@@ -7,10 +7,13 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.app_list_item.view.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class AppListAdapter(private val myDataset: List<Application>) : RecyclerView.Adapter<AppListAdapter.MyViewHolder>(), Filterable {
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView)
-    private var myDatasetFiltered: List<Application> = myDataset
+    var myDatasetFiltered: List<Application> = myDataset
+        private set
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val myView = LayoutInflater.from(parent.context).inflate(R.layout.app_list_item, parent, false)
@@ -27,7 +30,7 @@ class AppListAdapter(private val myDataset: List<Application>) : RecyclerView.Ad
         holder.itemView.secondLine.text = app.appPackageName
         holder.itemView.icon.setImageDrawable(app.appIcon)
         holder.itemView.checkBox.setOnClickListener {
-            myDataset[position].check(!app.isChecked)
+            app.check(!app.isChecked)
         }
     }
 
@@ -37,21 +40,21 @@ class AppListAdapter(private val myDataset: List<Application>) : RecyclerView.Ad
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence): FilterResults {
-                val charString = charSequence.toString().toLowerCase()
-                if (charString.isEmpty()) {
-                    myDatasetFiltered = myDataset
+                val charString = charSequence.toString().toLowerCase(Locale.getDefault())
+                myDatasetFiltered = if (charString.isEmpty()) {
+                    myDataset
                 } else {
                     val filteredList: MutableList<Application> = ArrayList()
                     for (app in myDataset) {
                         // name match condition. this might differ depending on your requirement
                         // here we are looking for name or phone number match
-                        if (app.appName.toLowerCase().contains(charString)
+                        if (app.appName.toLowerCase(Locale.getDefault()).contains(charString)
                             || app.appPackageName.contains(charSequence)
                         ) {
                             filteredList.add(app)
                         }
                     }
-                    myDatasetFiltered = filteredList
+                    filteredList
                 }
                 val filterResults = FilterResults()
                 filterResults.values = myDatasetFiltered

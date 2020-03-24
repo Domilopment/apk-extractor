@@ -4,8 +4,10 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.preference.PreferenceManager
@@ -46,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         fab.setOnClickListener { view ->
-            for (d in myData)
+            for (d in viewAdapter.myDatasetFiltered)
                 if(d.isChecked)
                     if (FileHelper(
                             d.appSourceDirectory,
@@ -64,15 +66,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
-        // Associate searchable configuration with the SearchView
 
         // Associate searchable configuration with the SearchView
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         searchView = menu.findItem(R.id.app_bar_search).actionView as SearchView
-        searchView.setSearchableInfo(
-            searchManager.getSearchableInfo(componentName)
-        )
         searchView.maxWidth = Int.MAX_VALUE
+        searchView.imeOptions = EditorInfo.IME_ACTION_SEARCH
 
         // listening to search query text change
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -81,7 +79,6 @@ class MainActivity : AppCompatActivity() {
                 viewAdapter.filter.filter(query)
                 return false
             }
-
             override fun onQueryTextChange(query: String?): Boolean {
                 // filter recycler view when text is changed
                 viewAdapter.filter.filter(query)
