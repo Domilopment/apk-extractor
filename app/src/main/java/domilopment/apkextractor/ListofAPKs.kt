@@ -2,7 +2,6 @@ package domilopment.apkextractor
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.os.Build
 
 class ListofAPKs(packageManager: PackageManager) {
     private val packages: List<ApplicationInfo> = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
@@ -17,10 +16,10 @@ class ListofAPKs(packageManager: PackageManager) {
                 packageManager
             )
             when {
-                (packageInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0 ->
-                    systemApps.add(app)
                 (packageInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0 ->
                     updatedSystemApps.add(app)
+                (packageInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0 ->
+                    systemApps.add(app)
                 else ->
                     userApps.add(app)
             }
