@@ -1,6 +1,7 @@
 package domilopment.apkextractor.activitys
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -27,9 +28,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        myData = SettingsManager(packageManager, PreferenceManager.getDefaultSharedPreferences(this)).selectedAppTypes()
+        myData = SettingsManager(this).selectedAppTypes()
 
-        path = getExternalFilesDir(null)!!.absolutePath+'/'
+        path = SettingsManager(this)
+            .saveDir(
+                getExternalFilesDir(null)!!.absolutePath
+            )
 
         viewManager = LinearLayoutManager(this)
         viewAdapter = AppListAdapter(myData)

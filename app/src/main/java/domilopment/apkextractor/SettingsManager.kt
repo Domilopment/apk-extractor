@@ -1,12 +1,14 @@
 package domilopment.apkextractor
 
-import android.content.SharedPreferences
-import android.content.pm.PackageManager
+import android.content.Context
+import androidx.preference.PreferenceManager
 
 class SettingsManager(
-    private val packageManager: PackageManager,
-    private val sharedPreferences: SharedPreferences
+    context: Context
 ) {
+    private val packageManager = context.packageManager
+    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
     fun selectedAppTypes(): List<Application>{
         val mData: ArrayList<Application> = ArrayList()
         if (sharedPreferences.getBoolean("system_apps", false))
@@ -16,5 +18,9 @@ class SettingsManager(
         if (sharedPreferences.getBoolean("user_apps", true))
             mData.addAll(ListofAPKs(packageManager).userApps)
         return mData
+    }
+
+    fun saveDir(alternativePath: String): String {
+        return sharedPreferences.getString("dir", alternativePath).toString() + '/'
     }
 }

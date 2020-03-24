@@ -1,29 +1,25 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory app:title="@string/messages_header">
-        <EditTextPreference
-            app:key="signature"
-            app:title="@string/signature_title"
-            app:useSimpleSummaryProvider="true" />
-        <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/reply_title"
-            app:useSimpleSummaryProvider="true" />
+    <PreferenceCategory app:title="@string/save_header">
+        <Preference
+            app:key="choose_dir"
+            app:title="Choose Save Directory"
+            android:defaultValue="test"/>
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/app_type_header">
         <SwitchPreferenceCompat
             app:key="updated_system_apps"
-            app:title="@string/app_type_system_updated" />
+            app:title="@string/app_type_system_updated"
+            app:summary="Show all updated System Apps"/>
         <SwitchPreferenceCompat
             app:dependency="updated_system_apps"
             app:key="system_apps"
-            app:title="@string/app_type_system" />
+            app:title="@string/app_type_system"
+            app:summary="Show all System Apps"/>
         <SwitchPreferenceCompat
             app:key="user_apps"
             app:title="@string/app_type_user"
+            app:summary="Show all Apps Installed by User"
             app:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Info">

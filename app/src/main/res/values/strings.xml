@@ -10,7 +10,7 @@
     <string name="title_activity_settings">Settings</string>
 
     <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
+    <string name="save_header">Save Options</string>
     <string name="app_type_header">Apps</string>
 
     <!-- Messages Preferences -->
@@ -18,9 +18,9 @@
     <string name="reply_title">Default reply action</string>
 
     <!-- Sync Preferences -->
-    <string name="app_type_system">Show All System Apps</string>
-    <string name="app_type_system_updated">Show All System Updated Apps</string>
-    <string name="app_type_user">Show All User installed Apps</string>
+    <string name="app_type_system">System Apps</string>
+    <string name="app_type_system_updated">Updated System Apps</string>
+    <string name="app_type_user">User Apps</string>
 
     <string name="search_hint">Type name…</string>
 </resources>
