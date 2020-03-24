@@ -1,0 +1,28 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory app:title="@string/messages_header">
+        <EditTextPreference
+            app:key="signature"
+            app:title="@string/signature_title"
+            app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            app:defaultValue="reply"
+            app:entries="@array/reply_entries"
+            app:entryValues="@array/reply_values"
+            app:key="reply"
+            app:title="@string/reply_title"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+    <PreferenceCategory app:title="@string/app_type_header">
+        <SwitchPreferenceCompat
+            app:key="system_apps"
+            app:title="@string/app_type_system" />
+        <SwitchPreferenceCompat
+            app:dependency="system_apps"
+            app:key="updated_system_apps"
+            app:title="@string/app_type_system_updated" />
+        <SwitchPreferenceCompat
+            app:key="user_apps"
+            app:title="@string/app_type_user"
+            app:defaultValue="true"/>
+    </PreferenceCategory>
+</PreferenceScreen>
