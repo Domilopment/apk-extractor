@@ -26,11 +26,13 @@ class AppListAdapter(private val myDataset: List<Application>) : RecyclerView.Ad
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         val app = myDatasetFiltered[position]
+        holder.setIsRecyclable(false)
         holder.itemView.firstLine.text = app.appName
         holder.itemView.secondLine.text = app.appPackageName
         holder.itemView.icon.setImageDrawable(app.appIcon)
-        holder.itemView.checkBox.setOnClickListener {
-            app.check(!app.isChecked)
+        holder.itemView.checkBox.isChecked = app.isChecked
+        holder.itemView.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            app.check(isChecked)
         }
     }
 
