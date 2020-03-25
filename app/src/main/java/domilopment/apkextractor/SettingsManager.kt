@@ -24,4 +24,11 @@ class SettingsManager(
     fun saveDir(): String {
         return sharedPreferences.getString("dir", null).toString() + '/'
     }
+
+    fun sortData(data : List<Application>): List<Application> {
+        data.sortedWith(Comparator { app, app2 ->
+            app.appName.compareTo(app2.appName)
+        })
+        return data
+    }
 }

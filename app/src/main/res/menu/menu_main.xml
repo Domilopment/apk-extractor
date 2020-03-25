@@ -3,14 +3,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="domilopment.apkextractor.activitys.MainActivity">
     <item
+        android:icon="@drawable/ic_share_black_24dp"
+        android:orderInCategory="0"
+        android:title="Share"
+        app:actionProviderClass="androidx.appcompat.widget.ShareActionProvider"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/app_bar_search"
         android:icon="@drawable/ic_search_black_24dp"
+        android:orderInCategory="0"
         android:title="Search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always" />
+    <item
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:orderInCategory="2"
+        android:title="Sort"
+        app:showAsAction="never">
+        <menu>
+            <group
+                android:checkableBehavior="single"
+                android:enabled="true"
+                android:orderInCategory="1"
+                android:visible="true">
+                <item
+                    android:id="@+id/switch_app_name"
+                    android:title="App Name"
+                    app:showAsAction="never" />
+                <item
+                    android:id="@+id/switch_package_name"
+                    android:title="Package Name"
+                    app:showAsAction="never" />
+            </group>
+        </menu>
+    </item>
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
+        android:orderInCategory="3"
         android:title="@string/action_settings"
         app:showAsAction="never" />
 </menu>
