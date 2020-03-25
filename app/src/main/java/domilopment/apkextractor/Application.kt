@@ -19,7 +19,7 @@ class Application(
                 packageManager.getPackageInfo(applicationInfo.packageName, 0).longVersionCode
             else
                 packageManager.getPackageInfo(applicationInfo.packageName, 0).versionCode.toLong()
-    val appFlags: Int =  applicationInfo.flags
+    val appFlags: Int = applicationInfo.flags
     var isChecked: Boolean = false
         private set
 

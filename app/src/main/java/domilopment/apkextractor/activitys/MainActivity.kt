@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             dlgAlert.setMessage("Choose a Directory to Save APKs")
             dlgAlert.setTitle("Save Dir")
             dlgAlert.setCancelable(false)
-            dlgAlert.setPositiveButton("Ok") { dialog, which ->
+            dlgAlert.setPositiveButton("Ok") { _, _ ->
                 val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
                 i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 i.addCategory(Intent.CATEGORY_DEFAULT)
@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity() {
         if (allPermissionsGranted(grantResults)) {
             startApplication()
         } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
         }
     }
 
@@ -169,7 +169,7 @@ class MainActivity : AppCompatActivity() {
         mShareActionProvider.setShareIntent(getSelectedApps())
     }
 
-    fun getSelectedApps(): Intent? {
+    private fun getSelectedApps(): Intent? {
         val intent = Intent(Intent.ACTION_SEND)
         intent.action = Intent.ACTION_SEND_MULTIPLE
         intent.type = "application/vnd.android.package-archive"
@@ -177,7 +177,7 @@ class MainActivity : AppCompatActivity() {
         for (app in viewAdapter.myDatasetFiltered) {
             if (app.isChecked) {
                 val uri = FileProvider.getUriForFile(
-                    MainActivity@this,
+                    this,
                     application.packageName+".provider",
                     File(app.appSourceDirectory))
                 files.add(uri)
@@ -220,7 +220,7 @@ class MainActivity : AppCompatActivity() {
                 PreferenceManager.getDefaultSharedPreferences(this).edit()
                     .putString("dir", data!!.data.toString()).apply()
                 val takeFlags =
-                    data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 contentResolver
                     .takePersistableUriPermission(data.data!!, takeFlags)
             }
