@@ -3,14 +3,12 @@ package domilopment.apkextractor.activitys
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
-import java.io.File
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +39,7 @@ class SettingsActivity : AppCompatActivity() {
             }
             findPreference<Preference>("choose_dir")!!.setOnPreferenceClickListener {
                 val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 i.addCategory(Intent.CATEGORY_DEFAULT)
                 startActivityForResult(Intent.createChooser(i, "Choose directory"), 9999)
                 return@setOnPreferenceClickListener true
@@ -49,7 +48,14 @@ class SettingsActivity : AppCompatActivity() {
 
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             when (requestCode) {
-                9999 -> getDefaultSharedPreferences(context).edit().putString("dir", data!!.data!!.path).apply()
+                9999 -> {
+                    getDefaultSharedPreferences(context).edit()
+                        .putString("dir", data!!.data.toString()).apply()
+                    val takeFlags =
+                        data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    activity!!.contentResolver
+                        .takePersistableUriPermission(data.data!!, takeFlags)
+                }
             }
         }
     }

@@ -1,31 +1,34 @@
 package domilopment.apkextractor
 
-import java.io.File
+import android.content.Context
+import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
+import java.io.*
 
-class FileHelper(from: String, to: String, fileName: String) {
-    private val from = File(from)
-    private val to = File(to + fileName)
-    private val path = to
-
-    fun copy(): Boolean{
-        try {
-            File(path).mkdir()
-            if (from.exists()) {
-                from.copyTo(to)
-                return true
-            }
+class FileHelper(private val context: Context) {
+    fun copy(
+        from: String,
+        to: String,
+        fileName: String
+    ): Boolean {
+        val source: InputStream
+        val out: OutputStream
+        val pickedDir = DocumentFile.fromTreeUri(context, Uri.parse(to + fileName))
+        return try {
+            val newFile = pickedDir!!.createFile("application/vnd.android.package-archive", fileName)
+            out = context.contentResolver.openOutputStream(newFile!!.uri)!!
+            source = FileInputStream(from)
+            source.copyTo(out)
+            source.close()
+            out.flush()
+            out.close()
+            true
+        } catch (fnfe1: FileNotFoundException) {
+            fnfe1.printStackTrace()
+            false
         } catch (e: Exception) {
             e.printStackTrace()
-            return false
-        }
-        return false
-    }
-
-    private fun File.copyTo(file: File) {
-        inputStream().use { input ->
-            file.outputStream().use { output ->
-                input.copyTo(output)
-            }
+            false
         }
     }
 }

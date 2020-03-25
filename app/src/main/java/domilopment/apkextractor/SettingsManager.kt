@@ -20,7 +20,7 @@ class SettingsManager(
         return mData
     }
 
-    fun saveDir(alternativePath: String): String {
-        return sharedPreferences.getString("dir", alternativePath).toString() + '/'
+    fun saveDir(): String {
+        return sharedPreferences.getString("dir", null).toString() + '/'
     }
 }

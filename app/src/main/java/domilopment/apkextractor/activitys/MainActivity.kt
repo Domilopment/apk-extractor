@@ -1,11 +1,11 @@
 package domilopment.apkextractor.activitys
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.preference.PreferenceManager
@@ -30,11 +30,6 @@ class MainActivity : AppCompatActivity() {
 
         myData = SettingsManager(this).selectedAppTypes()
 
-        path = SettingsManager(this)
-            .saveDir(
-                getExternalFilesDir(null)!!.absolutePath
-            )
-
         viewManager = LinearLayoutManager(this)
         viewAdapter = AppListAdapter(myData)
 
@@ -48,14 +43,30 @@ class MainActivity : AppCompatActivity() {
             adapter = viewAdapter
         }
 
+        if (!PreferenceManager.getDefaultSharedPreferences(this).contains("dir")) {
+            val dlgAlert = AlertDialog.Builder(this)
+            dlgAlert.setMessage("Choose a Directory to Save APKs")
+            dlgAlert.setTitle("Save Dir")
+            dlgAlert.setCancelable(false)
+            dlgAlert.setPositiveButton("Ok") { dialog, which ->
+                val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                i.addCategory(Intent.CATEGORY_DEFAULT)
+                startActivityForResult(Intent.createChooser(i, "Choose directory"), 9999)
+            }
+            dlgAlert.create().show()
+        }
+
         fab.setOnClickListener { view ->
+            path = SettingsManager(this).saveDir()
             for (d in viewAdapter.myDatasetFiltered)
                 if(d.isChecked)
-                    if (FileHelper(
+                    if (FileHelper(this).copy(
                             d.appSourceDirectory,
                             path,
                             "${d.appName}_${d.appVersionName}.apk"
-                        ).copy())
+                        )
+                    )
                         Snackbar.make(view, "APK ${d.appName} extracted to $path", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show()
                     else
@@ -109,5 +120,19 @@ class MainActivity : AppCompatActivity() {
             return
         }
         super.onBackPressed()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            9999 -> {
+                PreferenceManager.getDefaultSharedPreferences(this).edit()
+                    .putString("dir", data!!.data.toString()).apply()
+                val takeFlags =
+                    data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                this.contentResolver
+                    .takePersistableUriPermission(data.data!!, takeFlags)
+            }
+        }
     }
 }
