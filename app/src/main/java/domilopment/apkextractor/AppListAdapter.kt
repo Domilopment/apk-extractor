@@ -6,11 +6,12 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
+import domilopment.apkextractor.activitys.MainActivity
 import kotlinx.android.synthetic.main.app_list_item.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class AppListAdapter(private val myDataset: List<Application>) : RecyclerView.Adapter<AppListAdapter.MyViewHolder>(), Filterable {
+class AppListAdapter(private val myDataset: List<Application>, private val mainActivity: MainActivity) : RecyclerView.Adapter<AppListAdapter.MyViewHolder>(), Filterable {
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView)
     var myDatasetFiltered: List<Application> = myDataset
         private set
@@ -24,7 +25,6 @@ class AppListAdapter(private val myDataset: List<Application>) : RecyclerView.Ad
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         // - get element from your dataset at this position
-        // - replace the contents of the view with that element
         val app = myDatasetFiltered[position]
         holder.setIsRecyclable(false)
         holder.itemView.firstLine.text = app.appName
@@ -33,6 +33,7 @@ class AppListAdapter(private val myDataset: List<Application>) : RecyclerView.Ad
         holder.itemView.checkBox.isChecked = app.isChecked
         holder.itemView.checkBox.setOnCheckedChangeListener { _, isChecked ->
             app.check(isChecked)
+            mainActivity.updateIntent()
         }
     }
 

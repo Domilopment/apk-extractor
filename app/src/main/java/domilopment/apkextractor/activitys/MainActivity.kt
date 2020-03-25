@@ -12,13 +12,17 @@ import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
+import androidx.core.view.MenuItemCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
@@ -27,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var myData: List<Application>
     private lateinit var path: String
+    private lateinit var mShareActionProvider: ShareActionProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         myData = SettingsManager(this).selectedAppTypes()
 
         viewManager = LinearLayoutManager(this)
-        viewAdapter = AppListAdapter(myData)
+        viewAdapter = AppListAdapter(myData, this)
 
         recyclerView = findViewById<RecyclerView>(R.id.list).apply {
             // use this setting to improve performance if you know that changes
@@ -132,7 +137,7 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_main, menu)
 
         // Associate searchable configuration with the SearchView
-        searchView = menu.findItem(R.id.app_bar_search).actionView as SearchView
+        searchView = menu.findItem(R.id.action_search).actionView as SearchView
         searchView.maxWidth = Int.MAX_VALUE
         searchView.imeOptions = EditorInfo.IME_ACTION_SEARCH
 
@@ -149,7 +154,39 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
         })
+
+        // Retrieve the share menu item
+        val shareItem = menu.findItem(R.id.action_share)
+
+        // Now get the ShareActionProvider from the item
+        mShareActionProvider =
+            MenuItemCompat.getActionProvider(shareItem) as ShareActionProvider
+
+        mShareActionProvider.setShareIntent(getSelectedApps())
+
         return true
+    }
+
+    fun updateIntent() {
+        mShareActionProvider.setShareIntent(getSelectedApps())
+    }
+
+    fun getSelectedApps(): Intent? {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.action = Intent.ACTION_SEND_MULTIPLE
+        intent.type = "application/vnd.android.package-archive"
+        val files = ArrayList<Uri>()
+        for (app in viewAdapter.myDatasetFiltered) {
+            if (app.isChecked) {
+                val uri = FileProvider.getUriForFile(
+                    MainActivity@this,
+                    application.packageName+".provider",
+                    File(app.appSourceDirectory))
+                files.add(uri)
+            }
+        }
+        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
+        return intent
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
