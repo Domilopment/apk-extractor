@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NavUtils
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
@@ -61,5 +62,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        NavUtils.navigateUpFromSameTask(this)
     }
 }
