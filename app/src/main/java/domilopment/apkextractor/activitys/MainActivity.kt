@@ -1,6 +1,9 @@
 package domilopment.apkextractor.activitys
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Binder
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -21,7 +24,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewAdapter: AppListAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var myData: List<Application>
-    private lateinit var path: String
+    private var path: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +46,15 @@ class MainActivity : AppCompatActivity() {
             adapter = viewAdapter
         }
 
-        if (!PreferenceManager.getDefaultSharedPreferences(this).contains("dir")) {
+        if (
+            !(PreferenceManager.getDefaultSharedPreferences(this).contains("dir"))
+            || checkUriPermission(
+                Uri.parse(path),
+                Binder.getCallingPid(),
+                Binder.getCallingUid(),
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
             val dlgAlert = AlertDialog.Builder(this)
             dlgAlert.setMessage("Choose a Directory to Save APKs")
             dlgAlert.setTitle("Save Dir")
@@ -67,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                             "${d.appName}_${d.appVersionName}.apk"
                         )
                     )
-                        Snackbar.make(view, "APK ${d.appName} extracted to $path", Snackbar.LENGTH_LONG)
+                        Snackbar.make(view, "APK ${d.appName} extracted", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show()
                     else
                         Snackbar.make(view, "Extraction of ${d.appName} Failed", Snackbar.LENGTH_LONG)
@@ -130,7 +141,7 @@ class MainActivity : AppCompatActivity() {
                     .putString("dir", data!!.data.toString()).apply()
                 val takeFlags =
                     data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                this.contentResolver
+                contentResolver
                     .takePersistableUriPermission(data.data!!, takeFlags)
             }
         }
