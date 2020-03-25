@@ -162,8 +162,6 @@ class MainActivity : AppCompatActivity() {
         mShareActionProvider =
             MenuItemCompat.getActionProvider(shareItem) as ShareActionProvider
 
-        mShareActionProvider.setShareIntent(getSelectedApps())
-
         return true
     }
 
@@ -185,8 +183,12 @@ class MainActivity : AppCompatActivity() {
                 files.add(uri)
             }
         }
-        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
-        return intent
+        return if (files.isEmpty())
+            null
+        else {
+            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
+            intent
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
