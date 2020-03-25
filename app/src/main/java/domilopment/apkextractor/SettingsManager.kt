@@ -11,10 +11,11 @@ class SettingsManager(
 
     fun selectedAppTypes(): List<Application>{
         val mData: ArrayList<Application> = ArrayList()
-        if (sharedPreferences.getBoolean("system_apps", false))
-            mData.addAll(ListofAPKs(packageManager).systemApps)
-        if (sharedPreferences.getBoolean("updated_system_apps", false))
+        if (sharedPreferences.getBoolean("updated_system_apps", false)) {
             mData.addAll(ListofAPKs(packageManager).updatedSystemApps)
+            if (sharedPreferences.getBoolean("system_apps", false))
+                mData.addAll(ListofAPKs(packageManager).systemApps)
+        }
         if (sharedPreferences.getBoolean("user_apps", true))
             mData.addAll(ListofAPKs(packageManager).userApps)
         return mData

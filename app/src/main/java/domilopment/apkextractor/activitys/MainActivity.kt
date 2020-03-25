@@ -1,5 +1,6 @@
 package domilopment.apkextractor.activitys
 
+import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -11,6 +12,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,30 +26,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewAdapter: AppListAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var myData: List<Application>
-    private var path: String = ""
+    private lateinit var path: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        myData = SettingsManager(this).selectedAppTypes()
+        if (checkNeededPermissions())
+            startApplication()
 
-        viewManager = LinearLayoutManager(this)
-        viewAdapter = AppListAdapter(myData)
+        path = SettingsManager(this).saveDir()
 
-        recyclerView = findViewById<RecyclerView>(R.id.list).apply {
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
-            setHasFixedSize(true)
-            // use a linear layout manager
-            layoutManager = viewManager
-            // specify an viewAdapter (see also next example)
-            adapter = viewAdapter
-        }
-
-        if (
-            !(PreferenceManager.getDefaultSharedPreferences(this).contains("dir"))
+        if (!(PreferenceManager.getDefaultSharedPreferences(this).contains("dir"))
             || checkUriPermission(
                 Uri.parse(path),
                 Binder.getCallingPid(),
@@ -67,6 +58,23 @@ class MainActivity : AppCompatActivity() {
             }
             dlgAlert.create().show()
         }
+    }
+
+    private fun startApplication() {
+        myData = SettingsManager(this).selectedAppTypes()
+
+        viewManager = LinearLayoutManager(this)
+        viewAdapter = AppListAdapter(myData)
+
+        recyclerView = findViewById<RecyclerView>(R.id.list).apply {
+            // use this setting to improve performance if you know that changes
+            // in content do not change the layout size of the RecyclerView
+            setHasFixedSize(true)
+            // use a linear layout manager
+            layoutManager = viewManager
+            // specify an viewAdapter (see also next example)
+            adapter = viewAdapter
+        }
 
         fab.setOnClickListener { view ->
             path = SettingsManager(this).saveDir()
@@ -83,6 +91,39 @@ class MainActivity : AppCompatActivity() {
                     else
                         Snackbar.make(view, "Extraction of ${d.appName} Failed", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show()
+        }
+    }
+
+    private fun checkNeededPermissions() : Boolean{
+        val neededPermissions = arrayOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+        val missingPermissions = ArrayList<String>()
+        for (neededPermission in neededPermissions) {
+            if (ActivityCompat.checkSelfPermission(applicationContext, neededPermission) != PackageManager.PERMISSION_GRANTED) {
+                missingPermissions.add(neededPermission)
+            }
+        }
+        if (missingPermissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, missingPermissions.toTypedArray(), 0)
+        }
+        return true
+    }
+
+    private fun allPermissionsGranted(grantedPermissions: IntArray): Boolean {
+        for (singleGrantedPermission in grantedPermissions)
+            if (singleGrantedPermission == PackageManager.PERMISSION_DENIED)
+                return false
+        return true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (allPermissionsGranted(grantResults)) {
+            startApplication()
+        } else {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
         }
     }
 
