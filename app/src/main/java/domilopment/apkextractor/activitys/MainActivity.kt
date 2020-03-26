@@ -2,6 +2,7 @@ package domilopment.apkextractor.activitys
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Binder
@@ -33,18 +34,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var myData: List<Application>
     private lateinit var path: String
     private lateinit var mShareActionProvider: ShareActionProvider
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+
         if (checkNeededPermissions())
             startApplication()
 
         path = SettingsManager(this).saveDir()
 
-        if (!(PreferenceManager.getDefaultSharedPreferences(this).contains("dir"))
+        if (!(sharedPreferences.contains("dir"))
             || checkUriPermission(
                 Uri.parse(path),
                 Binder.getCallingPid(),
@@ -139,7 +143,7 @@ class MainActivity : AppCompatActivity() {
 
         val byname: MenuItem = menu.findItem(R.id.action_app_name)
         val bypackage: MenuItem = menu.findItem(R.id.action_package_name)
-        when (PreferenceManager.getDefaultSharedPreferences(this).getInt("app_sort", 0)){
+        when (sharedPreferences.getInt("app_sort", 0)){
             1 -> bypackage.isChecked = true
             else -> byname.isChecked = true
         }
@@ -153,11 +157,13 @@ class MainActivity : AppCompatActivity() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 // filter recycler view when query submitted
-                viewAdapter.filter.filter(query)
-                return false
+                return onFilter(query)
             }
             override fun onQueryTextChange(query: String?): Boolean {
                 // filter recycler view when text is changed
+                return onFilter(query)
+            }
+            fun onFilter(query: String?): Boolean {
                 viewAdapter.filter.filter(query)
                 return false
             }
@@ -207,14 +213,14 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings ->
                 startActivity(Intent(this, SettingsActivity::class.java))
             R.id.action_app_name -> {
-                PreferenceManager.getDefaultSharedPreferences(this).edit().putInt("app_sort", 0)
+                sharedPreferences.edit().putInt("app_sort", 0)
                     .apply()
                 item.isChecked = true
                 viewAdapter.sortData()
                 viewAdapter.notifyDataSetChanged()
             }
             R.id.action_package_name -> {
-                PreferenceManager.getDefaultSharedPreferences(this).edit().putInt("app_sort", 1)
+                sharedPreferences.edit().putInt("app_sort", 1)
                     .apply()
                 item.isChecked = true
                 viewAdapter.sortData()
@@ -239,7 +245,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             9999 -> {
-                PreferenceManager.getDefaultSharedPreferences(this).edit()
+                sharedPreferences.edit()
                     .putString("dir", data!!.data.toString()).apply()
                 val takeFlags =
                     data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
