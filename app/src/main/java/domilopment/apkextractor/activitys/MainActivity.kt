@@ -23,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
@@ -136,6 +137,13 @@ class MainActivity : AppCompatActivity() {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
 
+        val byname: MenuItem = menu.findItem(R.id.action_app_name)
+        val bypackage: MenuItem = menu.findItem(R.id.action_package_name)
+        when (PreferenceManager.getDefaultSharedPreferences(this).getInt("app_sort", 0)){
+            1 -> bypackage.isChecked = true
+            else -> byname.isChecked = true
+        }
+
         // Associate searchable configuration with the SearchView
         searchView = menu.findItem(R.id.action_search).actionView as SearchView
         searchView.maxWidth = Int.MAX_VALUE
@@ -198,6 +206,20 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_settings ->
                 startActivity(Intent(this, SettingsActivity::class.java))
+            R.id.action_app_name -> {
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putInt("app_sort", 0)
+                    .apply()
+                item.isChecked = true
+                viewAdapter.sortData()
+                viewAdapter.notifyDataSetChanged()
+            }
+            R.id.action_package_name -> {
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putInt("app_sort", 1)
+                    .apply()
+                item.isChecked = true
+                viewAdapter.sortData()
+                viewAdapter.notifyDataSetChanged()
+            }
             else ->
                 return super.onOptionsItemSelected(item)
         }

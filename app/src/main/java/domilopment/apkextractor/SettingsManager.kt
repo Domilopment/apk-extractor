@@ -1,7 +1,11 @@
 package domilopment.apkextractor
 
 import android.content.Context
+import android.util.Log
 import androidx.preference.PreferenceManager
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 class SettingsManager(
     context: Context
@@ -18,7 +22,7 @@ class SettingsManager(
         }
         if (sharedPreferences.getBoolean("user_apps", true))
             mData.addAll(ListofAPKs(packageManager).userApps)
-        return mData
+        return sortData(mData)
     }
 
     fun saveDir(): String {
@@ -26,9 +30,11 @@ class SettingsManager(
     }
 
     fun sortData(data : List<Application>): List<Application> {
-        data.sortedWith(Comparator { app, app2 ->
-            app.appName.compareTo(app2.appName)
-        })
+        Log.e("sorted", sharedPreferences.getInt("app_sort", 0).toString())
+        when (sharedPreferences.getInt("app_sort", 0)) {
+            1 -> Collections.sort(data, Comparator.comparing(Application::appPackageName))
+            else -> Collections.sort(data, Comparator.comparing(Application::appName))
+        }
         return data
     }
 }

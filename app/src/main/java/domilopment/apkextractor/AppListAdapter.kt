@@ -70,4 +70,8 @@ class AppListAdapter(private val myDataset: List<Application>, private val mainA
             }
         }
     }
+
+    fun sortData() {
+            SettingsManager(mainActivity).sortData(myDatasetFiltered)
+    }
 }

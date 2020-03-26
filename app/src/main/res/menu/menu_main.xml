@@ -29,7 +29,8 @@
                 <item
                     android:id="@+id/action_app_name"
                     android:title="App Name"
-                    app:showAsAction="never" />
+                    app:showAsAction="never"
+                    android:checked="true"/>
                 <item
                     android:id="@+id/action_package_name"
                     android:title="Package Name"
