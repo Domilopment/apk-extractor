@@ -25,4 +25,8 @@ object ListofAPKs {
             }
         }
     }
+
+    fun isEmpty(): Boolean {
+        return userApps.isEmpty() || systemApps.isEmpty() || updatedSystemApps.isEmpty()
+    }
 }
