@@ -1,8 +1,9 @@
 package domilopment.apkextractor
 
 import android.content.Context
-import android.util.Log
 import androidx.preference.PreferenceManager
+import domilopment.apkextractor.data.Application
+import domilopment.apkextractor.data.ListofAPKs
 import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
@@ -10,18 +11,17 @@ import kotlin.collections.ArrayList
 class SettingsManager(
     context: Context
 ) {
-    private val packageManager = context.packageManager
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     fun selectedAppTypes(): List<Application>{
         val mData: ArrayList<Application> = ArrayList()
         if (sharedPreferences.getBoolean("updated_system_apps", false)) {
-            mData.addAll(ListofAPKs(packageManager).updatedSystemApps)
+            mData.addAll(ListofAPKs.updatedSystemApps)
             if (sharedPreferences.getBoolean("system_apps", false))
-                mData.addAll(ListofAPKs(packageManager).systemApps)
+                mData.addAll(ListofAPKs.systemApps)
         }
         if (sharedPreferences.getBoolean("user_apps", true))
-            mData.addAll(ListofAPKs(packageManager).userApps)
+            mData.addAll(ListofAPKs.userApps)
         return sortData(mData)
     }
 

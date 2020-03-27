@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
+import domilopment.apkextractor.data.Application
+import domilopment.apkextractor.data.ListofAPKs
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import kotlin.collections.ArrayList

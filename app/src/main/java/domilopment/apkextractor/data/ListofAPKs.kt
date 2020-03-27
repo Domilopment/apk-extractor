@@ -1,15 +1,15 @@
-package domilopment.apkextractor
+package domilopment.apkextractor.data
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 
-class ListofAPKs(packageManager: PackageManager) {
-    private val packages: List<ApplicationInfo> = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+object ListofAPKs {
     val userApps: ArrayList<Application> = ArrayList()
     val systemApps: ArrayList<Application> = ArrayList()
     val updatedSystemApps: ArrayList<Application> = ArrayList()
 
-    init {
+    fun init(packageManager: PackageManager) {
+        val packages: List<ApplicationInfo> = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
         packages.forEach { packageInfo: ApplicationInfo ->
             val app = Application(
                 packageInfo,

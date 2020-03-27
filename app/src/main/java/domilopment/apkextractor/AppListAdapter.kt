@@ -7,6 +7,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import domilopment.apkextractor.activitys.MainActivity
+import domilopment.apkextractor.data.Application
 import kotlinx.android.synthetic.main.app_list_item.view.*
 import java.util.*
 import kotlin.collections.ArrayList
