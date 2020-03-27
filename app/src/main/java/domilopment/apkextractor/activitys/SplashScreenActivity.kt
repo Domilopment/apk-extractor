@@ -16,7 +16,7 @@ class SplashScreenActivity : AppCompatActivity() {
             ListofAPKs.init(packageManager)
             init = false
         }
-        intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
     }

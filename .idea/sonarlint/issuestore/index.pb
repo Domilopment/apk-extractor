@@ -11,3 +11,9 @@ m
 =app/src/main/java/domilopment/apkextractor/SettingsManager.kt,d\6\d6895f2dc54051829028095d6ba116bb0985b775
 t
 Dapp/src/main/java/domilopment/apkextractor/activitys/MainActivity.kt,a\b\ab8409cbbaad1f7f6ae049696d2883a534089b4a
+m
+=app/src/main/java/domilopment/apkextractor/data/ListofAPKs.kt,c\5\c5baa58722345c23fbca3740a3864abf4c10da00
+|
+Lapp/src/main/java/domilopment/apkextractor/activitys/SplashScreenActivity.kt,0\8\08af93616f349b0e4e13235c59ab7382cc543bf0
+@
+app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
