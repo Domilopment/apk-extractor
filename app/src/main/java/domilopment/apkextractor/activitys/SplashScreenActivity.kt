@@ -12,7 +12,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (init || ListofAPKs.isEmpty()) {
+        if (init) {
             ListofAPKs.init(packageManager)
             init = false
         }
