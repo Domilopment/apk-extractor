@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
@@ -17,13 +18,13 @@ import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.MenuItemCompat
+import androidx.documentfile.provider.DocumentFile
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import domilopment.apkextractor.data.Application
-import domilopment.apkextractor.data.ListofAPKs
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import kotlin.collections.ArrayList
@@ -57,16 +58,17 @@ class MainActivity : AppCompatActivity() {
                 Binder.getCallingUid(),
                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             ) == PackageManager.PERMISSION_DENIED
+            || !DocumentFile.fromTreeUri(
+                this,
+                Uri.parse(path)
+            )!!.exists()
         ) {
             val dlgAlert = AlertDialog.Builder(this)
             dlgAlert.setMessage("Choose a Directory to Save APKs")
             dlgAlert.setTitle("Save Dir")
             dlgAlert.setCancelable(false)
             dlgAlert.setPositiveButton("Ok") { _, _ ->
-                val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                i.addCategory(Intent.CATEGORY_DEFAULT)
-                startActivityForResult(Intent.createChooser(i, "Choose directory"), 9999)
+               FileHelper(this).chooseDir()
             }
             dlgAlert.create().show()
         }
@@ -101,8 +103,8 @@ class MainActivity : AppCompatActivity() {
                         Snackbar.make(view, "APK ${d.appName} extracted", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show()
                     else
-                        Snackbar.make(view, "Extraction of ${d.appName} Failed", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show()
+                        Snackbar.make(view, "Extraction of ${d.appName} FAILED", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).setTextColor(Color.RED).show()
         }
     }
 
@@ -246,7 +248,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            9999 -> {
+            FileHelper.CHOOSE_SAVE_DIR_RESULT -> {
                 sharedPreferences.edit()
                     .putString("dir", data!!.data.toString()).apply()
                 val takeFlags =

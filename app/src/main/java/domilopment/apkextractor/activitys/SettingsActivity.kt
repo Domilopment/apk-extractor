@@ -9,6 +9,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import domilopment.apkextractor.BuildConfig
+import domilopment.apkextractor.FileHelper
 import domilopment.apkextractor.R
 
 class SettingsActivity : AppCompatActivity() {
@@ -39,17 +40,14 @@ class SettingsActivity : AppCompatActivity() {
                 return@setOnPreferenceClickListener true
             }
             findPreference<Preference>("choose_dir")!!.setOnPreferenceClickListener {
-                val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                i.addCategory(Intent.CATEGORY_DEFAULT)
-                startActivityForResult(Intent.createChooser(i, "Choose directory"), 9999)
+                FileHelper(activity!!).chooseDir()
                 return@setOnPreferenceClickListener true
             }
         }
 
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             when (requestCode) {
-                9999 -> {
+                FileHelper.CHOOSE_SAVE_DIR_RESULT -> {
                     getDefaultSharedPreferences(context).edit()
                         .putString("dir", data!!.data.toString()).apply()
                     val takeFlags =
