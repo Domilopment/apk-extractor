@@ -153,25 +153,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Associate searchable configuration with the SearchView
-        searchView = menu.findItem(R.id.action_search).actionView as SearchView
-        searchView.maxWidth = Int.MAX_VALUE
-        searchView.imeOptions = EditorInfo.IME_ACTION_SEARCH
-
-        // listening to search query text change
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                // filter recycler view when query submitted
-                return onFilter(query)
-            }
-            override fun onQueryTextChange(query: String?): Boolean {
-                // filter recycler view when text is changed
-                return onFilter(query)
-            }
-            fun onFilter(query: String?): Boolean {
-                viewAdapter.filter.filter(query)
-                return false
-            }
-        })
+        searchView = (menu.findItem(R.id.action_search).actionView as SearchView).apply {
+            maxWidth = Int.MAX_VALUE
+            imeOptions = EditorInfo.IME_ACTION_SEARCH
+            // listening to search query text change
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    // filter recycler view when query submitted
+                    return onFilter(query)
+                }
+                override fun onQueryTextChange(query: String?): Boolean {
+                    // filter recycler view when text is changed
+                    return onFilter(query)
+                }
+                fun onFilter(query: String?): Boolean {
+                    viewAdapter.filter.filter(query)
+                    return false
+                }
+            })
+        }
 
         // Retrieve the share menu item
         val shareItem = menu.findItem(R.id.action_share)
@@ -251,10 +251,10 @@ class MainActivity : AppCompatActivity() {
             FileHelper.CHOOSE_SAVE_DIR_RESULT -> {
                 sharedPreferences.edit()
                     .putString("dir", data!!.data.toString()).apply()
-                val takeFlags =
-                    data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                contentResolver
-                    .takePersistableUriPermission(data.data!!, takeFlags)
+                (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
+                    contentResolver
+                        .takePersistableUriPermission(data.data!!, this)
+                }
             }
         }
     }

@@ -21,9 +21,4 @@ class Application(
                 packageManager.getPackageInfo(applicationInfo.packageName, 0).versionCode.toLong()
     val appFlags: Int = applicationInfo.flags
     var isChecked: Boolean = false
-        private set
-
-    fun check(bool: Boolean) {
-        isChecked = bool
-    }
 }

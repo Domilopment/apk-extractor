@@ -36,7 +36,7 @@ class AppListAdapter(private val myDataset: List<Application>, private val mainA
             icon.setImageDrawable(app.appIcon)
             checkBox.isChecked = app.isChecked
             checkBox.setOnCheckedChangeListener { _, isChecked ->
-                app.check(isChecked)
+                app.isChecked = isChecked
                 mainActivity.updateIntent()
             }
         }
