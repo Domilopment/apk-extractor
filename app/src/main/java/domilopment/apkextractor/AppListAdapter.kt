@@ -12,7 +12,10 @@ import kotlinx.android.synthetic.main.app_list_item.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class AppListAdapter(private val myDataset: List<Application>, private val mainActivity: MainActivity) : RecyclerView.Adapter<AppListAdapter.MyViewHolder>(), Filterable {
+class AppListAdapter(
+    private val myDataset: List<Application>,
+    private val mainActivity: MainActivity
+) : RecyclerView.Adapter<AppListAdapter.MyViewHolder>(), Filterable {
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView)
     var myDatasetFiltered: List<Application> = myDataset
         private set
@@ -52,21 +55,21 @@ class AppListAdapter(private val myDataset: List<Application>, private val mainA
                 myDatasetFiltered = if (charString.isEmpty()) {
                     myDataset
                 } else {
-                    val filteredList: MutableList<Application> = ArrayList()
-                    for (app in myDataset) {
-                        // name match condition. this might differ depending on your requirement
-                        // here we are looking for name or phone number match
-                        if (app.appName.toLowerCase(Locale.getDefault()).contains(charString)
-                            || app.appPackageName.contains(charSequence)
-                        ) {
-                            filteredList.add(app)
+                    ArrayList<Application>().apply {
+                        for (app in myDataset) {
+                            // name match condition. this might differ depending on your requirement
+                            // here we are looking for name or phone number match
+                            if (app.appName.toLowerCase(Locale.getDefault()).contains(charString)
+                                || app.appPackageName.contains(charSequence)
+                            ) {
+                                add(app)
+                            }
                         }
                     }
-                    filteredList
                 }
-                val filterResults = FilterResults()
-                filterResults.values = myDatasetFiltered
-                return filterResults
+                return FilterResults().apply {
+                    values = myDatasetFiltered
+                }
             }
 
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
