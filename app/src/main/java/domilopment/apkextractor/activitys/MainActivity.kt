@@ -190,7 +190,7 @@ class MainActivity : AppCompatActivity() {
     private fun getSelectedApps(): Intent? {
         val intent = Intent(Intent.ACTION_SEND)
         intent.action = Intent.ACTION_SEND_MULTIPLE
-        intent.type = "application/vnd.android.package-archive"
+        intent.type = FileHelper.MIME_TYPE
         val files = ArrayList<Uri>()
         for (app in viewAdapter.myDatasetFiltered) {
             if (app.isChecked) {

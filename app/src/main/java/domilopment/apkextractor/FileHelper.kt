@@ -3,12 +3,12 @@ package domilopment.apkextractor
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import java.io.*
 
 class FileHelper(private val activity: Activity) {
     companion object{
+        const val MIME_TYPE = "application/vnd.android.package-archive"
         const val CHOOSE_SAVE_DIR_RESULT = 9999
     }
 
@@ -30,7 +30,7 @@ class FileHelper(private val activity: Activity) {
     ): Boolean {
         return try {
             val pickedDir = DocumentFile.fromTreeUri(activity, Uri.parse(to + fileName))
-                ?.createFile("application/vnd.android.package-archive", fileName)
+                ?.createFile(MIME_TYPE, fileName)
             FileInputStream(from).use { input ->
                 activity.contentResolver.openOutputStream(pickedDir!!.uri).use { output ->
                     input.copyTo(output!!)
