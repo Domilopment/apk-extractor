@@ -18,9 +18,11 @@ class AppListAdapter(private val myDataset: List<Application>, private val mainA
         private set
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val myView = LayoutInflater.from(parent.context).inflate(R.layout.app_list_item, parent, false)
-        // set the view's size, margins, paddings and layout parameters
-        return MyViewHolder(myView)
+        return LayoutInflater.from(parent.context).inflate(R.layout.app_list_item, parent, false).let {
+            // set the view's size, margins, paddings and layout parameters
+            MyViewHolder(it)
+        }
+
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -28,13 +30,15 @@ class AppListAdapter(private val myDataset: List<Application>, private val mainA
         // - get element from your dataset at this position
         val app = myDatasetFiltered[position]
         holder.setIsRecyclable(false)
-        holder.itemView.firstLine.text = app.appName
-        holder.itemView.secondLine.text = app.appPackageName
-        holder.itemView.icon.setImageDrawable(app.appIcon)
-        holder.itemView.checkBox.isChecked = app.isChecked
-        holder.itemView.checkBox.setOnCheckedChangeListener { _, isChecked ->
-            app.check(isChecked)
-            mainActivity.updateIntent()
+        holder.itemView.apply {
+            firstLine.text = app.appName
+            secondLine.text = app.appPackageName
+            icon.setImageDrawable(app.appIcon)
+            checkBox.isChecked = app.isChecked
+            checkBox.setOnCheckedChangeListener { _, isChecked ->
+                app.check(isChecked)
+                mainActivity.updateIntent()
+            }
         }
     }
 

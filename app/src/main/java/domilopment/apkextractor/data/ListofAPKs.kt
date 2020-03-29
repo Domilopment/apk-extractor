@@ -3,10 +3,12 @@ package domilopment.apkextractor.data
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 
-object ListofAPKs {
-    val userApps: ArrayList<Application> = ArrayList()
-    val systemApps: ArrayList<Application> = ArrayList()
-    val updatedSystemApps: ArrayList<Application> = ArrayList()
+class ListofAPKs() {
+    companion object {
+        val userApps: ArrayList<Application> = ArrayList()
+        val systemApps: ArrayList<Application> = ArrayList()
+        val updatedSystemApps: ArrayList<Application> = ArrayList()
+    }
 
     fun init(packageManager: PackageManager) {
         val packages: List<ApplicationInfo> = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)

@@ -63,14 +63,14 @@ class MainActivity : AppCompatActivity() {
                 Uri.parse(path)
             )!!.exists()
         ) {
-            val dlgAlert = AlertDialog.Builder(this)
-            dlgAlert.setMessage("Choose a Directory to Save APKs")
-            dlgAlert.setTitle("Save Dir")
-            dlgAlert.setCancelable(false)
-            dlgAlert.setPositiveButton("Ok") { _, _ ->
-               FileHelper(this).chooseDir()
-            }
-            dlgAlert.create().show()
+            AlertDialog.Builder(this).let {
+                it.setMessage("Choose a Directory to Save APKs")
+                it.setTitle("Save Dir")
+                it.setCancelable(false)
+                it.setPositiveButton("Ok") { _, _ ->
+                    FileHelper(this).chooseDir()
+                }
+            }.create().show()
         }
     }
 
@@ -188,9 +188,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getSelectedApps(): Intent? {
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.action = Intent.ACTION_SEND_MULTIPLE
-        intent.type = FileHelper.MIME_TYPE
         val files = ArrayList<Uri>()
         for (app in viewAdapter.myDatasetFiltered) {
             if (app.isChecked) {
@@ -204,8 +201,11 @@ class MainActivity : AppCompatActivity() {
         return if (files.isEmpty())
             null
         else {
-            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
-            intent
+            Intent(Intent.ACTION_SEND).apply {
+                action = Intent.ACTION_SEND_MULTIPLE
+                type = FileHelper.MIME_TYPE
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
+            }
         }
     }
 

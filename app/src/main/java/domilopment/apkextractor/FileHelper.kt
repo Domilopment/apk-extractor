@@ -51,9 +51,11 @@ class FileHelper(private val activity: Activity) {
      * Shows Android Directory Chosser
      */
     fun chooseDir(){
-        val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-        i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        i.addCategory(Intent.CATEGORY_DEFAULT)
-        activity.startActivityForResult(Intent.createChooser(i, "Choose directory"), CHOOSE_SAVE_DIR_RESULT)
+        Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            addCategory(Intent.CATEGORY_DEFAULT)
+        }.also {
+            activity.startActivityForResult(Intent.createChooser(it, "Choose directory"), CHOOSE_SAVE_DIR_RESULT)
+        }
     }
 }

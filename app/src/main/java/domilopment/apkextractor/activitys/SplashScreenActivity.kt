@@ -13,11 +13,12 @@ class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (init) {
-            ListofAPKs.init(packageManager)
+            ListofAPKs().init(packageManager)
             init = false
         }
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
+        Intent(this, MainActivity::class.java).also {
+            startActivity(it)
+        }
         finish()
     }
 }

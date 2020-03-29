@@ -35,8 +35,9 @@ class SettingsActivity : AppCompatActivity() {
             super.onActivityCreated(savedInstanceState)
             findPreference<Preference>("version")!!.title = "Version: ${BuildConfig.VERSION_NAME}"
             findPreference<Preference>("github")!!.setOnPreferenceClickListener {
-                val browse = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/domilopment/apkextractor"))
-                startActivity(browse)
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/domilopment/apkextractor")).also {
+                    startActivity(it)
+                }
                 return@setOnPreferenceClickListener true
             }
             findPreference<Preference>("choose_dir")!!.setOnPreferenceClickListener {
@@ -50,10 +51,10 @@ class SettingsActivity : AppCompatActivity() {
                 FileHelper.CHOOSE_SAVE_DIR_RESULT -> {
                     getDefaultSharedPreferences(context).edit()
                         .putString("dir", data!!.data.toString()).apply()
-                    val takeFlags =
-                        data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    activity!!.contentResolver
-                        .takePersistableUriPermission(data.data!!, takeFlags)
+                    (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
+                        activity!!.contentResolver
+                            .takePersistableUriPermission(data.data!!, this)
+                    }
                 }
             }
         }
