@@ -33,7 +33,7 @@ class SettingsActivity : AppCompatActivity() {
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
-            findPreference<Preference>("version")!!.title = "Version: ${BuildConfig.VERSION_NAME}"
+            findPreference<Preference>("version")!!.title = activity!!.getString(R.string.version).format(BuildConfig.VERSION_NAME)
             findPreference<Preference>("github")!!.setOnPreferenceClickListener {
                 Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/domilopment/apkextractor")).also {
                     startActivity(it)

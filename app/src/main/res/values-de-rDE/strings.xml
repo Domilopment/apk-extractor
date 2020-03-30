@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_settings">Einstellungen</string>
+
+    <!-- Preference Header -->
+    <string name="save_header">Speicher Optionen</string>
+    <string name="app_type_header">Apps</string>
+    <string name="info_header">Info</string>
+
+    <!-- Preferences Save Option -->
+    <string name="choose_save_dir">Wähle Speicherpfad</string>
+    <string name="choose_save_dir_summary">Wähle oder ändere den Ort um APKs zu Speichern</string>
+
+    <!-- Preferences Apps -->
+    <string name="app_type_system">System Apps</string>
+    <string name="app_type_system_summary">Zeige alle System Apps</string>
+
+    <string name="app_type_system_updated">Aktualisierte System Apps</string>
+    <string name="app_type_system_updated_summary">Zeige alle aktualisierten System Apps</string>
+
+    <string name="app_type_user">Benutzer Apps</string>
+    <string name="app_type_user_summary">Zeige alle vom Nutzer Installierten Apps</string>
+
+    <!-- Preferences Info -->
+    <string name="github">GitHub</string>
+    <string name="github_summary">Schau dir den Code an oder erstelle ein Issue, eine Pull Request</string>
+
+    <string name="version">Version: %s</string>
+
+    <!-- Search Placeholder -->
+    <string name="search_hint">Suche Namen…</string>
+
+    <!-- Menu -->
+    <string name="menu_share">Teilen</string>
+    <string name="menu_search">Suche</string>
+    <string name="menu_sort">Sortieren</string>
+    <string name="menu_sort_name">App Name</string>
+    <string name="menu_sort_package">Paket Name</string>
+    <string name="menu_sort_install">Zuletzt Installiert</string>
+    <string name="menu_sort_update">Zuletzt Aktualisiert</string>
+    <string name="action_settings">Einstellungen</string>
+
+    <!-- MainActivity -->
+    <string name="alert_save_path_title">Speicherort</string>
+    <string name="alert_save_path_message">Wähle wohin die APKs gespeichert werden sollen</string>
+    <string name="toast_save_apps">Wähle Apps die gespeichert werden sollen</string>
+    <string name="snackbar_successful_extracted">%s erfolgreich extraiert</string>
+    <string name="snackbar_successful_extracted_multiple">%s und %d weitere erfolgreich extraiert</string>
+    <string name="snackbar_extraction_failed">Extraieren von %s FEHLGESCHLAGEN</string>
+    <string name="action_share">Teile App</string>
+    <string name="toast_share_app">Wähle Apps die geteilt werden sollen</string>
+</resources>

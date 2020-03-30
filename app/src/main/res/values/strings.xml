@@ -1,26 +1,53 @@
 <resources>
-    <string name="app_name">APK Extractor</string>
-    <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
+    <string name="app_name" translatable="false">APK Extractor</string>
 
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Preference Titles -->
+    <!-- Preference Header -->
     <string name="save_header">Save Options</string>
     <string name="app_type_header">Apps</string>
+    <string name="info_header">Info</string>
 
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
+    <!-- Preferences Save Option -->
+    <string name="choose_save_dir">Choose Save Directory</string>
+    <string name="choose_save_dir_summary">Choose or alter Path for Saving APKs</string>
 
-    <!-- Sync Preferences -->
+    <!-- Preferences Apps -->
     <string name="app_type_system">System Apps</string>
-    <string name="app_type_system_updated">Updated System Apps</string>
-    <string name="app_type_user">User Apps</string>
+    <string name="app_type_system_summary">Show all System Apps</string>
 
+    <string name="app_type_system_updated">Updated System Apps</string>
+    <string name="app_type_system_updated_summary">Show all updated System Apps</string>
+
+    <string name="app_type_user">User Apps</string>
+    <string name="app_type_user_summary">Show all Apps Installed by User</string>
+
+    <!-- Preferences Info -->
+    <string name="github">GitHub</string>
+    <string name="github_summary">View Code or create Issue, Pull Request</string>
+
+    <string name="version">Version: %s</string>
+
+    <!-- Search Placeholder -->
     <string name="search_hint">Type name…</string>
+
+    <!-- Menu -->
+    <string name="menu_share">Share</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_sort">Sort</string>
+    <string name="menu_sort_name">App Name</string>
+    <string name="menu_sort_package">Package Name</string>
+    <string name="menu_sort_install">Install Time</string>
+    <string name="menu_sort_update">Update Time</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- MainActivity -->
+    <string name="alert_save_path_title">Save Dir</string>
+    <string name="alert_save_path_message">Choose a Directory to Save APKs</string>
+    <string name="toast_save_apps">Select Apps to Save</string>
+    <string name="snackbar_successful_extracted">%s successful extracted</string>
+    <string name="snackbar_successful_extracted_multiple">%s and %d additional successful extracted</string>
+    <string name="snackbar_extraction_failed">Extraction of %s FAILED</string>
+    <string name="action_share">Sending App</string>
+    <string name="toast_share_app">Select Apps to Share</string>
 </resources>

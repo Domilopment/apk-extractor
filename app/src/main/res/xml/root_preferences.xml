@@ -3,33 +3,33 @@
     <PreferenceCategory app:title="@string/save_header">
         <Preference
             app:key="choose_dir"
-            app:title="Choose Save Directory"
-            app:summary="Choose or alter Path for Saving APKs"/>
+            app:title="@string/choose_save_dir"
+            app:summary="@string/choose_save_dir_summary"/>
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/app_type_header">
         <SwitchPreferenceCompat
             app:key="updated_system_apps"
             app:title="@string/app_type_system_updated"
-            app:summary="Show all updated System Apps"/>
+            app:summary="@string/app_type_system_updated_summary"/>
         <SwitchPreferenceCompat
             app:dependency="updated_system_apps"
             app:key="system_apps"
             app:title="@string/app_type_system"
-            app:summary="Show all System Apps"/>
+            app:summary="@string/app_type_system_summary"/>
         <SwitchPreferenceCompat
             app:key="user_apps"
             app:title="@string/app_type_user"
-            app:summary="Show all Apps Installed by User"
+            app:summary="@string/app_type_user_summary"
             app:defaultValue="true"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="Info">
+    <PreferenceCategory android:title="@string/info_header">
         <Preference
             app:key="github"
-            app:title="GitHub"
-            app:summary="View Code or create Issue, Pull Request"/>
+            app:title="@string/github"
+            app:summary="@string/github_summary"/>
         <Preference
             app:key="version"
-            app:title="Version: X"
+            app:title="@string/version"
             app:enabled="false"/>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -3,7 +3,7 @@ package domilopment.apkextractor.data
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 
-class ListofAPKs() {
+class ListOfAPKs() {
     // Static Lists of APKs
     companion object {
         val userApps: ArrayList<Application> = ArrayList()

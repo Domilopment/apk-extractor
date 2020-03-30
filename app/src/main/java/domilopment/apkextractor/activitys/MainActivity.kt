@@ -64,8 +64,8 @@ class MainActivity : AppCompatActivity() {
             )!!.exists()
         ) {
             AlertDialog.Builder(this).let {
-                it.setMessage("Choose a Directory to Save APKs")
-                it.setTitle("Save Dir")
+                it.setMessage(R.string.alert_save_path_message)
+                it.setTitle(R.string.alert_save_path_title)
                 it.setCancelable(false)
                 it.setPositiveButton("Ok") { _, _ ->
                     FileHelper(this).chooseDir()
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                 it.isChecked
             }.also {
                 if (it.isEmpty())
-                    Toast.makeText(this, "Select Apps to Save", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.toast_save_apps, Toast.LENGTH_SHORT).show()
                 else
                     it.forEach { d ->
                         if (FileHelper(this).copy(
@@ -108,16 +108,16 @@ class MainActivity : AppCompatActivity() {
                             Snackbar.make(
                                 view,
                                 if (it.size == 1) {
-                                    "${d.appName} successful extracted"
+                                    getString(R.string.snackbar_successful_extracted).format(d.appName)
                                 } else {
-                                    "${d.appName} and ${it.size} additional successful extracted"
+                                    getString(R.string.snackbar_successful_extracted_multiple).format(d.appName, it.size)
                                 },
                                 Snackbar.LENGTH_LONG
                             ).setAction("Action", null).show()
                         else
                             Snackbar.make(
                                 view,
-                                "Extraction of ${d.appName} FAILED",
+                                getString(R.string.snackbar_extraction_failed).format(d.appName),
                                 Snackbar.LENGTH_LONG
                             ).setAction("Action", null).setTextColor(Color.RED).show()
                 }
@@ -198,7 +198,7 @@ class MainActivity : AppCompatActivity() {
         menu.findItem(R.id.action_share).apply {
             setOnMenuItemClickListener {
                 getSelectedApps()?.let {
-                    startActivity(Intent.createChooser(it, "Sending App"))
+                    startActivity(Intent.createChooser(it, getString(R.string.action_share)))
                 }
                 return@setOnMenuItemClickListener true
             }
@@ -220,7 +220,7 @@ class MainActivity : AppCompatActivity() {
                 }
         }
         return if (files.isEmpty()) {
-            Toast.makeText(this, "Select Apps to Share", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.toast_share_app, Toast.LENGTH_SHORT).show()
             null
         } else {
             Intent(Intent.ACTION_SEND).apply {

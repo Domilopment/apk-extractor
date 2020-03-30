@@ -3,7 +3,7 @@ package domilopment.apkextractor.activitys
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import domilopment.apkextractor.data.ListofAPKs
+import domilopment.apkextractor.data.ListOfAPKs
 
 class SplashScreenActivity : AppCompatActivity() {
     companion object {
@@ -13,7 +13,7 @@ class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (init) {
-            ListofAPKs().init(packageManager)
+            ListOfAPKs().init(packageManager)
             init = false
         }
         Intent(this, MainActivity::class.java).also {
