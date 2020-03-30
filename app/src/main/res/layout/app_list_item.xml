@@ -3,7 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:padding="6dip"
-    android:id="@+id/list_element">
+    android:id="@+id/list_element"
+    android:background="?attr/selectableItemBackground" >
 
     <ImageView
         android:id="@+id/icon"

@@ -15,7 +15,6 @@ import kotlinx.android.synthetic.main.app_list_item.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-
 class AppListAdapter(
     private val myDataset: List<Application>,
     private val mainActivity: MainActivity
@@ -29,7 +28,6 @@ class AppListAdapter(
             // set the view's size, margins, paddings and layout parameters
             MyViewHolder(it)
         }
-
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -44,7 +42,6 @@ class AppListAdapter(
             checkBox.isChecked = app.isChecked
             checkBox.setOnCheckedChangeListener { _, isChecked ->
                 app.isChecked = isChecked
-                mainActivity.updateIntent()
             }
             setOnLongClickListener {
                 Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {

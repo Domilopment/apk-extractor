@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.ColorFilter
 import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
@@ -178,17 +179,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Retrieve the share menu item
-        val shareItem = menu.findItem(R.id.action_share)
-
-        // Now get the ShareActionProvider from the item
-        mShareActionProvider =
-            MenuItemCompat.getActionProvider(shareItem) as ShareActionProvider
+        menu.findItem(R.id.action_share).apply {
+            setOnMenuItemClickListener {
+                getSelectedApps()?.let {
+                    startActivity(Intent.createChooser(it, "Sending App"))
+                }
+                return@setOnMenuItemClickListener true
+            }
+        }
 
         return true
-    }
-
-    fun updateIntent() {
-        mShareActionProvider.setShareIntent(getSelectedApps())
     }
 
     private fun getSelectedApps(): Intent? {
@@ -206,7 +206,7 @@ class MainActivity : AppCompatActivity() {
             null
         else {
             Intent(Intent.ACTION_SEND).apply {
-                action = Intent.ACTION_SEND_MULTIPLE
+                action = if (files.size > 1) Intent.ACTION_SEND_MULTIPLE else Intent.ACTION_SEND
                 type = FileHelper.MIME_TYPE
                 putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
             }
