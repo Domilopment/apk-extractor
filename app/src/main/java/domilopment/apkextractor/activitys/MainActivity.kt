@@ -145,11 +145,15 @@ class MainActivity : AppCompatActivity() {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
 
-        val byname: MenuItem = menu.findItem(R.id.action_app_name)
-        val bypackage: MenuItem = menu.findItem(R.id.action_package_name)
+        val byName: MenuItem = menu.findItem(R.id.action_app_name)
+        val byPackage: MenuItem = menu.findItem(R.id.action_package_name)
+        val byInstall: MenuItem = menu.findItem(R.id.action_install_time)
+        val byUpdate: MenuItem = menu.findItem(R.id.action_update_time)
         when (sharedPreferences.getInt("app_sort", 0)){
-            1 -> bypackage.isChecked = true
-            else -> byname.isChecked = true
+            1 -> byPackage.isChecked = true
+            2 -> byInstall.isChecked = true
+            3 -> byUpdate.isChecked = true
+            else -> byName.isChecked = true
         }
 
         // Associate searchable configuration with the SearchView
@@ -225,6 +229,20 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.action_package_name -> {
                 sharedPreferences.edit().putInt("app_sort", 1)
+                    .apply()
+                item.isChecked = true
+                viewAdapter.sortData()
+                viewAdapter.notifyDataSetChanged()
+            }
+            R.id.action_install_time -> {
+                sharedPreferences.edit().putInt("app_sort", 2)
+                    .apply()
+                item.isChecked = true
+                viewAdapter.sortData()
+                viewAdapter.notifyDataSetChanged()
+            }
+            R.id.action_update_time -> {
+                sharedPreferences.edit().putInt("app_sort", 3)
                     .apply()
                 item.isChecked = true
                 viewAdapter.sortData()

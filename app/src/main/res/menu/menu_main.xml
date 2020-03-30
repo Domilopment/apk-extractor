@@ -29,11 +29,18 @@
                 <item
                     android:id="@+id/action_app_name"
                     android:title="App Name"
-                    app:showAsAction="never"
-                    android:checked="true"/>
+                    app:showAsAction="never" />
                 <item
                     android:id="@+id/action_package_name"
                     android:title="Package Name"
+                    app:showAsAction="never" />
+                <item
+                    android:id="@+id/action_install_time"
+                    android:title="Install Time"
+                    app:showAsAction="never" />
+                <item
+                    android:id="@+id/action_update_time"
+                    android:title="Update Time"
                     app:showAsAction="never" />
             </group>
         </menu>

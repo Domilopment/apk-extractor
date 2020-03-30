@@ -32,6 +32,8 @@ class SettingsManager(
     fun sortData(data : List<Application>): List<Application> {
         when (sharedPreferences.getInt("app_sort", 0)) {
             1 -> Collections.sort(data, Comparator.comparing(Application::appPackageName))
+            2 -> Collections.sort(data, Comparator.comparing(Application::appInstallTime).reversed())
+            3 -> Collections.sort(data, Comparator.comparing(Application::appUpdateTime).reversed())
             else -> Collections.sort(data, Comparator.comparing(Application::appName))
         }
         return data

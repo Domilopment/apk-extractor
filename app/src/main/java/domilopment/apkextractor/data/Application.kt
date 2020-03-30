@@ -20,5 +20,7 @@ class Application(
             else
                 packageManager.getPackageInfo(applicationInfo.packageName, 0).versionCode.toLong()
     val appFlags: Int = applicationInfo.flags
+    val appInstallTime: Long get() = packageManager.getPackageInfo(applicationInfo.packageName, 0).firstInstallTime
+    val appUpdateTime: Long get() = packageManager.getPackageInfo(applicationInfo.packageName, 0).lastUpdateTime
     var isChecked: Boolean = false
 }
