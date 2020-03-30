@@ -64,16 +64,9 @@ class AppListAdapter(
                 myDatasetFiltered = if (charString.isEmpty()) {
                     myDataset
                 } else {
-                    ArrayList<Application>().also {
-                        for (app in myDataset) {
-                            // name match condition. this might differ depending on your requirement
-                            // here we are looking for name or phone number match
-                            if (app.appName.toLowerCase(Locale.getDefault()).contains(charString)
-                                || app.appPackageName.contains(charSequence)
-                            ) {
-                                it.add(app)
-                            }
-                        }
+                    myDataset.filter {
+                        it.appName.toLowerCase(Locale.getDefault()).contains(charString)
+                                || it.appPackageName.contains(charSequence)
                     }
                 }
                 return FilterResults().apply {

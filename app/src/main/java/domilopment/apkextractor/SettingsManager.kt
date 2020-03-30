@@ -13,6 +13,10 @@ class SettingsManager(
 ) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
+    /**
+     * Creates a List containing of all Types the User Selected in Settings
+     * @return List of Selected App Types
+     */
     fun selectedAppTypes(): List<Application>{
         val mData: ArrayList<Application> = ArrayList()
         if (sharedPreferences.getBoolean("updated_system_apps", false)) {
@@ -25,10 +29,19 @@ class SettingsManager(
         return sortData(mData)
     }
 
+    /**
+     * Gives back in SharedPreferences Saved Directory Path
+     * @return Saved Directory Path
+     */
     fun saveDir(): String {
         return sharedPreferences.getString("dir", null).toString() + '/'
     }
 
+    /**
+     * Sorts Data by user selected Order
+     * @param data Unsorted List of APKs
+     * @return Sorted List of APKs
+     */
     fun sortData(data : List<Application>): List<Application> {
         when (sharedPreferences.getInt("app_sort", 0)) {
             1 -> Collections.sort(data, Comparator.comparing(Application::appPackageName))

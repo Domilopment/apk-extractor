@@ -5,20 +5,19 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.ColorFilter
 import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.MenuItemCompat
 import androidx.documentfile.provider.DocumentFile
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,6 +51,8 @@ class MainActivity : AppCompatActivity() {
 
         path = SettingsManager(this).saveDir()
 
+        // Check if Save dir is Selected, Writing permission to dir and whether dir exists
+        // if not ask for select dir
         if (!(sharedPreferences.contains("dir"))
             || checkUriPermission(
                 Uri.parse(path),
@@ -93,19 +94,36 @@ class MainActivity : AppCompatActivity() {
 
         fab.setOnClickListener { view ->
             path = SettingsManager(this).saveDir()
-            for (d in viewAdapter.myDatasetFiltered)
-                if(d.isChecked)
-                    if (FileHelper(this).copy(
-                            d.appSourceDirectory,
-                            path,
-                            "${d.appName}_${d.appVersionName}.apk"
+            viewAdapter.myDatasetFiltered.filter {
+                it.isChecked
+            }.also {
+                if (it.isEmpty())
+                    Toast.makeText(this, "Select Apps to Save", Toast.LENGTH_LONG).show()
+                else
+                    it.forEach { d ->
+                        if (FileHelper(this).copy(
+                                d.appSourceDirectory,
+                                path,
+                                "${d.appName}_${d.appVersionName}.apk"
+                            )
                         )
-                    )
-                        Snackbar.make(view, "APK ${d.appName} extracted", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show()
-                    else
-                        Snackbar.make(view, "Extraction of ${d.appName} FAILED", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).setTextColor(Color.RED).show()
+                            Snackbar.make(
+                                view,
+                                if (it.size == 1) {
+                                    "${d.appName} successful extracted"
+                                } else {
+                                    "${d.appName} and ${it.size} additional successful extracted"
+                                },
+                                Snackbar.LENGTH_LONG
+                            ).setAction("Action", null).show()
+                        else
+                            Snackbar.make(
+                                view,
+                                "Extraction of ${d.appName} FAILED",
+                                Snackbar.LENGTH_LONG
+                            ).setAction("Action", null).setTextColor(Color.RED).show()
+                }
+            }
         }
     }
 
@@ -187,28 +205,35 @@ class MainActivity : AppCompatActivity() {
                 return@setOnMenuItemClickListener true
             }
         }
-
         return true
     }
 
     private fun getSelectedApps(): Intent? {
         val files = ArrayList<Uri>()
-        for (app in viewAdapter.myDatasetFiltered) {
-            if (app.isChecked) {
-                val uri = FileProvider.getUriForFile(
+        viewAdapter.myDatasetFiltered.filter {
+            it.isChecked
+        }.forEach { app ->
+                FileProvider.getUriForFile(
                     this,
                     application.packageName+".provider",
-                    File(app.appSourceDirectory))
-                files.add(uri)
-            }
+                    File(app.appSourceDirectory)
+                ).also {
+                    files.add(it)
+                }
         }
-        return if (files.isEmpty())
+        return if (files.isEmpty()) {
+            Toast.makeText(this, "Select Apps to Share", Toast.LENGTH_LONG).show()
             null
-        else {
+        } else {
             Intent(Intent.ACTION_SEND).apply {
-                action = if (files.size > 1) Intent.ACTION_SEND_MULTIPLE else Intent.ACTION_SEND
                 type = FileHelper.MIME_TYPE
-                putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
+                if (files.size > 1) {
+                    action = Intent.ACTION_SEND_MULTIPLE
+                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
+                } else {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_STREAM, files[0])
+                }
             }
         }
     }

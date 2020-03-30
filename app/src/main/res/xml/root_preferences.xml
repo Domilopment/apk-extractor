@@ -4,7 +4,7 @@
         <Preference
             app:key="choose_dir"
             app:title="Choose Save Directory"
-            android:defaultValue="test"/>
+            app:summary="Choose or alter Path for Saving APKs"/>
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/app_type_header">
         <SwitchPreferenceCompat
@@ -25,9 +25,11 @@
     <PreferenceCategory android:title="Info">
         <Preference
             app:key="github"
-            app:title="GitHub"/>
+            app:title="GitHub"
+            app:summary="View Code or create Issue, Pull Request"/>
         <Preference
             app:key="version"
-            app:title="Version: x" />
+            app:title="Version: X"
+            app:enabled="false"/>
     </PreferenceCategory>
 </PreferenceScreen>
