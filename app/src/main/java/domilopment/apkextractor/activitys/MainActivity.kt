@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                 it.isChecked
             }.also {
                 if (it.isEmpty())
-                    Toast.makeText(this, "Select Apps to Save", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Select Apps to Save", Toast.LENGTH_SHORT).show()
                 else
                     it.forEach { d ->
                         if (FileHelper(this).copy(
@@ -220,7 +220,7 @@ class MainActivity : AppCompatActivity() {
                 }
         }
         return if (files.isEmpty()) {
-            Toast.makeText(this, "Select Apps to Share", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Select Apps to Share", Toast.LENGTH_SHORT).show()
             null
         } else {
             Intent(Intent.ACTION_SEND).apply {
