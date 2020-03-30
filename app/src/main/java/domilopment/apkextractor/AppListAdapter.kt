@@ -1,5 +1,8 @@
 package domilopment.apkextractor
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +14,7 @@ import domilopment.apkextractor.data.Application
 import kotlinx.android.synthetic.main.app_list_item.view.*
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class AppListAdapter(
     private val myDataset: List<Application>,
@@ -41,6 +45,14 @@ class AppListAdapter(
             checkBox.setOnCheckedChangeListener { _, isChecked ->
                 app.isChecked = isChecked
                 mainActivity.updateIntent()
+            }
+            setOnLongClickListener {
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", app.appPackageName, null)
+                }.also {
+                    mainActivity.startActivity(it)
+                }
+                return@setOnLongClickListener true
             }
         }
     }
