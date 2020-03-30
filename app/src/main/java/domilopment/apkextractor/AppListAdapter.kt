@@ -13,7 +13,6 @@ import domilopment.apkextractor.activitys.MainActivity
 import domilopment.apkextractor.data.Application
 import kotlinx.android.synthetic.main.app_list_item.view.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 class AppListAdapter(
     private val myDataset: List<Application>,
