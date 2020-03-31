@@ -10,6 +10,7 @@ import android.os.Binder
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -89,55 +90,52 @@ class MainActivity : AppCompatActivity() {
             // specify an viewAdapter (see also next example)
             adapter = viewAdapter
         }
+    }
 
-        fab.setOnClickListener { view ->
-            path = SettingsManager(this).saveDir()
-            viewAdapter.myDatasetFiltered.filter {
-                it.isChecked
-            }.also {
-                if (it.isEmpty())
-                    Toast.makeText(this, R.string.toast_save_apps, Toast.LENGTH_SHORT).show()
-                else
-                    it.forEach { d ->
-                        if (FileHelper(this).copy(
-                                d.appSourceDirectory,
-                                path,
-                                "${d.appName}_${d.appVersionName}.apk"
-                            )
+    // Function Called on FloatingActionButton Click
+    fun saveApps(view: View) {
+        path = SettingsManager(this).saveDir()
+        viewAdapter.myDatasetFiltered.filter {
+            it.isChecked
+        }.also {
+            if (it.isEmpty())
+                Toast.makeText(this, R.string.toast_save_apps, Toast.LENGTH_SHORT).show()
+            else
+                it.forEach { d ->
+                    if (FileHelper(this).copy(
+                            d.appSourceDirectory,
+                            path,
+                            "${d.appName}_${d.appVersionName}.apk"
                         )
-                            Snackbar.make(
-                                view,
-                                if (it.size == 1) {
-                                    getString(R.string.snackbar_successful_extracted).format(d.appName)
-                                } else {
-                                    getString(R.string.snackbar_successful_extracted_multiple).format(d.appName, it.size)
-                                },
-                                Snackbar.LENGTH_LONG
-                            ).setAction("Action", null).show()
-                        else
-                            Snackbar.make(
-                                view,
-                                getString(R.string.snackbar_extraction_failed).format(d.appName),
-                                Snackbar.LENGTH_LONG
-                            ).setAction("Action", null).setTextColor(Color.RED).show()
+                    )
+                        Snackbar.make(
+                            view,
+                            if (it.size == 1) {
+                                getString(R.string.snackbar_successful_extracted).format(d.appName)
+                            } else {
+                                getString(R.string.snackbar_successful_extracted_multiple).format(d.appName, it.size)
+                            },
+                            Snackbar.LENGTH_LONG
+                        ).setAction("Action", null).show()
+                    else
+                        Snackbar.make(
+                            view,
+                            getString(R.string.snackbar_extraction_failed).format(d.appName),
+                            Snackbar.LENGTH_LONG
+                        ).setAction("Action", null).setTextColor(Color.RED).show()
                 }
-            }
         }
     }
 
     private fun checkNeededPermissions() : Boolean{
-        val neededPermissions = arrayOf(
+        arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        val missingPermissions = ArrayList<String>()
-        for (neededPermission in neededPermissions) {
-            if (ActivityCompat.checkSelfPermission(applicationContext, neededPermission) != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(neededPermission)
-            }
-        }
-        if (missingPermissions.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, missingPermissions.toTypedArray(), 0)
+        ).filter {
+            ActivityCompat.checkSelfPermission(applicationContext, it) != PackageManager.PERMISSION_GRANTED
+        }.also {
+            if (it.isNotEmpty())
+                ActivityCompat.requestPermissions(this, it.toTypedArray(), 0)
         }
         return true
     }
