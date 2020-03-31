@@ -19,3 +19,5 @@ Lapp/src/main/java/domilopment/apkextractor/activitys/SplashScreenActivity.kt,0
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 n
 >app/src/main/java/domilopment/apkextractor/data/Application.kt,3\9\396ad6858c16811ed417d9513981f598831ee061
+m
+=app/src/main/java/domilopment/apkextractor/data/ListOfAPKs.kt,c\1\c1131121cfd3be8a1849d0015ead3c726b34760e

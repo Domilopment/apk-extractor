@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.NavUtils
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -35,9 +36,9 @@ class SettingsActivity : AppCompatActivity() {
             super.onActivityCreated(savedInstanceState)
             findPreference<Preference>("version")!!.title = activity!!.getString(R.string.version).format(BuildConfig.VERSION_NAME)
             findPreference<Preference>("github")!!.setOnPreferenceClickListener {
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/domilopment/apkextractor")).also {
-                    startActivity(it)
-                }
+                CustomTabsIntent.Builder()
+                    .build()
+                    .launchUrl(context!!, Uri.parse("https://github.com/domilopment/apkextractor"))
                 return@setOnPreferenceClickListener true
             }
             findPreference<Preference>("choose_dir")!!.setOnPreferenceClickListener {
