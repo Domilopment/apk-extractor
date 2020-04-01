@@ -1,6 +1,7 @@
 package domilopment.apkextractor.activitys
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -43,7 +44,14 @@ class SettingsActivity : AppCompatActivity() {
             }
             findPreference<Preference>("googleplay")!!.setOnPreferenceClickListener {
                 Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse("market://details?id=${context!!.packageName}")
+                    data = try {
+                        setPackage(
+                            context!!.packageManager.getPackageInfo("com.android.vending", 0).packageName
+                        )
+                        Uri.parse("market://details?id=${context!!.packageName}")
+                    } catch (e: PackageManager.NameNotFoundException) {
+                        Uri.parse("https://play.google.com/store/apps/details?id=${context!!.packageName}")
+                    }
                 }.also {
                     startActivity(it)
                 }
