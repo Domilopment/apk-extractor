@@ -41,6 +41,14 @@ class SettingsActivity : AppCompatActivity() {
                     .launchUrl(context!!, Uri.parse("https://github.com/domilopment/apkextractor"))
                 return@setOnPreferenceClickListener true
             }
+            findPreference<Preference>("googleplay")!!.setOnPreferenceClickListener {
+                Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse("market://details?id=${context!!.packageName}")
+                }.also {
+                    startActivity(it)
+                }
+                return@setOnPreferenceClickListener true
+            }
             findPreference<Preference>("choose_dir")!!.setOnPreferenceClickListener {
                 FileHelper(activity!!).chooseDir()
                 return@setOnPreferenceClickListener true

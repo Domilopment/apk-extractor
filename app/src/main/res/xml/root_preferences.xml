@@ -28,6 +28,10 @@
             app:title="@string/github"
             app:summary="@string/github_summary"/>
         <Preference
+            app:key="googleplay"
+            app:title="@string/googleplay"
+            app:summary="@string/googleplay_summary"/>
+        <Preference
             app:key="version"
             app:title="@string/version"
             app:enabled="false"/>

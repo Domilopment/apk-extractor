@@ -25,6 +25,9 @@
     <string name="github">GitHub</string>
     <string name="github_summary">Schau dir den Code an oder erstelle ein Issue, eine Pull Request</string>
 
+    <string name="googleplay">Google Play</string>
+    <string name="googleplay_summary">Öffne die Play Store Seite der App</string>
+
     <string name="version">Version: %s</string>
 
     <!-- Search Placeholder -->
