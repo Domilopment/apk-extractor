@@ -43,6 +43,7 @@
     <!-- MainActivity -->
     <string name="alert_save_path_title">Speicherort</string>
     <string name="alert_save_path_message">Wähle wohin die APKs gespeichert werden sollen</string>
+    <string name="alert_save_path_ok">Ok</string>
     <string name="toast_save_apps">Wähle Apps die gespeichert werden sollen</string>
     <string name="snackbar_successful_extracted">%s erfolgreich extraiert</string>
     <string name="snackbar_successful_extracted_multiple">%s und %d weitere erfolgreich extraiert</string>

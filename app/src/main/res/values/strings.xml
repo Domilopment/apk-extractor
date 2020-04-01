@@ -44,6 +44,7 @@
     <!-- MainActivity -->
     <string name="alert_save_path_title">Save Dir</string>
     <string name="alert_save_path_message">Choose a Directory to Save APKs</string>
+    <string name="alert_save_path_ok">Ok</string>
     <string name="toast_save_apps">Select Apps to Save</string>
     <string name="snackbar_successful_extracted">%s successful extracted</string>
     <string name="snackbar_successful_extracted_multiple">%s and %d additional successful extracted</string>

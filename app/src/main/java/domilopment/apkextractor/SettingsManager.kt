@@ -12,6 +12,7 @@ class SettingsManager(
     context: Context
 ) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val packageManager = context.packageManager
 
     /**
      * Creates a List containing of all Types the User Selected in Settings
@@ -20,12 +21,12 @@ class SettingsManager(
     fun selectedAppTypes(): List<Application>{
         val mData: ArrayList<Application> = ArrayList()
         if (sharedPreferences.getBoolean("updated_system_apps", false)) {
-            mData.addAll(ListOfAPKs.updatedSystemApps)
+            mData.addAll(ListOfAPKs(packageManager).updatedSystemApps)
             if (sharedPreferences.getBoolean("system_apps", false))
-                mData.addAll(ListOfAPKs.systemApps)
+                mData.addAll(ListOfAPKs(packageManager).systemApps)
         }
         if (sharedPreferences.getBoolean("user_apps", true))
-            mData.addAll(ListOfAPKs.userApps)
+            mData.addAll(ListOfAPKs(packageManager).userApps)
         return sortData(mData)
     }
 

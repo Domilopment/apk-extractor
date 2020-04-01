@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                 it.setMessage(R.string.alert_save_path_message)
                 it.setTitle(R.string.alert_save_path_title)
                 it.setCancelable(false)
-                it.setPositiveButton("Ok") { _, _ ->
+                it.setPositiveButton(R.string.alert_save_path_ok) { _, _ ->
                     FileHelper(this).chooseDir()
                 }
             }.create().show()

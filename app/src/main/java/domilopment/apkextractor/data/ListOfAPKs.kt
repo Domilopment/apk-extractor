@@ -3,34 +3,31 @@ package domilopment.apkextractor.data
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 
-class ListOfAPKs() {
-    // Static Lists of APKs
+class ListOfAPKs(private val packageManager: PackageManager) {
+    //Static List of APKs
     companion object {
-        val userApps: ArrayList<Application> = ArrayList()
-        val systemApps: ArrayList<Application> = ArrayList()
-        val updatedSystemApps: ArrayList<Application> = ArrayList()
+        private val apps = ArrayList<Application>()
     }
 
-    /**
-     * Initilize Lists, fill each List with corresponding type of Package
-     * @param packageManager
-     * PackageManager from Activity
-     */
-    fun init(packageManager: PackageManager) {
-        val packages: List<ApplicationInfo> = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-        packages.forEach { packageInfo: ApplicationInfo ->
-            val app = Application(
-                packageInfo,
-                packageManager
-            )
-            when {
-                (packageInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0 ->
-                    updatedSystemApps.add(app)
-                (packageInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0 ->
-                    systemApps.add(app)
-                else ->
-                    userApps.add(app)
-            }
-        }
+    //Lists of APK Types
+    val userApps: List<Application>
+        get() = apps.filter { (it.appFlags and ApplicationInfo.FLAG_SYSTEM) == 0 }
+    val systemApps: List<Application>
+        get() = apps.filter { (it.appFlags and ApplicationInfo.FLAG_SYSTEM) == 1 }
+    val updatedSystemApps: List<Application>
+        get() = apps.filter { (it.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 1 }
+
+    // initialize APK list
+    init {
+        if (apps.isEmpty())
+                packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+                    .forEach { packageInfo: ApplicationInfo ->
+                        Application(
+                            packageInfo,
+                            packageManager
+                        ).also {
+                            apps.add(it)
+                        }
+                    }
     }
 }
