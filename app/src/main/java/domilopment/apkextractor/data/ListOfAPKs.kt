@@ -2,6 +2,8 @@ package domilopment.apkextractor.data
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.util.Log
+import java.util.logging.LogManager
 
 class ListOfAPKs(private val packageManager: PackageManager) {
     //Static List of APKs
@@ -13,9 +15,9 @@ class ListOfAPKs(private val packageManager: PackageManager) {
     val userApps: List<Application>
         get() = apps.filter { (it.appFlags and ApplicationInfo.FLAG_SYSTEM) == 0 }
     val systemApps: List<Application>
-        get() = apps.filter { (it.appFlags and ApplicationInfo.FLAG_SYSTEM) == 1 }
+        get() = apps.filter { (it.appFlags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) == ApplicationInfo.FLAG_SYSTEM }
     val updatedSystemApps: List<Application>
-        get() = apps.filter { (it.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 1 }
+        get() = apps.filter { (it.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP }
 
     // initialize APK list
     init {
