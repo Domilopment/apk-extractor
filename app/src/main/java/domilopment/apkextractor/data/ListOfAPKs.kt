@@ -2,8 +2,6 @@ package domilopment.apkextractor.data
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.util.Log
-import java.util.logging.LogManager
 
 class ListOfAPKs(private val packageManager: PackageManager) {
     //Static List of APKs
