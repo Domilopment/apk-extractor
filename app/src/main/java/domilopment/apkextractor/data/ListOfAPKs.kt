@@ -5,29 +5,46 @@ import android.content.pm.PackageManager
 
 class ListOfAPKs(private val packageManager: PackageManager) {
     //Static List of APKs
-    companion object {
-        private val apps = ArrayList<Application>()
+    companion object Apps {
+        private val userApps = ArrayList<Application>()
+        private val systemApps = ArrayList<Application>()
+        private val updatedSystemApps = ArrayList<Application>()
+        private val isEmpty
+            get() = Apps.systemApps.isEmpty() || Apps.updatedSystemApps.isEmpty() || Apps.userApps.isEmpty()
     }
 
     //Lists of APK Types
     val userApps: List<Application>
-        get() = apps.filter { (it.appFlags and ApplicationInfo.FLAG_SYSTEM) == 0 }
+        get() = Apps.userApps
     val systemApps: List<Application>
-        get() = apps.filter { (it.appFlags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) == ApplicationInfo.FLAG_SYSTEM }
+        get() = Apps.systemApps
     val updatedSystemApps: List<Application>
-        get() = apps.filter { (it.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP }
+        get() = Apps.updatedSystemApps
 
     // initialize APK list
     init {
-        if (apps.isEmpty())
-                packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-                    .forEach { packageInfo: ApplicationInfo ->
-                        Application(
-                            packageInfo,
-                            packageManager
-                        ).also {
-                            apps.add(it)
+        if (isEmpty) {
+            // Ensure all list are Empty!
+            Apps.userApps.clear()
+            Apps.systemApps.clear()
+            Apps.updatedSystemApps.clear()
+            // Fill each list with its specific type
+            packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+                .forEach { packageInfo: ApplicationInfo ->
+                    Application(
+                        packageInfo,
+                        packageManager
+                    ).also {
+                        when {
+                            (it.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP ->
+                                Apps.updatedSystemApps.add(it)
+                            (it.appFlags and ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM ->
+                                Apps.systemApps.add(it)
+                            else ->
+                                Apps.userApps.add(it)
                         }
                     }
+                }
+        }
     }
 }
