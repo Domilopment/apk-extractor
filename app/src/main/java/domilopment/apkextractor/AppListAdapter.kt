@@ -15,10 +15,10 @@ import kotlinx.android.synthetic.main.app_list_item.view.*
 import java.util.*
 
 class AppListAdapter(
-    private val myDataset: List<Application>,
     private val mainActivity: MainActivity
 ) : RecyclerView.Adapter<AppListAdapter.MyViewHolder>(), Filterable {
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView)
+    private val myDataset = SettingsManager(mainActivity).selectedAppTypes()
     var myDatasetFiltered: List<Application> = myDataset
         private set
 

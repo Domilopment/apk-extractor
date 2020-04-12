@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: AppListAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var myData: List<Application>
     private lateinit var path: String
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -76,10 +75,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startApplication() {
-        myData = SettingsManager(this).selectedAppTypes()
-
         viewManager = LinearLayoutManager(this)
-        viewAdapter = AppListAdapter(myData, this)
+        viewAdapter = AppListAdapter(this)
 
         recyclerView = findViewById<RecyclerView>(R.id.list).apply {
             // use this setting to improve performance if you know that changes
