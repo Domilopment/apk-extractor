@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: AppListAdapter
-    private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var path: String
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -74,7 +73,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startApplication() {
-        viewManager = LinearLayoutManager(this)
         viewAdapter = AppListAdapter(this)
 
         recyclerView = findViewById<RecyclerView>(R.id.list).apply {
@@ -82,13 +80,17 @@ class MainActivity : AppCompatActivity() {
             // in content do not change the layout size of the RecyclerView
             setHasFixedSize(true)
             // use a linear layout manager
-            layoutManager = viewManager
+            layoutManager = LinearLayoutManager(this@MainActivity)
             // specify an viewAdapter (see also next example)
             adapter = viewAdapter
         }
     }
 
-    // Function Called on FloatingActionButton Click
+    /**
+     * Function Called on FloatingActionButton Click
+     * @param view
+     * The FloatingActionButton
+     */
     fun saveApps(view: View) {
         path = SettingsManager(this).saveDir()
         viewAdapter.myDatasetFiltered.filter {
@@ -123,6 +125,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Checks if all Permissions in Array are granted
+     * @return Boolean
+     * True after check
+     */
     private fun checkNeededPermissions() : Boolean{
         arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -136,22 +143,44 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    /**
+     * Checks if all Permissions in an IntArray are granted
+     * @param grantedPermissions
+     * Array of Permissions
+     * @return Boolean
+     * True if all Permissions Granted, else False
+     */
     private fun allPermissionsGranted(grantedPermissions: IntArray): Boolean {
-        for (singleGrantedPermission in grantedPermissions)
+        grantedPermissions.forEach { singleGrantedPermission ->
             if (singleGrantedPermission == PackageManager.PERMISSION_DENIED)
                 return false
+        }
         return true
     }
 
+    /**
+     * Checks if All Permissions Granted on Runtime
+     * @param requestCode
+     * @param permissions
+     * All Permissions the App needs
+     * @param grantResults
+     * Array of grant values from permissions
+     */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (allPermissionsGranted(grantResults)) {
             startApplication()
         } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+            ActivityCompat.requestPermissions(this, permissions, 0)
         }
     }
 
+    /**
+     * Creates Options Menu
+     * @param menu
+     * @return Boolean
+     * True after Menu is Created
+     */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -200,6 +229,12 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    /**
+     * Creates Intent for Apps to Share
+     * @return Intent?
+     * Returns Intent with selected app APKs
+     * if no Apps Selected null
+     */
     private fun getSelectedApps(): Intent? {
         val files = ArrayList<Uri>()
         viewAdapter.myDatasetFiltered.filter {
