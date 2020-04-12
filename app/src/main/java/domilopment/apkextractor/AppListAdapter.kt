@@ -120,6 +120,7 @@ class AppListAdapter(
      * Sorts date on Call after Selected Sort type
      */
     fun sortData() {
-            SettingsManager(mainActivity).sortData(myDatasetFiltered)
+        SettingsManager(mainActivity).sortData(myDatasetFiltered)
+        notifyDataSetChanged()
     }
 }

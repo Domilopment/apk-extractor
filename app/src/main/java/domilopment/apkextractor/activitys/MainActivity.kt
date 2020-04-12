@@ -242,28 +242,24 @@ class MainActivity : AppCompatActivity() {
                     .apply()
                 item.isChecked = true
                 viewAdapter.sortData()
-                viewAdapter.notifyDataSetChanged()
             }
             R.id.action_package_name -> {
                 sharedPreferences.edit().putInt("app_sort", 1)
                     .apply()
                 item.isChecked = true
                 viewAdapter.sortData()
-                viewAdapter.notifyDataSetChanged()
             }
             R.id.action_install_time -> {
                 sharedPreferences.edit().putInt("app_sort", 2)
                     .apply()
                 item.isChecked = true
                 viewAdapter.sortData()
-                viewAdapter.notifyDataSetChanged()
             }
             R.id.action_update_time -> {
                 sharedPreferences.edit().putInt("app_sort", 3)
                     .apply()
                 item.isChecked = true
                 viewAdapter.sortData()
-                viewAdapter.notifyDataSetChanged()
             }
             else ->
                 return super.onOptionsItemSelected(item)
