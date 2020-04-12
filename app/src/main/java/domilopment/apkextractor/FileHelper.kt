@@ -7,7 +7,7 @@ import androidx.documentfile.provider.DocumentFile
 import java.io.*
 
 class FileHelper(private val activity: Activity) {
-    companion object{
+    companion object {
         const val MIME_TYPE = "application/vnd.android.package-archive"
         const val CHOOSE_SAVE_DIR_RESULT = 9999
     }
@@ -23,7 +23,7 @@ class FileHelper(private val activity: Activity) {
      * @return
      * True if copy was Succsessfull else False
      */
-    fun copy(
+    fun copy (
         from: String,
         to: String,
         fileName: String

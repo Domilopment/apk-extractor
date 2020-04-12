@@ -22,6 +22,13 @@ class AppListAdapter(
     var myDatasetFiltered: List<Application> = myDataset
         private set
 
+    /**
+     * Creates ViewHolder with Layout
+     * @param parent
+     * @param viewType
+     * @return MyViewHolder
+     * A ViewHolder with Layout app_list_item
+     */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return LayoutInflater.from(parent.context).inflate(R.layout.app_list_item, parent, false).let {
             // set the view's size, margins, paddings and layout parameters
@@ -29,11 +36,20 @@ class AppListAdapter(
         }
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
+    /**
+     * Creates View Elements
+     * @param holder
+     * The Holder Item to be changed
+     * @param position
+     * Position of the holder Item in View
+     * (also position for Item Data in Dataset)
+     */
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         // - get element from your dataset at this position
         val app = myDatasetFiltered[position]
+        // say holder should not be re used for other Dataset menbers
         holder.setIsRecyclable(false)
+        // Apply data from Dataset item to holder
         holder.itemView.apply {
             firstLine.text = app.appName
             secondLine.text = app.appPackageName
@@ -53,11 +69,24 @@ class AppListAdapter(
         }
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    /**
+     * Return the size of your dataset (invoked by the layout manager)
+     */
     override fun getItemCount() = myDatasetFiltered.size
 
+    /**
+     * Filter Apps with CharSequence (invoked by the SearchView)
+     * @return Filter
+     */
     override fun getFilter(): Filter {
         return object : Filter() {
+            /**
+             * The Filter Algorythm
+             * @param charSequence
+             * charSequence to find
+             * @return FilterResultes
+             * Apps that match charSequence
+             */
             override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString().toLowerCase(Locale.getDefault())
                 myDatasetFiltered = if (charString.isEmpty()) {
@@ -73,6 +102,13 @@ class AppListAdapter(
                 }
             }
 
+            /**
+             * Changes RecyclerView Content after Filtering
+             * @param charSequence
+             * charSequence to find
+             * @param filterResults
+             * Apps that match charSequence
+             */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
                 myDatasetFiltered = filterResults.values as List<Application>
                 notifyDataSetChanged()
@@ -80,6 +116,9 @@ class AppListAdapter(
         }
     }
 
+    /**
+     * Sorts date on Call after Selected Sort type
+     */
     fun sortData() {
             SettingsManager(mainActivity).sortData(myDatasetFiltered)
     }
