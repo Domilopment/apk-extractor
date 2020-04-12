@@ -50,7 +50,7 @@ class FileHelper(private val activity: Activity) {
      * Select a Destination Directory for APK files
      * Shows Android Directory Chooser
      */
-    fun chooseDir(){
+    fun chooseDir() {
         Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
             addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             addCategory(Intent.CATEGORY_DEFAULT)

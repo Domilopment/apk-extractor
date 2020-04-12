@@ -62,22 +62,23 @@ class SettingsActivity : AppCompatActivity() {
                 return@setOnPreferenceClickListener true
             }
         }
-
-        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-            when (requestCode) {
-                FileHelper.CHOOSE_SAVE_DIR_RESULT -> {
-                    getDefaultSharedPreferences(context).edit()
-                        .putString("dir", data!!.data.toString()).apply()
-                    (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
-                        activity!!.contentResolver
-                            .takePersistableUriPermission(data.data!!, this)
-                    }
-                }
-            }
-        }
     }
 
     override fun onBackPressed() {
         NavUtils.navigateUpFromSameTask(this)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            FileHelper.CHOOSE_SAVE_DIR_RESULT -> {
+                getDefaultSharedPreferences(this).edit()
+                    .putString("dir", data!!.data.toString()).apply()
+                (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
+                    contentResolver
+                        .takePersistableUriPermission(data.data!!, this)
+                }
+            }
+        }
     }
 }
