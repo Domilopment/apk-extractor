@@ -21,3 +21,5 @@ n
 >app/src/main/java/domilopment/apkextractor/data/Application.kt,3\9\396ad6858c16811ed417d9513981f598831ee061
 m
 =app/src/main/java/domilopment/apkextractor/data/ListOfAPKs.kt,c\1\c1131121cfd3be8a1849d0015ead3c726b34760e
+A
+gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4

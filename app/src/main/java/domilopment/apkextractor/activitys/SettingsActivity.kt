@@ -35,22 +35,22 @@ class SettingsActivity : AppCompatActivity() {
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
-            findPreference<Preference>("version")!!.title = activity!!.getString(R.string.version).format(BuildConfig.VERSION_NAME)
+            findPreference<Preference>("version")!!.title = requireActivity().getString(R.string.version).format(BuildConfig.VERSION_NAME)
             findPreference<Preference>("github")!!.setOnPreferenceClickListener {
                 CustomTabsIntent.Builder()
                     .build()
-                    .launchUrl(context!!, Uri.parse("https://github.com/domilopment/apkextractor"))
+                    .launchUrl(requireContext(), Uri.parse("https://github.com/domilopment/apkextractor"))
                 return@setOnPreferenceClickListener true
             }
             findPreference<Preference>("googleplay")!!.setOnPreferenceClickListener {
                 Intent(Intent.ACTION_VIEW).apply {
                     data = try {
                         setPackage(
-                            context!!.packageManager.getPackageInfo("com.android.vending", 0).packageName
+                            requireContext().packageManager.getPackageInfo("com.android.vending", 0).packageName
                         )
-                        Uri.parse("market://details?id=${context!!.packageName}")
+                        Uri.parse("market://details?id=${requireContext().packageName}")
                     } catch (e: PackageManager.NameNotFoundException) {
-                        Uri.parse("https://play.google.com/store/apps/details?id=${context!!.packageName}")
+                        Uri.parse("https://play.google.com/store/apps/details?id=${requireContext().packageName}")
                     }
                 }.also {
                     startActivity(it)
@@ -58,7 +58,7 @@ class SettingsActivity : AppCompatActivity() {
                 return@setOnPreferenceClickListener true
             }
             findPreference<Preference>("choose_dir")!!.setOnPreferenceClickListener {
-                FileHelper(activity!!).chooseDir()
+                FileHelper(requireActivity()).chooseDir()
                 return@setOnPreferenceClickListener true
             }
         }
