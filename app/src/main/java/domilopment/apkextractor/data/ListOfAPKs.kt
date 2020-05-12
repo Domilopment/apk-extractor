@@ -10,7 +10,7 @@ class ListOfAPKs(private val packageManager: PackageManager) {
         private val systemApps = ArrayList<Application>()
         private val updatedSystemApps = ArrayList<Application>()
         private val isEmpty
-            get() = Apps.systemApps.isEmpty() || Apps.updatedSystemApps.isEmpty() || Apps.userApps.isEmpty()
+            get() = Apps.systemApps.isEmpty() && Apps.updatedSystemApps.isEmpty() && Apps.userApps.isEmpty()
     }
 
     //Lists of APK Types
