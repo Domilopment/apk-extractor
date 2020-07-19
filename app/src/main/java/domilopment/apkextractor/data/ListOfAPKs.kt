@@ -5,29 +5,30 @@ import android.content.pm.PackageManager
 
 class ListOfAPKs(private val packageManager: PackageManager) {
     //Static List of APKs
-    companion object Apps {
-        private val userApps = ArrayList<Application>()
-        private val systemApps = ArrayList<Application>()
-        private val updatedSystemApps = ArrayList<Application>()
-        private val isEmpty
-            get() = Apps.systemApps.isEmpty() && Apps.updatedSystemApps.isEmpty() && Apps.userApps.isEmpty()
+    companion object {
+        private val staticUserApps = ArrayList<Application>()
+        private val staticSystemApps = ArrayList<Application>()
+        private val staticUpdatedSystemApps = ArrayList<Application>()
     }
+
+    private val isEmpty
+        get() = staticSystemApps.isEmpty() && staticUpdatedSystemApps.isEmpty() && staticUserApps.isEmpty()
 
     //Lists of APK Types
     val userApps: List<Application>
-        get() = Apps.userApps
+        get() = staticUserApps
     val systemApps: List<Application>
-        get() = Apps.systemApps
+        get() = staticSystemApps
     val updatedSystemApps: List<Application>
-        get() = Apps.updatedSystemApps
+        get() = staticUpdatedSystemApps
 
     // initialize APK list
     init {
         if (isEmpty) {
             // Ensure all list are Empty!
-            Apps.userApps.clear()
-            Apps.systemApps.clear()
-            Apps.updatedSystemApps.clear()
+            staticUserApps.clear()
+            staticSystemApps.clear()
+            staticUpdatedSystemApps.clear()
             // Fill each list with its specific type
             packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
                 .forEach { packageInfo: ApplicationInfo ->
@@ -37,11 +38,11 @@ class ListOfAPKs(private val packageManager: PackageManager) {
                     ).also {
                         when {
                             (it.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP ->
-                                Apps.updatedSystemApps.add(it)
+                                staticUpdatedSystemApps.add(it)
                             (it.appFlags and ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM ->
-                                Apps.systemApps.add(it)
+                                staticSystemApps.add(it)
                             else ->
-                                Apps.userApps.add(it)
+                                staticUserApps.add(it)
                         }
                     }
                 }

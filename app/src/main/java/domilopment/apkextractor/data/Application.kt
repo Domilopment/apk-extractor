@@ -9,18 +9,17 @@ class Application(
     private val applicationInfo: ApplicationInfo,
     private val packageManager: PackageManager
 ) {
+    private val packageInfo get() = packageManager.getPackageInfo(applicationInfo.packageName, 0)
     val appName: String get() = packageManager.getApplicationLabel(applicationInfo).toString()
     val appPackageName: String = applicationInfo.packageName
     val appSourceDirectory: String = applicationInfo.sourceDir
     val appIcon: Drawable get() = packageManager.getApplicationIcon(applicationInfo)
-    val appVersionName: String get() = packageManager.getPackageInfo(applicationInfo.packageName, 0).versionName
+    val appVersionName: String get() = packageInfo.versionName
     val appVersionCode: Long
-            get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-                packageManager.getPackageInfo(applicationInfo.packageName, 0).longVersionCode
-            else
-                packageManager.getPackageInfo(applicationInfo.packageName, 0).versionCode.toLong()
+            get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) packageInfo.longVersionCode
+                    else packageInfo.versionCode.toLong()
     val appFlags: Int = applicationInfo.flags
-    val appInstallTime: Long get() = packageManager.getPackageInfo(applicationInfo.packageName, 0).firstInstallTime
-    val appUpdateTime: Long get() = packageManager.getPackageInfo(applicationInfo.packageName, 0).lastUpdateTime
+    val appInstallTime: Long get() = packageInfo.firstInstallTime
+    val appUpdateTime: Long get() = packageInfo.lastUpdateTime
     var isChecked: Boolean = false
 }
