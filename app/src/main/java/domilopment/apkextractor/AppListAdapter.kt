@@ -33,10 +33,6 @@ class AppListAdapter(
         private set
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView)
 
-    init {
-        updateData()
-    }
-
     /**
      * Creates ViewHolder with Layout
      * @param parent
@@ -104,7 +100,7 @@ class AppListAdapter(
              */
             override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString().toLowerCase(Locale.getDefault())
-                myDatasetFiltered = if (charString.isEmpty()) {
+                val myDatasetFiltered = if (charString.isEmpty()) {
                     myDataset
                 } else {
                     myDataset.filter {
@@ -125,7 +121,7 @@ class AppListAdapter(
              * Apps that match charSequence
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
-                myDatasetFiltered = listOf(filterResults.values).filterIsInstance<Application>()
+                myDatasetFiltered = filterResults.values as List<Application>
                 notifyDataSetChanged()
             }
         }
@@ -145,7 +141,9 @@ class AppListAdapter(
     fun updateData() {
         mainActivity.refresh.isRefreshing = true
         mainActivity.run {
-            LoaderManager.getInstance(this).initLoader(SettingsManager.DATA_LOADER_ID, null, this@AppListAdapter)
+            LoaderManager.getInstance(this)
+                .initLoader(SettingsManager.DATA_LOADER_ID, null, this@AppListAdapter)
+                .forceLoad()
         }
     }
 
@@ -154,8 +152,8 @@ class AppListAdapter(
      */
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Application>> {
         return when (id) {
-            42 -> SettingsManager(mainActivity)
-            else -> Loader(mainActivity)
+            SettingsManager.DATA_LOADER_ID -> SettingsManager(mainActivity)
+            else -> throw Exception("No such Loader")
         }
     }
 

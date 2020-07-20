@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         // add Refresh Layout action on Swipe
         refresh.setOnRefreshListener {
             viewAdapter.updateData()
+            searchView.isIconified = true
         }
 
         // Check if Save dir is Selected, Writing permission to dir and whether dir exists
@@ -91,6 +92,8 @@ class MainActivity : AppCompatActivity() {
             // specify an viewAdapter (see also next example)
             adapter = viewAdapter
         }
+
+        viewAdapter.updateData()
     }
 
     /**
@@ -197,10 +200,11 @@ class MainActivity : AppCompatActivity() {
         val byInstall: MenuItem = menu.findItem(R.id.action_install_time)
         val byUpdate: MenuItem = menu.findItem(R.id.action_update_time)
         when (sharedPreferences.getInt("app_sort", 0)){
+            0 -> byName.isChecked = true
             1 -> byPackage.isChecked = true
             2 -> byInstall.isChecked = true
             3 -> byUpdate.isChecked = true
-            else -> byName.isChecked = true
+            else -> throw Exception("No such sort type")
         }
 
         // Associate searchable configuration with the SearchView

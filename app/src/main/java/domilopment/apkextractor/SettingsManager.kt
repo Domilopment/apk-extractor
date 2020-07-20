@@ -51,10 +51,11 @@ class SettingsManager(
      */
     fun sortData(data : List<Application>): List<Application> {
         when (sharedPreferences.getInt("app_sort", 0)) {
+            0 -> Collections.sort(data, Comparator.comparing(Application::appName))
             1 -> Collections.sort(data, Comparator.comparing(Application::appPackageName))
             2 -> Collections.sort(data, Comparator.comparing(Application::appInstallTime).reversed())
             3 -> Collections.sort(data, Comparator.comparing(Application::appUpdateTime).reversed())
-            else -> Collections.sort(data, Comparator.comparing(Application::appName))
+            else -> throw Exception("No such sort type")
         }
         return data
     }
@@ -70,7 +71,6 @@ class SettingsManager(
      * Force load on Start
      */
     override fun onStartLoading() {
-        super.onStartLoading()
         forceLoad()
     }
 }
