@@ -1,6 +1,7 @@
 package domilopment.apkextractor.data
 
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -9,7 +10,7 @@ class Application(
     private val applicationInfo: ApplicationInfo,
     private val packageManager: PackageManager
 ) {
-    private val packageInfo get() = packageManager.getPackageInfo(applicationInfo.packageName, 0)
+    private val packageInfo: PackageInfo get() = packageManager.getPackageInfo(applicationInfo.packageName, 0)
     val appName: String get() = packageManager.getApplicationLabel(applicationInfo).toString()
     val appPackageName: String = applicationInfo.packageName
     val appSourceDirectory: String = applicationInfo.sourceDir

@@ -23,10 +23,12 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import domilopment.apkextractor.*
+import domilopment.apkextractor.AppListAdapter
+import domilopment.apkextractor.FileHelper
+import domilopment.apkextractor.R
+import domilopment.apkextractor.SettingsManager
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
@@ -46,6 +48,11 @@ class MainActivity : AppCompatActivity() {
             startApplication()
 
         path = SettingsManager(this).saveDir()
+
+        // add Refresh Layout action on Swipe
+        refresh.setOnRefreshListener {
+            viewAdapter.updateData()
+        }
 
         // Check if Save dir is Selected, Writing permission to dir and whether dir exists
         // if not ask for select dir

@@ -1,6 +1,7 @@
 package domilopment.apkextractor
 
 import android.content.Context
+import androidx.loader.content.AsyncTaskLoader
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.data.ListOfAPKs
@@ -10,9 +11,13 @@ import kotlin.collections.ArrayList
 
 class SettingsManager(
     context: Context
-) {
+) : AsyncTaskLoader<List<Application>>(context) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val packageManager = context.packageManager
+
+    companion object {
+        const val DATA_LOADER_ID = 42
+    }
 
     /**
      * Creates a List containing of all Types the User Selected in Settings
@@ -29,6 +34,7 @@ class SettingsManager(
             mData.addAll(ListOfAPKs(packageManager).userApps)
         return sortData(mData)
     }
+
 
     /**
      * Gives back in SharedPreferences Saved Directory Path
@@ -51,5 +57,20 @@ class SettingsManager(
             else -> Collections.sort(data, Comparator.comparing(Application::appName))
         }
         return data
+    }
+
+    /**
+     * Loading data in Background
+     */
+    override fun loadInBackground(): List<Application> {
+        return selectedAppTypes()
+    }
+
+    /**
+     * Force load on Start
+     */
+    override fun onStartLoading() {
+        super.onStartLoading()
+        forceLoad()
     }
 }

@@ -2,25 +2,40 @@ package domilopment.apkextractor
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.Loader
 import androidx.recyclerview.widget.RecyclerView
 import domilopment.apkextractor.activitys.MainActivity
 import domilopment.apkextractor.data.Application
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_list_item.view.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class AppListAdapter(
     private val mainActivity: MainActivity
-) : RecyclerView.Adapter<AppListAdapter.MyViewHolder>(), Filterable {
-    class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView)
-    private val myDataset = SettingsManager(mainActivity).selectedAppTypes()
+) : RecyclerView.Adapter<AppListAdapter.MyViewHolder>(),
+    Filterable,
+    LoaderManager.LoaderCallbacks<List<Application>> {
+    // Static Dataset for Smoother transition
+    companion object {
+        val myDataset = ArrayList<Application>()
+    }
+    // Shown Data in ListView
     var myDatasetFiltered: List<Application> = myDataset
         private set
+    class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView)
+
+    init {
+        updateData()
+    }
 
     /**
      * Creates ViewHolder with Layout
@@ -110,7 +125,7 @@ class AppListAdapter(
              * Apps that match charSequence
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
-                myDatasetFiltered = filterResults.values as List<Application>
+                myDatasetFiltered = listOf(filterResults.values).filterIsInstance<Application>()
                 notifyDataSetChanged()
             }
         }
@@ -122,5 +137,44 @@ class AppListAdapter(
     fun sortData() {
         SettingsManager(mainActivity).sortData(myDatasetFiltered)
         notifyDataSetChanged()
+    }
+
+    /**
+     * Update Dataset
+     */
+    fun updateData() {
+        mainActivity.refresh.isRefreshing = true
+        mainActivity.run {
+            LoaderManager.getInstance(this).initLoader(SettingsManager.DATA_LOADER_ID, null, this@AppListAdapter)
+        }
+    }
+
+    /**
+     * Creates Data Loader Class on Request
+     */
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Application>> {
+        return when (id) {
+            42 -> SettingsManager(mainActivity)
+            else -> Loader(mainActivity)
+        }
+    }
+
+    /**
+     * Updates Dataset when Loader delivers result
+     */
+    override fun onLoadFinished(loader: Loader<List<Application>>, data: List<Application>) {
+        myDataset.clear()
+        myDataset.addAll(data)
+        myDatasetFiltered = myDataset
+        notifyDataSetChanged()
+        mainActivity.refresh.isRefreshing = false
+    }
+
+    /**
+     * Clear Data on Loader Reset
+     */
+    override fun onLoaderReset(loader: Loader<List<Application>>) {
+        myDataset.clear()
+        myDatasetFiltered = myDataset
     }
 }
