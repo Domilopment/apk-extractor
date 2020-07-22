@@ -70,6 +70,9 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Navigates back to last Activity
+     */
     override fun onBackPressed() {
         NavUtils.navigateUpFromSameTask(this)
     }

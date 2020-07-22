@@ -11,6 +11,7 @@ class ListOfAPKs(private val packageManager: PackageManager) {
         private val staticUpdatedSystemApps = ArrayList<Application>()
     }
 
+    // Check lists to hold Data
     private val isEmpty
         get() = staticSystemApps.isEmpty() && staticUpdatedSystemApps.isEmpty() && staticUserApps.isEmpty()
 
@@ -29,6 +30,9 @@ class ListOfAPKs(private val packageManager: PackageManager) {
         }
     }
 
+    /**
+     * Update Installed APK lists
+     */
     fun updateData() {
         // Ensure all list are Empty!
         staticUserApps.clear()

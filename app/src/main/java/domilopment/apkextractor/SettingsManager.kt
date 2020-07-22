@@ -1,7 +1,6 @@
 package domilopment.apkextractor
 
 import android.content.Context
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.loader.content.AsyncTaskLoader
 import androidx.preference.PreferenceManager
@@ -62,6 +61,10 @@ class SettingsManager(
         return data
     }
 
+    /**
+     * Switch ui mode (System, Light, Dark) either with given Parameter or with saved Preference
+     * @param newValue Int castable String value to switch ui mode
+     */
     fun changeUIMode(newValue: String = sharedPreferences.getString("list_preference_ui_mode", "0")!!) {
         when (newValue.toInt()) {
             1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)

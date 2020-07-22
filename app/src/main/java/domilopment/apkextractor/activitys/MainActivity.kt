@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -48,9 +47,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-
-        Log.e("settings", sharedPreferences.all.toString())
-
 
         if (checkNeededPermissions())
             startApplication()
