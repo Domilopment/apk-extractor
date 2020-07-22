@@ -29,6 +29,9 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.SettingsManager
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 class MainActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
@@ -251,13 +254,13 @@ class MainActivity : AppCompatActivity() {
         viewAdapter.myDatasetFiltered.filter {
             it.isChecked
         }.forEach { app ->
-                FileProvider.getUriForFile(
-                    this,
-                    application.packageName+".provider",
-                    File(app.appSourceDirectory)
-                ).also {
-                    files.add(it)
-                }
+            FileProvider.getUriForFile(
+                this,
+                application.packageName+".provider",
+                File(app.appSourceDirectory).copyTo(File.createTempFile("${app.appName}_${app.appVersionName}_", ".apk", cacheDir), true)
+            ).also {
+                files.add(it)
+            }
         }
         return if (files.isEmpty()) {
             Toast.makeText(this, R.string.toast_share_app, Toast.LENGTH_SHORT).show()
