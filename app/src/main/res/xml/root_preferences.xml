@@ -22,6 +22,14 @@
             app:summary="@string/app_type_user_summary"
             app:defaultValue="true"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/advanced">
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/ui_mode_names"
+            android:entryValues="@array/ui_mode_values"
+            android:key="list_preference_ui_mode"
+            android:title="@string/ui_mode" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/info_header">
         <Preference
             app:key="github"

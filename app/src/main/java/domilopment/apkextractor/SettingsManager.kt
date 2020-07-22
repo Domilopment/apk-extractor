@@ -1,6 +1,8 @@
 package domilopment.apkextractor
 
 import android.content.Context
+import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.loader.content.AsyncTaskLoader
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.data.Application
@@ -60,10 +62,19 @@ class SettingsManager(
         return data
     }
 
+    fun changeUIMode(newValue: String = sharedPreferences.getString("list_preference_ui_mode", "0")!!) {
+        when (newValue.toInt()) {
+            1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
+    }
+
     /**
      * Loading data in Background
      */
     override fun loadInBackground(): List<Application> {
+        ListOfAPKs(packageManager).updateData()
         return selectedAppTypes()
     }
 

@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -29,9 +30,6 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.SettingsManager
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.OutputStream
 
 class MainActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
@@ -40,12 +38,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var path: String
     private lateinit var sharedPreferences: SharedPreferences
 
+    companion object {
+        const val SHARE_APP_RESULT = 666
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        Log.e("settings", sharedPreferences.all.toString())
+
 
         if (checkNeededPermissions())
             startApplication()
@@ -97,6 +102,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewAdapter.updateData()
+    }
+
+    /**
+     * Executes on Application Destroy, clear cache
+     */
+    override fun onDestroy() {
+        cacheDir.deleteRecursively()
+        super.onDestroy()
     }
 
     /**
@@ -235,7 +248,7 @@ class MainActivity : AppCompatActivity() {
         menu.findItem(R.id.action_share).apply {
             setOnMenuItemClickListener {
                 getSelectedApps()?.let {
-                    startActivity(Intent.createChooser(it, getString(R.string.action_share)))
+                    startActivityForResult(Intent.createChooser(it, getString(R.string.action_share)), SHARE_APP_RESULT)
                 }
                 return@setOnMenuItemClickListener true
             }
@@ -325,6 +338,9 @@ class MainActivity : AppCompatActivity() {
         super.onBackPressed()
     }
 
+    /**
+     * Executes on Intent results
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -335,6 +351,9 @@ class MainActivity : AppCompatActivity() {
                     contentResolver
                         .takePersistableUriPermission(data.data!!, this)
                 }
+            }
+            SHARE_APP_RESULT -> {
+                cacheDir.deleteRecursively()
             }
         }
     }

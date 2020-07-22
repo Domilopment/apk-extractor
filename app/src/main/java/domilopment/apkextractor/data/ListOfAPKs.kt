@@ -25,27 +25,31 @@ class ListOfAPKs(private val packageManager: PackageManager) {
     // initialize APK list
     init {
         if (isEmpty) {
-            // Ensure all list are Empty!
-            staticUserApps.clear()
-            staticSystemApps.clear()
-            staticUpdatedSystemApps.clear()
-            // Fill each list with its specific type
-            packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-                .forEach { packageInfo: ApplicationInfo ->
-                    Application(
-                        packageInfo,
-                        packageManager
-                    ).also {
-                        when {
-                            (it.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP ->
-                                staticUpdatedSystemApps.add(it)
-                            (it.appFlags and ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM ->
-                                staticSystemApps.add(it)
-                            else ->
-                                staticUserApps.add(it)
-                        }
+            updateData()
+        }
+    }
+
+    fun updateData() {
+        // Ensure all list are Empty!
+        staticUserApps.clear()
+        staticSystemApps.clear()
+        staticUpdatedSystemApps.clear()
+        // Fill each list with its specific type
+        packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+            .forEach { packageInfo: ApplicationInfo ->
+                Application(
+                    packageInfo,
+                    packageManager
+                ).also {
+                    when {
+                        (it.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP ->
+                            staticUpdatedSystemApps.add(it)
+                        (it.appFlags and ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM ->
+                            staticSystemApps.add(it)
+                        else ->
+                            staticUserApps.add(it)
                     }
                 }
-        }
+            }
     }
 }

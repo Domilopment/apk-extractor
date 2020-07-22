@@ -7,12 +7,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.NavUtils
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.FileHelper
 import domilopment.apkextractor.R
+import domilopment.apkextractor.SettingsManager
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +44,7 @@ class SettingsActivity : AppCompatActivity() {
                     .launchUrl(requireContext(), Uri.parse("https://github.com/domilopment/apkextractor"))
                 return@setOnPreferenceClickListener true
             }
-            findPreference<Preference>("googleplay")!!.setOnPreferenceClickListener {
+            findPreference<Preference>("googleplay")?.setOnPreferenceClickListener {
                 Intent(Intent.ACTION_VIEW).apply {
                     data = try {
                         setPackage(
@@ -57,9 +59,13 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 return@setOnPreferenceClickListener true
             }
-            findPreference<Preference>("choose_dir")!!.setOnPreferenceClickListener {
+            findPreference<Preference>("choose_dir")?.setOnPreferenceClickListener {
                 FileHelper(requireActivity()).chooseDir()
                 return@setOnPreferenceClickListener true
+            }
+            findPreference<ListPreference>("list_preference_ui_mode")?.setOnPreferenceChangeListener { _, newValue ->
+                SettingsManager(requireContext()).changeUIMode(newValue.toString())
+                return@setOnPreferenceChangeListener true
             }
         }
     }

@@ -10,6 +10,7 @@ import domilopment.apkextractor.data.ListOfAPKs
 class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SettingsManager(this).changeUIMode()
         ListOfAPKs(packageManager)
         AppListAdapter.myDataset.addAll(SettingsManager(this).selectedAppTypes())
         startActivity(Intent(this, MainActivity::class.java))

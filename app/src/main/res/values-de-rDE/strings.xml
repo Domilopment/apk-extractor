@@ -30,6 +30,12 @@
 
     <string name="version">Version: %s</string>
 
+    <string name="advanced">Erweiterte Einstellungen</string>
+    <string name="ui_mode">Nacht Modus</string>
+    <string name="ui_follow_os">System einstellungen</string>
+    <string name="ui_dark">Dunkel</string>
+    <string name="ui_white">Hell</string>
+
     <!-- Search Placeholder -->
     <string name="search_hint">Suche Namen…</string>
 
