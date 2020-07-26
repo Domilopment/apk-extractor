@@ -33,6 +33,7 @@
 
     <string name="advanced">Advanced Settings</string>
     <string name="ui_mode">Night Mode</string>
+    <string name="ui_mode_summary">Change App Appearance</string>
     <string name="ui_follow_os">Follow OS</string>
     <string name="ui_dark">Dark</string>
     <string name="ui_white">White</string>

@@ -28,7 +28,8 @@
             android:entries="@array/ui_mode_names"
             android:entryValues="@array/ui_mode_values"
             android:key="list_preference_ui_mode"
-            android:title="@string/ui_mode" />
+            android:title="@string/ui_mode"
+            android:summary="@string/ui_mode_summary" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/info_header">
         <Preference
