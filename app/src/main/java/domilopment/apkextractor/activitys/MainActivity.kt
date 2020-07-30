@@ -266,7 +266,7 @@ class MainActivity : AppCompatActivity() {
             FileProvider.getUriForFile(
                 this,
                 application.packageName+".provider",
-                File(app.appSourceDirectory).copyTo(File.createTempFile("${app.appName}_${app.appVersionName}_", ".apk", cacheDir), true)
+                File(app.appSourceDirectory).copyTo(File(cacheDir, "${app.appName}_${app.appVersionName}.apk"), true)
             ).also {
                 files.add(it)
             }
