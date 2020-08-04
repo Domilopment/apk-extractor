@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                     if (FileHelper(this).copy(
                             d.appSourceDirectory,
                             path,
-                            "${d.appName}_${d.appVersionName}.apk"
+                            "${SettingsManager(this).appName(d)}.apk"
                         )
                     )
                         Snackbar.make(
@@ -266,7 +266,7 @@ class MainActivity : AppCompatActivity() {
             FileProvider.getUriForFile(
                 this,
                 application.packageName+".provider",
-                File(app.appSourceDirectory).copyTo(File(cacheDir, "${app.appName}_${app.appVersionName}.apk"), true)
+                File(app.appSourceDirectory).copyTo(File(cacheDir, "${SettingsManager(this).appName(app)}.apk"), true)
             ).also {
                 files.add(it)
             }

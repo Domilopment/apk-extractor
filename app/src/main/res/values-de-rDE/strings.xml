@@ -37,6 +37,17 @@
     <string name="ui_dark">Dunkel</string>
     <string name="ui_white">Hell</string>
 
+    <string name="clear_cache">Cache leeren</string>
+    <string name="clear_cache_summary">Leere App cache</string>
+    <string name="clear_cache_success">Cache gesäubert!</string>
+    <string name="clear_cache_failed">Cache konnte nicht geleert werden!</string>
+
+    <string name="app_save_name">APK Name</string>
+    <string name="app_save_name_summary">Konfiguriere Namens informationen für gespeicherte APKs</string>
+    <string name="app_save_name_package">Paket Name</string>
+    <string name="app_save_name_version_name">App Versions-Name</string>
+    <string name="app_save_name_version_number">App versions-Nummer</string>
+
     <!-- Search Placeholder -->
     <string name="search_hint">Suche Namen…</string>
 

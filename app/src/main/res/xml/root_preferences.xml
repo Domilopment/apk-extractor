@@ -5,6 +5,12 @@
             app:key="choose_dir"
             app:title="@string/choose_save_dir"
             app:summary="@string/choose_save_dir_summary"/>
+        <MultiSelectListPreference
+            android:entries="@array/app_save_name_names"
+            android:entryValues="@array/app_save_name_values"
+            android:key="app_save_name"
+            android:summary="@string/app_save_name_summary"
+            android:title="@string/app_save_name" />
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/app_type_header">
         <SwitchPreferenceCompat
@@ -30,6 +36,10 @@
             android:key="list_preference_ui_mode"
             android:title="@string/ui_mode"
             android:summary="@string/ui_mode_summary" />
+        <Preference
+            app:key="clear_cache"
+            app:title="@string/clear_cache"
+            app:summary="@string/clear_cache_summary"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/info_header">
         <Preference

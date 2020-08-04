@@ -9,4 +9,15 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+
+    <string-array name="app_save_name_names">
+        <item>@string/app_save_name_package</item>
+        <item>@string/app_save_name_version_name</item>
+        <item>@string/app_save_name_version_number</item>
+    </string-array>
+    <string-array name="app_save_name_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 </resources>

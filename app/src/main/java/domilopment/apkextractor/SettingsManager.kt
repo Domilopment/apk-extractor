@@ -74,6 +74,24 @@ class SettingsManager(
     }
 
     /**
+     * Gets an app and Creates a Name from its Data
+     * @param app the resource App
+     * @return String of the name after the APK should be named
+     */
+    fun appName(app: Application): String {
+        val sb = StringBuilder().append(app.appName)
+        sharedPreferences.getStringSet("app_save_name", setOf())?.also { prefs ->
+            if (prefs.contains("1"))
+                sb.append("_${app.appPackageName}")
+            if (prefs.contains("2"))
+                sb.append("_${app.appVersionCode}")
+            if (prefs.contains("3"))
+                sb.append("_${app.appVersionName}")
+        }
+        return sb.toString()
+    }
+
+    /**
      * Loading data in Background
      */
     override fun loadInBackground(): List<Application> {

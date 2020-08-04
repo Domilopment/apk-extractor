@@ -38,6 +38,17 @@
     <string name="ui_dark">Dark</string>
     <string name="ui_white">White</string>
 
+    <string name="clear_cache">Clear cache</string>
+    <string name="clear_cache_summary">Clear App cache</string>
+    <string name="clear_cache_success">Cache cleared</string>
+    <string name="clear_cache_failed">Cache could not be cleared</string>
+
+    <string name="app_save_name">APK Name</string>
+    <string name="app_save_name_summary">Configurate APK save name informations</string>
+    <string name="app_save_name_package">Package Name</string>
+    <string name="app_save_name_version_name">App Version Name</string>
+    <string name="app_save_name_version_number">App version Number</string>
+
     <!-- Search Placeholder -->
     <string name="search_hint">Type name…</string>
 

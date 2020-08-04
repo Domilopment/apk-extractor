@@ -4,12 +4,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.NavUtils
-import androidx.preference.ListPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.*
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.FileHelper
@@ -66,6 +65,13 @@ class SettingsActivity : AppCompatActivity() {
             findPreference<ListPreference>("list_preference_ui_mode")?.setOnPreferenceChangeListener { _, newValue ->
                 SettingsManager(requireContext()).changeUIMode(newValue.toString())
                 return@setOnPreferenceChangeListener true
+            }
+            findPreference<Preference>("clear_cache")?.setOnPreferenceClickListener {
+                if (activity?.cacheDir!!.deleteRecursively())
+                    Toast.makeText(activity, "cache cleared", Toast.LENGTH_SHORT).show()
+                else
+                    Toast.makeText(activity, "clear cache failed", Toast.LENGTH_SHORT).show()
+                return@setOnPreferenceClickListener true
             }
         }
     }
