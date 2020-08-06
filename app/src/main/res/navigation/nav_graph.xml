@@ -3,17 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/splashScreenFragment">
-    <fragment
-        android:id="@+id/splashScreenFragment"
-        android:name="domilopment.apkextractor.fragments.SplashScreenFragment"
-        android:label="SplashScreenFragment">
-        <action
-            android:id="@+id/action_splashScreenFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
-            app:popUpTo="@id/splashScreenFragment"
-            app:popUpToInclusive="true"/>
-    </fragment>
+    app:startDestination="@id/mainFragment">
     <fragment
         android:id="@+id/mainFragment"
         android:name="domilopment.apkextractor.fragments.MainFragment"

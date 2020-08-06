@@ -15,10 +15,7 @@ import domilopment.apkextractor.*
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity() as MainActivity).supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            title = getString(R.string.title_activity_settings)
-        }
+
         setHasOptionsMenu(true)
     }
 
@@ -64,6 +61,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
             else
                 Toast.makeText(activity, "clear cache failed", Toast.LENGTH_SHORT).show()
             return@setOnPreferenceClickListener true
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as MainActivity).supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            title = getString(R.string.title_activity_settings)
         }
     }
 

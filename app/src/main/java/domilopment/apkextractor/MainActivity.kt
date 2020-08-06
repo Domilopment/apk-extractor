@@ -4,34 +4,20 @@ import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
-import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
-import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_main.*
-import java.io.File
 
 class MainActivity : AppCompatActivity() {
-    lateinit var viewAdapter: AppListAdapter
     private lateinit var path: String
     private lateinit var sharedPreferences: SharedPreferences
+    lateinit var settingsManager: SettingsManager
 
     companion object {
         const val SHARE_APP_RESULT = 666
@@ -42,6 +28,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        settingsManager = SettingsManager(this)
+        // Set UI Mode
+        settingsManager.changeUIMode()
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 

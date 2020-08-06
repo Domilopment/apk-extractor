@@ -13,23 +13,37 @@ import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.*
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.Loader
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
+import domilopment.apkextractor.R
+import domilopment.apkextractor.data.Application
 import kotlinx.android.synthetic.main.app_list.*
 import kotlinx.android.synthetic.main.fragment_main.*
 import java.io.File
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), LoaderManager.LoaderCallbacks<List<Application>> {
     private lateinit var mainActivity: MainActivity
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: AppListAdapter
     private lateinit var searchView: SearchView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var callback: OnBackPressedCallback
-    private val viewAdapter get() = mainActivity.viewAdapter
+    private val model by activityViewModels<MainViewModel> {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+                    return MainViewModel(mainActivity) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class")
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,11 +74,15 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // add Refresh Layout action on Swipe
         refresh.setOnRefreshListener {
-            viewAdapter.updateData()
+            updateData()
             searchView.isIconified = true
         }
 
         fab.setOnClickListener { saveApps(it) }
+
+        model.getApps().observe(viewLifecycleOwner, Observer<List<Application>>{ apps ->
+            viewAdapter.updateData(apps)
+        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -72,7 +90,9 @@ class MainFragment : Fragment() {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
-        recyclerView = list.apply {
+        viewAdapter = AppListAdapter(mainActivity)
+
+        list.apply {
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
             setHasFixedSize(true)
@@ -83,13 +103,13 @@ class MainFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         mainActivity.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(false)
             title = getString(R.string.app_name)
         }
-        mainActivity.viewAdapter.updateData()
+        updateData()
     }
 
     /**
@@ -129,6 +149,16 @@ class MainFragment : Fragment() {
                         ).setAction("Action", null).setTextColor(Color.RED).show()
                 }
         }
+    }
+
+    /**
+     * Update Dataset
+     */
+    private fun updateData() {
+        refresh.isRefreshing = true
+        LoaderManager.getInstance(mainActivity)
+            .initLoader(SettingsManager.DATA_LOADER_ID, null, this@MainFragment)
+            .forceLoad()
     }
 
     /**
@@ -268,5 +298,30 @@ class MainFragment : Fragment() {
                 return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    /**
+     * Creates Data Loader Class on Request
+     */
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Application>> {
+        return when (id) {
+            SettingsManager.DATA_LOADER_ID -> SettingsManager(mainActivity)
+            else -> throw Exception("No such Loader")
+        }
+    }
+
+    /**
+     * Updates Dataset when Loader delivers result
+     */
+    override fun onLoadFinished(loader: Loader<List<Application>>, data: List<Application>) {
+        model.updateApps(data)
+        refresh.isRefreshing = false
+    }
+
+    /**
+     * Clear Data on Loader Reset
+     */
+    override fun onLoaderReset(loader: Loader<List<Application>>) {
+        model.updateApps(listOf())
     }
 }

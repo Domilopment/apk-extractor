@@ -2,33 +2,26 @@ package domilopment.apkextractor
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import androidx.fragment.app.Fragment
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.Loader
 import androidx.recyclerview.widget.RecyclerView
 import domilopment.apkextractor.data.Application
-import domilopment.apkextractor.fragments.MainFragment
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.app_list_item.view.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 class AppListAdapter(
     private val mainActivity: MainActivity
-) : RecyclerView.Adapter<AppListAdapter.MyViewHolder>(),
-    Filterable,
-    LoaderManager.LoaderCallbacks<List<Application>> {
+) :
+    RecyclerView.Adapter<AppListAdapter.MyViewHolder>(),
+    Filterable
+{
+    private val settingsManager = mainActivity.settingsManager
     // Static Dataset for Smoother transition
-    private val myDataset = ArrayList(SettingsManager(mainActivity).selectedAppTypes())
+    private var myDataset = listOf<Application>()
     // Shown Data in ListView
     var myDatasetFiltered: List<Application> = myDataset
         private set
@@ -129,51 +122,20 @@ class AppListAdapter(
     }
 
     /**
-     * Sorts date on Call after Selected Sort type
+     * Sorts data on Call after Selected Sort type
      */
     fun sortData() {
-        SettingsManager(mainActivity).sortData(myDatasetFiltered)
+        settingsManager.sortData(myDatasetFiltered)
         notifyDataSetChanged()
     }
 
     /**
-     * Update Dataset
+     * Updates data with delivered Dataset
+     * @param apps Updated set of Applications
      */
-    fun updateData(fragment: MainFragment? = null) {
-        mainActivity.refresh?.isRefreshing = true
-        mainActivity.run {
-            LoaderManager.getInstance(this)
-                .initLoader(SettingsManager.DATA_LOADER_ID, null, this@AppListAdapter)
-                .forceLoad()
-        }
-    }
-
-    /**
-     * Creates Data Loader Class on Request
-     */
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Application>> {
-        return when (id) {
-            SettingsManager.DATA_LOADER_ID -> SettingsManager(mainActivity)
-            else -> throw Exception("No such Loader")
-        }
-    }
-
-    /**
-     * Updates Dataset when Loader delivers result
-     */
-    override fun onLoadFinished(loader: Loader<List<Application>>, data: List<Application>) {
-        myDataset.clear()
-        myDataset.addAll(data)
+    fun updateData(apps: List<Application>) {
+        myDataset = apps
         myDatasetFiltered = myDataset
         notifyDataSetChanged()
-        mainActivity.refresh?.isRefreshing = false
-    }
-
-    /**
-     * Clear Data on Loader Reset
-     */
-    override fun onLoaderReset(loader: Loader<List<Application>>) {
-        myDataset.clear()
-        myDatasetFiltered = myDataset
     }
 }

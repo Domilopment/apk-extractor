@@ -21,8 +21,6 @@ A
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 j
 :app/src/main/java/domilopment/apkextractor/MainActivity.kt,2\d\2df9b7c5b2d894547906a063aec630aa230bcb1b
-|
-Lapp/src/main/java/domilopment/apkextractor/fragments/SplashScreenFragment.kt,5\f\5f77fd65ac99fdedbdabbe75b3d3212dbc9f9a18
 t
 Dapp/src/main/java/domilopment/apkextractor/fragments/MainFragment.kt,8\4\84899303cd81ba38d48962224c13c171b1885b47
 x
