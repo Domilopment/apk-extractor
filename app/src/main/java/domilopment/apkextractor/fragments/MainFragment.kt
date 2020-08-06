@@ -1,111 +1,95 @@
-package domilopment.apkextractor.activitys
+package domilopment.apkextractor.fragments
 
-import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
-import android.os.Binder
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
-import androidx.documentfile.provider.DocumentFile
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import domilopment.apkextractor.AppListAdapter
-import domilopment.apkextractor.FileHelper
-import domilopment.apkextractor.R
-import domilopment.apkextractor.SettingsManager
-import kotlinx.android.synthetic.main.activity_main.*
+import domilopment.apkextractor.*
+import kotlinx.android.synthetic.main.app_list.*
+import kotlinx.android.synthetic.main.fragment_main.*
 import java.io.File
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var searchView: SearchView
+class MainFragment : Fragment() {
+    private lateinit var mainActivity: MainActivity
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: AppListAdapter
-    private lateinit var path: String
+    private lateinit var searchView: SearchView
     private lateinit var sharedPreferences: SharedPreferences
-
-    companion object {
-        const val SHARE_APP_RESULT = 666
-    }
+    private lateinit var callback: OnBackPressedCallback
+    private val viewAdapter get() = mainActivity.viewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        callback = requireActivity().onBackPressedDispatcher.addCallback {
+            // close search view on back button pressed
+            if (!searchView.isIconified) {
+                searchView.isIconified = true
+            }
+            isEnabled = !searchView.isIconified
+        }.also {
+            it.isEnabled = false
+        }
 
-        if (checkNeededPermissions())
-            startApplication()
+        mainActivity = (requireActivity() as MainActivity)
+        setHasOptionsMenu(true)
+    }
 
-        path = SettingsManager(this).saveDir()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return inflater.inflate(R.layout.fragment_main, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         // add Refresh Layout action on Swipe
         refresh.setOnRefreshListener {
             viewAdapter.updateData()
             searchView.isIconified = true
         }
 
-        // Check if Save dir is Selected, Writing permission to dir and whether dir exists
-        // if not ask for select dir
-        if (!(sharedPreferences.contains("dir"))
-            || checkUriPermission(
-                Uri.parse(path),
-                Binder.getCallingPid(),
-                Binder.getCallingUid(),
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            ) == PackageManager.PERMISSION_DENIED
-            || !DocumentFile.fromTreeUri(
-                this,
-                Uri.parse(path)
-            )!!.exists()
-        ) {
-            AlertDialog.Builder(this).let {
-                it.setMessage(R.string.alert_save_path_message)
-                it.setTitle(R.string.alert_save_path_title)
-                it.setCancelable(false)
-                it.setPositiveButton(R.string.alert_save_path_ok) { _, _ ->
-                    FileHelper(this).chooseDir()
-                }
-            }.create().show()
-        }
+        fab.setOnClickListener { saveApps(it) }
     }
 
-    private fun startApplication() {
-        viewAdapter = AppListAdapter(this)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
-        recyclerView = findViewById<RecyclerView>(R.id.list).apply {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
+        recyclerView = list.apply {
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
             setHasFixedSize(true)
             // use a linear layout manager
-            layoutManager = LinearLayoutManager(this@MainActivity)
+            layoutManager = LinearLayoutManager(mainActivity)
             // specify an viewAdapter (see also next example)
             adapter = viewAdapter
         }
-
-        viewAdapter.updateData()
     }
 
-    /**
-     * Executes on Application Destroy, clear cache
-     */
-    override fun onDestroy() {
-        cacheDir.deleteRecursively()
-        super.onDestroy()
+    override fun onResume() {
+        super.onResume()
+        mainActivity.supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(false)
+            title = getString(R.string.app_name)
+        }
+        mainActivity.viewAdapter.updateData()
     }
 
     /**
@@ -113,19 +97,19 @@ class MainActivity : AppCompatActivity() {
      * @param view
      * The FloatingActionButton
      */
-    fun saveApps(view: View) {
-        path = SettingsManager(this).saveDir()
+    private fun saveApps(view: View) {
+        val path = SettingsManager(requireContext()).saveDir()
         viewAdapter.myDatasetFiltered.filter {
             it.isChecked
         }.also {
             if (it.isEmpty())
-                Toast.makeText(this, R.string.toast_save_apps, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.toast_save_apps, Toast.LENGTH_SHORT).show()
             else
                 it.forEach { d ->
-                    if (FileHelper(this).copy(
+                    if (FileHelper(requireActivity()).copy(
                             d.appSourceDirectory,
                             path,
-                            "${SettingsManager(this).appName(d)}.apk"
+                            SettingsManager(requireContext()).appName(d)
                         )
                     )
                         Snackbar.make(
@@ -148,63 +132,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Checks if all Permissions in Array are granted
-     * @return Boolean
-     * True after check
-     */
-    private fun checkNeededPermissions() : Boolean{
-        arrayOf(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        ).filter {
-            ActivityCompat.checkSelfPermission(applicationContext, it) != PackageManager.PERMISSION_GRANTED
-        }.also {
-            if (it.isNotEmpty())
-                ActivityCompat.requestPermissions(this, it.toTypedArray(), 0)
-        }
-        return true
-    }
-
-    /**
-     * Checks if all Permissions in an IntArray are granted
-     * @param grantedPermissions
-     * Array of Permissions
-     * @return Boolean
-     * True if all Permissions Granted, else False
-     */
-    private fun allPermissionsGranted(grantedPermissions: IntArray): Boolean {
-        grantedPermissions.forEach { singleGrantedPermission ->
-            if (singleGrantedPermission == PackageManager.PERMISSION_DENIED)
-                return false
-        }
-        return true
-    }
-
-    /**
-     * Checks if All Permissions Granted on Runtime
-     * @param requestCode
-     * @param permissions
-     * All Permissions the App needs
-     * @param grantResults
-     * Array of grant values from permissions
-     */
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (allPermissionsGranted(grantResults)) {
-            startApplication()
-        } else {
-            ActivityCompat.requestPermissions(this, permissions, 0)
-        }
-    }
-
-    /**
      * Creates Options Menu
      * @param menu
      * @return Boolean
      * True after Menu is Created
      */
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        super.onCreateOptionsMenu(menu, menuInflater)
         menuInflater.inflate(R.menu.menu_main, menu)
 
         val byName: MenuItem = menu.findItem(R.id.action_app_name)
@@ -238,18 +173,23 @@ class MainActivity : AppCompatActivity() {
                     return false
                 }
             })
+            setOnSearchClickListener {
+                callback.isEnabled = true
+            }
         }
 
         // Retrieve the share menu item
         menu.findItem(R.id.action_share).apply {
             setOnMenuItemClickListener {
                 getSelectedApps()?.let {
-                    startActivityForResult(Intent.createChooser(it, getString(R.string.action_share)), SHARE_APP_RESULT)
+                    startActivityForResult(
+                        Intent.createChooser(it, getString(R.string.action_share)),
+                        MainActivity.SHARE_APP_RESULT
+                    )
                 }
                 return@setOnMenuItemClickListener true
             }
         }
-        return true
     }
 
     /**
@@ -264,15 +204,15 @@ class MainActivity : AppCompatActivity() {
             it.isChecked
         }.forEach { app ->
             FileProvider.getUriForFile(
-                this,
-                application.packageName+".provider",
-                File(app.appSourceDirectory).copyTo(File(cacheDir, "${SettingsManager(this).appName(app)}.apk"), true)
+                requireContext(),
+                requireActivity().application.packageName+".provider",
+                File(app.appSourceDirectory).copyTo(File(requireActivity().cacheDir, SettingsManager(requireContext()).appName(app)), true)
             ).also {
                 files.add(it)
             }
         }
         return if (files.isEmpty()) {
-            Toast.makeText(this, R.string.toast_share_app, Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), R.string.toast_share_app, Toast.LENGTH_SHORT).show()
             null
         } else {
             Intent(Intent.ACTION_SEND).apply {
@@ -288,13 +228,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Perform actions for menu Items
+     * @param item selected menu Item
+     * return Boolean
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         when (item.itemId) {
             R.id.action_settings ->
-                startActivity(Intent(this, SettingsActivity::class.java))
+                findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
             R.id.action_app_name -> {
                 sharedPreferences.edit().putInt("app_sort", 0)
                     .apply()
@@ -323,34 +268,5 @@ class MainActivity : AppCompatActivity() {
                 return super.onOptionsItemSelected(item)
         }
         return true
-    }
-
-    override fun onBackPressed() {
-        // close search view on back button pressed
-        if (!searchView.isIconified) {
-            searchView.isIconified = true
-            return
-        }
-        super.onBackPressed()
-    }
-
-    /**
-     * Executes on Intent results
-     */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            FileHelper.CHOOSE_SAVE_DIR_RESULT -> {
-                sharedPreferences.edit()
-                    .putString("dir", data!!.data.toString()).apply()
-                (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
-                    contentResolver
-                        .takePersistableUriPermission(data.data!!, this)
-                }
-            }
-            SHARE_APP_RESULT -> {
-                cacheDir.deleteRecursively()
-            }
-        }
     }
 }

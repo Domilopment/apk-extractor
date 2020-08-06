@@ -4,17 +4,20 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.fragment.app.Fragment
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.Loader
 import androidx.recyclerview.widget.RecyclerView
-import domilopment.apkextractor.activitys.MainActivity
 import domilopment.apkextractor.data.Application
+import domilopment.apkextractor.fragments.MainFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.app_list_item.view.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -25,9 +28,7 @@ class AppListAdapter(
     Filterable,
     LoaderManager.LoaderCallbacks<List<Application>> {
     // Static Dataset for Smoother transition
-    companion object {
-        val myDataset = ArrayList<Application>()
-    }
+    private val myDataset = ArrayList(SettingsManager(mainActivity).selectedAppTypes())
     // Shown Data in ListView
     var myDatasetFiltered: List<Application> = myDataset
         private set
@@ -138,8 +139,8 @@ class AppListAdapter(
     /**
      * Update Dataset
      */
-    fun updateData() {
-        mainActivity.refresh.isRefreshing = true
+    fun updateData(fragment: MainFragment? = null) {
+        mainActivity.refresh?.isRefreshing = true
         mainActivity.run {
             LoaderManager.getInstance(this)
                 .initLoader(SettingsManager.DATA_LOADER_ID, null, this@AppListAdapter)
@@ -165,7 +166,7 @@ class AppListAdapter(
         myDataset.addAll(data)
         myDatasetFiltered = myDataset
         notifyDataSetChanged()
-        mainActivity.refresh.isRefreshing = false
+        mainActivity.refresh?.isRefreshing = false
     }
 
     /**

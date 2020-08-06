@@ -5,16 +5,10 @@ P
  app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
 l
 <app/src/main/java/domilopment/apkextractor/AppListAdapter.kt,f\3\f3f95cbe87288b272053ca095a93e4b546fe25e1
-x
-Happ/src/main/java/domilopment/apkextractor/activitys/SettingsActivity.kt,6\0\60675579d4f2cb1e80663e80613518f4cf413670
 m
 =app/src/main/java/domilopment/apkextractor/SettingsManager.kt,d\6\d6895f2dc54051829028095d6ba116bb0985b775
-t
-Dapp/src/main/java/domilopment/apkextractor/activitys/MainActivity.kt,a\b\ab8409cbbaad1f7f6ae049696d2883a534089b4a
 m
 =app/src/main/java/domilopment/apkextractor/data/ListofAPKs.kt,c\5\c5baa58722345c23fbca3740a3864abf4c10da00
-|
-Lapp/src/main/java/domilopment/apkextractor/activitys/SplashScreenActivity.kt,0\8\08af93616f349b0e4e13235c59ab7382cc543bf0
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 n
@@ -25,3 +19,11 @@ A
 gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
+j
+:app/src/main/java/domilopment/apkextractor/MainActivity.kt,2\d\2df9b7c5b2d894547906a063aec630aa230bcb1b
+|
+Lapp/src/main/java/domilopment/apkextractor/fragments/SplashScreenFragment.kt,5\f\5f77fd65ac99fdedbdabbe75b3d3212dbc9f9a18
+t
+Dapp/src/main/java/domilopment/apkextractor/fragments/MainFragment.kt,8\4\84899303cd81ba38d48962224c13c171b1885b47
+x
+Happ/src/main/java/domilopment/apkextractor/fragments/SettingsFragment.kt,2\2\2279a5f849bbb5474f0881585ff6189f5a179e95

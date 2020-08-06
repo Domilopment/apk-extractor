@@ -10,6 +10,7 @@ class FileHelper(private val activity: Activity) {
     companion object {
         const val MIME_TYPE = "application/vnd.android.package-archive"
         const val CHOOSE_SAVE_DIR_RESULT = 9999
+        const val PREFIX = ".apk"
     }
 
     /**

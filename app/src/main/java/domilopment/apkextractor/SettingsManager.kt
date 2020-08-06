@@ -82,13 +82,13 @@ class SettingsManager(
         val sb = StringBuilder().append(app.appName)
         sharedPreferences.getStringSet("app_save_name", setOf())?.also { prefs ->
             if (prefs.contains("1"))
-                sb.append("_${app.appPackageName}")
+                sb.append(" ${app.appPackageName}")
             if (prefs.contains("2"))
-                sb.append("_${app.appVersionCode}")
+                sb.append(" ${app.appVersionCode}")
             if (prefs.contains("3"))
-                sb.append("_${app.appVersionName}")
+                sb.append(" ${app.appVersionName}")
         }
-        return sb.toString()
+        return sb.append(FileHelper.PREFIX).toString()
     }
 
     /**
