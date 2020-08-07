@@ -2,7 +2,6 @@ package domilopment.apkextractor
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.loader.content.AsyncTaskLoader
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.data.ListOfAPKs
@@ -10,15 +9,9 @@ import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
 
-class SettingsManager(
-    context: Context
-) : AsyncTaskLoader<List<Application>>(context) {
+class SettingsManager(context: Context) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val packageManager = context.packageManager
-
-    companion object {
-        const val DATA_LOADER_ID = 42
-    }
 
     /**
      * Creates a List containing of all Types the User Selected in Settings
@@ -89,20 +82,5 @@ class SettingsManager(
                 sb.append(" ${app.appVersionName}")
         }
         return sb.append(FileHelper.PREFIX).toString()
-    }
-
-    /**
-     * Loading data in Background
-     */
-    override fun loadInBackground(): List<Application> {
-        ListOfAPKs(packageManager).updateData()
-        return selectedAppTypes()
-    }
-
-    /**
-     * Force load on Start
-     */
-    override fun onStartLoading() {
-        forceLoad()
     }
 }

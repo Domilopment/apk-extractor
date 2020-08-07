@@ -25,3 +25,5 @@ t
 Dapp/src/main/java/domilopment/apkextractor/fragments/MainFragment.kt,8\4\84899303cd81ba38d48962224c13c171b1885b47
 x
 Happ/src/main/java/domilopment/apkextractor/fragments/SettingsFragment.kt,2\2\2279a5f849bbb5474f0881585ff6189f5a179e95
+u
+Eapp/src/main/java/domilopment/apkextractor/fragments/MainViewModel.kt,a\d\ade00bb2341dc586e84f35ac6f411ada5e960106

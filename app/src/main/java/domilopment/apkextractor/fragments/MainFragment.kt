@@ -15,8 +15,6 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.*
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.Loader
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +26,7 @@ import kotlinx.android.synthetic.main.app_list.*
 import kotlinx.android.synthetic.main.fragment_main.*
 import java.io.File
 
-class MainFragment : Fragment(), LoaderManager.LoaderCallbacks<List<Application>> {
+class MainFragment : Fragment() {
     private lateinit var mainActivity: MainActivity
     private lateinit var viewAdapter: AppListAdapter
     private lateinit var searchView: SearchView
@@ -74,14 +72,15 @@ class MainFragment : Fragment(), LoaderManager.LoaderCallbacks<List<Application>
         super.onViewCreated(view, savedInstanceState)
         // add Refresh Layout action on Swipe
         refresh.setOnRefreshListener {
-            updateData()
             searchView.isIconified = true
+            updateData()
         }
 
         fab.setOnClickListener { saveApps(it) }
 
         model.getApps().observe(viewLifecycleOwner, Observer<List<Application>>{ apps ->
             viewAdapter.updateData(apps)
+            refresh.isRefreshing = false
         })
     }
 
@@ -156,9 +155,7 @@ class MainFragment : Fragment(), LoaderManager.LoaderCallbacks<List<Application>
      */
     private fun updateData() {
         refresh.isRefreshing = true
-        LoaderManager.getInstance(mainActivity)
-            .initLoader(SettingsManager.DATA_LOADER_ID, null, this@MainFragment)
-            .forceLoad()
+        model.updateApps()
     }
 
     /**
@@ -298,30 +295,5 @@ class MainFragment : Fragment(), LoaderManager.LoaderCallbacks<List<Application>
                 return super.onOptionsItemSelected(item)
         }
         return true
-    }
-
-    /**
-     * Creates Data Loader Class on Request
-     */
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Application>> {
-        return when (id) {
-            SettingsManager.DATA_LOADER_ID -> SettingsManager(mainActivity)
-            else -> throw Exception("No such Loader")
-        }
-    }
-
-    /**
-     * Updates Dataset when Loader delivers result
-     */
-    override fun onLoadFinished(loader: Loader<List<Application>>, data: List<Application>) {
-        model.updateApps(data)
-        refresh.isRefreshing = false
-    }
-
-    /**
-     * Clear Data on Loader Reset
-     */
-    override fun onLoaderReset(loader: Loader<List<Application>>) {
-        model.updateApps(listOf())
     }
 }
