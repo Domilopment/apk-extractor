@@ -1,14 +1,16 @@
 package domilopment.apkextractor.fragments
 
-import android.os.AsyncTask
 import androidx.annotation.NonNull
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.SettingsManager
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.data.ListOfAPKs
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainViewModel(@NonNull private val mainActivity: MainActivity): ViewModel() {
     private val applications: MutableLiveData<List<Application>> by lazy {
@@ -22,17 +24,10 @@ class MainViewModel(@NonNull private val mainActivity: MainActivity): ViewModel(
     }
 
     fun updateApps() {
-        object : AsyncTask<Void, Void, List<Application>>() {
-            override fun doInBackground(vararg p0: Void?): List<Application> {
-                ListOfAPKs(mainActivity.packageManager).updateData()
-                return SettingsManager(mainActivity).selectedAppTypes()
-            }
-
-            override fun onPostExecute(result: List<Application>?) {
-                super.onPostExecute(result)
-                applications.value = result
-            }
-        }.execute()
+        viewModelScope.launch(Dispatchers.IO) {
+            ListOfAPKs(mainActivity.packageManager).updateData()
+            applications.postValue(SettingsManager(mainActivity).selectedAppTypes())
+        }
     }
 
     private fun loadApps(): List<Application> {
