@@ -3,25 +3,25 @@ package domilopment.apkextractor.data
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 
-class ListOfAPKs(private val packageManager: PackageManager) {
-    //Static List of APKs
+class ListOfAPKs private constructor(private val packageManager: PackageManager) {
+    //Static Singleton Constructor
     companion object {
-        private val staticUserApps = ArrayList<Application>()
-        private val staticSystemApps = ArrayList<Application>()
-        private val staticUpdatedSystemApps = ArrayList<Application>()
+        private lateinit var INSTANCE: ListOfAPKs
+        operator fun invoke(packageManager: PackageManager): ListOfAPKs {
+            if (!this::INSTANCE.isInitialized)
+                INSTANCE = ListOfAPKs(packageManager)
+            return INSTANCE
+        }
     }
 
     // Check lists to hold Data
     private val isEmpty
-        get() = staticSystemApps.isEmpty() && staticUpdatedSystemApps.isEmpty() && staticUserApps.isEmpty()
+        get() = systemApps.isEmpty() && updatedSystemApps.isEmpty() && userApps.isEmpty()
 
     //Lists of APK Types
-    val userApps: List<Application>
-        get() = staticUserApps
-    val systemApps: List<Application>
-        get() = staticSystemApps
-    val updatedSystemApps: List<Application>
-        get() = staticUpdatedSystemApps
+    val userApps = ArrayList<Application>()
+    val systemApps = ArrayList<Application>()
+    val updatedSystemApps = ArrayList<Application>()
 
     // initialize APK list
     init {
@@ -35,9 +35,9 @@ class ListOfAPKs(private val packageManager: PackageManager) {
      */
     fun updateData() {
         // Ensure all list are Empty!
-        staticUserApps.clear()
-        staticSystemApps.clear()
-        staticUpdatedSystemApps.clear()
+        userApps.clear()
+        systemApps.clear()
+        updatedSystemApps.clear()
         // Fill each list with its specific type
         packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
             .forEach { packageInfo: ApplicationInfo ->
@@ -47,11 +47,11 @@ class ListOfAPKs(private val packageManager: PackageManager) {
                 ).also {
                     when {
                         (it.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP ->
-                            staticUpdatedSystemApps.add(it)
+                            updatedSystemApps.add(it)
                         (it.appFlags and ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM ->
-                            staticSystemApps.add(it)
+                            systemApps.add(it)
                         else ->
-                            staticUserApps.add(it)
+                            userApps.add(it)
                     }
                 }
             }

@@ -33,14 +33,7 @@ class MainFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var callback: OnBackPressedCallback
     private val model by activityViewModels<MainViewModel> {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-                    return MainViewModel(mainActivity) as T
-                }
-                throw IllegalArgumentException("Unknown ViewModel class")
-            }
-        }
+        MainViewModel(mainActivity).defaultViewModelProviderFactory
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

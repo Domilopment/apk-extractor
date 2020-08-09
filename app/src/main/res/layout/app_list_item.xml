@@ -24,7 +24,7 @@
         android:layout_toEndOf="@id/icon"
         android:layout_toStartOf="@id/checkBox"
         android:singleLine="true"
-        android:text="App Pachage"
+        android:text="App Package"
         android:textSize="12sp" />
 
     <TextView
