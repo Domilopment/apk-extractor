@@ -23,7 +23,7 @@ class AppListAdapter(
     // Static Dataset for Smoother transition
     private var myDataset = listOf<Application>()
     // Shown Data in ListView
-    var myDatasetFiltered: MutableList<Application> = myDataset as MutableList<Application>
+    var myDatasetFiltered: MutableList<Application> = myDataset.toMutableList()
         private set
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView)
 
@@ -135,7 +135,7 @@ class AppListAdapter(
      */
     fun updateData(apps: List<Application>) {
         myDataset = apps
-        myDatasetFiltered = myDataset as MutableList<Application>
+        myDatasetFiltered = myDataset.toMutableList()
         notifyDataSetChanged()
     }
 }
