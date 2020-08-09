@@ -8,7 +8,7 @@ class ListOfAPKs private constructor(private val packageManager: PackageManager)
     companion object {
         private lateinit var INSTANCE: ListOfAPKs
         operator fun invoke(packageManager: PackageManager): ListOfAPKs {
-            if (!this::INSTANCE.isInitialized)
+            if (!::INSTANCE.isInitialized)
                 INSTANCE = ListOfAPKs(packageManager)
             return INSTANCE
         }

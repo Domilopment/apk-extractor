@@ -23,7 +23,7 @@ class AppListAdapter(
     // Static Dataset for Smoother transition
     private var myDataset = listOf<Application>()
     // Shown Data in ListView
-    var myDatasetFiltered: List<Application> = myDataset
+    var myDatasetFiltered: MutableList<Application> = myDataset as MutableList<Application>
         private set
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView)
 
@@ -115,7 +115,7 @@ class AppListAdapter(
              * Apps that match charSequence
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
-                myDatasetFiltered = filterResults.values as List<Application>
+                myDatasetFiltered = filterResults.values as MutableList<Application>
                 notifyDataSetChanged()
             }
         }
@@ -135,7 +135,7 @@ class AppListAdapter(
      */
     fun updateData(apps: List<Application>) {
         myDataset = apps
-        myDatasetFiltered = myDataset
+        myDatasetFiltered = myDataset as MutableList<Application>
         notifyDataSetChanged()
     }
 }

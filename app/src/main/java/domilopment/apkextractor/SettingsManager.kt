@@ -5,9 +5,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.data.ListOfAPKs
-import java.util.*
 import kotlin.Comparator
-import kotlin.collections.ArrayList
 
 class SettingsManager(context: Context) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -18,7 +16,7 @@ class SettingsManager(context: Context) {
      * @return List of Selected App Types
      */
     fun selectedAppTypes(): List<Application>{
-        val mData: ArrayList<Application> = ArrayList()
+        val mData: MutableList<Application> = mutableListOf()
         if (sharedPreferences.getBoolean("updated_system_apps", false)) {
             mData.addAll(ListOfAPKs(packageManager).updatedSystemApps)
             if (sharedPreferences.getBoolean("system_apps", false))
@@ -43,12 +41,12 @@ class SettingsManager(context: Context) {
      * @param data Unsorted List of APKs
      * @return Sorted List of APKs
      */
-    fun sortData(data : List<Application>): List<Application> {
+    fun sortData(data : MutableList<Application>): List<Application> {
         when (sharedPreferences.getInt("app_sort", 0)) {
-            0 -> Collections.sort(data, Comparator.comparing(Application::appName))
-            1 -> Collections.sort(data, Comparator.comparing(Application::appPackageName))
-            2 -> Collections.sort(data, Comparator.comparing(Application::appInstallTime).reversed())
-            3 -> Collections.sort(data, Comparator.comparing(Application::appUpdateTime).reversed())
+            0 -> data.sortWith(Comparator.comparing(Application::appName))
+            1 -> data.sortWith(Comparator.comparing(Application::appPackageName))
+            2 -> data.sortWith(Comparator.comparing(Application::appInstallTime).reversed())
+            3 -> data.sortWith(Comparator.comparing(Application::appUpdateTime).reversed())
             else -> throw Exception("No such sort type")
         }
         return data
