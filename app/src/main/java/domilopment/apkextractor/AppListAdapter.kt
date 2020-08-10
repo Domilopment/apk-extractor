@@ -115,6 +115,7 @@ class AppListAdapter(
              * Apps that match charSequence
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
+                @Suppress("UNCHECKED_CAST")
                 myDatasetFiltered = filterResults.values as MutableList<Application>
                 notifyDataSetChanged()
             }
