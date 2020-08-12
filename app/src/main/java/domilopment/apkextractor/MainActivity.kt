@@ -1,6 +1,7 @@
 package domilopment.apkextractor
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -126,11 +127,26 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             FileHelper.CHOOSE_SAVE_DIR_RESULT -> {
-                sharedPreferences.edit()
-                    .putString("dir", data!!.data.toString()).apply()
-                (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
-                    contentResolver
-                        .takePersistableUriPermission(data.data!!, this)
+                if (resultCode == Activity.RESULT_OK) {
+                    sharedPreferences.edit()
+                        .putString("dir", data!!.data.toString()).apply()
+                    (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
+                        contentResolver
+                            .takePersistableUriPermission(data.data!!, this)
+                    }
+                } else if (!(sharedPreferences.contains("dir"))
+                    || checkUriPermission(
+                        Uri.parse(path),
+                        Binder.getCallingPid(),
+                        Binder.getCallingUid(),
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    ) == PackageManager.PERMISSION_DENIED
+                    || !DocumentFile.fromTreeUri(
+                        this,
+                        Uri.parse(path)
+                    )!!.exists()
+                ) {
+                    FileHelper(this).chooseDir()
                 }
             }
             SHARE_APP_RESULT -> {
