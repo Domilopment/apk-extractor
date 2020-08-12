@@ -41,15 +41,14 @@ class SettingsManager(context: Context) {
      * @param data Unsorted List of APKs
      * @return Sorted List of APKs
      */
-    fun sortData(data : MutableList<Application>): List<Application> {
-        when (sharedPreferences.getInt("app_sort", 0)) {
-            0 -> data.sortWith(Comparator.comparing(Application::appName))
-            1 -> data.sortWith(Comparator.comparing(Application::appPackageName))
-            2 -> data.sortWith(Comparator.comparing(Application::appInstallTime).reversed())
-            3 -> data.sortWith(Comparator.comparing(Application::appUpdateTime).reversed())
+    fun sortData(data : List<Application>): List<Application> {
+        return when (sharedPreferences.getInt("app_sort", 0)) {
+            0 -> data.sortedWith(Comparator.comparing(Application::appName))
+            1 -> data.sortedWith(Comparator.comparing(Application::appPackageName))
+            2 -> data.sortedWith(Comparator.comparing(Application::appInstallTime).reversed())
+            3 -> data.sortedWith(Comparator.comparing(Application::appUpdateTime).reversed())
             else -> throw Exception("No such sort type")
         }
-        return data
     }
 
     /**
