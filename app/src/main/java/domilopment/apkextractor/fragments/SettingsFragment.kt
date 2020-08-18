@@ -56,9 +56,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         findPreference<Preference>("clear_cache")?.setOnPreferenceClickListener {
             if (activity?.cacheDir!!.deleteRecursively())
-                Toast.makeText(activity, "cache cleared", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, getString(R.string.clear_cache_success), Toast.LENGTH_SHORT).show()
             else
-                Toast.makeText(activity, "clear cache failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT).show()
             return@setOnPreferenceClickListener true
         }
     }

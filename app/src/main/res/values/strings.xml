@@ -49,9 +49,6 @@
     <string name="app_save_name_version_name">App Version Name</string>
     <string name="app_save_name_version_number">App Version Number</string>
 
-    <!-- Search Placeholder -->
-    <string name="search_hint">Type name…</string>
-
     <!-- Menu -->
     <string name="menu_share">Share</string>
     <string name="menu_search">Search</string>
