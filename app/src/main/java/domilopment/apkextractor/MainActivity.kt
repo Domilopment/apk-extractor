@@ -16,7 +16,6 @@ import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var path: String
     private lateinit var sharedPreferences: SharedPreferences
     lateinit var settingsManager: SettingsManager
 
@@ -35,24 +34,12 @@ class MainActivity : AppCompatActivity() {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
+        // Check for Permissions to READ/WRITE external Storage for Lower android Versions
         checkNeededPermissions()
-
-        path = SettingsManager(this).saveDir()
 
         // Check if Save dir is Selected, Writing permission to dir and whether dir exists
         // if not ask for select dir
-        if (!(sharedPreferences.contains("dir"))
-            || checkUriPermission(
-                Uri.parse(path),
-                Binder.getCallingPid(),
-                Binder.getCallingUid(),
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            ) == PackageManager.PERMISSION_DENIED
-            || !DocumentFile.fromTreeUri(
-                this,
-                Uri.parse(path)
-            )!!.exists()
-        ) {
+        if ( mustAskForSaveDir() ) {
             AlertDialog.Builder(this).let {
                 it.setMessage(R.string.alert_save_path_message)
                 it.setTitle(R.string.alert_save_path_title)
@@ -106,6 +93,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
+     * Checks for picked Save Directory and for Access to this Dir
+     * @return Have to ask user for Save Dir
+     */
+    private fun mustAskForSaveDir(): Boolean {
+        val path = SettingsManager(this).saveDir()
+        return !(sharedPreferences.contains("dir"))
+                || checkUriPermission(
+                    Uri.parse(path),
+                    Binder.getCallingPid(),
+                    Binder.getCallingUid(),
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                ) == PackageManager.PERMISSION_DENIED
+                || !DocumentFile.fromTreeUri(
+                    this,
+                    Uri.parse(path)
+                )!!.exists()
+    }
+
+    /**
      * Checks if All Permissions Granted on Runtime
      * @param requestCode
      * @param permissions
@@ -134,18 +140,7 @@ class MainActivity : AppCompatActivity() {
                         contentResolver
                             .takePersistableUriPermission(data.data!!, this)
                     }
-                } else if (!(sharedPreferences.contains("dir"))
-                    || checkUriPermission(
-                        Uri.parse(path),
-                        Binder.getCallingPid(),
-                        Binder.getCallingUid(),
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                    ) == PackageManager.PERMISSION_DENIED
-                    || !DocumentFile.fromTreeUri(
-                        this,
-                        Uri.parse(path)
-                    )!!.exists()
-                ) {
+                } else if ( mustAskForSaveDir() ) {
                     FileHelper(this).chooseDir()
                 }
             }

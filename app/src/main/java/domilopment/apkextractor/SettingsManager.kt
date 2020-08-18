@@ -32,9 +32,8 @@ class SettingsManager(context: Context) {
      * Gives back in SharedPreferences Saved Directory Path
      * @return Saved Directory Path
      */
-    fun saveDir(): String {
-        return sharedPreferences.getString("dir", null).toString() + '/'
-    }
+    fun saveDir(): String = sharedPreferences.getString("dir", null).toString() + '/'
+
 
     /**
      * Sorts Data by user selected Order
