@@ -15,4 +15,4 @@ A Simple Modern APK Extractor App
   * Extract multiple apk in single click
   * Follows System Night Mode (can be activated manually in App)
 
-Programmed with Love^^
+Programmed with Love^^ ❤
