@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.Application
 import kotlinx.android.synthetic.main.app_list.*
 import kotlinx.android.synthetic.main.fragment_main.*
 import java.io.File
@@ -71,7 +70,7 @@ class MainFragment : Fragment() {
 
         fab.setOnClickListener { saveApps(it) }
 
-        model.getApps().observe(viewLifecycleOwner, Observer<List<Application>>{ apps ->
+        model.getApps().observe(viewLifecycleOwner, Observer{ apps ->
             viewAdapter.updateData(apps)
             refresh.isRefreshing = false
         })
