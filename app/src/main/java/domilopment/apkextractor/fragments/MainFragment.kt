@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.provider.DocumentsContract
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
@@ -14,13 +15,12 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
-import domilopment.apkextractor.R
 import kotlinx.android.synthetic.main.app_list.*
 import kotlinx.android.synthetic.main.fragment_main.*
 import java.io.File
@@ -70,7 +70,7 @@ class MainFragment : Fragment() {
 
         fab.setOnClickListener { saveApps(it) }
 
-        model.getApps().observe(viewLifecycleOwner, Observer{ apps ->
+        model.getApps().observe(viewLifecycleOwner, Observer { apps ->
             viewAdapter.updateData(apps)
             refresh.isRefreshing = false
         })
@@ -128,7 +128,10 @@ class MainFragment : Fragment() {
                             if (it.size == 1) {
                                 getString(R.string.snackbar_successful_extracted).format(d.appName)
                             } else {
-                                getString(R.string.snackbar_successful_extracted_multiple).format(d.appName, it.size)
+                                getString(R.string.snackbar_successful_extracted_multiple).format(
+                                    d.appName,
+                                    it.size
+                                )
                             },
                             Snackbar.LENGTH_LONG
                         ).setAction("Action", null).show()
@@ -183,10 +186,12 @@ class MainFragment : Fragment() {
                     // filter recycler view when query submitted
                     return onFilter(query)
                 }
+
                 override fun onQueryTextChange(query: String?): Boolean {
                     // filter recycler view when text is changed
                     return onFilter(query)
                 }
+
                 fun onFilter(query: String?): Boolean {
                     viewAdapter.filter.filter(query)
                     return false
@@ -224,8 +229,14 @@ class MainFragment : Fragment() {
         }.forEach { app ->
             FileProvider.getUriForFile(
                 requireContext(),
-                requireActivity().application.packageName+".provider",
-                File(app.appSourceDirectory).copyTo(File(requireActivity().cacheDir, SettingsManager(requireContext()).appName(app)), true)
+                requireActivity().application.packageName + ".provider",
+                File(app.appSourceDirectory).copyTo(
+                    File(
+                        requireActivity().cacheDir, SettingsManager(
+                            requireContext()
+                        ).appName(app)
+                    ), true
+                )
             ).also {
                 files.add(it)
             }
@@ -282,6 +293,13 @@ class MainFragment : Fragment() {
                     .apply()
                 item.isChecked = true
                 viewAdapter.sortData()
+            }
+            R.id.action_show_save_dir -> {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    val destDir = Uri.parse(mainActivity.settingsManager.saveDir())
+                    setDataAndType(destDir, DocumentsContract.Document.MIME_TYPE_DIR)
+                }
+                startActivity(intent)
             }
             else ->
                 return super.onOptionsItemSelected(item)
