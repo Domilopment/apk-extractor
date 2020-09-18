@@ -15,7 +15,7 @@ class SettingsManager(context: Context) {
      * Creates a List containing of all Types the User Selected in Settings
      * @return List of Selected App Types
      */
-    fun selectedAppTypes(): List<Application>{
+    fun selectedAppTypes(): List<Application> {
         val mData: MutableList<Application> = mutableListOf()
         if (sharedPreferences.getBoolean("updated_system_apps", false)) {
             mData.addAll(ListOfAPKs(packageManager).updatedSystemApps)
@@ -32,7 +32,7 @@ class SettingsManager(context: Context) {
      * Gives back in SharedPreferences Saved Directory Path
      * @return Saved Directory Path
      */
-    fun saveDir(): String = sharedPreferences.getString("dir", null).toString() + '/'
+    fun saveDir(): String = sharedPreferences.getString("dir", null).toString()
 
 
     /**
@@ -40,7 +40,7 @@ class SettingsManager(context: Context) {
      * @param data Unsorted List of APKs
      * @return Sorted List of APKs
      */
-    fun sortData(data : List<Application>): List<Application> {
+    fun sortData(data: List<Application>): List<Application> {
         return when (sharedPreferences.getInt("app_sort", 0)) {
             0 -> data.sortedWith(Comparator.comparing(Application::appName))
             1 -> data.sortedWith(Comparator.comparing(Application::appPackageName))
@@ -54,7 +54,12 @@ class SettingsManager(context: Context) {
      * Switch ui mode (System, Light, Dark) either with given Parameter or with saved Preference
      * @param newValue Int castable String value to switch ui mode
      */
-    fun changeUIMode(newValue: String = sharedPreferences.getString("list_preference_ui_mode", "0")!!) {
+    fun changeUIMode(
+        newValue: String = sharedPreferences.getString(
+            "list_preference_ui_mode",
+            "0"
+        )!!
+    ) {
         when (newValue.toInt()) {
             1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)

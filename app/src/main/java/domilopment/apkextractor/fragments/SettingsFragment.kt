@@ -24,18 +24,25 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        findPreference<Preference>("version")!!.title = getString(R.string.version).format(BuildConfig.VERSION_NAME)
+        findPreference<Preference>("version")!!.title =
+            getString(R.string.version).format(BuildConfig.VERSION_NAME)
         findPreference<Preference>("github")!!.setOnPreferenceClickListener {
             CustomTabsIntent.Builder()
                 .build()
-                .launchUrl(requireContext(), Uri.parse("https://github.com/domilopment/apkextractor"))
+                .launchUrl(
+                    requireContext(),
+                    Uri.parse("https://github.com/domilopment/apkextractor")
+                )
             return@setOnPreferenceClickListener true
         }
         findPreference<Preference>("googleplay")?.setOnPreferenceClickListener {
             Intent(Intent.ACTION_VIEW).apply {
                 data = try {
                     setPackage(
-                        requireContext().packageManager.getPackageInfo("com.android.vending", 0).packageName
+                        requireContext().packageManager.getPackageInfo(
+                            "com.android.vending",
+                            0
+                        ).packageName
                     )
                     Uri.parse("market://details?id=${requireContext().packageName}")
                 } catch (e: PackageManager.NameNotFoundException) {
@@ -56,9 +63,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         findPreference<Preference>("clear_cache")?.setOnPreferenceClickListener {
             if (activity?.cacheDir!!.deleteRecursively())
-                Toast.makeText(activity, getString(R.string.clear_cache_success), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    activity,
+                    getString(R.string.clear_cache_success),
+                    Toast.LENGTH_SHORT
+                ).show()
             else
-                Toast.makeText(activity, getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT)
+                    .show()
             return@setOnPreferenceClickListener true
         }
     }

@@ -114,7 +114,8 @@ class MainFragment : Fragment() {
             it.isChecked
         }.also {
             if (it.isEmpty())
-                Toast.makeText(requireContext(), R.string.toast_save_apps, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.toast_save_apps, Toast.LENGTH_SHORT)
+                    .show()
             else
                 it.forEach { d ->
                     if (FileHelper(requireActivity()).copy(
@@ -168,7 +169,7 @@ class MainFragment : Fragment() {
         val byPackage: MenuItem = menu.findItem(R.id.action_package_name)
         val byInstall: MenuItem = menu.findItem(R.id.action_install_time)
         val byUpdate: MenuItem = menu.findItem(R.id.action_update_time)
-        when (sharedPreferences.getInt("app_sort", 0)){
+        when (sharedPreferences.getInt("app_sort", 0)) {
             0 -> byName.isChecked = true
             1 -> byPackage.isChecked = true
             2 -> byInstall.isChecked = true
@@ -295,9 +296,15 @@ class MainFragment : Fragment() {
                 viewAdapter.sortData()
             }
             R.id.action_show_save_dir -> {
-                val intent = Intent(Intent.ACTION_VIEW).apply {
-                    val destDir = Uri.parse(mainActivity.settingsManager.saveDir())
-                    setDataAndType(destDir, DocumentsContract.Document.MIME_TYPE_DIR)
+                val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                    val destDir = Uri.parse(mainActivity.settingsManager.saveDir()).let {
+                        DocumentsContract.buildDocumentUriUsingTree(
+                            it,
+                            DocumentsContract.getTreeDocumentId(it)
+                        )
+                    }
+                    putExtra(DocumentsContract.EXTRA_INITIAL_URI, destDir)
+                    setDataAndType(destDir, FileHelper.MIME_TYPE)
                 }
                 startActivity(intent)
             }

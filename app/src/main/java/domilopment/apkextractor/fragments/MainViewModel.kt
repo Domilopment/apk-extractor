@@ -11,10 +11,9 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(
     @NonNull private val mainActivity: MainActivity
-):
+) :
     ViewModel(),
-    HasDefaultViewModelProviderFactory
-{
+    HasDefaultViewModelProviderFactory {
     private val applications: MutableLiveData<List<Application>> by lazy {
         MutableLiveData<List<Application>>().also {
             it.value = loadApps()
@@ -40,7 +39,7 @@ class MainViewModel(
     override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
         return object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return modelClass.getConstructor(MainActivity::class.java).newInstance(mainActivity)
+                return modelClass.getConstructor(MainActivity::class.java).newInstance(mainActivity)
             }
         }
     }

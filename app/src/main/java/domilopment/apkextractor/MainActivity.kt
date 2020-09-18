@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         // Check if Save dir is Selected, Writing permission to dir and whether dir exists
         // if not ask for select dir
-        if ( mustAskForSaveDir() ) {
+        if (mustAskForSaveDir()) {
             AlertDialog.Builder(this).let {
                 it.setMessage(R.string.alert_save_path_message)
                 it.setTitle(R.string.alert_save_path_title)
@@ -64,12 +64,15 @@ class MainActivity : AppCompatActivity() {
      * @return Boolean
      * True after check
      */
-    private fun checkNeededPermissions() : Boolean{
+    private fun checkNeededPermissions(): Boolean {
         arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
         ).filter {
-            ActivityCompat.checkSelfPermission(applicationContext, it) != PackageManager.PERMISSION_GRANTED
+            ActivityCompat.checkSelfPermission(
+                applicationContext,
+                it
+            ) != PackageManager.PERMISSION_GRANTED
         }.also {
             if (it.isNotEmpty())
                 ActivityCompat.requestPermissions(this, it.toTypedArray(), 0)
@@ -100,15 +103,15 @@ class MainActivity : AppCompatActivity() {
         val path = SettingsManager(this).saveDir()
         return !(sharedPreferences.contains("dir"))
                 || checkUriPermission(
-                    Uri.parse(path),
-                    Binder.getCallingPid(),
-                    Binder.getCallingUid(),
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                ) == PackageManager.PERMISSION_DENIED
+            Uri.parse(path),
+            Binder.getCallingPid(),
+            Binder.getCallingUid(),
+            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        ) == PackageManager.PERMISSION_DENIED
                 || !DocumentFile.fromTreeUri(
-                    this,
-                    Uri.parse(path)
-                )!!.exists()
+            this,
+            Uri.parse(path)
+        )!!.exists()
     }
 
     /**
@@ -119,7 +122,11 @@ class MainActivity : AppCompatActivity() {
      * @param grantResults
      * Array of grant values from permissions
      */
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (!allPermissionsGranted(grantResults)) {
             ActivityCompat.requestPermissions(this, permissions, 0)
@@ -140,7 +147,7 @@ class MainActivity : AppCompatActivity() {
                         contentResolver
                             .takePersistableUriPermission(data.data!!, this)
                     }
-                } else if ( mustAskForSaveDir() ) {
+                } else if (mustAskForSaveDir()) {
                     FileHelper(this).chooseDir()
                 }
             }

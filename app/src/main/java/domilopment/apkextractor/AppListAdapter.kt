@@ -17,14 +17,16 @@ class AppListAdapter(
     private val mainActivity: MainActivity
 ) :
     RecyclerView.Adapter<AppListAdapter.MyViewHolder>(),
-    Filterable
-{
+    Filterable {
     private val settingsManager = mainActivity.settingsManager
+
     // Static Dataset for Smoother transition
     private var myDataset = listOf<Application>()
+
     // Shown Data in ListView
     var myDatasetFiltered: MutableList<Application> = myDataset.toMutableList()
         private set
+
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView)
 
     /**
@@ -35,10 +37,11 @@ class AppListAdapter(
      * A ViewHolder with Layout app_list_item
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return LayoutInflater.from(parent.context).inflate(R.layout.app_list_item, parent, false).let {
-            // set the view's size, margins, paddings and layout parameters
-            MyViewHolder(it)
-        }
+        return LayoutInflater.from(parent.context).inflate(R.layout.app_list_item, parent, false)
+            .let {
+                // set the view's size, margins, paddings and layout parameters
+                MyViewHolder(it)
+            }
     }
 
     /**
@@ -56,7 +59,7 @@ class AppListAdapter(
         holder.setIsRecyclable(false)
         // Apply data from Dataset item to holder
         holder.itemView.apply {
-            firstLine.text = app.appName
+            firstLine.text = "${app.appName} (${app.apkSize} MB)"
             secondLine.text = app.appPackageName
             icon.setImageDrawable(app.appIcon)
             checkBox.isChecked = app.isChecked

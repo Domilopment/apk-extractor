@@ -24,13 +24,13 @@ class FileHelper(private val activity: Activity) {
      * @return
      * True if copy was Succsessfull else False
      */
-    fun copy (
+    fun copy(
         from: String,
         to: String,
         fileName: String
     ): Boolean {
         return try {
-            val pickedDir = DocumentFile.fromTreeUri(activity, Uri.parse(to + fileName))
+            val pickedDir = DocumentFile.fromTreeUri(activity, Uri.parse("$to/$fileName"))
                 ?.createFile(MIME_TYPE, fileName)
             FileInputStream(from).use { input ->
                 activity.contentResolver.openOutputStream(pickedDir!!.uri).use { output ->
@@ -56,7 +56,10 @@ class FileHelper(private val activity: Activity) {
             addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             addCategory(Intent.CATEGORY_DEFAULT)
         }.also {
-            activity.startActivityForResult(Intent.createChooser(it, "Choose directory"), CHOOSE_SAVE_DIR_RESULT)
+            activity.startActivityForResult(
+                Intent.createChooser(it, "Choose directory"),
+                CHOOSE_SAVE_DIR_RESULT
+            )
         }
     }
 }
