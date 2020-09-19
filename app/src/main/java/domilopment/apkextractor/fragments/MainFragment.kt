@@ -15,7 +15,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -70,7 +69,7 @@ class MainFragment : Fragment() {
 
         fab.setOnClickListener { saveApps(it) }
 
-        model.getApps().observe(viewLifecycleOwner, Observer { apps ->
+        model.getApps().observe(viewLifecycleOwner, { apps ->
             viewAdapter.updateData(apps)
             refresh.isRefreshing = false
         })
