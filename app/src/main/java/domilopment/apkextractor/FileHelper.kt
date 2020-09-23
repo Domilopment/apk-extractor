@@ -3,7 +3,7 @@ package domilopment.apkextractor
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import androidx.documentfile.provider.DocumentFile
+import android.provider.DocumentsContract
 import java.io.*
 
 class FileHelper(private val activity: Activity) {
@@ -30,10 +30,16 @@ class FileHelper(private val activity: Activity) {
         fileName: String
     ): Boolean {
         return try {
-            val pickedDir = DocumentFile.fromTreeUri(activity, Uri.parse("$to/$fileName"))
-                ?.createFile(MIME_TYPE, fileName)
+            val pickedDir = Uri.parse(to).let {
+                DocumentsContract.createDocument(
+                    activity.contentResolver,
+                    DocumentsContract.buildDocumentUriUsingTree(
+                        it, DocumentsContract.getTreeDocumentId(it)
+                    ), MIME_TYPE, fileName
+                )
+            }
             FileInputStream(from).use { input ->
-                activity.contentResolver.openOutputStream(pickedDir!!.uri).use { output ->
+                activity.contentResolver.openOutputStream(pickedDir!!).use { output ->
                     input.copyTo(output!!)
                 }
             }
