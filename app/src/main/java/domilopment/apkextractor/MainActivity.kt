@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
+import android.provider.DocumentsContract
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val SHARE_APP_RESULT = 666
+        const val SELECTED_APK_RESULT = 7553
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,14 +42,14 @@ class MainActivity : AppCompatActivity() {
         // Check if Save dir is Selected, Writing permission to dir and whether dir exists
         // if not ask for select dir
         if (mustAskForSaveDir()) {
-            AlertDialog.Builder(this).let {
-                it.setMessage(R.string.alert_save_path_message)
-                it.setTitle(R.string.alert_save_path_title)
-                it.setCancelable(false)
-                it.setPositiveButton(R.string.alert_save_path_ok) { _, _ ->
-                    FileHelper(this).chooseDir()
+            AlertDialog.Builder(this).apply {
+                setMessage(R.string.alert_save_path_message)
+                setTitle(R.string.alert_save_path_title)
+                setCancelable(false)
+                setPositiveButton(R.string.alert_save_path_ok) { _, _ ->
+                    FileHelper(this@MainActivity).chooseDir()
                 }
-            }.create().show()
+            }.show()
         }
     }
 
@@ -153,6 +155,33 @@ class MainActivity : AppCompatActivity() {
             }
             SHARE_APP_RESULT -> {
                 cacheDir.deleteRecursively()
+            }
+            SELECTED_APK_RESULT -> {
+                if (resultCode == Activity.RESULT_OK)
+                    AlertDialog.Builder(this).apply {
+                        setTitle(getString(R.string.alert_apk_selected_title))
+                        setItems(R.array.selected_apk_options) { _, i: Int ->
+                            when (i) {
+                                0 -> startActivity(
+                                    Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+                                        type = FileHelper.MIME_TYPE
+                                        action = Intent.ACTION_SEND
+                                        putExtra(Intent.EXTRA_STREAM, data!!.data)
+                                    }, getString(R.string.action_share))
+                                )
+                                1 -> startActivity(
+                                    Intent(Intent.ACTION_VIEW).apply {
+                                        setDataAndType(
+                                            data?.data!!,
+                                            FileHelper.MIME_TYPE
+                                        )
+                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    })
+                                2 -> DocumentsContract.deleteDocument(contentResolver, data?.data!!)
+                            }
+                        }
+                    }.show()
             }
         }
     }

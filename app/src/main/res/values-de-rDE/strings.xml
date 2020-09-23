@@ -59,6 +59,12 @@
     <string name="menu_show_save_dir">Speicher Ordner</string>
     <string name="action_settings">Einstellungen</string>
 
+    <!-- APK Selected Alert -->
+    <string name="alert_apk_selected_title">APK Verwendungszweck</string>
+    <string name="alert_apk_selected_share">Teile APK</string>
+    <string name="alert_apk_selected_install">Instaliere APK</string>
+    <string name="alert_apk_selected_delete">Lösche APK</string>
+
     <!-- MainActivity -->
     <string name="alert_save_path_title">Speicherort</string>
     <string name="alert_save_path_message">Wähle wohin die APKs gespeichert werden sollen</string>

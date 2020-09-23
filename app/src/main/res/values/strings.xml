@@ -60,6 +60,12 @@
     <string name="menu_show_save_dir">Save Directory</string>
     <string name="action_settings">Settings</string>
 
+    <!-- APK Selected Alert -->
+    <string name="alert_apk_selected_title">How to use APK</string>
+    <string name="alert_apk_selected_share">Share APK</string>
+    <string name="alert_apk_selected_install">Install APK</string>
+    <string name="alert_apk_selected_delete">Delete APK</string>
+
     <!-- MainActivity -->
     <string name="alert_save_path_title">Save Dir</string>
     <string name="alert_save_path_message">Choose a Directory to Save APKs</string>
