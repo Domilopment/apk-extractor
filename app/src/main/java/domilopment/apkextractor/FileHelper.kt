@@ -26,18 +26,17 @@ class FileHelper(private val activity: Activity) {
      */
     fun copy(
         from: String,
-        to: String,
+        to: Uri,
         fileName: String
     ): Boolean {
         return try {
-            val pickedDir = Uri.parse(to).let {
-                DocumentsContract.createDocument(
-                    activity.contentResolver,
-                    DocumentsContract.buildDocumentUriUsingTree(
-                        it, DocumentsContract.getTreeDocumentId(it)
-                    ), MIME_TYPE, fileName
-                )
-            }
+            val pickedDir = DocumentsContract.createDocument(
+                activity.contentResolver,
+                DocumentsContract.buildDocumentUriUsingTree(
+                    to, DocumentsContract.getTreeDocumentId(to)
+                ), MIME_TYPE, fileName
+            )
+
             FileInputStream(from).use { input ->
                 activity.contentResolver.openOutputStream(pickedDir!!).use { output ->
                     input.copyTo(output!!)

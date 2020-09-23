@@ -1,6 +1,7 @@
 package domilopment.apkextractor
 
 import android.content.Context
+import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.data.Application
@@ -32,7 +33,7 @@ class SettingsManager(context: Context) {
      * Gives back in SharedPreferences Saved Directory Path
      * @return Saved Directory Path
      */
-    fun saveDir(): String = sharedPreferences.getString("dir", null).toString()
+    fun saveDir(): Uri? = Uri.parse(sharedPreferences.getString("dir", null).toString())
 
 
     /**

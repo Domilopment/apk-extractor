@@ -119,7 +119,7 @@ class MainFragment : Fragment() {
                 it.forEach { d ->
                     if (FileHelper(requireActivity()).copy(
                             d.appSourceDirectory,
-                            path,
+                            path!!,
                             SettingsManager(requireContext()).appName(d)
                         )
                     )
@@ -296,7 +296,7 @@ class MainFragment : Fragment() {
             }
             R.id.action_show_save_dir -> {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    val destDir = Uri.parse(mainActivity.settingsManager.saveDir())
+                    val destDir = mainActivity.settingsManager.saveDir()
                     putExtra(DocumentsContract.EXTRA_INITIAL_URI, destDir)
                     setDataAndType(destDir, FileHelper.MIME_TYPE)
                 }

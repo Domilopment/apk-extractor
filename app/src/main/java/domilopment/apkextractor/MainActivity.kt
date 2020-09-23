@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
 import android.provider.DocumentsContract
@@ -104,17 +103,17 @@ class MainActivity : AppCompatActivity() {
         val path = SettingsManager(this).saveDir()
         return !(sharedPreferences.contains("dir"))
                 || checkUriPermission(
-            Uri.parse(path),
+            path,
             Binder.getCallingPid(),
             Binder.getCallingUid(),
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         ) == PackageManager.PERMISSION_DENIED
-                || !DocumentsContract.isDocumentUri(this,
-            Uri.parse(path).let {
-                DocumentsContract.buildDocumentUriUsingTree(
-                    it, DocumentsContract.getTreeDocumentId(it)
-                )
-            })
+                || !DocumentsContract.isDocumentUri(
+            this,
+            DocumentsContract.buildDocumentUriUsingTree(
+                path, DocumentsContract.getTreeDocumentId(path)
+            )
+        )
     }
 
     /**
