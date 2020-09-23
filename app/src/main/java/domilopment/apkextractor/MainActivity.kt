@@ -12,7 +12,6 @@ import android.provider.DocumentsContract
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.documentfile.provider.DocumentFile
 import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -110,10 +109,12 @@ class MainActivity : AppCompatActivity() {
             Binder.getCallingUid(),
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         ) == PackageManager.PERMISSION_DENIED
-                || !DocumentFile.fromTreeUri(
-            this,
-            Uri.parse(path)
-        )!!.exists()
+                || !DocumentsContract.isDocumentUri(this,
+            Uri.parse(path).let {
+                DocumentsContract.buildDocumentUriUsingTree(
+                    it, DocumentsContract.getTreeDocumentId(it)
+                )
+            })
     }
 
     /**
