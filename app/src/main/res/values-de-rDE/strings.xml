@@ -62,7 +62,7 @@
     <!-- APK Selected Alert -->
     <string name="alert_apk_selected_title">APK Verwendungszweck</string>
     <string name="alert_apk_selected_share">Teile APK</string>
-    <string name="alert_apk_selected_install">Instaliere APK</string>
+    <string name="alert_apk_selected_install">Installiere APK</string>
     <string name="alert_apk_selected_delete">Lösche APK</string>
 
     <!-- MainActivity -->
