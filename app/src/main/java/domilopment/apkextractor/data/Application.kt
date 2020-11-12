@@ -9,7 +9,7 @@ import java.io.File
 import kotlin.math.pow
 import kotlin.math.round
 
-class Application(
+data class Application(
     private val applicationInfo: ApplicationInfo,
     private val packageManager: PackageManager
 ) {

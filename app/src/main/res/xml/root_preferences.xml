@@ -11,6 +11,16 @@
             android:key="app_save_name"
             android:summary="@string/app_save_name_summary"
             android:title="@string/app_save_name" />
+        <SwitchPreferenceCompat
+            app:key="auto_backup"
+            app:title="@string/auto_backup"
+            app:summary="@string/auto_backup_summary"/>
+        <MultiSelectListPreference
+            app:enabled="false"
+            app:dependency="auto_backup"
+            app:key="app_list_auto_backup"
+            app:title="@string/auto_backup_app_list"
+            app:summary="@string/auto_backup_app_list_summary"/>
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/app_type_header">
         <SwitchPreferenceCompat

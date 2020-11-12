@@ -39,9 +39,9 @@ class MainFragment : Fragment() {
 
         callback = requireActivity().onBackPressedDispatcher.addCallback {
             // close search view on back button pressed
-            if (!searchView.isIconified) {
+            if (!searchView.isIconified)
                 searchView.isIconified = true
-            }
+
             isEnabled = !searchView.isIconified
         }.also {
             it.isEnabled = false
@@ -130,7 +130,7 @@ class MainFragment : Fragment() {
                             } else {
                                 getString(R.string.snackbar_successful_extracted_multiple).format(
                                     d.appName,
-                                    it.size
+                                    it.size - 1
                                 )
                             },
                             Snackbar.LENGTH_LONG
@@ -180,6 +180,7 @@ class MainFragment : Fragment() {
         searchView = (menu.findItem(R.id.action_search).actionView as SearchView).apply {
             maxWidth = Int.MAX_VALUE
             imeOptions = EditorInfo.IME_ACTION_SEARCH
+
             // listening to search query text change
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
@@ -197,8 +198,16 @@ class MainFragment : Fragment() {
                     return false
                 }
             })
+
+            // Enable on return Callback if user Opens SearchView
             setOnSearchClickListener {
                 callback.isEnabled = true
+            }
+
+            // Disable on return Callback if user closes SearchView
+            setOnCloseListener {
+                callback.isEnabled = false
+                return@setOnCloseListener false
             }
         }
 
@@ -232,9 +241,9 @@ class MainFragment : Fragment() {
                 requireActivity().application.packageName + ".provider",
                 File(app.appSourceDirectory).copyTo(
                     File(
-                        requireActivity().cacheDir, SettingsManager(
-                            requireContext()
-                        ).appName(app)
+                        requireActivity().cacheDir,
+                        SettingsManager(requireContext())
+                            .appName(app)
                     ), true
                 )
             ).also {

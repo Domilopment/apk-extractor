@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
+import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.data.ListOfAPKs
 import kotlin.Comparator
@@ -84,5 +85,23 @@ class SettingsManager(context: Context) {
                 sb.append(" ${app.appVersionName}")
         }
         return sb.append(FileHelper.PREFIX).toString()
+    }
+
+    /**
+     * Get set of Packages that should be looked for to Auto Backup
+     * @return A Set of Package Names
+     */
+    fun listOfAutoBackupApps(): Set<String>? {
+        return sharedPreferences.getStringSet("app_list_auto_backup", setOf())
+    }
+
+    /**
+     * Tells an Activity if AutoBackupService should be startet
+     * @return true if Service isn't running and should be started
+     */
+    fun shouldStartService(): Boolean {
+        val pref = sharedPreferences.getBoolean("auto_backup", false)
+        val service = AutoBackupService.isRunning
+        return pref and !service
     }
 }

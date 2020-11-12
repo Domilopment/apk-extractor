@@ -1,12 +1,13 @@
 package domilopment.apkextractor
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
 import java.io.*
 
-class FileHelper(private val activity: Activity) {
+class FileHelper(private val context: Context) {
     companion object {
         const val MIME_TYPE = "application/vnd.android.package-archive"
         const val CHOOSE_SAVE_DIR_RESULT = 9999
@@ -31,14 +32,14 @@ class FileHelper(private val activity: Activity) {
     ): Boolean {
         return try {
             val pickedDir = DocumentsContract.createDocument(
-                activity.contentResolver,
+                context.contentResolver,
                 DocumentsContract.buildDocumentUriUsingTree(
                     to, DocumentsContract.getTreeDocumentId(to)
                 ), MIME_TYPE, fileName
             )
 
             FileInputStream(from).use { input ->
-                activity.contentResolver.openOutputStream(pickedDir!!).use { output ->
+                context.contentResolver.openOutputStream(pickedDir!!).use { output ->
                     input.copyTo(output!!)
                 }
             }
@@ -56,7 +57,7 @@ class FileHelper(private val activity: Activity) {
      * Select a Destination Directory for APK files
      * Shows Android Directory Chooser
      */
-    fun chooseDir() {
+    fun chooseDir(activity: Activity) {
         Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
             addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             addCategory(Intent.CATEGORY_DEFAULT)

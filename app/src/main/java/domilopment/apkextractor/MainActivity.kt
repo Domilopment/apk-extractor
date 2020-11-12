@@ -8,11 +8,15 @@ import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.Bundle
 import android.provider.DocumentsContract
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
+import domilopment.apkextractor.autoBackup.AutoBackupService
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.Exception
 
 class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -45,10 +49,16 @@ class MainActivity : AppCompatActivity() {
                 setTitle(R.string.alert_save_path_title)
                 setCancelable(false)
                 setPositiveButton(R.string.alert_save_path_ok) { _, _ ->
-                    FileHelper(this@MainActivity).chooseDir()
+                    FileHelper(this@MainActivity).chooseDir(this@MainActivity)
                 }
             }.show()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (settingsManager.shouldStartService())
+            startService(Intent(this, AutoBackupService::class.java))
     }
 
     /**
@@ -150,7 +160,7 @@ class MainActivity : AppCompatActivity() {
                             .takePersistableUriPermission(data.data!!, this)
                     }
                 } else if (mustAskForSaveDir()) {
-                    FileHelper(this).chooseDir()
+                    FileHelper(this).chooseDir(this)
                 }
             }
             SHARE_APP_RESULT -> {
@@ -161,28 +171,48 @@ class MainActivity : AppCompatActivity() {
                     AlertDialog.Builder(this).apply {
                         setTitle(getString(R.string.alert_apk_selected_title))
                         setItems(R.array.selected_apk_options) { _, i: Int ->
-                            when (i) {
-                                0 -> startActivity(
-                                    Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-                                        type = FileHelper.MIME_TYPE
-                                        action = Intent.ACTION_SEND
-                                        putExtra(Intent.EXTRA_STREAM, data!!.data)
-                                    }, getString(R.string.action_share))
-                                )
-                                1 -> startActivity(
-                                    Intent(Intent.ACTION_VIEW).apply {
-                                        setDataAndType(
-                                            data?.data!!,
-                                            FileHelper.MIME_TYPE
-                                        )
-                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                    })
-                                2 -> DocumentsContract.deleteDocument(contentResolver, data?.data!!)
+                            try {
+                                apkFileOptions(i, data)
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Something went wrong, couldn't perform action on Selected Apk", Toast.LENGTH_LONG).show()
+                                Log.e("Apk Extractor: Saved Apps Dialog", e.toString())
                             }
                         }
                     }.show()
             }
+        }
+    }
+
+    /**
+     * Executes Option for "How to Use Apk" Dialoge
+     * @param i Selected Option
+     * @param data Result Intent, holding Apk files data
+     */
+    private fun apkFileOptions(i: Int, data: Intent?) {
+        when (i) {
+            // Send Selected Apk File
+            0 -> startActivity(
+                Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+                    type = FileHelper.MIME_TYPE
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_STREAM, data!!.data)
+                }, getString(R.string.action_share))
+            )
+            // Install Selected Apk File
+            1 -> startActivity(
+                Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(
+                        data?.data!!,
+                        FileHelper.MIME_TYPE
+                    )
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                })
+            // Delete Selected Apk File
+            2 -> DocumentsContract.deleteDocument(
+                contentResolver,
+                data?.data!!
+            )
         }
     }
 }
