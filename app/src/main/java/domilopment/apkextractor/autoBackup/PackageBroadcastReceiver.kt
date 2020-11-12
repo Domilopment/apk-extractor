@@ -31,6 +31,14 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
             PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("auto_backup", false).apply()
             context.stopService(Intent(context, AutoBackupService::class.java))
         }
+        // Restart Service on Device Boot
+        if (Intent.ACTION_BOOT_COMPLETED == intent.action ||
+            Intent.ACTION_LOCKED_BOOT_COMPLETED == intent.action
+        ) {
+            if (SettingsManager(context).shouldStartService()) {
+                context.startForegroundService(Intent(context, AutoBackupService::class.java))
+            }
+        }
     }
 
     /**
