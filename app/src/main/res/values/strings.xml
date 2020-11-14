@@ -82,4 +82,12 @@
     <string name="snackbar_extraction_failed">Extraction of %s FAILED</string>
     <string name="action_share">Sending App</string>
     <string name="toast_share_app">Select Apps to Share</string>
+
+    <!-- Auto Backup Foreground Service -->
+    <string name="auto_backup_notification_title">Watching for Updates</string>
+    <string name="auto_backup_notification_content_text">Watching for Updates on Selected Packages</string>
+    <string name="auto_backup_notification_action_stop">STOP SERVICE</string>
+    <string name="auto_backup_broadcast_receiver_backup_success">Backup %s successfully</string>
+    <string name="auto_backup_broadcast_receiver_backup_failed">Backup %s failed</string>
+
 </resources>

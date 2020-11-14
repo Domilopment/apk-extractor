@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -93,11 +92,11 @@ class AutoBackupService : Service() {
 
         // Build and return Notification
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Watching for Updates")
-            .setContentText("Watching for Updates on Selected Packages")
+            .setContentTitle(getString(R.string.auto_backup_notification_title))
+            .setContentText(getString(R.string.auto_backup_notification_content_text))
             .setSmallIcon(R.drawable.ic_small_notification_icon_24)
             .setContentIntent(pendingIntent)
-            .addAction(R.drawable.ic_small_notification_icon_24, "STOP SERVICE", stopPendingIntent)
+            .addAction(R.drawable.ic_small_notification_icon_24, getString(R.string.auto_backup_notification_action_stop), stopPendingIntent)
             .build()
     }
 }

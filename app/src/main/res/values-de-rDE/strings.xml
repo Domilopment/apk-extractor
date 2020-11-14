@@ -81,4 +81,12 @@
     <string name="snackbar_extraction_failed">Extraieren von %s FEHLGESCHLAGEN</string>
     <string name="action_share">Teile App</string>
     <string name="toast_share_app">Wähle Apps die geteilt werden sollen</string>
+
+    <!-- Auto Backup Foreground Service -->
+    <string name="auto_backup_notification_title">Überwache App Updates</string>
+    <string name="auto_backup_notification_content_text">Überwache Updates für ausgewählte Pakete</string>
+    <string name="auto_backup_notification_action_stop">STOPPE SERVICE</string>
+    <string name="auto_backup_broadcast_receiver_backup_success">Backup %s erfolgreich</string>
+    <string name="auto_backup_broadcast_receiver_backup_failed">Backup %s fehlgeschlagen</string>
+
 </resources>

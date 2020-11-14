@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.FileHelper
+import domilopment.apkextractor.R
 import domilopment.apkextractor.SettingsManager
 import domilopment.apkextractor.data.Application
 
@@ -80,9 +81,9 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
             super.onPostExecute(result)
             // Let User know when App is or should be Updated
             if (success)
-                Toast.makeText(context, "Backup ${app.appName} Successed", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, context.getString(R.string.auto_backup_broadcast_receiver_backup_success, app.appName), Toast.LENGTH_LONG).show()
             else
-                Toast.makeText(context, "Backup ${app.appName} Failed", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, context.getString(R.string.auto_backup_broadcast_receiver_backup_failed, app.appName), Toast.LENGTH_LONG).show()
 
             // Must call finish() so the BroadcastReceiver can be recycled.
             pendingResult.finish()
