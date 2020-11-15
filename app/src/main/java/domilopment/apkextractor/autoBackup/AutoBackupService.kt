@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.graphics.Color
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.preference.PreferenceManager
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.R
 
@@ -15,6 +16,7 @@ class AutoBackupService : Service() {
     companion object {
         private const val CHANNEL_ID = "domilopment.apkextractor.AUTO_BACKUP_SERVICE"
         const val ACTION_STOP_SERVICE = "domilopment.apkextractor.STOP_AUTO_BACKUP_SERVICE"
+        const val ACTION_RESTART_SERVICE = "domilopment.apkextractor.RESTART_AUTO_BACKUP_SERVICE"
         // Check for Service is Running
         var isRunning = false
     }
@@ -53,6 +55,11 @@ class AutoBackupService : Service() {
         isRunning = false
         unregisterReceiver(br)
         stopForeground(true)
+        // Restart Service if kill isn't called by user
+        if (PreferenceManager.getDefaultSharedPreferences(applicationContext).getBoolean("auto_backup", false))
+            sendBroadcast(Intent(this, PackageBroadcastReceiver::class.java).apply {
+                action = ACTION_RESTART_SERVICE
+            })
     }
 
     /**

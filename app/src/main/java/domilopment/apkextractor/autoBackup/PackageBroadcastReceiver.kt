@@ -14,9 +14,10 @@ import domilopment.apkextractor.data.Application
 
 class PackageBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        // Check for App Updates
-        if (Intent.ACTION_PACKAGE_REPLACED == intent.action) {
-            intent.data?.encodedSchemeSpecificPart?.let { packageName ->
+        when(intent.action) {
+            // Check for App Updates
+            Intent.ACTION_PACKAGE_REPLACED ->
+                intent.data?.encodedSchemeSpecificPart?.let { packageName ->
                 // Check if Updated App is in Backup List
                 if (
                     SettingsManager(context).listOfAutoBackupApps()!!.contains(packageName)
@@ -26,17 +27,22 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                     asyncTask.execute()
                 }
             }
-        }
-        // Foreground Notification Button Call
-        if (AutoBackupService.ACTION_STOP_SERVICE == intent.action) {
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("auto_backup", false).apply()
-            context.stopService(Intent(context, AutoBackupService::class.java))
-        }
-        // Restart Service on Device Boot
-        if (Intent.ACTION_BOOT_COMPLETED == intent.action ||
-            Intent.ACTION_LOCKED_BOOT_COMPLETED == intent.action
-        ) {
-            if (SettingsManager(context).shouldStartService()) {
+
+            // Foreground Notification Button Call
+            AutoBackupService.ACTION_STOP_SERVICE -> {
+                PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("auto_backup", false).apply()
+                context.stopService(Intent(context, AutoBackupService::class.java))
+            }
+
+            // Restart Service on Device Boot
+            Intent.ACTION_BOOT_COMPLETED, Intent.ACTION_LOCKED_BOOT_COMPLETED -> {
+                if (SettingsManager(context).shouldStartService()) {
+                    context.startForegroundService(Intent(context, AutoBackupService::class.java))
+                }
+            }
+
+            // Restart Service if it is killed
+            AutoBackupService.ACTION_RESTART_SERVICE -> {
                 context.startForegroundService(Intent(context, AutoBackupService::class.java))
             }
         }

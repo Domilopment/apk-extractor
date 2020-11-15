@@ -21,7 +21,7 @@
         <service
             android:name=".autoBackup.AutoBackupService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <receiver android:name=".autoBackup.PackageBroadcastReceiver"
             android:exported="true"
