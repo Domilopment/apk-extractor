@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
 import android.os.IBinder
+import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.MainActivity
@@ -57,9 +58,7 @@ class AutoBackupService : Service() {
         stopForeground(true)
         // Restart Service if kill isn't called by user
         if (PreferenceManager.getDefaultSharedPreferences(applicationContext).getBoolean("auto_backup", false))
-            sendBroadcast(Intent(this, PackageBroadcastReceiver::class.java).apply {
-                action = ACTION_RESTART_SERVICE
-            })
+            restartService()
     }
 
     /**
@@ -105,5 +104,26 @@ class AutoBackupService : Service() {
             .setContentIntent(pendingIntent)
             .addAction(R.drawable.ic_small_notification_icon_24, getString(R.string.auto_backup_notification_action_stop), stopPendingIntent)
             .build()
+    }
+
+    /**
+     * Restarts Service even if Phone is in dose mode
+     */
+    private fun restartService() {
+        // restart Pending Intent
+        val restartServicePendingIntent: PendingIntent =  Intent(this, PackageBroadcastReceiver::class.java).apply {
+            action = ACTION_RESTART_SERVICE
+        }.let { restartIntent ->
+            PendingIntent.getBroadcast(this, 0, restartIntent, 0)
+        }
+        // System Alarm Manager
+        val alarmService: AlarmManager =
+            applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        // Set Alarm to be executed
+        alarmService.setExactAndAllowWhileIdle(
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            SystemClock.elapsedRealtime() + 1000,
+            restartServicePendingIntent,
+        )
     }
 }
