@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_multiselect_bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorPrimary"
+    android:maxHeight="?android:attr/listPreferredItemHeight"
+    android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
     android:padding="8dp"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    android:maxHeight="?android:attr/listPreferredItemHeight"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    app:behavior_peekHeight="0dp"
     app:behavior_draggable="false"
-    android:background="@color/colorPrimary"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     tools:showIn="@layout/fragment_main">
 
     <ImageView
         android:id="@+id/action_save_apk"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:layout_gravity="center"
         android:layout_marginEnd="4dp"
-        app:tint="@color/white"
+        android:layout_weight="1"
         android:background="?attr/selectableItemBackground"
+        android:contentDescription="Save Apk"
         android:padding="4dp"
         app:srcCompat="@drawable/ic_baseline_save_24"
-        android:contentDescription="Save Apk" />
+        app:tint="@color/white" />
 
     <ImageView
         android:id="@+id/action_share"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:layout_gravity="center"
         android:layout_marginStart="4dp"
-        app:tint="@color/white"
+        android:layout_weight="1"
         android:background="?attr/selectableItemBackground"
+        android:contentDescription="Share Apk"
         android:padding="4dp"
         app:srcCompat="@drawable/ic_share_24dp"
-        android:contentDescription="Share Apk" />
+        app:tint="@color/white" />
 
 
 </LinearLayout>

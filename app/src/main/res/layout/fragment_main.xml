@@ -3,19 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fragments.MainFragment" >
+    tools:context="fragments.MainFragment">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresh"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent" >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <include layout="@layout/app_list"
-            android:id="@+id/list"/>
+        <include
+            android:id="@+id/list_view"
+            layout="@layout/app_list" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <include layout="@layout/app_multiselect_options_sheet"
-        android:id="@+id/app_multiselect_bottom_sheet"/>
+    <include
+        android:id="@+id/app_multiselect_bottom_sheet"
+        layout="@layout/app_multiselect_options_sheet" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

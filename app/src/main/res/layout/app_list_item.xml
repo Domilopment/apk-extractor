@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/list_element"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
-    android:padding="6dip"
-    android:id="@+id/list_element"
-    android:background="?attr/selectableItemBackground" >
+    android:background="?attr/selectableItemBackground"
+    android:padding="6dip">
 
     <ImageView
         android:id="@+id/icon"
@@ -22,8 +22,8 @@
         android:layout_width="wrap_content"
         android:layout_height="26dip"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@id/icon"
         android:layout_toStartOf="@id/checkBox"
+        android:layout_toEndOf="@id/icon"
         android:singleLine="true"
         android:text="App Package"
         android:textSize="12sp" />
@@ -32,11 +32,11 @@
         android:id="@+id/firstLine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
         android:layout_above="@id/secondLine"
         android:layout_alignParentTop="true"
-        android:layout_alignWithParentIfMissing="true"
-        android:layout_toEndOf="@id/icon"
         android:layout_toStartOf="@id/checkBox"
+        android:layout_toEndOf="@id/icon"
         android:gravity="center_vertical"
         android:singleLine="true"
         android:text="App Title"
@@ -47,10 +47,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        app:srcCompat="@drawable/ic_baseline_check_box_24"
+        android:layout_alignParentBottom="true"
+        android:contentDescription="Multiselect Checkbox"
         android:visibility="invisible"
-        android:contentDescription="Multiselect Checkbox" />
+        app:srcCompat="@drawable/ic_baseline_check_box_24" />
 
 </RelativeLayout>

@@ -3,81 +3,81 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehaviorandroid.support.design.widget.BottomSheetBehavior"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehaviorandroid.support.design.widget.BottomSheetBehavior">
 
     <TextView
         android:id="@+id/action_save_apk"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:text="@string/action_bottom_sheet_save"
-        android:padding="15dp"
-        android:textSize="20sp"
         android:background="?attr/selectableItemBackground"
-        app:drawableStartCompat="@drawable/ic_baseline_save_24"
-        android:drawablePadding="20dp"/>
+        android:drawablePadding="20dp"
+        android:gravity="center_vertical"
+        android:padding="15dp"
+        android:text="@string/action_bottom_sheet_save"
+        android:textSize="20sp"
+        app:drawableStartCompat="@drawable/ic_baseline_save_24" />
 
     <TextView
         android:id="@+id/action_share"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:text="@string/action_bottom_sheet_share"
-        android:padding="15dp"
-        android:textSize="20sp"
         android:background="?attr/selectableItemBackground"
-        app:drawableStartCompat="@drawable/ic_share_24dp"
-        android:drawablePadding="20dp"/>
+        android:drawablePadding="20dp"
+        android:gravity="center_vertical"
+        android:padding="15dp"
+        android:text="@string/action_bottom_sheet_share"
+        android:textSize="20sp"
+        app:drawableStartCompat="@drawable/ic_share_24dp" />
 
     <TextView
         android:id="@+id/action_save_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:text="@string/action_bottom_sheet_save_image"
-        android:padding="15dp"
-        android:textSize="20sp"
         android:background="?attr/selectableItemBackground"
-        app:drawableStartCompat="@drawable/ic_baseline_image_24"
-        android:drawablePadding="20dp"/>
+        android:drawablePadding="20dp"
+        android:gravity="center_vertical"
+        android:padding="15dp"
+        android:text="@string/action_bottom_sheet_save_image"
+        android:textSize="20sp"
+        app:drawableStartCompat="@drawable/ic_baseline_image_24" />
 
     <TextView
         android:id="@+id/action_open_app"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:text="@string/action_bottom_sheet_open"
-        android:padding="15dp"
-        android:textSize="20sp"
         android:background="?attr/selectableItemBackground"
-        app:drawableStartCompat="@drawable/ic_baseline_android_24"
-        android:drawablePadding="20dp"/>
+        android:drawablePadding="20dp"
+        android:gravity="center_vertical"
+        android:padding="15dp"
+        android:text="@string/action_bottom_sheet_open"
+        android:textSize="20sp"
+        app:drawableStartCompat="@drawable/ic_baseline_android_24" />
 
     <TextView
         android:id="@+id/action_show_app_settings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:text="@string/action_bottom_sheet_settings"
-        android:padding="15dp"
-        android:textSize="20sp"
         android:background="?attr/selectableItemBackground"
-        app:drawableStartCompat="@drawable/ic_baseline_settings_24"
-        android:drawablePadding="20dp"/>
+        android:drawablePadding="20dp"
+        android:gravity="center_vertical"
+        android:padding="15dp"
+        android:text="@string/action_bottom_sheet_settings"
+        android:textSize="20sp"
+        app:drawableStartCompat="@drawable/ic_baseline_settings_24" />
 
     <TextView
         android:id="@+id/action_uninstall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:text="@string/action_bottom_sheet_uninstall"
-        android:padding="15dp"
-        android:textSize="20sp"
         android:background="?attr/selectableItemBackground"
-        app:drawableStartCompat="@drawable/ic_baseline_delete_24"
         android:drawablePadding="20dp"
-        android:visibility="gone"/>
+        android:gravity="center_vertical"
+        android:padding="15dp"
+        android:text="@string/action_bottom_sheet_uninstall"
+        android:textSize="20sp"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_baseline_delete_24" />
 
 </LinearLayout>

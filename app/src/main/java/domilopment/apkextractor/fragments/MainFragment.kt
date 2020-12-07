@@ -17,15 +17,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import domilopment.apkextractor.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    val binding get() = _binding!!
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     private lateinit var mainActivity: MainActivity
     private lateinit var viewAdapter: AppListAdapter
@@ -98,19 +99,20 @@ class MainFragment : Fragment() {
 
         viewAdapter = AppListAdapter(this)
 
-        binding.list.apply {
+        binding.listView.list.apply {
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
-            list.setHasFixedSize(true)
+            setHasFixedSize(true)
             // use a linear layout manager
-            list.layoutManager = LinearLayoutManager(mainActivity)
+            layoutManager = LinearLayoutManager(mainActivity)
             // specify an viewAdapter (see also next example)
-            list.adapter = viewAdapter
+            adapter = viewAdapter
         }
     }
 
     override fun onStart() {
         super.onStart()
+        viewAdapter.finish()
         mainActivity.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(false)
             title = getString(R.string.app_name)
@@ -313,5 +315,23 @@ class MainFragment : Fragment() {
                 return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    /**
+     * Set Enabled State of refresh
+     * @param enabled
+     * boolean for enabled state
+     */
+    fun enableRefresh(enabled: Boolean) {
+        binding.refresh.isEnabled = enabled
+    }
+
+    /**
+     * Set State of Multiselect Bottom Sheet
+     * @param state
+     * State to apply
+     */
+    fun stateBottomSheetBehaviour(state: Int) {
+        BottomSheetBehavior.from(binding.appMultiselectBottomSheet.root).state = state
     }
 }

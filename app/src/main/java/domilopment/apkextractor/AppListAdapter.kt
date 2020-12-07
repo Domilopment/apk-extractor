@@ -19,7 +19,7 @@ class AppListAdapter(
     RecyclerView.Adapter<AppListAdapter.MyViewHolder>(),
     Filterable,
     ActionMode.Callback {
-    private val settingsManager = (mainFragment.activity as MainActivity).settingsManager
+    private val settingsManager = SettingsManager(mainFragment.requireContext())
 
     // Static Dataset for Smoother transition
     private var myDataset = listOf<Application>()
@@ -29,7 +29,7 @@ class AppListAdapter(
         private set
 
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView) {
-        private val _binding : AppListItemBinding = AppListItemBinding.bind(myView)
+        private val _binding: AppListItemBinding = AppListItemBinding.bind(myView)
         val binding: AppListItemBinding get() = _binding
     }
 
@@ -75,9 +75,9 @@ class AppListAdapter(
             // ItemView on Click
             root.setOnClickListener {
                 if (multiselect) {
-                    checkBox.isVisible = !checkBox.isVisible
+                    app.isChecked = !app.isChecked
 
-                    if (checkBox.isVisible)
+                    if (app.isChecked)
                         myTitle++
                     else {
                         myTitle--
@@ -87,7 +87,8 @@ class AppListAdapter(
 
                     mode?.title = myTitle.toString()
 
-                    app.isChecked = checkBox.isVisible
+                    checkBox.isVisible = app.isChecked
+
                 } else {
                     val optionsBottomSheet = AppOptionsBottomSheet(app)
                     optionsBottomSheet.show(
@@ -184,13 +185,14 @@ class AppListAdapter(
         inflater.inflate(R.menu.menu_multiselect, menu)
         this.mode = mode
         mode.title = myTitle.toString()
-        (menu.findItem(R.id.action_select_all).actionView as CheckBox).setOnCheckedChangeListener { _, isChecked ->
-            menu.findItem(R.id.action_select_all).isChecked = isChecked
-            onActionItemClicked(mode, menu.findItem(R.id.action_select_all))
+        menu.findItem(R.id.action_select_all)?.also {
+            (it.actionView as CheckBox).setOnCheckedChangeListener { _, isChecked ->
+                it.isChecked = isChecked
+                onActionItemClicked(mode, it)
+            }
         }
-        mainFragment.binding.refresh.isEnabled = false
-        BottomSheetBehavior.from(mainFragment.binding.appMultiselectBottomSheet.root).state =
-            BottomSheetBehavior.STATE_EXPANDED
+        mainFragment.enableRefresh(false)
+        mainFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_EXPANDED)
         return true
     }
 
@@ -218,10 +220,16 @@ class AppListAdapter(
         }
         myTitle = 0
         multiselect = false
-        mainFragment.binding.refresh.isEnabled = true
-        BottomSheetBehavior.from(mainFragment.binding.appMultiselectBottomSheet.root).state =
-            BottomSheetBehavior.STATE_COLLAPSED
+        mainFragment.enableRefresh(true)
+        mainFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_COLLAPSED)
         this.mode = null
         notifyDataSetChanged()
+    }
+
+    /**
+     * Destroy action Mode if active
+     */
+    fun finish() {
+        mode?.finish()
     }
 }
