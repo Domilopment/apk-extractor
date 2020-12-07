@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:padding="6dip"
@@ -41,13 +42,15 @@
         android:text="App Title"
         android:textSize="16sp" />
 
-    <CheckBox
+    <ImageView
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:checked="false"/>
+        app:srcCompat="@drawable/ic_baseline_check_box_24"
+        android:visibility="invisible"
+        android:contentDescription="Multiselect Checkbox" />
 
 </RelativeLayout>

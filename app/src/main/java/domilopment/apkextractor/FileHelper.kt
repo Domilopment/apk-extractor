@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
+import androidx.core.content.FileProvider
+import domilopment.apkextractor.data.Application
 import java.io.*
 
 class FileHelper(private val context: Context) {
@@ -67,5 +69,24 @@ class FileHelper(private val context: Context) {
                 CHOOSE_SAVE_DIR_RESULT
             )
         }
+    }
+
+    /**
+     * Creates a Uri for Provider
+     * @param app Application for sharing
+     * @return Shareable Uri of Application APK
+     */
+    fun shareURI(app: Application): Uri {
+        return FileProvider.getUriForFile(
+            context,
+            context.applicationInfo.packageName + ".provider",
+            File(app.appSourceDirectory).copyTo(
+                File(
+                    context.cacheDir,
+                    SettingsManager(context).appName(app)
+                ),
+                true
+            )
+        )
     }
 }

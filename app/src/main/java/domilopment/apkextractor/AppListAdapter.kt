@@ -1,24 +1,25 @@
 package domilopment.apkextractor
 
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.CheckBox
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.appcompat.view.ActionMode
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import domilopment.apkextractor.data.Application
-import kotlinx.android.synthetic.main.app_list_item.view.*
+import domilopment.apkextractor.databinding.AppListItemBinding
+import domilopment.apkextractor.fragments.MainFragment
 import java.util.*
 
 class AppListAdapter(
-    private val mainActivity: MainActivity
+    private val mainFragment: MainFragment
 ) :
     RecyclerView.Adapter<AppListAdapter.MyViewHolder>(),
-    Filterable {
-    private val settingsManager = mainActivity.settingsManager
+    Filterable,
+    ActionMode.Callback {
+    private val settingsManager = (mainFragment.activity as MainActivity).settingsManager
 
     // Static Dataset for Smoother transition
     private var myDataset = listOf<Application>()
@@ -27,7 +28,14 @@ class AppListAdapter(
     var myDatasetFiltered: MutableList<Application> = myDataset.toMutableList()
         private set
 
-    class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView)
+    class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView) {
+        private val _binding : AppListItemBinding = AppListItemBinding.bind(myView)
+        val binding: AppListItemBinding get() = _binding
+    }
+
+    private var multiselect = false
+    private var myTitle = 0
+    private var mode: ActionMode? = null
 
     /**
      * Creates ViewHolder with Layout
@@ -58,21 +66,47 @@ class AppListAdapter(
         // say holder should not be re used for other Dataset menbers
         holder.setIsRecyclable(false)
         // Apply data from Dataset item to holder
-        holder.itemView.apply {
-            firstLine.text = "${app.appName} (${app.apkSize} MB)"
+        holder.binding.apply {
+            firstLine.text =
+                mainFragment.getString(R.string.holder_app_name).format(app.appName, app.apkSize)
             secondLine.text = app.appPackageName
             icon.setImageDrawable(app.appIcon)
-            checkBox.isChecked = app.isChecked
-            checkBox.setOnCheckedChangeListener { _, isChecked ->
-                app.isChecked = isChecked
-            }
-            setOnLongClickListener {
-                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", app.appPackageName, null)
-                }.also {
-                    mainActivity.startActivity(it)
+            checkBox.isVisible = app.isChecked
+            // ItemView on Click
+            root.setOnClickListener {
+                if (multiselect) {
+                    checkBox.isVisible = !checkBox.isVisible
+
+                    if (checkBox.isVisible)
+                        myTitle++
+                    else {
+                        myTitle--
+                        (mode?.menu?.findItem(R.id.action_select_all)?.actionView as CheckBox).isChecked =
+                            false
+                    }
+
+                    mode?.title = myTitle.toString()
+
+                    app.isChecked = checkBox.isVisible
+                } else {
+                    val optionsBottomSheet = AppOptionsBottomSheet(app)
+                    optionsBottomSheet.show(
+                        mainFragment.requireActivity().supportFragmentManager,
+                        AppOptionsBottomSheet.TAG
+                    )
                 }
-                return@setOnLongClickListener true
+            }
+            // ItemView on Long Click
+            root.setOnLongClickListener {
+                return@setOnLongClickListener if (!multiselect) {
+                    multiselect = true
+                    checkBox.isVisible = true
+                    app.isChecked = true
+                    myTitle++
+                    (mainFragment.requireActivity() as MainActivity).startSupportActionMode(this@AppListAdapter)
+                    true
+                } else
+                    false
             }
         }
     }
@@ -141,6 +175,53 @@ class AppListAdapter(
     fun updateData(apps: List<Application>) {
         myDataset = apps
         myDatasetFiltered = myDataset.toMutableList()
+        notifyDataSetChanged()
+    }
+
+    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+        // Inflate the menu resource providing context menu items
+        val inflater: MenuInflater = mode.menuInflater
+        inflater.inflate(R.menu.menu_multiselect, menu)
+        this.mode = mode
+        mode.title = myTitle.toString()
+        (menu.findItem(R.id.action_select_all).actionView as CheckBox).setOnCheckedChangeListener { _, isChecked ->
+            menu.findItem(R.id.action_select_all).isChecked = isChecked
+            onActionItemClicked(mode, menu.findItem(R.id.action_select_all))
+        }
+        mainFragment.binding.refresh.isEnabled = false
+        BottomSheetBehavior.from(mainFragment.binding.appMultiselectBottomSheet.root).state =
+            BottomSheetBehavior.STATE_EXPANDED
+        return true
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+        return false
+    }
+
+    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_select_all -> if (item.isChecked) {
+                myDatasetFiltered.forEach {
+                    it.isChecked = true
+                }
+                myTitle = itemCount
+                mode.title = itemCount.toString()
+                notifyDataSetChanged()
+            }
+        }
+        return true
+    }
+
+    override fun onDestroyActionMode(mode: ActionMode?) {
+        myDatasetFiltered.forEach {
+            it.isChecked = false
+        }
+        myTitle = 0
+        multiselect = false
+        mainFragment.binding.refresh.isEnabled = true
+        BottomSheetBehavior.from(mainFragment.binding.appMultiselectBottomSheet.root).state =
+            BottomSheetBehavior.STATE_COLLAPSED
+        this.mode = null
         notifyDataSetChanged()
     }
 }

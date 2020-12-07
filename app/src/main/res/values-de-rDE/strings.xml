@@ -55,7 +55,6 @@
     <string name="app_save_name_version_number">App Versions-Nummer</string>
 
     <!-- Menu -->
-    <string name="menu_share">Teilen</string>
     <string name="menu_search">Suche</string>
     <string name="menu_sort">Sortieren</string>
     <string name="menu_sort_name">App Name</string>
@@ -79,6 +78,7 @@
     <string name="snackbar_successful_extracted">%s erfolgreich extraiert</string>
     <string name="snackbar_successful_extracted_multiple">%s und %d weitere erfolgreich extraiert</string>
     <string name="snackbar_extraction_failed">Extraieren von %s FEHLGESCHLAGEN</string>
+    <string name="snackbar_successful_saved_image">Icon gespeichert</string>
     <string name="action_share">Teile App</string>
     <string name="toast_share_app">Wähle Apps die geteilt werden sollen</string>
 
@@ -88,5 +88,16 @@
     <string name="auto_backup_notification_action_stop">STOPPE SERVICE</string>
     <string name="auto_backup_broadcast_receiver_backup_success">Backup %s erfolgreich</string>
     <string name="auto_backup_broadcast_receiver_backup_failed">Backup %s fehlgeschlagen</string>
+
+    <!-- App Options Bottom Sheet -->
+    <string name="action_bottom_sheet_save">Speichern</string>
+    <string name="action_bottom_sheet_share">Teilen</string>
+    <string name="action_bottom_sheet_save_image">Speicher Icon</string>
+    <string name="action_bottom_sheet_open">Öffnen</string>
+    <string name="action_bottom_sheet_settings">Einstellungen</string>
+    <string name="action_bottom_sheet_uninstall">Deinstallieren</string>
+
+    <!-- App List Adapter -->
+    <string name="holder_app_name">%s (%.2f MB)</string>
 
 </resources>

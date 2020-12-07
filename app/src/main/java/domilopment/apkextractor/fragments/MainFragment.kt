@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -20,11 +19,14 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
-import kotlinx.android.synthetic.main.app_list.*
-import kotlinx.android.synthetic.main.fragment_main.*
-import java.io.File
+import domilopment.apkextractor.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
+    private var _binding: FragmentMainBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    val binding get() = _binding!!
+
     private lateinit var mainActivity: MainActivity
     private lateinit var viewAdapter: AppListAdapter
     private lateinit var searchView: SearchView
@@ -56,23 +58,37 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        _binding = FragmentMainBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         // add Refresh Layout action on Swipe
-        refresh.setOnRefreshListener {
+        binding.refresh.setOnRefreshListener {
             searchView.isIconified = true
             updateData()
         }
 
-        fab.setOnClickListener { saveApps(it) }
-
         model.getApps().observe(viewLifecycleOwner, { apps ->
             viewAdapter.updateData(apps)
-            refresh.isRefreshing = false
+            binding.refresh.isRefreshing = false
         })
+
+        binding.appMultiselectBottomSheet.apply {
+            actionSaveApk.setOnClickListener {
+                saveApps(it)
+            }
+
+            actionShare.setOnClickListener {
+                getSelectedApps()?.let {
+                    Intent.createChooser(it, getString(R.string.action_share))
+                }?.also {
+                    startActivityForResult(it, MainActivity.SHARE_APP_RESULT)
+                }
+            }
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -80,16 +96,16 @@ class MainFragment : Fragment() {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
-        viewAdapter = AppListAdapter(mainActivity)
+        viewAdapter = AppListAdapter(this)
 
-        list.apply {
+        binding.list.apply {
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
-            setHasFixedSize(true)
+            list.setHasFixedSize(true)
             // use a linear layout manager
-            layoutManager = LinearLayoutManager(mainActivity)
+            list.layoutManager = LinearLayoutManager(mainActivity)
             // specify an viewAdapter (see also next example)
-            adapter = viewAdapter
+            list.adapter = viewAdapter
         }
     }
 
@@ -101,6 +117,12 @@ class MainFragment : Fragment() {
         }
         updateData()
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 
     /**
      * Function Called on FloatingActionButton Click
@@ -149,7 +171,7 @@ class MainFragment : Fragment() {
      * Update Dataset
      */
     private fun updateData() {
-        refresh.isRefreshing = true
+        binding.refresh.isRefreshing = true
         model.updateApps()
     }
 
@@ -210,19 +232,6 @@ class MainFragment : Fragment() {
                 return@setOnCloseListener false
             }
         }
-
-        // Retrieve the share menu item
-        menu.findItem(R.id.action_share).apply {
-            setOnMenuItemClickListener {
-                getSelectedApps()?.let {
-                    activity?.startActivityForResult(
-                        Intent.createChooser(it, getString(R.string.action_share)),
-                        MainActivity.SHARE_APP_RESULT
-                    )
-                }
-                return@setOnMenuItemClickListener true
-            }
-        }
     }
 
     /**
@@ -236,31 +245,20 @@ class MainFragment : Fragment() {
         viewAdapter.myDatasetFiltered.filter {
             it.isChecked
         }.forEach { app ->
-            FileProvider.getUriForFile(
-                requireContext(),
-                requireActivity().application.packageName + ".provider",
-                File(app.appSourceDirectory).copyTo(
-                    File(
-                        requireActivity().cacheDir,
-                        SettingsManager(requireContext())
-                            .appName(app)
-                    ), true
-                )
-            ).also {
-                files.add(it)
-            }
+            FileHelper(requireContext()).shareURI(app)
+                .also {
+                    files.add(it)
+                }
         }
         return if (files.isEmpty()) {
             Toast.makeText(requireContext(), R.string.toast_share_app, Toast.LENGTH_SHORT).show()
             null
         } else {
-            Intent(Intent.ACTION_SEND).apply {
+            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
                 type = FileHelper.MIME_TYPE
                 if (files.size > 1) {
-                    action = Intent.ACTION_SEND_MULTIPLE
                     putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
                 } else {
-                    action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_STREAM, files[0])
                 }
             }

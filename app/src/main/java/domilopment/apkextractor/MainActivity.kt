@@ -15,10 +15,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.autoBackup.AutoBackupService
-import kotlinx.android.synthetic.main.activity_main.*
+import domilopment.apkextractor.databinding.ActivityMainBinding
 import kotlin.Exception
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
     private lateinit var sharedPreferences: SharedPreferences
     lateinit var settingsManager: SettingsManager
 
@@ -30,8 +31,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         settingsManager = SettingsManager(this)
         // Set UI Mode
         settingsManager.changeUIMode()
