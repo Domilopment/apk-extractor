@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
@@ -110,9 +111,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setOnPreferenceChangeListener { _, newValue ->
                 newValue as Boolean
                 if (newValue and !AutoBackupService.isRunning)
-                    requireActivity().startService(Intent(requireContext(), AutoBackupService::class.java))
+                    requireActivity().startService(
+                        Intent(
+                            requireContext(),
+                            AutoBackupService::class.java
+                        )
+                    )
                 else if (!newValue and AutoBackupService.isRunning)
-                    requireActivity().stopService(Intent(requireContext(), AutoBackupService::class.java))
+                    requireActivity().stopService(
+                        Intent(
+                            requireContext(),
+                            AutoBackupService::class.java
+                        )
+                    )
 
                 return@setOnPreferenceChangeListener true
             }
@@ -121,7 +132,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onStart() {
         super.onStart()
-        (requireActivity() as MainActivity).supportActionBar?.apply {
+        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             title = getString(R.string.title_activity_settings)
         }

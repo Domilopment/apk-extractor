@@ -4,6 +4,7 @@ import android.view.*
 import android.widget.CheckBox
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
@@ -104,7 +105,9 @@ class AppListAdapter(
                     checkBox.isVisible = true
                     app.isChecked = true
                     myTitle++
-                    (mainFragment.requireActivity() as MainActivity).startSupportActionMode(this@AppListAdapter)
+                    (mainFragment.requireActivity() as AppCompatActivity).startSupportActionMode(
+                        this@AppListAdapter
+                    )
                     true
                 } else
                     false
