@@ -14,11 +14,13 @@
         <item>@string/app_save_name_package</item>
         <item>@string/app_save_name_version_name</item>
         <item>@string/app_save_name_version_number</item>
+        <item>@string/app_save_name_datetime</item>
     </string-array>
     <string-array name="app_save_name_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
+        <item>package</item>
+        <item>version_name</item>
+        <item>version_number</item>
+        <item>datetime</item>
     </string-array>
 
     <string-array name="selected_apk_options">

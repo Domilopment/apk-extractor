@@ -44,12 +44,12 @@ class AppOptionsBottomSheet(private val app: Application) : BottomSheetDialogFra
 
         // Save Apk
         binding.actionSaveApk.setOnClickListener {
-            val path = SettingsManager(requireContext()).saveDir()
+            val settingsManager = SettingsManager(requireContext())
 
             if (FileHelper(requireActivity()).copy(
                     app.appSourceDirectory,
-                    path!!,
-                    SettingsManager(requireContext()).appName(app)
+                    settingsManager.saveDir()!!,
+                    settingsManager.appName(app)
                 )
             )
                 Snackbar.make(

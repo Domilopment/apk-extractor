@@ -7,6 +7,8 @@ import androidx.preference.PreferenceManager
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.data.ListOfAPKs
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.Comparator
 
 class SettingsManager(context: Context) {
@@ -77,12 +79,14 @@ class SettingsManager(context: Context) {
     fun appName(app: Application): String {
         val sb = StringBuilder().append(app.appName)
         sharedPreferences.getStringSet("app_save_name", setOf())?.also { prefs ->
-            if (prefs.contains("1"))
+            if (prefs.contains("package"))
                 sb.append(" ${app.appPackageName}")
-            if (prefs.contains("2"))
+            if (prefs.contains("version_name"))
                 sb.append(" ${app.appVersionCode}")
-            if (prefs.contains("3"))
-                sb.append(" ${app.appVersionName}")
+            if (prefs.contains("version_number"))
+                sb.append(" v${app.appVersionName}")
+            if (prefs.contains("datetime"))
+                sb.append(" ${SimpleDateFormat.getDateTimeInstance().format(Date())}")
         }
         return sb.append(FileHelper.PREFIX).toString()
     }

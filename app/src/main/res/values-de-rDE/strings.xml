@@ -53,6 +53,7 @@
     <string name="app_save_name_package">Paket Name</string>
     <string name="app_save_name_version_name">App Versions-Name</string>
     <string name="app_save_name_version_number">App Versions-Nummer</string>
+    <string name="app_save_name_datetime">Datum</string>
 
     <!-- Menu -->
     <string name="menu_search">Suche</string>
