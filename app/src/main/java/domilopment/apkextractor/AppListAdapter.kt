@@ -30,8 +30,7 @@ class AppListAdapter(
         private set
 
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView) {
-        private val _binding: AppListItemBinding = AppListItemBinding.bind(myView)
-        val binding: AppListItemBinding get() = _binding
+        val binding: AppListItemBinding = AppListItemBinding.bind(myView)
     }
 
     private var multiselect = false

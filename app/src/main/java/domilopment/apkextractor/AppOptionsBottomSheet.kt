@@ -34,7 +34,7 @@ class AppOptionsBottomSheet(private val app: Application) : BottomSheetDialogFra
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = AppOptionsBottomSheetBinding.inflate(inflater, container, false)
         return binding.root
     }
