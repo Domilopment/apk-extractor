@@ -1,8 +1,8 @@
 package domilopment.apkextractor.fragments
 
+import android.content.Context
 import androidx.annotation.NonNull
 import androidx.lifecycle.*
-import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.SettingsManager
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.data.ListOfAPKs
@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    @NonNull private val mainActivity: MainActivity
+    @NonNull private val context: Context
 ) :
     ViewModel(),
     HasDefaultViewModelProviderFactory {
@@ -26,20 +26,20 @@ class MainViewModel(
 
     fun updateApps() {
         viewModelScope.launch(Dispatchers.IO) {
-            ListOfAPKs(mainActivity.packageManager).updateData()
-            applications.postValue(SettingsManager(mainActivity).selectedAppTypes())
+            ListOfAPKs(context.packageManager).updateData()
+            applications.postValue(SettingsManager(context).selectedAppTypes())
         }
     }
 
     private fun loadApps(): List<Application> {
         // Do an asynchronous operation to fetch users.
-        return SettingsManager(mainActivity).selectedAppTypes()
+        return SettingsManager(context).selectedAppTypes()
     }
 
     override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
         return object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return modelClass.getConstructor(MainActivity::class.java).newInstance(mainActivity)
+                return modelClass.getConstructor(Context::class.java).newInstance(context)
             }
         }
     }

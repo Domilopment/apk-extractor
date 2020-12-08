@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -28,13 +29,12 @@ class MainFragment : Fragment() {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var mainActivity: MainActivity
     private lateinit var viewAdapter: AppListAdapter
     private lateinit var searchView: SearchView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var callback: OnBackPressedCallback
     private val model by activityViewModels<MainViewModel> {
-        MainViewModel(mainActivity).defaultViewModelProviderFactory
+        MainViewModel(requireContext()).defaultViewModelProviderFactory
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +50,6 @@ class MainFragment : Fragment() {
             it.isEnabled = false
         }
 
-        mainActivity = (requireActivity() as MainActivity)
         setHasOptionsMenu(true)
     }
 
@@ -104,7 +103,7 @@ class MainFragment : Fragment() {
             // in content do not change the layout size of the RecyclerView
             setHasFixedSize(true)
             // use a linear layout manager
-            layoutManager = LinearLayoutManager(mainActivity)
+            layoutManager = LinearLayoutManager(requireContext())
             // specify an viewAdapter (see also next example)
             adapter = viewAdapter
         }
@@ -113,7 +112,7 @@ class MainFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         viewAdapter.finish()
-        mainActivity.supportActionBar?.apply {
+        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(false)
             title = getString(R.string.app_name)
         }
@@ -132,7 +131,8 @@ class MainFragment : Fragment() {
      * The FloatingActionButton
      */
     private fun saveApps(view: View) {
-        val path = SettingsManager(requireContext()).saveDir()
+        val settingsManager = SettingsManager(requireContext())
+        val fileHelper = FileHelper(requireContext())
         viewAdapter.myDatasetFiltered.filter {
             it.isChecked
         }.also {
@@ -141,10 +141,10 @@ class MainFragment : Fragment() {
                     .show()
             else
                 it.forEach { d ->
-                    if (FileHelper(requireActivity()).copy(
+                    if (fileHelper.copy(
                             d.appSourceDirectory,
-                            path!!,
-                            SettingsManager(requireContext()).appName(d)
+                            settingsManager.saveDir()!!,
+                            settingsManager.appName(d)
                         )
                     )
                         Snackbar.make(
@@ -158,13 +158,13 @@ class MainFragment : Fragment() {
                                 )
                             },
                             Snackbar.LENGTH_LONG
-                        ).setAction("Action", null).show()
+                        ).setAnchorView(binding.appMultiselectBottomSheet.root).show()
                     else
                         Snackbar.make(
                             view,
                             getString(R.string.snackbar_extraction_failed).format(d.appName),
                             Snackbar.LENGTH_LONG
-                        ).setAction("Action", null).setTextColor(Color.RED).show()
+                        ).setAnchorView(binding.appMultiselectBottomSheet.root).setTextColor(Color.RED).show()
                 }
         }
     }
@@ -244,10 +244,11 @@ class MainFragment : Fragment() {
      */
     private fun getSelectedApps(): Intent? {
         val files = ArrayList<Uri>()
+        val fileHelper = FileHelper(requireContext())
         viewAdapter.myDatasetFiltered.filter {
             it.isChecked
         }.forEach { app ->
-            FileHelper(requireContext()).shareURI(app)
+            fileHelper.shareURI(app)
                 .also {
                     files.add(it)
                 }
@@ -305,7 +306,7 @@ class MainFragment : Fragment() {
             }
             R.id.action_show_save_dir -> {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    val destDir = mainActivity.settingsManager.saveDir()
+                    val destDir = SettingsManager(requireContext()).saveDir()
                     putExtra(DocumentsContract.EXTRA_INITIAL_URI, destDir)
                     setDataAndType(destDir, FileHelper.MIME_TYPE)
                 }

@@ -21,7 +21,7 @@ import kotlin.Exception
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var sharedPreferences: SharedPreferences
-    lateinit var settingsManager: SettingsManager
+    private lateinit var settingsManager: SettingsManager
 
     companion object {
         const val SHARE_APP_RESULT = 666
