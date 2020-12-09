@@ -1,7 +1,9 @@
 # APKExtractor
 A Simple Modern APK Extractor App
 
-> [Download on Google Play](https://play.google.com/store/apps/details?id=domilopment.apkextractor)
+<a href="https://play.google.com/store/apps/details?id=domilopment.apkextractor" 
+    target="_blank"><img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" 
+    alt="Get it on Google Play" height="90"/></a>
 
   * Fast and easy to use. (hopefully)  
   * Extracts all application, including system applications.
@@ -14,5 +16,6 @@ A Simple Modern APK Extractor App
   * filter apps by user apps, system apps and updated system apps
   * Extract multiple apk in single click
   * Follows System Night Mode (can be activated manually in App)
+  * Auto Backup APKs on App updates
 
 Programmed with Love^^ ❤
