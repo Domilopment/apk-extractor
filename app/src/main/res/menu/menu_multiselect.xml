@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_select_all"
-        android:title="select all"
         android:orderInCategory="0"
-        app:showAsAction="always"
-        app:actionViewClass="android.widget.CheckBox" />
+        android:title="select all"
+        app:actionViewClass="android.widget.CheckBox"
+        app:showAsAction="always" />
 </menu>

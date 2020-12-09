@@ -3,9 +3,10 @@
     <PreferenceCategory app:title="@string/save_header">
         <Preference
             app:key="choose_dir"
-            app:title="@string/choose_save_dir"
-            app:summary="@string/choose_save_dir_summary"/>
+            app:summary="@string/choose_save_dir_summary"
+            app:title="@string/choose_save_dir" />
         <MultiSelectListPreference
+            android:defaultValue="@array/app_save_name_default_values"
             android:entries="@array/app_save_name_names"
             android:entryValues="@array/app_save_name_values"
             android:key="app_save_name"
@@ -13,30 +14,30 @@
             android:title="@string/app_save_name" />
         <SwitchPreferenceCompat
             app:key="auto_backup"
-            app:title="@string/auto_backup"
-            app:summary="@string/auto_backup_summary"/>
+            app:summary="@string/auto_backup_summary"
+            app:title="@string/auto_backup" />
         <MultiSelectListPreference
-            app:enabled="false"
             app:dependency="auto_backup"
+            app:enabled="false"
             app:key="app_list_auto_backup"
-            app:title="@string/auto_backup_app_list"
-            app:summary="@string/auto_backup_app_list_summary"/>
+            app:summary="@string/auto_backup_app_list_summary"
+            app:title="@string/auto_backup_app_list" />
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/app_type_header">
         <SwitchPreferenceCompat
             app:key="updated_system_apps"
-            app:title="@string/app_type_system_updated"
-            app:summary="@string/app_type_system_updated_summary"/>
+            app:summary="@string/app_type_system_updated_summary"
+            app:title="@string/app_type_system_updated" />
         <SwitchPreferenceCompat
             app:dependency="updated_system_apps"
             app:key="system_apps"
-            app:title="@string/app_type_system"
-            app:summary="@string/app_type_system_summary"/>
+            app:summary="@string/app_type_system_summary"
+            app:title="@string/app_type_system" />
         <SwitchPreferenceCompat
+            app:defaultValue="true"
             app:key="user_apps"
-            app:title="@string/app_type_user"
             app:summary="@string/app_type_user_summary"
-            app:defaultValue="true"/>
+            app:title="@string/app_type_user" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/advanced">
         <ListPreference
@@ -44,25 +45,25 @@
             android:entries="@array/ui_mode_names"
             android:entryValues="@array/ui_mode_values"
             android:key="list_preference_ui_mode"
-            android:title="@string/ui_mode"
-            android:summary="@string/ui_mode_summary" />
+            android:summary="@string/ui_mode_summary"
+            android:title="@string/ui_mode" />
         <Preference
             app:key="clear_cache"
-            app:title="@string/clear_cache"
-            app:summary="@string/clear_cache_summary"/>
+            app:summary="@string/clear_cache_summary"
+            app:title="@string/clear_cache" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/info_header">
         <Preference
             app:key="github"
-            app:title="@string/github"
-            app:summary="@string/github_summary"/>
+            app:summary="@string/github_summary"
+            app:title="@string/github" />
         <Preference
             app:key="googleplay"
-            app:title="@string/googleplay"
-            app:summary="@string/googleplay_summary"/>
+            app:summary="@string/googleplay_summary"
+            app:title="@string/googleplay" />
         <Preference
+            app:enabled="false"
             app:key="version"
-            app:title="@string/version"
-            app:enabled="false"/>
+            app:title="@string/version" />
     </PreferenceCategory>
 </PreferenceScreen>

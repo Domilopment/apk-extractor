@@ -24,6 +24,9 @@
         <item>version_number</item>
         <item>datetime</item>
     </string-array>
+    <string-array name="app_save_name_default_values">
+        <item>name</item>
+    </string-array>
 
     <string-array name="selected_apk_options">
         <item>@string/alert_apk_selected_share</item>
