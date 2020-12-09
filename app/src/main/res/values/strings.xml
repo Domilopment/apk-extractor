@@ -50,7 +50,7 @@
     <string name="clear_cache_failed">Cache could not be cleared</string>
 
     <string name="app_save_name">APK Name</string>
-    <string name="app_save_name_summary">Configurate APK save name informations</string>
+    <string name="app_save_name_summary">Configure APK save name information, shall at Least include App or Package Name.</string>
     <string name="app_save_name_name">App Name</string>
     <string name="app_save_name_package">Package Name</string>
     <string name="app_save_name_version_name">App Version Name</string>
@@ -77,7 +77,7 @@
     <!-- MainActivity -->
     <string name="alert_save_path_title">Save Dir</string>
     <string name="alert_save_path_message">Choose a Directory to Save APKs</string>
-    <string name="alert_save_path_ok">Ok</string>
+    <string name="alert_save_path_ok">OK</string>
     <string name="toast_save_apps">Select Apps to Save</string>
     <string name="snackbar_successful_extracted">%s successful extracted</string>
     <string name="snackbar_successful_extracted_multiple">%s and %d additional successful extracted</string>
