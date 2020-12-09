@@ -51,6 +51,7 @@
 
     <string name="app_save_name">APK Name</string>
     <string name="app_save_name_summary">Configurate APK save name informations</string>
+    <string name="app_save_name_name">App Name</string>
     <string name="app_save_name_package">Package Name</string>
     <string name="app_save_name_version_name">App Version Name</string>
     <string name="app_save_name_version_number">App Version Number</string>

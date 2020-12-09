@@ -128,6 +128,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 return@setOnPreferenceChangeListener true
             }
         }
+        // Check if user has Selected Name Options
+        findPreference<MultiSelectListPreference>("app_save_name")?.apply {
+            setOnPreferenceChangeListener { _, newValue ->
+                return@setOnPreferenceChangeListener (newValue as Set<*>).contains("name") or (newValue).contains("package")
+            }
+        }
     }
 
     override fun onStart() {

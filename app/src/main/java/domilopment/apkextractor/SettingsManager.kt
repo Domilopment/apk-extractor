@@ -77,17 +77,15 @@ class SettingsManager(context: Context) {
      * @return String of the name after the APK should be named
      */
     fun appName(app: Application): String {
-        val sb = StringBuilder().append(app.appName)
+        val sb = StringBuilder()
         sharedPreferences.getStringSet("app_save_name", setOf())?.also { prefs ->
-            if (prefs.contains("package"))
-                sb.append(" ${app.appPackageName}")
-            if (prefs.contains("version_name"))
-                sb.append(" ${app.appVersionCode}")
-            if (prefs.contains("version_number"))
-                sb.append(" v${app.appVersionName}")
-            if (prefs.contains("datetime"))
-                sb.append(" ${SimpleDateFormat.getDateTimeInstance().format(Date())}")
+            if (prefs.contains("name")) sb.append(app.appName)
+            if (prefs.contains("package")) sb.append(" ${app.appPackageName}")
+            if (prefs.contains("version_name")) sb.append(" ${app.appVersionCode}")
+            if (prefs.contains("version_number")) sb.append(" v${app.appVersionName}")
+            if (prefs.contains("datetime")) sb.append(" ${SimpleDateFormat.getDateTimeInstance().format(Date())}")
         }
+        if (sb.isEmpty()) sb.append(app.appName)
         return sb.append(FileHelper.PREFIX).toString()
     }
 
