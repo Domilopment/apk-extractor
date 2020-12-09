@@ -55,6 +55,7 @@
     <string name="app_save_name_version_name">App Versions-Name</string>
     <string name="app_save_name_version_number">App Versions-Nummer</string>
     <string name="app_save_name_datetime">Datum</string>
+    <string name="app_save_name_toast">Bitte wähle mindestens App oder Paket Namen</string>
 
     <!-- Menu -->
     <string name="menu_search">Suche</string>

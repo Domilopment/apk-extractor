@@ -131,7 +131,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // Check if user has Selected Name Options
         findPreference<MultiSelectListPreference>("app_save_name")?.apply {
             setOnPreferenceChangeListener { _, newValue ->
-                return@setOnPreferenceChangeListener (newValue as Set<*>).contains("name") or (newValue).contains("package")
+                return@setOnPreferenceChangeListener if (
+                    (newValue as Set<*>).contains("name") or (newValue).contains("package")
+                ) {
+                    true
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.app_save_name_toast),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    false
+                }
             }
         }
     }
