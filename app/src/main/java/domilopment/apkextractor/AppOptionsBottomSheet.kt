@@ -3,6 +3,7 @@ package domilopment.apkextractor
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
@@ -20,14 +21,16 @@ import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.databinding.AppOptionsBottomSheetBinding
 
-class AppOptionsBottomSheet(private val app: Application) : BottomSheetDialogFragment() {
+class AppOptionsBottomSheet(private val app: Application, private val callback: () -> Unit) : BottomSheetDialogFragment() {
     private var _binding: AppOptionsBottomSheetBinding? = null
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
 
     companion object {
         const val TAG = "app_options_bottom_sheet"
+        const val UNINSTALL_APP_RESULT = 777
     }
 
     override fun onCreateView(
@@ -99,9 +102,8 @@ class AppOptionsBottomSheet(private val app: Application) : BottomSheetDialogFra
                 Intent.ACTION_DELETE,
                 Uri.fromParts("package", app.appPackageName, null)
             ).also {
-                startActivity(it)
+                startActivityForResult(it, UNINSTALL_APP_RESULT)
             }
-            dismiss()
         }
 
         // If App is User App make Uninstall Option visible
@@ -133,5 +135,30 @@ class AppOptionsBottomSheet(private val app: Application) : BottomSheetDialogFra
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    /**
+     * Check if Application is Installed
+     * @param packageName
+     * Package Name of App
+     */
+    private fun isPackageInstalled(packageName: String): Boolean {
+        return try {
+            requireContext().packageManager.getPackageInfo(packageName, 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            UNINSTALL_APP_RESULT ->
+                if (!isPackageInstalled(app.appPackageName)) {
+                    dismiss()
+                    callback()
+                }
+        }
     }
 }

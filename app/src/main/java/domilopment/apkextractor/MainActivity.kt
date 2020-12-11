@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
 import android.provider.DocumentsContract
@@ -100,11 +101,9 @@ class MainActivity : AppCompatActivity() {
      * True if all Permissions Granted, else False
      */
     private fun allPermissionsGranted(grantedPermissions: IntArray): Boolean {
-        grantedPermissions.forEach { singleGrantedPermission ->
-            if (singleGrantedPermission == PackageManager.PERMISSION_DENIED)
-                return false
+        return grantedPermissions.all { singleGrantedPermission ->
+            singleGrantedPermission == PackageManager.PERMISSION_GRANTED
         }
-        return true
     }
 
     /**
@@ -174,7 +173,7 @@ class MainActivity : AppCompatActivity() {
                         setTitle(getString(R.string.alert_apk_selected_title))
                         setItems(R.array.selected_apk_options) { _, i: Int ->
                             try {
-                                apkFileOptions(i, data)
+                                data?.data?.let { apkFileOptions(i, it) }
                             } catch (e: Exception) {
                                 Toast.makeText(context, "Something went wrong, couldn't perform action on Selected Apk", Toast.LENGTH_LONG).show()
                                 Log.e("Apk Extractor: Saved Apps Dialog", e.toString())
@@ -190,21 +189,21 @@ class MainActivity : AppCompatActivity() {
      * @param i Selected Option
      * @param data Result Intent, holding Apk files data
      */
-    private fun apkFileOptions(i: Int, data: Intent?) {
+    private fun apkFileOptions(i: Int, data: Uri) {
         when (i) {
             // Send Selected Apk File
             0 -> startActivity(
                 Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                     type = FileHelper.MIME_TYPE
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_STREAM, data!!.data)
+                    putExtra(Intent.EXTRA_STREAM, data)
                 }, getString(R.string.action_share))
             )
             // Install Selected Apk File
             1 -> startActivity(
                 Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(
-                        data?.data!!,
+                        data,
                         FileHelper.MIME_TYPE
                     )
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -213,7 +212,7 @@ class MainActivity : AppCompatActivity() {
             // Delete Selected Apk File
             2 -> DocumentsContract.deleteDocument(
                 contentResolver,
-                data?.data!!
+                data
             )
         }
     }

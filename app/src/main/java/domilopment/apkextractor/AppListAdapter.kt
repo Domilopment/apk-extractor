@@ -90,7 +90,11 @@ class AppListAdapter(
                     checkBox.isVisible = app.isChecked
 
                 } else {
-                    val optionsBottomSheet = AppOptionsBottomSheet(app)
+                    val optionsBottomSheet = AppOptionsBottomSheet(app) {
+                        val newDataset = myDataset.toMutableList()
+                        newDataset.remove(app)
+                        updateData(newDataset)
+                    }
                     optionsBottomSheet.show(
                         mainFragment.requireActivity().supportFragmentManager,
                         AppOptionsBottomSheet.TAG
