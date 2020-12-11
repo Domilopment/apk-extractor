@@ -12,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.databinding.AppListItemBinding
 import domilopment.apkextractor.fragments.MainFragment
+import domilopment.apkextractor.utils.SettingsManager
 import java.util.*
 
 class AppListAdapter(

@@ -17,6 +17,8 @@ import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.databinding.ActivityMainBinding
+import domilopment.apkextractor.utils.FileHelper
+import domilopment.apkextractor.utils.SettingsManager
 import kotlin.Exception
 
 class MainActivity : AppCompatActivity() {

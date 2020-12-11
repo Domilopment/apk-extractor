@@ -7,9 +7,9 @@ import android.os.AsyncTask
 import android.util.Log
 import android.widget.Toast
 import androidx.preference.PreferenceManager
-import domilopment.apkextractor.FileHelper
+import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.R
-import domilopment.apkextractor.SettingsManager
+import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.data.Application
 
 class PackageBroadcastReceiver : BroadcastReceiver() {

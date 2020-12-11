@@ -1,4 +1,4 @@
-package domilopment.apkextractor
+package domilopment.apkextractor.utils
 
 import android.app.Activity
 import android.content.Context

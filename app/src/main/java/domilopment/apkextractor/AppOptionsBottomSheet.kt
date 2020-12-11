@@ -20,8 +20,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.databinding.AppOptionsBottomSheetBinding
+import domilopment.apkextractor.utils.FileHelper
+import domilopment.apkextractor.utils.SettingsManager
 
-class AppOptionsBottomSheet(private val app: Application, private val callback: () -> Unit) : BottomSheetDialogFragment() {
+class AppOptionsBottomSheet(
+    private val app: Application,
+    private val callback: () -> Unit
+) : BottomSheetDialogFragment() {
     private var _binding: AppOptionsBottomSheetBinding? = null
 
     // This property is only valid between onCreateView and

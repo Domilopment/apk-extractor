@@ -22,6 +22,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import domilopment.apkextractor.databinding.FragmentMainBinding
+import domilopment.apkextractor.utils.FileHelper
+import domilopment.apkextractor.utils.SettingsManager
 
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null

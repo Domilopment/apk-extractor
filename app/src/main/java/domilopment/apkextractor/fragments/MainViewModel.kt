@@ -3,7 +3,7 @@ package domilopment.apkextractor.fragments
 import android.content.Context
 import androidx.annotation.NonNull
 import androidx.lifecycle.*
-import domilopment.apkextractor.SettingsManager
+import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.data.ListOfAPKs
 import kotlinx.coroutines.Dispatchers

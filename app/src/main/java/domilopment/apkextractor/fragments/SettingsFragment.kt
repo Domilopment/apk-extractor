@@ -14,6 +14,8 @@ import domilopment.apkextractor.*
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ListOfAPKs
+import domilopment.apkextractor.utils.FileHelper
+import domilopment.apkextractor.utils.SettingsManager
 import kotlinx.coroutines.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
