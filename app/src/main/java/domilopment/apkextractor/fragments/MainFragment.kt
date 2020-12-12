@@ -129,45 +129,54 @@ class MainFragment : Fragment() {
 
     /**
      * Function Called on FloatingActionButton Click
+     * If backup was successful, print name of last app backup and number of additional
+     * else break on first unsuccessful backup and print its name
      * @param view
      * The FloatingActionButton
      */
     private fun saveApps(view: View) {
-        val settingsManager = SettingsManager(requireContext())
-        val fileHelper = FileHelper(requireContext())
         viewAdapter.myDatasetFiltered.filter {
             it.isChecked
-        }.also {
-            if (it.isEmpty())
-                Toast.makeText(
-                    requireContext(),
-                    R.string.toast_save_apps,
-                    Toast.LENGTH_SHORT
-                ).show()
-            else {
-                var success = false
-                it.forEach { app ->
-                    success = fileHelper.copy(
-                        app.appSourceDirectory,
-                        settingsManager.saveDir()!!,
-                        settingsManager.appName(app)
-                    )
+        }.also { list ->
+            if (list.isEmpty()) Toast.makeText(
+                requireContext(),
+                R.string.toast_save_apps,
+                Toast.LENGTH_SHORT
+            ).show()
+            else if (
+                kotlin.run success@{
+                    val settingsManager = SettingsManager(requireContext())
+                    val fileHelper = FileHelper(requireContext())
+                    list.forEach { app ->
+                        if (
+                            !fileHelper.copy(
+                                app.appSourceDirectory,
+                                settingsManager.saveDir()!!,
+                                settingsManager.appName(app)
+                            )
+                        ) {
+                            Snackbar.make(
+                                view,
+                                getString(R.string.snackbar_extraction_failed)
+                                    .format(app.appPackageName),
+                                Snackbar.LENGTH_LONG
+                            ).setAnchorView(binding.appMultiselectBottomSheet.root)
+                                .setTextColor(Color.RED)
+                                .show()
+                            return@success false
+                        }
+                    }
+                    return@success true
                 }
-                if (success) Snackbar.make(
+            ) {
+                Snackbar.make(
                     view,
-                    if (it.size == 1) getString(R.string.snackbar_successful_extracted)
-                        .format(it.last().appName)
+                    if (list.size == 1) getString(R.string.snackbar_successful_extracted)
+                        .format(list.last().appName)
                     else getString(R.string.snackbar_successful_extracted_multiple)
-                        .format(it.last().appName, it.size - 1),
+                        .format(list.last().appName, list.size - 1),
                     Snackbar.LENGTH_LONG
                 ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                    .show()
-                else Snackbar.make(
-                    view,
-                    getString(R.string.snackbar_extraction_failed)
-                        .format(it.last().appName),
-                    Snackbar.LENGTH_LONG
-                ).setAnchorView(binding.appMultiselectBottomSheet.root).setTextColor(Color.RED)
                     .show()
             }
         }

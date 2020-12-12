@@ -92,9 +92,12 @@ class AppListAdapter(
 
                 } else {
                     val optionsBottomSheet = AppOptionsBottomSheet(app) {
-                        val newDataset = myDataset.toMutableList()
-                        newDataset.remove(app)
-                        updateData(newDataset)
+                        myDataset.toMutableList()
+                            .apply {
+                                remove(app)
+                            }.also {
+                                updateData(it)
+                            }
                     }
                     optionsBottomSheet.show(
                         mainFragment.requireActivity().supportFragmentManager,

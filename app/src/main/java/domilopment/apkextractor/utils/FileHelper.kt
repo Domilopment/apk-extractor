@@ -33,15 +33,21 @@ class FileHelper(private val context: Context) {
         fileName: String
     ): Boolean {
         return try {
-            val pickedDir = DocumentsContract.createDocument(
-                context.contentResolver,
-                DocumentsContract.buildDocumentUriUsingTree(
-                    to, DocumentsContract.getTreeDocumentId(to)
-                ), MIME_TYPE, fileName
-            )
-
+            // Create Input Stream from APK source file
             FileInputStream(from).use { input ->
-                context.contentResolver.openOutputStream(pickedDir!!).use { output ->
+                // Create new APK file in destination folder
+                DocumentsContract.createDocument(
+                    context.contentResolver,
+                    DocumentsContract.buildDocumentUriUsingTree(
+                        to, DocumentsContract.getTreeDocumentId(to)
+                    ),
+                    MIME_TYPE,
+                    fileName
+                ).let { outputFile ->
+                    // Create Output Stream for target APK file
+                    context.contentResolver.openOutputStream(outputFile!!)
+                }.use { output ->
+                    // Copy from Input to Output Stream
                     input.copyTo(output!!)
                 }
             }
