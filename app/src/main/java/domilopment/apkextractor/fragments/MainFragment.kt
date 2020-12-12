@@ -166,7 +166,8 @@ class MainFragment : Fragment() {
                             view,
                             getString(R.string.snackbar_extraction_failed).format(d.appName),
                             Snackbar.LENGTH_LONG
-                        ).setAnchorView(binding.appMultiselectBottomSheet.root).setTextColor(Color.RED).show()
+                        ).setAnchorView(binding.appMultiselectBottomSheet.root)
+                            .setTextColor(Color.RED).show()
                 }
         }
     }
@@ -271,6 +272,17 @@ class MainFragment : Fragment() {
     }
 
     /**
+     * Set Preferencies for App List Sort Type and Apply
+     * @param item Menu item for sortType
+     * @param sortType Internal sort type number
+     */
+    private fun sortData(item: MenuItem, sortType: Int) {
+        sharedPreferences.edit().putInt("app_sort", sortType).apply()
+        item.isChecked = true
+        viewAdapter.sortData()
+    }
+
+    /**
      * Perform actions for menu Items
      * @param item selected menu Item
      * return Boolean
@@ -282,30 +294,10 @@ class MainFragment : Fragment() {
         when (item.itemId) {
             R.id.action_settings ->
                 findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
-            R.id.action_app_name -> {
-                sharedPreferences.edit().putInt("app_sort", 0)
-                    .apply()
-                item.isChecked = true
-                viewAdapter.sortData()
-            }
-            R.id.action_package_name -> {
-                sharedPreferences.edit().putInt("app_sort", 1)
-                    .apply()
-                item.isChecked = true
-                viewAdapter.sortData()
-            }
-            R.id.action_install_time -> {
-                sharedPreferences.edit().putInt("app_sort", 2)
-                    .apply()
-                item.isChecked = true
-                viewAdapter.sortData()
-            }
-            R.id.action_update_time -> {
-                sharedPreferences.edit().putInt("app_sort", 3)
-                    .apply()
-                item.isChecked = true
-                viewAdapter.sortData()
-            }
+            R.id.action_app_name -> sortData(item, 0)
+            R.id.action_package_name -> sortData(item, 1)
+            R.id.action_install_time -> sortData(item, 2)
+            R.id.action_update_time -> sortData(item, 3)
             R.id.action_show_save_dir -> {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     val destDir = SettingsManager(requireContext()).saveDir()
