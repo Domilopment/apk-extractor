@@ -139,36 +139,37 @@ class MainFragment : Fragment() {
             it.isChecked
         }.also {
             if (it.isEmpty())
-                Toast.makeText(requireContext(), R.string.toast_save_apps, Toast.LENGTH_SHORT)
-                    .show()
-            else
-                it.forEach { d ->
-                    if (fileHelper.copy(
-                            d.appSourceDirectory,
-                            settingsManager.saveDir()!!,
-                            settingsManager.appName(d)
-                        )
+                Toast.makeText(
+                    requireContext(),
+                    R.string.toast_save_apps,
+                    Toast.LENGTH_SHORT
+                ).show()
+            else {
+                var success = false
+                it.forEach { app ->
+                    success = fileHelper.copy(
+                        app.appSourceDirectory,
+                        settingsManager.saveDir()!!,
+                        settingsManager.appName(app)
                     )
-                        Snackbar.make(
-                            view,
-                            if (it.size == 1) {
-                                getString(R.string.snackbar_successful_extracted).format(d.appName)
-                            } else {
-                                getString(R.string.snackbar_successful_extracted_multiple).format(
-                                    d.appName,
-                                    it.size - 1
-                                )
-                            },
-                            Snackbar.LENGTH_LONG
-                        ).setAnchorView(binding.appMultiselectBottomSheet.root).show()
-                    else
-                        Snackbar.make(
-                            view,
-                            getString(R.string.snackbar_extraction_failed).format(d.appName),
-                            Snackbar.LENGTH_LONG
-                        ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                            .setTextColor(Color.RED).show()
                 }
+                if (success) Snackbar.make(
+                    view,
+                    if (it.size == 1) getString(R.string.snackbar_successful_extracted)
+                        .format(it.last().appName)
+                    else getString(R.string.snackbar_successful_extracted_multiple)
+                        .format(it.last().appName, it.size - 1),
+                    Snackbar.LENGTH_LONG
+                ).setAnchorView(binding.appMultiselectBottomSheet.root)
+                    .show()
+                else Snackbar.make(
+                    view,
+                    getString(R.string.snackbar_extraction_failed)
+                        .format(it.last().appName),
+                    Snackbar.LENGTH_LONG
+                ).setAnchorView(binding.appMultiselectBottomSheet.root).setTextColor(Color.RED)
+                    .show()
+            }
         }
     }
 
@@ -251,10 +252,9 @@ class MainFragment : Fragment() {
         viewAdapter.myDatasetFiltered.filter {
             it.isChecked
         }.forEach { app ->
-            fileHelper.shareURI(app)
-                .also {
-                    files.add(it)
-                }
+            fileHelper.shareURI(app).also {
+                files.add(it)
+            }
         }
         return if (files.isEmpty()) {
             Toast.makeText(requireContext(), R.string.toast_share_app, Toast.LENGTH_SHORT).show()
@@ -262,11 +262,7 @@ class MainFragment : Fragment() {
         } else {
             Intent(Intent.ACTION_SEND_MULTIPLE).apply {
                 type = FileHelper.MIME_TYPE
-                if (files.size > 1) {
-                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
-                } else {
-                    putExtra(Intent.EXTRA_STREAM, files[0])
-                }
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
             }
         }
     }
