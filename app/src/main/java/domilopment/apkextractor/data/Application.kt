@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
 import java.io.File
-import kotlin.math.pow
-import kotlin.math.round
 
 data class Application(
     private val applicationInfo: ApplicationInfo,

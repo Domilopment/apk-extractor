@@ -82,8 +82,8 @@ class AppListAdapter(
                         myTitle++
                     else {
                         myTitle--
-                        (mode?.menu?.findItem(R.id.action_select_all)?.actionView as CheckBox).isChecked =
-                            false
+                        (mode?.menu?.findItem(R.id.action_select_all)?.actionView as CheckBox)
+                            .isChecked = false
                     }
 
                     mode?.title = myTitle.toString()
@@ -137,7 +137,7 @@ class AppListAdapter(
              * The Filter Algorythm
              * @param charSequence
              * charSequence to find
-             * @return FilterResultes
+             * @return FilterResults
              * Apps that match charSequence
              */
             override fun performFiltering(charSequence: CharSequence): FilterResults {

@@ -80,7 +80,17 @@
     <string name="alert_save_path_ok">OK</string>
     <string name="toast_save_apps">Select Apps to Save</string>
     <string name="snackbar_successful_extracted">%s successful extracted</string>
-    <string name="snackbar_successful_extracted_multiple">%s and %d additional successful extracted</string>
+    <plurals name="snackbar_successful_extracted_multiple">
+        <!--
+             As a developer, you should always supply "one" and "other"
+             strings. Your translators will know which strings are actually
+             needed for their language. Always include %d in "one" because
+             translators will need to use %d for languages where "one"
+             doesn't mean 1 (as explained above).
+          -->
+        <item quantity="one">%s successful extracted</item>
+        <item quantity="other">%s and %d additional successful extracted</item>
+    </plurals>
     <string name="snackbar_extraction_failed">Extraction of %s FAILED</string>
     <string name="snackbar_successful_saved_image">Icon Saved</string>
     <string name="action_share">Sending App</string>
