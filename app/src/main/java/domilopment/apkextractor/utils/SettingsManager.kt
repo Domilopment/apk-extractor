@@ -98,7 +98,7 @@ class SettingsManager(context: Context) {
     }
 
     /**
-     * Tells an Activity if AutoBackupService should be startet
+     * Tells an Activity if AutoBackupService should be started
      * @return true if Service isn't running and should be started
      */
     fun shouldStartService(): Boolean {

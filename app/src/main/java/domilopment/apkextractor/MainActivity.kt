@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Executes Option for "How to Use Apk" Dialoge
+     * Executes Option for "How to Use Apk" Dialog
      * @param i Selected Option
      * @param data Result Intent, holding Apk files data
      */

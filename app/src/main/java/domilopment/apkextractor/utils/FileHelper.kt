@@ -17,7 +17,7 @@ class FileHelper(private val context: Context) {
     }
 
     /**
-     * Copy APK file from Source to Choosen Save Director with Name
+     * Copy APK file from Source to Chosen Save Director with Name
      * @param from
      * Source of existing APK from App
      * @param to
@@ -25,7 +25,7 @@ class FileHelper(private val context: Context) {
      * @param fileName
      * Name for Saved APK File
      * @return
-     * True if copy was Succsessfull else False
+     * True if copy was Successfully else False
      */
     fun copy(
         from: String,

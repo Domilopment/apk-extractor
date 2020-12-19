@@ -52,7 +52,7 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
      * Async Task to ensure Backup isn't killed by System when Broadcast finishes
      * @param pendingResult
      * @param context get Broadcast context
-     * @param packageName Packagename of Updated App
+     * @param packageName Package name of Updated App
      */
     private class Task(
         private val pendingResult: PendingResult,

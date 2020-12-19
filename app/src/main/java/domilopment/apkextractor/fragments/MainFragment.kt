@@ -277,7 +277,7 @@ class MainFragment : Fragment() {
     }
 
     /**
-     * Set Preferencies for App List Sort Type and Apply
+     * Set Preference for App List Sort Type and Apply
      * @param item Menu item for sortType
      * @param sortType Internal sort type number
      */

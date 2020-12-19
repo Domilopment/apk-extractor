@@ -48,7 +48,7 @@ class AppListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return LayoutInflater.from(parent.context).inflate(R.layout.app_list_item, parent, false)
             .let {
-                // set the view's size, margins, paddings and layout parameters
+                // set the view's size, margins, padding and layout parameters
                 MyViewHolder(it)
             }
     }
@@ -64,7 +64,7 @@ class AppListAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         // - get element from your dataset at this position
         val app = myDatasetFiltered[position]
-        // say holder should not be re used for other Dataset menbers
+        // say holder should not be re used for other Dataset members
         holder.setIsRecyclable(false)
         // Apply data from Dataset item to holder
         holder.binding.apply {
@@ -134,7 +134,7 @@ class AppListAdapter(
     override fun getFilter(): Filter {
         return object : Filter() {
             /**
-             * The Filter Algorythm
+             * The Filter Algorithm
              * @param charSequence
              * charSequence to find
              * @return FilterResults
