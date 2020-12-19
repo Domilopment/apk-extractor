@@ -171,10 +171,12 @@ class MainFragment : Fragment() {
             ) {
                 Snackbar.make(
                     view,
-                    if (list.size == 1) getString(R.string.snackbar_successful_extracted)
-                        .format(list.last().appName)
-                    else resources.getQuantityString(R.plurals.snackbar_successful_extracted_multiple, list.size, list.last().appName, list.size)
-                    .format(list.last().appName, list.size - 1),
+                    resources.getQuantityString(
+                        R.plurals.snackbar_successful_extracted_multiple,
+                        list.size,
+                        list.last().appName,
+                        list.size - 1
+                    ),
                     Snackbar.LENGTH_LONG
                 ).setAnchorView(binding.appMultiselectBottomSheet.root)
                     .show()

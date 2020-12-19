@@ -91,7 +91,7 @@
              translators will need to use %d for languages where "one"
              doesn't mean 1 (as explained above).
           -->
-        <item quantity="one">%s successful extracted</item>
+        <item quantity="one">@string/snackbar_successful_extracted</item>
         <item quantity="other">%s and %d additional successful extracted</item>
     </plurals>
     <string name="snackbar_extraction_failed">Extraction of %s FAILED</string>

@@ -90,7 +90,7 @@
              translators will need to use %d for languages where "one"
              doesn't mean 1 (as explained above).
           -->
-        <item quantity="one">%s wurde erfolgreich extraiert</item>
+        <item quantity="one">@string/snackbar_successful_extracted</item>
         <item quantity="other">%s und %d weitere erfolgreich extraiert</item>
     </plurals>
     <string name="snackbar_extraction_failed">Extraieren von %s FEHLGESCHLAGEN</string>
