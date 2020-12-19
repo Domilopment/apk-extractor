@@ -13,7 +13,8 @@
     app:behavior_draggable="false"
     app:behavior_peekHeight="0dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    tools:showIn="@layout/fragment_main">
+    tools:showIn="@layout/fragment_main"
+    tools:ignore="Overdraw">
 
     <ImageView
         android:id="@+id/action_save_apk"
@@ -23,7 +24,7 @@
         android:layout_marginEnd="4dp"
         android:layout_weight="1"
         android:background="?attr/selectableItemBackground"
-        android:contentDescription="Save Apk"
+        android:contentDescription="@string/action_multiselect_bottom_sheet_save_description"
         android:padding="4dp"
         app:srcCompat="@drawable/ic_baseline_save_24"
         app:tint="@color/white" />
@@ -36,10 +37,9 @@
         android:layout_marginStart="4dp"
         android:layout_weight="1"
         android:background="?attr/selectableItemBackground"
-        android:contentDescription="Share Apk"
+        android:contentDescription="@string/action_multiselect_bottom_sheet_share_description"
         android:padding="4dp"
         app:srcCompat="@drawable/ic_share_24dp"
         app:tint="@color/white" />
-
 
 </LinearLayout>

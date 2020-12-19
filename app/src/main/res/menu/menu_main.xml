@@ -7,7 +7,7 @@
         android:orderInCategory="0"
         android:title="@string/menu_search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <item
         android:orderInCategory="1"
         android:title="@string/menu_sort"

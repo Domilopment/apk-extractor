@@ -65,8 +65,11 @@
     <string name="menu_sort_package">Package Name</string>
     <string name="menu_sort_install">Install Time</string>
     <string name="menu_sort_update">Update Time</string>
-    <string name="menu_show_save_dir">Save Directory</string>
+    <string name="menu_show_save_dir">Saved Apps</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Menu Multiselect -->
+    <string name="multiselect_select_all">Select all</string>
 
     <!-- APK Selected Alert -->
     <string name="alert_apk_selected_title">How to use APK</string>
@@ -111,7 +114,17 @@
     <string name="action_bottom_sheet_settings">Settings</string>
     <string name="action_bottom_sheet_uninstall">Uninstall</string>
 
+    <!-- App Multiselect Options Bottom Sheet -->
+    <string name="action_multiselect_bottom_sheet_save_description">Save Apks</string>
+    <string name="action_multiselect_bottom_sheet_share_description">Share Apks</string>
+
     <!-- App List Adapter -->
     <string name="holder_app_name">%s (%.2f MB)</string>
+
+    <!-- App List Item -->
+    <string name="list_item_Image_description">App Icon</string>
+    <string name="list_item_title_placeholder" translatable="false">App Title</string>
+    <string name="list_item_package_placeholder" translatable="false">com.placeholder.application</string>
+    <string name="list_item_checkbox_description">Multiselect Checkbox</string>
 
 </resources>

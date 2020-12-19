@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="6dip"
-        android:contentDescription="App Icon"
+        android:contentDescription="@string/list_item_Image_description"
         android:src="@mipmap/ic_launcher" />
 
     <TextView
@@ -25,7 +25,7 @@
         android:layout_toStartOf="@id/checkBox"
         android:layout_toEndOf="@id/icon"
         android:singleLine="true"
-        android:text="App Package"
+        android:text="@string/list_item_package_placeholder"
         android:textSize="12sp" />
 
     <TextView
@@ -39,7 +39,7 @@
         android:layout_toEndOf="@id/icon"
         android:gravity="center_vertical"
         android:singleLine="true"
-        android:text="App Title"
+        android:text="@string/list_item_title_placeholder"
         android:textSize="16sp" />
 
     <ImageView
@@ -49,7 +49,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:contentDescription="Multiselect Checkbox"
+        android:contentDescription="@string/list_item_checkbox_description"
         android:visibility="invisible"
         app:srcCompat="@drawable/ic_baseline_check_box_24" />
 
