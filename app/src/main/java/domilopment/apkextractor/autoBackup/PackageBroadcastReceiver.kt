@@ -1,36 +1,51 @@
 package domilopment.apkextractor.autoBackup
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
 import android.os.AsyncTask
+import android.provider.DocumentsContract
 import android.util.Log
-import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
+import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.R
 import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.data.Application
 
 class PackageBroadcastReceiver : BroadcastReceiver() {
+    companion object {
+        private const val CHANNEL_ID = "domilopment.apkextractor.BROADCAST_RECEIVER"
+        const val ACTION_DELETE_APK = "domilopment.apkextractor.DELETE_APK"
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
-        when(intent.action) {
+        when (intent.action) {
             // Check for App Updates
             Intent.ACTION_PACKAGE_REPLACED ->
                 intent.data?.encodedSchemeSpecificPart?.let { packageName ->
-                // Check if Updated App is in Backup List
-                if (
-                    SettingsManager(context).listOfAutoBackupApps()!!.contains(packageName)
-                ) {
-                    val pendingResult: PendingResult = goAsync()
-                    val asyncTask = Task(pendingResult, context, packageName)
-                    asyncTask.execute()
+                    // Check if Updated App is in Backup List
+                    if (
+                        SettingsManager(context).listOfAutoBackupApps()!!.contains(packageName)
+                    ) {
+                        val pendingResult: PendingResult = goAsync()
+                        val asyncTask = Task(pendingResult, context, packageName)
+                        asyncTask.execute()
+                    }
                 }
-            }
 
             // Foreground Notification Button Call
             AutoBackupService.ACTION_STOP_SERVICE -> {
-                PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("auto_backup", false).apply()
+                PreferenceManager.getDefaultSharedPreferences(context).edit()
+                    .putBoolean("auto_backup", false).apply()
                 context.stopService(Intent(context, AutoBackupService::class.java))
             }
 
@@ -44,6 +59,16 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
             // Restart Service if it is killed
             AutoBackupService.ACTION_RESTART_SERVICE -> {
                 context.startForegroundService(Intent(context, AutoBackupService::class.java))
+            }
+
+            // Delete Backup APK file
+            ACTION_DELETE_APK -> {
+                intent.data?.let {
+                    DocumentsContract.deleteDocument(
+                        context.contentResolver,
+                        it
+                    )
+                }
             }
         }
     }
@@ -59,7 +84,8 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
         private val context: Context,
         packageName: String
     ) : AsyncTask<String, Int, Unit>() {
-        private var success = false
+        private var success: Uri? = null
+
         // Get Application Info from Package
         private val app =
             Application(
@@ -79,20 +105,126 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                 )
             } catch (e: Exception) {
                 Log.e("Apk Extractor: AutoBackupService", e.toString())
-                false
+                null
             }
         }
 
         override fun onPostExecute(result: Unit?) {
             super.onPostExecute(result)
             // Let User know when App is or should be Updated
-            if (success)
-                Toast.makeText(context, context.getString(R.string.auto_backup_broadcast_receiver_backup_success, app.appName), Toast.LENGTH_LONG).show()
-            else
-                Toast.makeText(context, context.getString(R.string.auto_backup_broadcast_receiver_backup_failed, app.appName), Toast.LENGTH_LONG).show()
-
+            createNotificationChannel()
+            with(NotificationManagerCompat.from(context)) {
+                success?.let {
+                    // notificationId is a unique int for each notification that you must define
+                    notify(AutoBackupService.getNewNotificationID(), createNotificationSuccess())
+                } ?: run {
+                    // notificationId is a unique int for each notification that you must define
+                    notify(AutoBackupService.getNewNotificationID(), createNotificationFailed())
+                }
+            }
             // Must call finish() so the BroadcastReceiver can be recycled.
             pendingResult.finish()
+        }
+
+        /**
+         * Create notification Channel for auto Backup Apk results
+         */
+        private fun createNotificationChannel() {
+            // Create Notification Channel
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "App Backup Created",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                lightColor = Color.BLUE
+                lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+            }
+
+            // Open Channel with Notification Service
+            val service =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            service.createNotificationChannel(channel)
+        }
+
+        /**
+         * Creates Notification
+         * @return Notification
+         * Returns a Notification for Backup Apk
+         */
+        private fun createNotificationSuccess(): Notification {
+            // Call MainActivity an Notification Click
+            val pendingIntent: PendingIntent =
+                Intent(context, MainActivity::class.java).let { notificationIntent ->
+                    PendingIntent.getActivity(context, 0, notificationIntent, 0)
+                }
+
+            // Share APK on Button Click
+            val sharePendingIntent: PendingIntent =
+                Intent.createChooser(
+                    Intent(Intent.ACTION_SEND).apply {
+                        type = FileHelper.MIME_TYPE
+                        putExtra(Intent.EXTRA_STREAM, success)
+                    },
+                    context.getString(R.string.share_intent_title)
+                ).let {
+                    PendingIntent.getActivity(context, 0, it, 0)
+                }
+
+            // Delete APK on Button Click
+            val deletePendingIntent: PendingIntent =
+                Intent(context, PackageBroadcastReceiver::class.java).apply {
+                    action = ACTION_DELETE_APK
+                    data = success
+                }.let { stopIntent ->
+                    PendingIntent.getBroadcast(context, 0, stopIntent, 0)
+                }
+
+            // Build and return Notification
+            return NotificationCompat.Builder(context, CHANNEL_ID)
+                .setContentTitle(context.getString(R.string.auto_backup_broadcast_receiver_notification_title))
+                .setContentText(
+                    context.getString(
+                        R.string.auto_backup_broadcast_receiver_backup_success,
+                        app.appName
+                    )
+                ).setSmallIcon(R.drawable.ic_small_notification_icon_24)
+                .setContentIntent(pendingIntent)
+                .addAction(
+                    R.drawable.ic_small_notification_icon_24,
+                    context.getString(R.string.action_bottom_sheet_share),
+                    sharePendingIntent
+                ).addAction(
+                    R.drawable.ic_small_notification_icon_24,
+                    context.getString(R.string.alert_apk_selected_delete),
+                    deletePendingIntent
+                ).setAutoCancel(true)
+                .build()
+        }
+
+        /**
+         * Creates Notification
+         * @return Notification
+         * Returns a Notification if Backup Apk failed
+         */
+        private fun createNotificationFailed(): Notification {
+            // Call MainActivity an Notification Click
+            val pendingIntent: PendingIntent =
+                Intent(context, MainActivity::class.java).let { notificationIntent ->
+                    PendingIntent.getActivity(context, 0, notificationIntent, 0)
+                }
+
+            // Build and return Notification
+            return NotificationCompat.Builder(context, CHANNEL_ID)
+                .setContentTitle(context.getString(R.string.auto_backup_broadcast_receiver_notification_title))
+                .setContentText(
+                    context.getString(
+                        R.string.auto_backup_broadcast_receiver_backup_failed,
+                        app.appName
+                    )
+                ).setSmallIcon(R.drawable.ic_small_notification_icon_24)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .build()
         }
     }
 }

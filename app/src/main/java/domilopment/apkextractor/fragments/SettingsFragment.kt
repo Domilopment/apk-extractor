@@ -32,7 +32,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         super.onActivityCreated(savedInstanceState)
         // Shows Version Number in Settings
         findPreference<Preference>("version")!!.title =
-            getString(R.string.version).format(BuildConfig.VERSION_NAME)
+            getString(R.string.version, BuildConfig.VERSION_NAME)
         // A Link to Projects Github Repo
         findPreference<Preference>("github")!!.setOnPreferenceClickListener {
             CustomTabsIntent.Builder()

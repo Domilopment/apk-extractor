@@ -85,7 +85,7 @@ class MainFragment : Fragment() {
 
             actionShare.setOnClickListener {
                 getSelectedApps()?.let {
-                    Intent.createChooser(it, getString(R.string.action_share))
+                    Intent.createChooser(it, getString(R.string.share_intent_title))
                 }?.also {
                     startActivityForResult(it, MainActivity.SHARE_APP_RESULT)
                 }
@@ -149,16 +149,15 @@ class MainFragment : Fragment() {
                     val fileHelper = FileHelper(requireContext())
                     list.forEach { app ->
                         if (
-                            !fileHelper.copy(
+                            fileHelper.copy(
                                 app.appSourceDirectory,
                                 settingsManager.saveDir()!!,
                                 settingsManager.appName(app)
-                            )
+                            ) == null
                         ) {
                             Snackbar.make(
                                 view,
-                                getString(R.string.snackbar_extraction_failed)
-                                    .format(app.appPackageName),
+                                getString(R.string.snackbar_extraction_failed, app.appPackageName),
                                 Snackbar.LENGTH_LONG
                             ).setAnchorView(binding.appMultiselectBottomSheet.root)
                                 .setTextColor(Color.RED)

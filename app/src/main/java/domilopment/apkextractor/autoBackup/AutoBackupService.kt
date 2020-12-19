@@ -12,14 +12,20 @@ import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.R
+import java.util.concurrent.atomic.AtomicInteger
 
 class AutoBackupService : Service() {
     companion object {
         private const val CHANNEL_ID = "domilopment.apkextractor.AUTO_BACKUP_SERVICE"
         const val ACTION_STOP_SERVICE = "domilopment.apkextractor.STOP_AUTO_BACKUP_SERVICE"
         const val ACTION_RESTART_SERVICE = "domilopment.apkextractor.RESTART_AUTO_BACKUP_SERVICE"
+
         // Check for Service is Running
         var isRunning = false
+
+        // Create unique notification IDs
+        private val c: AtomicInteger = AtomicInteger(1)
+        fun getNewNotificationID() = c.incrementAndGet()
     }
 
     private lateinit var br: BroadcastReceiver
@@ -57,7 +63,11 @@ class AutoBackupService : Service() {
         unregisterReceiver(br)
         stopForeground(true)
         // Restart Service if kill isn't called by user
-        if (PreferenceManager.getDefaultSharedPreferences(applicationContext).getBoolean("auto_backup", false))
+        if (PreferenceManager.getDefaultSharedPreferences(applicationContext).getBoolean(
+                "auto_backup",
+                false
+            )
+        )
             restartService()
     }
 
@@ -102,7 +112,11 @@ class AutoBackupService : Service() {
             .setContentText(getString(R.string.auto_backup_notification_content_text))
             .setSmallIcon(R.drawable.ic_small_notification_icon_24)
             .setContentIntent(pendingIntent)
-            .addAction(R.drawable.ic_small_notification_icon_24, getString(R.string.auto_backup_notification_action_stop), stopPendingIntent)
+            .addAction(
+                R.drawable.ic_small_notification_icon_24,
+                getString(R.string.auto_backup_notification_action_stop),
+                stopPendingIntent
+            )
             .build()
     }
 
@@ -111,7 +125,10 @@ class AutoBackupService : Service() {
      */
     private fun restartService() {
         // restart Pending Intent
-        val restartServicePendingIntent: PendingIntent =  Intent(this, PackageBroadcastReceiver::class.java).apply {
+        val restartServicePendingIntent: PendingIntent = Intent(
+            this,
+            PackageBroadcastReceiver::class.java
+        ).apply {
             action = ACTION_RESTART_SERVICE
         }.let { restartIntent ->
             PendingIntent.getBroadcast(this, 0, restartIntent, 0)

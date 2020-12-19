@@ -31,8 +31,9 @@ class FileHelper(private val context: Context) {
         from: String,
         to: Uri,
         fileName: String
-    ): Boolean {
+    ): Uri? {
         return try {
+            val extractedApk: Uri?
             // Create Input Stream from APK source file
             FileInputStream(from).use { input ->
                 // Create new APK file in destination folder
@@ -44,6 +45,7 @@ class FileHelper(private val context: Context) {
                     MIME_TYPE,
                     fileName
                 ).let { outputFile ->
+                    extractedApk = outputFile
                     // Create Output Stream for target APK file
                     context.contentResolver.openOutputStream(outputFile!!)
                 }.use { output ->
@@ -51,13 +53,13 @@ class FileHelper(private val context: Context) {
                     input.copyTo(output!!)
                 }
             }
-            true
+            extractedApk
         } catch (fnf_e: FileNotFoundException) {
             fnf_e.printStackTrace()
-            false
+            null
         } catch (e: Exception) {
             e.printStackTrace()
-            false
+            null
         }
     }
 

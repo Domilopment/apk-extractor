@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name" translatable="false">APK Extractor</string>
 
+    <!-- Apk Options -->
+    <string name="apk_action_share">Share</string>
+    <string name="apk_action_delete">Delete</string>
+
     <string name="title_activity_settings">Settings</string>
 
     <!-- Preference Header -->
@@ -73,9 +77,9 @@
 
     <!-- APK Selected Alert -->
     <string name="alert_apk_selected_title">How to use APK</string>
-    <string name="alert_apk_selected_share">Share APK</string>
-    <string name="alert_apk_selected_install">Install APK</string>
-    <string name="alert_apk_selected_delete">Delete APK</string>
+    <string name="alert_apk_selected_share">@string/apk_action_share</string>
+    <string name="alert_apk_selected_install">Install</string>
+    <string name="alert_apk_selected_delete">@string/apk_action_delete</string>
 
     <!-- MainActivity -->
     <string name="alert_save_path_title">Save Dir</string>
@@ -96,7 +100,7 @@
     </plurals>
     <string name="snackbar_extraction_failed">Extraction of %s FAILED</string>
     <string name="snackbar_successful_saved_image">Icon Saved</string>
-    <string name="action_share">Sending App</string>
+    <string name="share_intent_title">Sharing App</string>
     <string name="toast_share_app">Select Apps to Share</string>
 
     <!-- Auto Backup Foreground Service -->
@@ -105,10 +109,11 @@
     <string name="auto_backup_notification_action_stop">STOP SERVICE</string>
     <string name="auto_backup_broadcast_receiver_backup_success">Backup %s successfully</string>
     <string name="auto_backup_broadcast_receiver_backup_failed">Backup %s failed</string>
+    <string name="auto_backup_broadcast_receiver_notification_title">Auto Backup</string>
 
     <!-- App Options Bottom Sheet -->
     <string name="action_bottom_sheet_save">Save</string>
-    <string name="action_bottom_sheet_share">Share</string>
+    <string name="action_bottom_sheet_share">@string/apk_action_share</string>
     <string name="action_bottom_sheet_save_image">Save Icon</string>
     <string name="action_bottom_sheet_open">Open</string>
     <string name="action_bottom_sheet_settings">Settings</string>
@@ -116,7 +121,7 @@
 
     <!-- App Multiselect Options Bottom Sheet -->
     <string name="action_multiselect_bottom_sheet_save_description">Save Apks</string>
-    <string name="action_multiselect_bottom_sheet_share_description">Share Apks</string>
+    <string name="action_multiselect_bottom_sheet_share_description">@string/apk_action_share</string>
 
     <!-- App List Adapter -->
     <string name="holder_app_name">%s (%.2f MB)</string>

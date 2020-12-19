@@ -69,7 +69,7 @@ class AppListAdapter(
         // Apply data from Dataset item to holder
         holder.binding.apply {
             firstLine.text =
-                mainFragment.getString(R.string.holder_app_name).format(app.appName, app.apkSize)
+                mainFragment.getString(R.string.holder_app_name, app.appName, app.apkSize)
             secondLine.text = app.appPackageName
             icon.setImageDrawable(app.appIcon)
             checkBox.isVisible = app.isChecked

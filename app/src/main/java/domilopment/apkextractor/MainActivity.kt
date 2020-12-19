@@ -177,7 +177,11 @@ class MainActivity : AppCompatActivity() {
                             try {
                                 data?.data?.let { apkFileOptions(i, it) }
                             } catch (e: Exception) {
-                                Toast.makeText(context, "Something went wrong, couldn't perform action on Selected Apk", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    context,
+                                    "Something went wrong, couldn't perform action on Selected Apk",
+                                    Toast.LENGTH_LONG
+                                ).show()
                                 Log.e("Apk Extractor: Saved Apps Dialog", e.toString())
                             }
                         }
@@ -197,9 +201,8 @@ class MainActivity : AppCompatActivity() {
             0 -> startActivity(
                 Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                     type = FileHelper.MIME_TYPE
-                    action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_STREAM, data)
-                }, getString(R.string.action_share))
+                }, getString(R.string.share_intent_title))
             )
             // Install Selected Apk File
             1 -> startActivity(

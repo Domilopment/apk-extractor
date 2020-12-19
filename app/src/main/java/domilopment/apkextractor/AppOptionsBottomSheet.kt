@@ -51,26 +51,26 @@ class AppOptionsBottomSheet(
         super.onActivityCreated(savedInstanceState)
 
         // Save Apk
-        binding.actionSaveApk.setOnClickListener {
+        binding.actionSaveApk.setOnClickListener { view ->
             val settingsManager = SettingsManager(requireContext())
 
-            if (FileHelper(requireActivity()).copy(
-                    app.appSourceDirectory,
-                    settingsManager.saveDir()!!,
-                    settingsManager.appName(app)
-                )
-            )
+            FileHelper(requireActivity()).copy(
+                app.appSourceDirectory,
+                settingsManager.saveDir()!!,
+                settingsManager.appName(app)
+            )?.let {
                 Snackbar.make(
-                    it,
-                    getString(R.string.snackbar_successful_extracted).format(app.appName),
+                    view,
+                    getString(R.string.snackbar_successful_extracted, app.appName),
                     Snackbar.LENGTH_LONG
                 ).setAnchorView(this.view).show()
-            else
+            } ?: run {
                 Snackbar.make(
-                    it,
-                    getString(R.string.snackbar_extraction_failed).format(app.appName),
+                    view,
+                    getString(R.string.snackbar_extraction_failed, app.appName),
                     Snackbar.LENGTH_LONG
                 ).setAnchorView(this.view).setTextColor(Color.RED).show()
+            }
         }
 
         // Share APK
@@ -80,7 +80,7 @@ class AppOptionsBottomSheet(
                 type = FileHelper.MIME_TYPE
                 putExtra(Intent.EXTRA_STREAM, file)
             }.let {
-                Intent.createChooser(it, getString(R.string.action_share))
+                Intent.createChooser(it, getString(R.string.share_intent_title))
             }
             requireActivity().startActivityForResult(shareIntent, MainActivity.SHARE_APP_RESULT)
         }
