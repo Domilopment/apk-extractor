@@ -44,8 +44,8 @@ class SettingsManager(context: Context) {
      * @param data Unsorted List of APKs
      * @return Sorted List of APKs
      */
-    fun sortData(data: List<Application>): List<Application> {
-        return when (sharedPreferences.getInt("app_sort", 0)) {
+    fun sortData(data: List<Application>, sortMode: Int = sharedPreferences.getInt("app_sort", 0)): List<Application> {
+        return when (sortMode) {
             0 -> data.sortedWith(Comparator.comparing(Application::appName))
             1 -> data.sortedWith(Comparator.comparing(Application::appPackageName))
             2 -> data.sortedWith(Comparator.comparing(Application::appInstallTime).reversed())

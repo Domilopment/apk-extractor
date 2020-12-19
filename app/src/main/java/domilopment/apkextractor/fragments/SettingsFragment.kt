@@ -94,7 +94,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
                     SettingsManager(context).sortData(
                         ListOfAPKs(context.packageManager).userApps
-                                + ListOfAPKs(context.packageManager).updatedSystemApps
+                                + ListOfAPKs(context.packageManager).updatedSystemApps,
+                        0
                     ).forEach {
                         appEntries.add(it.appName)
                         appValues.add(it.appPackageName)

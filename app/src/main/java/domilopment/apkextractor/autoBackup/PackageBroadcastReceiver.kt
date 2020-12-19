@@ -64,10 +64,14 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
             // Delete Backup APK file
             ACTION_DELETE_APK -> {
                 intent.data?.let {
-                    DocumentsContract.deleteDocument(
+                    val deleted = DocumentsContract.deleteDocument(
                         context.contentResolver,
                         it
                     )
+                    if (deleted) with(NotificationManagerCompat.from(context)) {
+                        val id = intent.getIntExtra("ID", -1)
+                        if (id > 1) cancel(id)
+                    }
                 }
             }
         }
@@ -116,10 +120,11 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
             with(NotificationManagerCompat.from(context)) {
                 success?.let {
                     // notificationId is a unique int for each notification that you must define
-                    notify(AutoBackupService.getNewNotificationID(), createNotificationSuccess())
+                    val id = AutoBackupService.getNewNotificationID()
+                    notify(id, createNotificationSuccess(id).build())
                 } ?: run {
                     // notificationId is a unique int for each notification that you must define
-                    notify(AutoBackupService.getNewNotificationID(), createNotificationFailed())
+                    notify(AutoBackupService.getNewNotificationID(), createNotificationFailed().build())
                 }
             }
             // Must call finish() so the BroadcastReceiver can be recycled.
@@ -151,7 +156,7 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
          * @return Notification
          * Returns a Notification for Backup Apk
          */
-        private fun createNotificationSuccess(): Notification {
+        private fun createNotificationSuccess(notificationID: Int): NotificationCompat.Builder {
             // Call MainActivity an Notification Click
             val pendingIntent: PendingIntent =
                 Intent(context, MainActivity::class.java).let { notificationIntent ->
@@ -175,6 +180,7 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                 Intent(context, PackageBroadcastReceiver::class.java).apply {
                     action = ACTION_DELETE_APK
                     data = success
+                    putExtra("ID", notificationID)
                 }.let { stopIntent ->
                     PendingIntent.getBroadcast(context, 0, stopIntent, 0)
                 }
@@ -198,7 +204,6 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                     context.getString(R.string.alert_apk_selected_delete),
                     deletePendingIntent
                 ).setAutoCancel(true)
-                .build()
         }
 
         /**
@@ -206,7 +211,7 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
          * @return Notification
          * Returns a Notification if Backup Apk failed
          */
-        private fun createNotificationFailed(): Notification {
+        private fun createNotificationFailed(): NotificationCompat.Builder {
             // Call MainActivity an Notification Click
             val pendingIntent: PendingIntent =
                 Intent(context, MainActivity::class.java).let { notificationIntent ->
@@ -224,7 +229,6 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                 ).setSmallIcon(R.drawable.ic_small_notification_icon_24)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-                .build()
         }
     }
 }
