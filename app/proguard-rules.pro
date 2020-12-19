@@ -22,4 +22,3 @@
 
 # keep NavHostFragment in activity_main: FragmentContainerView
 -keep class androidx.navigation.fragment.NavHostFragment
--keep class androidx.documentfile.provider.DocumentsContractApi19
