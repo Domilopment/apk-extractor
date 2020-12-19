@@ -6,7 +6,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:navigationBarColor">@color/navigationBarColor</item>
-        <item name="bottomSheetDialogTheme">@style/Theme.MaterialComponents.DayNight.BottomSheetDialog</item>
+        <item name="bottomSheetDialogTheme">
+            @style/Theme.MaterialComponents.DayNight.BottomSheetDialog
+        </item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -34,8 +36,21 @@
         <item name="backgroundSplit">@color/colorPrimaryDark</item>
         <item name="height">?attr/actionBarSize</item>
         <item name="titleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionMode.Title</item>
-        <item name="subtitleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionMode.Subtitle</item>
+        <item name="subtitleTextStyle">
+            @style/TextAppearance.AppCompat.Widget.ActionMode.Subtitle
+        </item>
         <item name="closeItemLayout">@layout/abc_action_mode_close_item_material</item>
+    </style>
+
+    <!-- App Options Bottom Sheet Item Style -->
+    <style name="BottomSheetItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:drawablePadding">@dimen/bottom_sheet_drawable_padding</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">@dimen/bottom_sheet_padding</item>
+        <item name="android:textSize">@dimen/bottom_sheet_text_size</item>
     </style>
 
 </resources>
