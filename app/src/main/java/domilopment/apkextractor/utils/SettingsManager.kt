@@ -10,6 +10,7 @@ import domilopment.apkextractor.data.ListOfAPKs
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.Comparator
+import kotlin.jvm.Throws
 
 class SettingsManager(context: Context) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -44,14 +45,16 @@ class SettingsManager(context: Context) {
      * Gives back in SharedPreferences Saved Directory Path
      * @return Saved Directory Path
      */
-    fun saveDir(): Uri? = Uri.parse(sharedPreferences.getString("dir", null).toString())
+    fun saveDir(): Uri? = sharedPreferences.getString("dir", null)?.let { Uri.parse(it) }
 
 
     /**
      * Sorts Data by user selected Order
      * @param data Unsorted List of APKs
      * @return Sorted List of APKs
+     * @throws Exception if given sort type doesn't exist
      */
+    @Throws(Exception::class)
     fun sortData(data: List<Application>, sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME)): List<Application> {
         return when (sortMode) {
             SORT_BY_NAME -> data.sortedWith(Comparator.comparing(Application::appName))
