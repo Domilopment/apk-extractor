@@ -5,4 +5,5 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="navigationBarColor">#30000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="notificationColor">#6250EE</color>
 </resources>

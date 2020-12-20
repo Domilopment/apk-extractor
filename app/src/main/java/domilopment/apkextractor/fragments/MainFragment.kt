@@ -300,10 +300,10 @@ class MainFragment : Fragment() {
         when (item.itemId) {
             R.id.action_settings ->
                 findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
-            R.id.action_app_name -> sortData(item, 0)
-            R.id.action_package_name -> sortData(item, 1)
-            R.id.action_install_time -> sortData(item, 2)
-            R.id.action_update_time -> sortData(item, 3)
+            R.id.action_app_name -> sortData(item, SettingsManager.SORT_BY_NAME)
+            R.id.action_package_name -> sortData(item, SettingsManager.SORT_BY_PACKAGE)
+            R.id.action_install_time -> sortData(item, SettingsManager.SORT_BY_INSTALL_TIME)
+            R.id.action_update_time -> sortData(item, SettingsManager.SORT_BY_UPDATE_TIME)
             R.id.action_show_save_dir -> {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     val destDir = SettingsManager(requireContext()).saveDir()

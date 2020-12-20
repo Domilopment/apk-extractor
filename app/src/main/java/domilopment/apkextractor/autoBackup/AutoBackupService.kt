@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.os.IBinder
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
@@ -83,7 +82,6 @@ class AutoBackupService : Service() {
             "App Update Watching Service",
             NotificationManager.IMPORTANCE_MIN
         ).apply {
-            lightColor = Color.BLUE
             lockscreenVisibility = Notification.VISIBILITY_PRIVATE
         }
 
@@ -111,6 +109,7 @@ class AutoBackupService : Service() {
             .setContentTitle(getString(R.string.auto_backup_notification_title))
             .setContentText(getString(R.string.auto_backup_notification_content_text))
             .setSmallIcon(R.drawable.ic_small_notification_icon_24)
+            .setColor(getColor(R.color.notificationColor))
             .setContentIntent(pendingIntent)
             .addAction(
                 R.drawable.ic_small_notification_icon_24,

@@ -15,6 +15,14 @@ class SettingsManager(context: Context) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val packageManager = context.packageManager
 
+    companion object {
+        // Sort types for App List
+        const val SORT_BY_NAME = 0
+        const val SORT_BY_PACKAGE = 1
+        const val SORT_BY_INSTALL_TIME = 2
+        const val SORT_BY_UPDATE_TIME = 3
+    }
+
     /**
      * Creates a List containing of all Types the User Selected in Settings
      * @return List of Selected App Types
@@ -44,12 +52,12 @@ class SettingsManager(context: Context) {
      * @param data Unsorted List of APKs
      * @return Sorted List of APKs
      */
-    fun sortData(data: List<Application>, sortMode: Int = sharedPreferences.getInt("app_sort", 0)): List<Application> {
+    fun sortData(data: List<Application>, sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME)): List<Application> {
         return when (sortMode) {
-            0 -> data.sortedWith(Comparator.comparing(Application::appName))
-            1 -> data.sortedWith(Comparator.comparing(Application::appPackageName))
-            2 -> data.sortedWith(Comparator.comparing(Application::appInstallTime).reversed())
-            3 -> data.sortedWith(Comparator.comparing(Application::appUpdateTime).reversed())
+            SORT_BY_NAME -> data.sortedWith(Comparator.comparing(Application::appName))
+            SORT_BY_PACKAGE -> data.sortedWith(Comparator.comparing(Application::appPackageName))
+            SORT_BY_INSTALL_TIME -> data.sortedWith(Comparator.comparing(Application::appInstallTime).reversed())
+            SORT_BY_UPDATE_TIME -> data.sortedWith(Comparator.comparing(Application::appUpdateTime).reversed())
             else -> throw Exception("No such sort type")
         }
     }
