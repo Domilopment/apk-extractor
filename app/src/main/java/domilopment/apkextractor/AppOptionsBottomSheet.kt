@@ -22,6 +22,7 @@ import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.databinding.AppOptionsBottomSheetBinding
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import java.io.File
 
 class AppOptionsBottomSheet(
     private val app: Application,
@@ -122,7 +123,10 @@ class AppOptionsBottomSheet(
                 put(MediaStore.MediaColumns.DISPLAY_NAME, app.appName)
                 put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q)
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                    put(
+                        MediaStore.MediaColumns.RELATIVE_PATH,
+                        Environment.DIRECTORY_PICTURES + File.separator + getString(R.string.app_name)
+                    )
             }
             resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)?.let {
                 resolver.openOutputStream(it)
