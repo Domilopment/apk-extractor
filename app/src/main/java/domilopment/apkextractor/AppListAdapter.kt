@@ -164,15 +164,6 @@ class AppListAdapter(
     }
 
     /**
-     * Sorts data on Call after Selected Sort type
-     */
-    fun sortData() {
-        myDataset = settingsManager.sortData(myDataset)
-        myDatasetFiltered = myDataset.toMutableList()
-        notifyDataSetChanged()
-    }
-
-    /**
      * Updates data with delivered Dataset
      * @param apps Updated set of Applications
      */

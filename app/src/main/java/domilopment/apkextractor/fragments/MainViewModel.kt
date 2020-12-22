@@ -58,6 +58,20 @@ class MainViewModel(
     }
 
     /**
+     * Sorts data on Call after Selected Sort type
+     */
+    fun sortApps() {
+        viewModelScope.launch {
+            val load = async(Dispatchers.IO) {
+                applications.value?.let {
+                    return@async SettingsManager(context).sortData(it)
+                }
+            }
+            applications.postValue(load.await())
+        }
+    }
+
+    /**
      * Load apps from device
      */
     private fun loadApps(): List<Application> {

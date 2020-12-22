@@ -287,7 +287,7 @@ class MainFragment : Fragment() {
     private fun sortData(item: MenuItem, sortType: Int) {
         sharedPreferences.edit().putInt("app_sort", sortType).apply()
         item.isChecked = true
-        viewAdapter.sortData()
+        model.sortApps()
     }
 
     /**
