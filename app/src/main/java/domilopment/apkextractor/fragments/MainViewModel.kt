@@ -7,6 +7,7 @@ import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.data.Application
 import domilopment.apkextractor.data.ListOfAPKs
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -20,17 +21,45 @@ class MainViewModel(
         }
     }
 
+    /**
+     * Get app list from ViewModel
+     * @return
+     * List of APKs
+     */
     fun getApps(): LiveData<List<Application>> {
         return applications
     }
 
+    /**
+     * Update App list
+     */
     fun updateApps() {
-        viewModelScope.launch(Dispatchers.IO) {
-            ListOfAPKs(context.packageManager).updateData()
-            applications.postValue(SettingsManager(context).selectedAppTypes())
+        viewModelScope.launch {
+            val load = async(Dispatchers.IO) {
+                ListOfAPKs(context.packageManager).updateData()
+                return@async loadApps()
+            }
+            applications.postValue(load.await())
         }
     }
 
+    /**
+     * Remove app from app list, for example on uninstall
+     * @param app
+     * uninstalled app
+     */
+    fun removeApp(app: Application) {
+        applications.value?.toMutableList()
+            ?.apply {
+                remove(app)
+            }?.also {
+                applications.postValue(it)
+            }
+    }
+
+    /**
+     * Load apps from device
+     */
     private fun loadApps(): List<Application> {
         // Do an asynchronous operation to fetch users.
         return SettingsManager(context).selectedAppTypes()

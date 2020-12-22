@@ -240,11 +240,13 @@ class MainFragment : Fragment() {
             // Enable on return Callback if user Opens SearchView
             setOnSearchClickListener {
                 callback.isEnabled = true
+                enableRefresh(false)
             }
 
             // Disable on return Callback if user closes SearchView
             setOnCloseListener {
                 callback.isEnabled = false
+                enableRefresh(true)
                 return@setOnCloseListener false
             }
         }

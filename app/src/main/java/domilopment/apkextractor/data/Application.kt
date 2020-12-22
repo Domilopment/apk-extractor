@@ -29,4 +29,6 @@ data class Application(
     val appUpdateTime: Long get() = packageInfo.lastUpdateTime
     val apkSize: Float get() = File(applicationInfo.sourceDir).length() / (1000.0F * 1000.0F) // Calculate MB Size
     var isChecked: Boolean = false
+
+    fun getApplicationInfo() = applicationInfo
 }

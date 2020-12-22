@@ -91,18 +91,11 @@ class AppListAdapter(
                     checkBox.isVisible = app.isChecked
 
                 } else {
-                    val optionsBottomSheet = AppOptionsBottomSheet(app) {
-                        myDataset.toMutableList()
-                            .apply {
-                                remove(app)
-                            }.also {
-                                updateData(it)
-                            }
+                    mainFragment.requireActivity().supportFragmentManager.let {
+                        AppOptionsBottomSheet.newInstance(app.getApplicationInfo()).apply {
+                            show(it, AppOptionsBottomSheet.TAG)
+                        }
                     }
-                    optionsBottomSheet.show(
-                        mainFragment.requireActivity().supportFragmentManager,
-                        AppOptionsBottomSheet.TAG
-                    )
                 }
             }
             // ItemView on Long Click
