@@ -98,13 +98,7 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             FileHelper.CHOOSE_SAVE_DIR_RESULT -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    (data!!.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
-                        settingsManager.saveDir()?.also { oldPath ->
-                            contentResolver.releasePersistableUriPermission(oldPath, this)
-                        }
-                        sharedPreferences.edit().putString("dir", data.data.toString()).apply()
-                        contentResolver.takePersistableUriPermission(data.data!!, this)
-                    }
+                    data?.also { takeUriPermission(it) }
                 } else if (mustAskForSaveDir()) {
                     FileHelper(this).chooseDir(this)
                 }
@@ -131,6 +125,21 @@ class MainActivity : AppCompatActivity() {
                     }.show()
             }
             else -> super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    /**
+     * Take Uri Permission for Save Dir
+     * @param data return Intent from choose Save Dir
+     */
+    private fun takeUriPermission(data: Intent) {
+        (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
+            settingsManager.saveDir()?.also { oldPath ->
+                if (oldPath in contentResolver.persistedUriPermissions.map { it.uri })
+                    contentResolver.releasePersistableUriPermission(oldPath, this)
+            }
+            sharedPreferences.edit().putString("dir", data.data.toString()).apply()
+            contentResolver.takePersistableUriPermission(data.data!!, this)
         }
     }
 
