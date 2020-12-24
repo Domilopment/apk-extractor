@@ -99,7 +99,6 @@
         <item quantity="other">%s and %d additional successful extracted</item>
     </plurals>
     <string name="snackbar_extraction_failed">Extraction of %s FAILED</string>
-    <string name="snackbar_successful_saved_image">Icon Saved</string>
     <string name="share_intent_title">Sharing App</string>
     <string name="toast_share_app">Select Apps to Share</string>
 
@@ -118,6 +117,8 @@
     <string name="action_bottom_sheet_open">Open</string>
     <string name="action_bottom_sheet_settings">Settings</string>
     <string name="action_bottom_sheet_uninstall">Uninstall</string>
+    <string name="snackbar_successful_save_image">Icon Saved</string>
+    <string name="snackbar_need_permission_save_image">Need Storage Permission to Save Images</string>
 
     <!-- App Multiselect Options Bottom Sheet -->
     <string name="action_multiselect_bottom_sheet_save_description">Save Apks</string>

@@ -1,5 +1,6 @@
 package domilopment.apkextractor
 
+import android.Manifest
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -7,6 +8,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -14,6 +16,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -33,7 +36,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private var app: Application? = null
+    private lateinit var app: Application
 
     private val model by activityViewModels<MainViewModel> {
         MainViewModel(requireContext()).defaultViewModelProviderFactory
@@ -58,8 +61,8 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        app = arguments?.getParcelable<ApplicationInfo>("app")?.let {
-            Application(it, requireContext().packageManager)
+        arguments?.getParcelable<ApplicationInfo>("app")?.let {
+            app = Application(it, requireContext().packageManager)
         } ?: return dismiss()
     }
 
@@ -80,19 +83,19 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             val settingsManager = SettingsManager(requireContext())
 
             FileHelper(requireActivity()).copy(
-                app!!.appSourceDirectory,
+                app.appSourceDirectory,
                 settingsManager.saveDir()!!,
-                settingsManager.appName(app!!)
+                settingsManager.appName(app)
             )?.let {
                 Snackbar.make(
                     view,
-                    getString(R.string.snackbar_successful_extracted, app!!.appName),
+                    getString(R.string.snackbar_successful_extracted, app.appName),
                     Snackbar.LENGTH_LONG
                 ).setAnchorView(this.view).show()
             } ?: run {
                 Snackbar.make(
                     view,
-                    getString(R.string.snackbar_extraction_failed, app!!.appName),
+                    getString(R.string.snackbar_extraction_failed, app.appName),
                     Snackbar.LENGTH_LONG
                 ).setAnchorView(this.view).setTextColor(Color.RED).show()
             }
@@ -100,7 +103,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
         // Share APK
         binding.actionShare.setOnClickListener {
-            val file = FileHelper(requireContext()).shareURI(app!!)
+            val file = FileHelper(requireContext()).shareURI(app)
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = FileHelper.MIME_TYPE
                 putExtra(Intent.EXTRA_STREAM, file)
@@ -113,7 +116,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         // Show app Settings
         binding.actionShowAppSettings.setOnClickListener {
             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", app!!.appPackageName, null)
+                data = Uri.fromParts("package", app.appPackageName, null)
             }.also {
                 requireActivity().startActivity(it)
             }
@@ -121,7 +124,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
         // Open App
         binding.actionOpenApp.setOnClickListener {
-            requireContext().packageManager.getLaunchIntentForPackage(app!!.appPackageName)?.also {
+            requireContext().packageManager.getLaunchIntentForPackage(app.appPackageName)?.also {
                 startActivity(it)
             }
         }
@@ -130,37 +133,56 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         binding.actionUninstall.setOnClickListener {
             Intent(
                 Intent.ACTION_DELETE,
-                Uri.fromParts("package", app!!.appPackageName, null)
+                Uri.fromParts("package", app.appPackageName, null)
             ).also {
                 startActivityForResult(it, UNINSTALL_APP_RESULT)
             }
         }
 
         // If App is User App make Uninstall Option visible
-        app?.appFlags?.also { flags ->
-            if (flags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM)
-                binding.actionUninstall.isVisible = true
-        }
+        if (::app.isInitialized && (app.appFlags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM))
+            binding.actionUninstall.isVisible = true
 
         // Save App Image
         binding.actionSaveImage.setOnClickListener { view ->
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                this.requestPermissions(
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    0
+                )
+                return@setOnClickListener
+            }
             val resolver = requireContext().contentResolver
             val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, app!!.appName)
+                put(MediaStore.MediaColumns.DISPLAY_NAME, app.appName)
                 put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                     put(
                         MediaStore.MediaColumns.RELATIVE_PATH,
                         Environment.DIRECTORY_PICTURES + File.separator + getString(R.string.app_name)
                     )
             }
-            resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)?.let {
+            // Find all image files on the primary external storage device.
+            val imageCollection =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Images.Media.getContentUri(
+                        MediaStore.VOLUME_EXTERNAL_PRIMARY
+                    )
+                } else {
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                }
+
+            resolver.insert(imageCollection, contentValues)?.let {
                 resolver.openOutputStream(it)
             }.use {
-                if (app!!.appIcon.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, it))
+                if (app.appIcon.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, it))
                     Snackbar.make(
                         view,
-                        getString(R.string.snackbar_successful_saved_image),
+                        getString(R.string.snackbar_successful_save_image),
                         Snackbar.LENGTH_LONG
                     ).setAnchorView(this.view).show()
             }
@@ -186,13 +208,41 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Checks if All Permissions Granted on Runtime
+     * @param requestCode
+     * @param permissions
+     * All Permissions the App needs
+     * @param grantResults
+     * Array of grant values from permissions
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            0 -> {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    binding.actionSaveImage.callOnClick()
+                else
+                    Snackbar.make(
+                        binding.actionSaveImage,
+                        getString(R.string.snackbar_need_permission_save_image),
+                        Snackbar.LENGTH_LONG
+                    ).setTextColor(Color.RED).setAnchorView(this.view).show()
+            }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             UNINSTALL_APP_RESULT ->
-                if (!isPackageInstalled(app!!.appPackageName)) {
+                if (!isPackageInstalled(app.appPackageName)) {
                     dismiss()
-                    model.removeApp(app!!)
+                    model.removeApp(app)
                 }
         }
     }

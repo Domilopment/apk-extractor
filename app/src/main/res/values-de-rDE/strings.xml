@@ -98,7 +98,6 @@
         <item quantity="other">%s und %d weitere erfolgreich extraiert</item>
     </plurals>
     <string name="snackbar_extraction_failed">Extraieren von %s FEHLGESCHLAGEN</string>
-    <string name="snackbar_successful_saved_image">Icon gespeichert</string>
     <string name="share_intent_title">@string/apk_action_share</string>
     <string name="toast_share_app">Wähle Apps die geteilt werden sollen</string>
 
@@ -117,6 +116,8 @@
     <string name="action_bottom_sheet_open">Öffnen</string>
     <string name="action_bottom_sheet_settings">Einstellungen</string>
     <string name="action_bottom_sheet_uninstall">Deinstallieren</string>
+    <string name="snackbar_successful_save_image">Icon gespeichert</string>
+    <string name="snackbar_need_permission_save_image">Benötige Speicher Berechtigung um Icons zu speichern</string>
 
     <!-- App Multiselect Options Bottom Sheet -->
     <string name="action_multiselect_bottom_sheet_save_description">Speichere Apks</string>

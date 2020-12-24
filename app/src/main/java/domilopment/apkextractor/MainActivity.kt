@@ -1,6 +1,5 @@
 package domilopment.apkextractor
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
@@ -13,7 +12,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.databinding.ActivityMainBinding
@@ -42,10 +40,10 @@ class MainActivity : AppCompatActivity() {
         settingsManager.changeUIMode()
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+    }
 
-        // Check for Permissions to READ/WRITE external Storage for Lower android Versions
-        checkNeededPermissions()
-
+    override fun onStart() {
+        super.onStart()
         // Check if Save dir is Selected, Writing permission to dir and whether dir exists
         // if not ask for select dir
         if (mustAskForSaveDir()) {
@@ -58,10 +56,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }.show()
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
+        // Checks if Service isn't running but should be
         if (settingsManager.shouldStartService())
             startService(Intent(this, AutoBackupService::class.java))
     }
@@ -72,40 +68,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         cacheDir.deleteRecursively()
         super.onDestroy()
-    }
-
-    /**
-     * Checks if all Permissions in Array are granted
-     * @return Boolean
-     * True after check
-     */
-    private fun checkNeededPermissions(): Boolean {
-        arrayOf(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        ).filter {
-            ActivityCompat.checkSelfPermission(
-                applicationContext,
-                it
-            ) != PackageManager.PERMISSION_GRANTED
-        }.also {
-            if (it.isNotEmpty())
-                ActivityCompat.requestPermissions(this, it.toTypedArray(), 0)
-        }
-        return true
-    }
-
-    /**
-     * Checks if all Permissions in an IntArray are granted
-     * @param grantedPermissions
-     * Array of Permissions
-     * @return Boolean
-     * True if all Permissions Granted, else False
-     */
-    private fun allPermissionsGranted(grantedPermissions: IntArray): Boolean {
-        return grantedPermissions.all { singleGrantedPermission ->
-            singleGrantedPermission == PackageManager.PERMISSION_GRANTED
-        }
     }
 
     /**
@@ -130,37 +92,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Checks if All Permissions Granted on Runtime
-     * @param requestCode
-     * @param permissions
-     * All Permissions the App needs
-     * @param grantResults
-     * Array of grant values from permissions
-     */
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (!allPermissionsGranted(grantResults)) {
-            ActivityCompat.requestPermissions(this, permissions, 0)
-        }
-    }
-
-    /**
      * Executes on Intent results
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             FileHelper.CHOOSE_SAVE_DIR_RESULT -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    sharedPreferences.edit()
-                        .putString("dir", data!!.data.toString()).apply()
-                    (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
-                        contentResolver
-                            .takePersistableUriPermission(data.data!!, this)
+                    (data!!.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
+                        settingsManager.saveDir()?.also { oldPath ->
+                            contentResolver.releasePersistableUriPermission(oldPath, this)
+                        }
+                        sharedPreferences.edit().putString("dir", data.data.toString()).apply()
+                        contentResolver.takePersistableUriPermission(data.data!!, this)
                     }
                 } else if (mustAskForSaveDir()) {
                     FileHelper(this).chooseDir(this)
@@ -187,6 +130,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }.show()
             }
+            else -> super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
