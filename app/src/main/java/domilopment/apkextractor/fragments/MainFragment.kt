@@ -69,12 +69,14 @@ class MainFragment : Fragment() {
 
         // add Refresh Layout action on Swipe
         binding.refresh.setOnRefreshListener {
-            searchView.isIconified = true
             updateData()
         }
 
         model.getApps().observe(viewLifecycleOwner, { apps ->
             viewAdapter.updateData(apps)
+            if (::searchView.isInitialized) with(searchView.query) {
+                if (isNotBlank()) viewAdapter.filter.filter(this)
+            }
             binding.refresh.isRefreshing = false
         })
 
@@ -240,13 +242,11 @@ class MainFragment : Fragment() {
             // Enable on return Callback if user Opens SearchView
             setOnSearchClickListener {
                 callback.isEnabled = true
-                enableRefresh(false)
             }
 
             // Disable on return Callback if user closes SearchView
             setOnCloseListener {
                 callback.isEnabled = false
-                enableRefresh(true)
                 return@setOnCloseListener false
             }
         }
@@ -285,6 +285,7 @@ class MainFragment : Fragment() {
      * @param sortType Internal sort type number
      */
     private fun sortData(item: MenuItem, sortType: Int) {
+        binding.refresh.isRefreshing = true
         sharedPreferences.edit().putInt("app_sort", sortType).apply()
         item.isChecked = true
         model.sortApps()
