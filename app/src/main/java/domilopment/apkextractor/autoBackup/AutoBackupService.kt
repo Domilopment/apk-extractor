@@ -1,16 +1,14 @@
 package domilopment.apkextractor.autoBackup
 
 import android.app.*
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.IBinder
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.R
+import java.lang.IllegalArgumentException
 import java.util.concurrent.atomic.AtomicInteger
 
 class AutoBackupService : Service() {
@@ -59,15 +57,17 @@ class AutoBackupService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         isRunning = false
-        unregisterReceiver(br)
+        try {
+            unregisterReceiver(br)
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+        }
         stopForeground(true)
         // Restart Service if kill isn't called by user
-        if (PreferenceManager.getDefaultSharedPreferences(applicationContext).getBoolean(
-                "auto_backup",
-                false
-            )
-        )
-            restartService()
+        if (
+            PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                .getBoolean("auto_backup", false)
+        ) restartService()
     }
 
     /**
