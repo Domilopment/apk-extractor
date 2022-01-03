@@ -47,6 +47,11 @@
             android:key="list_preference_ui_mode"
             android:summary="@string/ui_mode_summary"
             android:title="@string/ui_mode" />
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:key="use_material_you"
+            app:summary="@string/use_material_you_summary"
+            app:title="@string/use_material_you" />
         <Preference
             app:key="clear_cache"
             app:summary="@string/clear_cache_summary"

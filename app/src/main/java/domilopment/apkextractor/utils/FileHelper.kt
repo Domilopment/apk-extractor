@@ -1,18 +1,17 @@
 package domilopment.apkextractor.utils
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
+import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.FileProvider
-import domilopment.apkextractor.data.Application
+import domilopment.apkextractor.data.ApplicationModel
 import java.io.*
 
 class FileHelper(private val context: Context) {
     companion object {
         const val MIME_TYPE = "application/vnd.android.package-archive"
-        const val CHOOSE_SAVE_DIR_RESULT = 9999
         const val PREFIX = ".apk"
     }
 
@@ -67,14 +66,13 @@ class FileHelper(private val context: Context) {
      * Select a Destination Directory for APK files
      * Shows Android Directory Chooser
      */
-    fun chooseDir(activity: Activity) {
+    fun chooseDir(activityResultLauncher: ActivityResultLauncher<Intent>) {
         Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
             addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             addCategory(Intent.CATEGORY_DEFAULT)
         }.also {
-            activity.startActivityForResult(
-                Intent.createChooser(it, "Choose directory"),
-                CHOOSE_SAVE_DIR_RESULT
+            activityResultLauncher.launch(
+                Intent.createChooser(it, "Choose directory")
             )
         }
     }
@@ -84,7 +82,7 @@ class FileHelper(private val context: Context) {
      * @param app Application for sharing
      * @return Shareable Uri of Application APK
      */
-    fun shareURI(app: Application): Uri {
+    fun shareURI(app: ApplicationModel): Uri {
         return FileProvider.getUriForFile(
             context,
             context.applicationInfo.packageName + ".provider",

@@ -16,13 +16,14 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
-import domilopment.apkextractor.data.Application
+import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.AppOptionsBottomSheetBinding
 import domilopment.apkextractor.fragments.MainViewModel
 import domilopment.apkextractor.utils.FileHelper
@@ -36,15 +37,39 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var app: Application
+    private lateinit var app: ApplicationModel
+
+    private val shareApp =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            requireContext().cacheDir.deleteRecursively()
+        }
+
+    private val uninstallApp =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (!isPackageInstalled(app.appPackageName)) {
+                dismiss()
+                model.removeApp(app)
+            }
+        }
+
+    private val saveImage =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true)
+                binding.actionSaveImage.callOnClick()
+            else
+                Snackbar.make(
+                    binding.actionSaveImage,
+                    getString(R.string.snackbar_need_permission_save_image),
+                    Snackbar.LENGTH_LONG
+                ).setTextColor(Color.RED).setAnchorView(this.view).show()
+        }
 
     private val model by activityViewModels<MainViewModel> {
-        MainViewModel(requireContext()).defaultViewModelProviderFactory
+        MainViewModel(requireActivity().application).defaultViewModelProviderFactory
     }
 
     companion object {
         const val TAG = "app_options_bottom_sheet"
-        const val UNINSTALL_APP_RESULT = 777
 
         @JvmStatic
         fun newInstance(
@@ -62,7 +87,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.getParcelable<ApplicationInfo>("app")?.let {
-            app = Application(it, requireContext().packageManager)
+            app = ApplicationModel(it, requireContext().packageManager)
         } ?: return dismiss()
     }
 
@@ -75,11 +100,11 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // Save Apk
-        binding.actionSaveApk.setOnClickListener { view ->
+        binding.actionSaveApk.setOnClickListener { v ->
             val settingsManager = SettingsManager(requireContext())
 
             FileHelper(requireActivity()).copy(
@@ -88,13 +113,13 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                 settingsManager.appName(app)
             )?.let {
                 Snackbar.make(
-                    view,
+                    v,
                     getString(R.string.snackbar_successful_extracted, app.appName),
                     Snackbar.LENGTH_LONG
                 ).setAnchorView(this.view).show()
             } ?: run {
                 Snackbar.make(
-                    view,
+                    v,
                     getString(R.string.snackbar_extraction_failed, app.appName),
                     Snackbar.LENGTH_LONG
                 ).setAnchorView(this.view).setTextColor(Color.RED).show()
@@ -110,7 +135,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             }.let {
                 Intent.createChooser(it, getString(R.string.share_intent_title))
             }
-            requireActivity().startActivityForResult(shareIntent, MainActivity.SHARE_APP_RESULT)
+            shareApp.launch(shareIntent)
         }
 
         // Show app Settings
@@ -135,7 +160,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                 Intent.ACTION_DELETE,
                 Uri.fromParts("package", app.appPackageName, null)
             ).also {
-                startActivityForResult(it, UNINSTALL_APP_RESULT)
+                uninstallApp.launch(it)
             }
         }
 
@@ -144,15 +169,14 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             binding.actionUninstall.isVisible = true
 
         // Save App Image
-        binding.actionSaveImage.setOnClickListener { view ->
+        binding.actionSaveImage.setOnClickListener { v ->
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                this.requestPermissions(
+                saveImage.launch(
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    0
                 )
                 return@setOnClickListener
             }
@@ -181,7 +205,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             }.use {
                 if (app.appIcon.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, it))
                     Snackbar.make(
-                        view,
+                        v,
                         getString(R.string.snackbar_successful_save_image),
                         Snackbar.LENGTH_LONG
                     ).setAnchorView(this.view).show()
@@ -205,45 +229,6 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             true
         } catch (e: PackageManager.NameNotFoundException) {
             false
-        }
-    }
-
-    /**
-     * Checks if All Permissions Granted on Runtime
-     * @param requestCode
-     * @param permissions
-     * All Permissions the App needs
-     * @param grantResults
-     * Array of grant values from permissions
-     */
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            0 -> {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    binding.actionSaveImage.callOnClick()
-                else
-                    Snackbar.make(
-                        binding.actionSaveImage,
-                        getString(R.string.snackbar_need_permission_save_image),
-                        Snackbar.LENGTH_LONG
-                    ).setTextColor(Color.RED).setAnchorView(this.view).show()
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            UNINSTALL_APP_RESULT ->
-                if (!isPackageInstalled(app.appPackageName)) {
-                    dismiss()
-                    model.removeApp(app)
-                }
         }
     }
 }

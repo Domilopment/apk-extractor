@@ -13,7 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.Application
+import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
 import java.io.FileNotFoundException
@@ -38,7 +38,7 @@ class AsyncBackupTask(
 
     // Get Application Info from Package
     private val app =
-        Application(
+        ApplicationModel(
             context.packageManager.getPackageInfo(packageName, 0).applicationInfo,
             context.packageManager
         )
@@ -87,7 +87,7 @@ class AsyncBackupTask(
             "App Backup Created",
             NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
-            lightColor = R.color.colorPrimary
+            lightColor = R.attr.colorPrimary
             enableLights(true)
             lockscreenVisibility = Notification.VISIBILITY_PRIVATE
         }
@@ -107,7 +107,7 @@ class AsyncBackupTask(
         // Call MainActivity an Notification Click
         val pendingIntent: PendingIntent =
             Intent(context, MainActivity::class.java).let { notificationIntent ->
-                PendingIntent.getActivity(context, 0, notificationIntent, 0)
+                PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
             }
 
         // Share APK on Button Click
@@ -129,7 +129,7 @@ class AsyncBackupTask(
                 data = success!!
                 putExtra("ID", notificationID)
             }.let { stopIntent ->
-                PendingIntent.getBroadcast(context, 0, stopIntent, 0)
+                PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
             }
 
         // Build and return Notification
@@ -163,7 +163,7 @@ class AsyncBackupTask(
         // Call MainActivity an Notification Click
         val pendingIntent: PendingIntent =
             Intent(context, MainActivity::class.java).let { notificationIntent ->
-                PendingIntent.getActivity(context, 0, notificationIntent, 0)
+                PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
             }
 
         // Build and return Notification

@@ -47,6 +47,10 @@
     <string name="ui_dark">Dunkel</string>
     <string name="ui_white">Hell</string>
 
+    <string name="use_material_you">Aktiviere Material You</string>
+    <string name="use_material_you_summary">Benutze die Dynamische Farbpalette, welche durch das ändern des Hintergrundes ab Android 12 Bereitgestellt wird.</string>
+    <string name="use_material_you_toast">Aktiv nach neustart</string>
+
     <string name="clear_cache">Cache leeren</string>
     <string name="clear_cache_summary">Leere App cache</string>
     <string name="clear_cache_success">Cache gesäubert!</string>

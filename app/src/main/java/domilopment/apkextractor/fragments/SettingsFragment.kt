@@ -1,15 +1,19 @@
 package domilopment.apkextractor.fragments
 
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
+import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.*
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
@@ -19,6 +23,14 @@ import domilopment.apkextractor.utils.SettingsManager
 import kotlinx.coroutines.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
+    private val chooseSaveDir =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK)
+                it.data?.also { saveDirUri -> takeUriPermission(saveDirUri) }
+        }
+
+    private val ioDispatcher get() = Dispatchers.IO
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -28,8 +40,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         // Shows Version Number in Settings
         findPreference<Preference>("version")!!.title =
             getString(R.string.version, BuildConfig.VERSION_NAME)
@@ -64,13 +77,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         // Select a Dir to Save APKs
         findPreference<Preference>("choose_dir")?.setOnPreferenceClickListener {
-            FileHelper(requireActivity()).chooseDir(requireActivity())
+            FileHelper(requireActivity()).chooseDir(chooseSaveDir)
             return@setOnPreferenceClickListener true
         }
         // Change between Day and Night Mode
         findPreference<ListPreference>("list_preference_ui_mode")?.setOnPreferenceChangeListener { _, newValue ->
             SettingsManager(requireContext()).changeUIMode(newValue.toString())
             return@setOnPreferenceChangeListener true
+        }
+        findPreference<SwitchPreferenceCompat>("use_material_you")?.apply {
+            setOnPreferenceChangeListener { _, _ ->
+                Toast.makeText(requireContext(), getString(R.string.use_material_you_toast), Toast.LENGTH_SHORT).show()
+                return@setOnPreferenceChangeListener true
+            }
+            isVisible = DynamicColors.isDynamicColorAvailable()
         }
         // Clear App cache
         findPreference<Preference>("clear_cache")?.setOnPreferenceClickListener {
@@ -81,14 +101,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     Toast.LENGTH_SHORT
                 ).show()
             else
-                Toast.makeText(activity, getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    activity,
+                    getString(R.string.clear_cache_failed),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
             return@setOnPreferenceClickListener true
         }
         // Fill List of Apps for Aut Backup with Installed or Updated Apps
         findPreference<MultiSelectListPreference>("app_list_auto_backup")?.apply {
             lifecycleScope.launch {
-                val load = async(Dispatchers.IO) {
+                val load = async(ioDispatcher) {
                     val appEntries = mutableListOf<String>()
                     val appValues = mutableListOf<String>()
 
@@ -166,5 +190,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * Take Uri Permission for Save Dir
+     * @param data return Intent from choose Save Dir
+     */
+    private fun takeUriPermission(data: Intent) {
+        (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
+            SettingsManager(requireContext()).saveDir()?.also { oldPath ->
+                if (oldPath in requireContext().contentResolver.persistedUriPermissions.map { it.uri })
+                    requireContext().contentResolver.releasePersistableUriPermission(oldPath, this)
+            }
+            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+                .putString("dir", data.data.toString()).apply()
+            requireContext().contentResolver.takePersistableUriPermission(data.data!!, this)
+        }
     }
 }

@@ -11,42 +11,48 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/action_save_apk"
             style="@style/BottomSheetItem"
             android:text="@string/action_bottom_sheet_save"
-            app:drawableStartCompat="@drawable/ic_baseline_save_24" />
+            app:drawableStartCompat="@drawable/ic_baseline_save_24"
+            app:drawableTint="?attr/colorSecondary" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/action_share"
             style="@style/BottomSheetItem"
             android:text="@string/action_bottom_sheet_share"
-            app:drawableStartCompat="@drawable/ic_share_24dp" />
+            app:drawableStartCompat="@drawable/ic_share_24dp"
+            app:drawableTint="?attr/colorSecondary" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/action_save_image"
             style="@style/BottomSheetItem"
             android:text="@string/action_bottom_sheet_save_image"
-            app:drawableStartCompat="@drawable/ic_baseline_image_24" />
+            app:drawableStartCompat="@drawable/ic_baseline_image_24"
+            app:drawableTint="?attr/colorSecondary" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/action_open_app"
             style="@style/BottomSheetItem"
             android:text="@string/action_bottom_sheet_open"
-            app:drawableStartCompat="@drawable/ic_baseline_android_24" />
+            app:drawableStartCompat="@drawable/ic_baseline_android_24"
+            app:drawableTint="?attr/colorSecondary" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/action_show_app_settings"
             style="@style/BottomSheetItem"
             android:text="@string/action_bottom_sheet_settings"
-            app:drawableStartCompat="@drawable/ic_baseline_settings_24" />
+            app:drawableStartCompat="@drawable/ic_baseline_settings_24"
+            app:drawableTint="?attr/colorSecondary" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/action_uninstall"
             style="@style/BottomSheetItem"
             android:text="@string/action_bottom_sheet_uninstall"
             android:visibility="gone"
-            app:drawableStartCompat="@drawable/ic_baseline_delete_24" />
+            app:drawableStartCompat="@drawable/ic_baseline_delete_24"
+            app:drawableTint="?attr/colorSecondary" />
 
     </LinearLayout>
 

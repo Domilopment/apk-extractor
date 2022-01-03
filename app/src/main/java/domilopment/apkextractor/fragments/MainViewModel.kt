@@ -1,32 +1,34 @@
 package domilopment.apkextractor.fragments
 
-import android.content.Context
+import android.app.Application
 import androidx.annotation.NonNull
 import androidx.lifecycle.*
 import domilopment.apkextractor.utils.SettingsManager
-import domilopment.apkextractor.data.Application
+import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.data.ListOfAPKs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    @NonNull private val context: Context
-) :
-    ViewModel(),
-    HasDefaultViewModelProviderFactory {
-    private val applications: MutableLiveData<List<Application>> by lazy {
-        MutableLiveData<List<Application>>().also {
+    @NonNull application: Application
+) : AndroidViewModel(application), HasDefaultViewModelProviderFactory {
+    private val applications: MutableLiveData<List<ApplicationModel>> by lazy {
+        MutableLiveData<List<ApplicationModel>>().also {
             it.value = loadApps()
         }
     }
+
+    private val context get() = getApplication<Application>().applicationContext
+
+    private val ioDispatcher get() = Dispatchers.IO
 
     /**
      * Get app list from ViewModel
      * @return
      * List of APKs
      */
-    fun getApps(): LiveData<List<Application>> {
+    fun getApps(): LiveData<List<ApplicationModel>> {
         return applications
     }
 
@@ -35,7 +37,7 @@ class MainViewModel(
      */
     fun updateApps() {
         viewModelScope.launch {
-            val load = async(Dispatchers.IO) {
+            val load = async(ioDispatcher) {
                 ListOfAPKs(context.packageManager).updateData()
                 return@async loadApps()
             }
@@ -48,7 +50,7 @@ class MainViewModel(
      * @param app
      * uninstalled app
      */
-    fun removeApp(app: Application) {
+    fun removeApp(app: ApplicationModel) {
         applications.value?.toMutableList()
             ?.apply {
                 remove(app)
@@ -62,7 +64,7 @@ class MainViewModel(
      */
     fun sortApps() {
         viewModelScope.launch {
-            val load = async(Dispatchers.IO) {
+            val load = async(ioDispatcher) {
                 applications.value?.let {
                     return@async SettingsManager(context).sortData(it)
                 }
@@ -74,7 +76,7 @@ class MainViewModel(
     /**
      * Load apps from device
      */
-    private fun loadApps(): List<Application> {
+    private fun loadApps(): List<ApplicationModel> {
         // Do an asynchronous operation to fetch users.
         return SettingsManager(context).selectedAppTypes()
     }
@@ -82,7 +84,8 @@ class MainViewModel(
     override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
         return object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return modelClass.getConstructor(Context::class.java).newInstance(context)
+                return modelClass.getConstructor(Application::class.java)
+                    .newInstance(getApplication())
             }
         }
     }

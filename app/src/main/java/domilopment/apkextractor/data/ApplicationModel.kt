@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import java.io.File
 
-data class Application(
+data class ApplicationModel(
     private val applicationInfo: ApplicationInfo,
     private val packageManager: PackageManager
 ) {

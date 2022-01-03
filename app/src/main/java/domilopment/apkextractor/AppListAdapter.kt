@@ -9,7 +9,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import domilopment.apkextractor.data.Application
+import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.AppListItemBinding
 import domilopment.apkextractor.fragments.MainFragment
 import java.util.*
@@ -21,10 +21,10 @@ class AppListAdapter(
     Filterable,
     ActionMode.Callback {
     // Static Dataset for Smoother transition
-    private var myDataset = listOf<Application>()
+    private var myDataset = listOf<ApplicationModel>()
 
     // Shown Data in ListView
-    var myDatasetFiltered: MutableList<Application> = myDataset.toMutableList()
+    var myDatasetFiltered: MutableList<ApplicationModel> = myDataset.toMutableList()
         private set
 
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView) {
@@ -131,12 +131,12 @@ class AppListAdapter(
              * Apps that match charSequence
              */
             override fun performFiltering(charSequence: CharSequence): FilterResults {
-                val charString = charSequence.toString().toLowerCase(Locale.getDefault())
+                val charString = charSequence.toString().lowercase()
                 val myDatasetFiltered = if (charString.isEmpty()) {
                     myDataset
                 } else {
                     myDataset.filter {
-                        it.appName.toLowerCase(Locale.getDefault()).contains(charString)
+                        it.appName.lowercase().contains(charString)
                                 || it.appPackageName.contains(charSequence)
                     }
                 }
@@ -154,7 +154,7 @@ class AppListAdapter(
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
                 @Suppress("UNCHECKED_CAST")
-                myDatasetFiltered = filterResults.values as MutableList<Application>
+                myDatasetFiltered = filterResults.values as MutableList<ApplicationModel>
                 notifyDataSetChanged()
             }
         }
@@ -164,7 +164,7 @@ class AppListAdapter(
      * Updates data with delivered Dataset
      * @param apps Updated set of Applications
      */
-    fun updateData(apps: List<Application>) {
+    fun updateData(apps: List<ApplicationModel>) {
         myDataset = apps
         myDatasetFiltered = myDataset.toMutableList()
         notifyDataSetChanged()

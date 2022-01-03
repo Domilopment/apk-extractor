@@ -5,7 +5,7 @@
     android:id="@+id/app_multiselect_bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimary"
+    android:background="?attr/colorPrimary"
     android:maxHeight="?android:attr/listPreferredItemHeight"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
@@ -16,7 +16,7 @@
     tools:showIn="@layout/fragment_main"
     tools:ignore="Overdraw">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/action_save_apk"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -27,9 +27,9 @@
         android:contentDescription="@string/action_multiselect_bottom_sheet_save_description"
         android:padding="4dp"
         app:srcCompat="@drawable/ic_baseline_save_24"
-        app:tint="@color/white" />
+        app:tint="?attr/colorOnPrimary" />
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/action_share"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -40,6 +40,6 @@
         android:contentDescription="@string/action_multiselect_bottom_sheet_share_description"
         android:padding="4dp"
         app:srcCompat="@drawable/ic_share_24dp"
-        app:tint="@color/white" />
+        app:tint="?attr/colorOnPrimary" />
 
 </LinearLayout>

@@ -92,7 +92,7 @@ class AutoBackupService : Service() {
         // Call MainActivity an Notification Click
         val pendingIntent: PendingIntent =
             Intent(this, MainActivity::class.java).let { notificationIntent ->
-                PendingIntent.getActivity(this, 0, notificationIntent, 0)
+                PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
             }
 
         // Stop Foreground Service on Button Click
@@ -100,7 +100,7 @@ class AutoBackupService : Service() {
             Intent(this, PackageBroadcastReceiver::class.java).apply {
                 action = ACTION_STOP_SERVICE
             }.let { stopIntent ->
-                PendingIntent.getBroadcast(this, 0, stopIntent, 0)
+                PendingIntent.getBroadcast(this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
             }
 
 
@@ -130,13 +130,13 @@ class AutoBackupService : Service() {
         ).apply {
             action = ACTION_RESTART_SERVICE
         }.let { restartIntent ->
-            PendingIntent.getBroadcast(this, 0, restartIntent, 0)
+            PendingIntent.getBroadcast(this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE)
         }
         // System Alarm Manager
         val alarmService: AlarmManager =
             applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         // Set Alarm to be executed
-        alarmService.setExactAndAllowWhileIdle(
+        alarmService.setAndAllowWhileIdle(
             AlarmManager.ELAPSED_REALTIME_WAKEUP,
             SystemClock.elapsedRealtime() + 1000,
             restartServicePendingIntent,

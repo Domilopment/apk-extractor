@@ -7,7 +7,7 @@
     android:background="?attr/selectableItemBackground"
     android:padding="6dip">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/icon"
         android:layout_width="50dp"
         android:layout_height="fill_parent"
@@ -17,7 +17,7 @@
         android:contentDescription="@string/list_item_Image_description"
         android:src="@mipmap/ic_launcher" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/secondLine"
         android:layout_width="wrap_content"
         android:layout_height="26dip"
@@ -28,7 +28,7 @@
         android:text="@string/list_item_package_placeholder"
         android:textSize="12sp" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/firstLine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
         android:text="@string/list_item_title_placeholder"
         android:textSize="16sp" />
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

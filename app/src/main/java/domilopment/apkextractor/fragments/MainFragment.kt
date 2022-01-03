@@ -1,16 +1,20 @@
 package domilopment.apkextractor.fragments
 
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -36,8 +40,33 @@ class MainFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var callback: OnBackPressedCallback
     private val model by activityViewModels<MainViewModel> {
-        MainViewModel(requireContext()).defaultViewModelProviderFactory
+        MainViewModel(requireActivity().application).defaultViewModelProviderFactory
     }
+
+    private val shareApp =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            requireContext().cacheDir.deleteRecursively()
+        }
+
+    private val selectApk =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK)
+                AlertDialog.Builder(requireContext()).apply {
+                    setTitle(getString(R.string.alert_apk_selected_title))
+                    setItems(R.array.selected_apk_options) { _, i: Int ->
+                        try {
+                            it.data?.data?.let { apkUri -> apkFileOptions(i, apkUri) }
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                context,
+                                "Something went wrong, couldn't perform action on Selected Apk",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            Log.e("Apk Extractor: Saved Apps Dialog", e.toString())
+                        }
+                    }
+                }.show()
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +96,20 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
+        viewAdapter = AppListAdapter(this)
+
+        binding.listView.list.apply {
+            // use this setting to improve performance if you know that changes
+            // in content do not change the layout size of the RecyclerView
+            setHasFixedSize(true)
+            // use a linear layout manager
+            layoutManager = LinearLayoutManager(requireContext())
+            // specify an viewAdapter (see also next example)
+            adapter = viewAdapter
+        }
+
         // add Refresh Layout action on Swipe
         binding.refresh.setOnRefreshListener {
             updateData()
@@ -89,27 +132,9 @@ class MainFragment : Fragment() {
                 getSelectedApps()?.let {
                     Intent.createChooser(it, getString(R.string.share_intent_title))
                 }?.also {
-                    startActivityForResult(it, MainActivity.SHARE_APP_RESULT)
+                    shareApp.launch(it)
                 }
             }
-        }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-
-        viewAdapter = AppListAdapter(this)
-
-        binding.listView.list.apply {
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
-            setHasFixedSize(true)
-            // use a linear layout manager
-            layoutManager = LinearLayoutManager(requireContext())
-            // specify an viewAdapter (see also next example)
-            adapter = viewAdapter
         }
     }
 
@@ -308,12 +333,12 @@ class MainFragment : Fragment() {
             R.id.action_install_time -> sortData(item, SettingsManager.SORT_BY_INSTALL_TIME)
             R.id.action_update_time -> sortData(item, SettingsManager.SORT_BY_UPDATE_TIME)
             R.id.action_show_save_dir -> {
+                val destDir = SettingsManager(requireContext()).saveDir()
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    val destDir = SettingsManager(requireContext()).saveDir()
                     putExtra(DocumentsContract.EXTRA_INITIAL_URI, destDir)
                     setDataAndType(destDir, FileHelper.MIME_TYPE)
                 }
-                activity?.startActivityForResult(intent, MainActivity.SELECTED_APK_RESULT)
+                selectApk.launch(intent)
             }
             else ->
                 return super.onOptionsItemSelected(item)
@@ -337,5 +362,37 @@ class MainFragment : Fragment() {
      */
     fun stateBottomSheetBehaviour(state: Int) {
         BottomSheetBehavior.from(binding.appMultiselectBottomSheet.root).state = state
+    }
+
+    /**
+     * Executes Option for "How to Use Apk" Dialog
+     * @param i Selected Option
+     * @param data Result Intent, holding Apk files data
+     */
+    private fun apkFileOptions(i: Int, data: Uri) {
+        when (i) {
+            // Send Selected Apk File
+            0 -> startActivity(
+                Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+                    type = FileHelper.MIME_TYPE
+                    putExtra(Intent.EXTRA_STREAM, data)
+                }, getString(R.string.share_intent_title))
+            )
+            // Install Selected Apk File
+            1 -> startActivity(
+                Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(
+                        data,
+                        FileHelper.MIME_TYPE
+                    )
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                })
+            // Delete Selected Apk File
+            2 -> DocumentsContract.deleteDocument(
+                requireContext().contentResolver,
+                data
+            )
+        }
     }
 }

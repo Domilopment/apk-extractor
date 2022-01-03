@@ -1,15 +1,16 @@
 package domilopment.apkextractor.utils
 
+import android.app.Application
 import android.content.Context
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
+import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.autoBackup.AutoBackupService
-import domilopment.apkextractor.data.Application
+import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.data.ListOfAPKs
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.Comparator
 import kotlin.jvm.Throws
 
 class SettingsManager(context: Context) {
@@ -28,8 +29,8 @@ class SettingsManager(context: Context) {
      * Creates a List containing of all Types the User Selected in Settings
      * @return List of Selected App Types
      */
-    fun selectedAppTypes(): List<Application> {
-        val mData: MutableList<Application> = mutableListOf()
+    fun selectedAppTypes(): List<ApplicationModel> {
+        val mData: MutableList<ApplicationModel> = mutableListOf()
         if (sharedPreferences.getBoolean("updated_system_apps", false)) {
             mData.addAll(ListOfAPKs(packageManager).updatedSystemApps)
             if (sharedPreferences.getBoolean("system_apps", false))
@@ -55,12 +56,19 @@ class SettingsManager(context: Context) {
      * @throws Exception if given sort type doesn't exist
      */
     @Throws(Exception::class)
-    fun sortData(data: List<Application>, sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME)): List<Application> {
+    fun sortData(
+        data: List<ApplicationModel>,
+        sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME)
+    ): List<ApplicationModel> {
         return when (sortMode) {
-            SORT_BY_NAME -> data.sortedWith(Comparator.comparing(Application::appName))
-            SORT_BY_PACKAGE -> data.sortedWith(Comparator.comparing(Application::appPackageName))
-            SORT_BY_INSTALL_TIME -> data.sortedWith(Comparator.comparing(Application::appInstallTime).reversed())
-            SORT_BY_UPDATE_TIME -> data.sortedWith(Comparator.comparing(Application::appUpdateTime).reversed())
+            SORT_BY_NAME -> data.sortedWith(Comparator.comparing(ApplicationModel::appName))
+            SORT_BY_PACKAGE -> data.sortedWith(Comparator.comparing(ApplicationModel::appPackageName))
+            SORT_BY_INSTALL_TIME -> data.sortedWith(
+                Comparator.comparing(ApplicationModel::appInstallTime).reversed()
+            )
+            SORT_BY_UPDATE_TIME -> data.sortedWith(
+                Comparator.comparing(ApplicationModel::appUpdateTime).reversed()
+            )
             else -> throw Exception("No such sort type")
         }
     }
@@ -87,14 +95,18 @@ class SettingsManager(context: Context) {
      * @param app the resource App
      * @return String of the name after the APK should be named
      */
-    fun appName(app: Application): String {
+    fun appName(app: ApplicationModel): String {
         val sb = StringBuilder()
         sharedPreferences.getStringSet("app_save_name", setOf())?.also { prefs ->
             if (prefs.contains("name")) sb.append(app.appName)
             if (prefs.contains("package")) sb.append(" ${app.appPackageName}")
             if (prefs.contains("version_name")) sb.append(" ${app.appVersionCode}")
             if (prefs.contains("version_number")) sb.append(" v${app.appVersionName}")
-            if (prefs.contains("datetime")) sb.append(" ${SimpleDateFormat.getDateTimeInstance().format(Date())}")
+            if (prefs.contains("datetime")) sb.append(
+                " ${
+                    SimpleDateFormat.getDateTimeInstance().format(Date())
+                }"
+            )
         }
         if (sb.isEmpty()) sb.append(app.appName)
         return sb.append(FileHelper.PREFIX).toString()
@@ -116,5 +128,15 @@ class SettingsManager(context: Context) {
         val pref = sharedPreferences.getBoolean("auto_backup", false)
         val service = AutoBackupService.isRunning
         return pref and !service
+    }
+
+    /**
+     * Enable Material You if it's turned on and the User wishes to (Only after app Restart)
+     * @param application Application reference to enable Dynamic Colors
+     */
+    fun useMaterialYou(application: Application) {
+        val available = DynamicColors.isDynamicColorAvailable()
+        val enabled = sharedPreferences.getBoolean("use_material_you", false)
+        if (available && enabled) DynamicColors.applyToActivitiesIfAvailable(application)
     }
 }

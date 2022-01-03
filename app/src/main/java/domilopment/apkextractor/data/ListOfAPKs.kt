@@ -19,9 +19,9 @@ class ListOfAPKs private constructor(private val packageManager: PackageManager)
         get() = systemApps.isEmpty() && updatedSystemApps.isEmpty() && userApps.isEmpty()
 
     //Lists of APK Types
-    val userApps = ArrayList<Application>()
-    val systemApps = ArrayList<Application>()
-    val updatedSystemApps = ArrayList<Application>()
+    val userApps = ArrayList<ApplicationModel>()
+    val systemApps = ArrayList<ApplicationModel>()
+    val updatedSystemApps = ArrayList<ApplicationModel>()
 
     // initialize APK list
     init {
@@ -41,7 +41,7 @@ class ListOfAPKs private constructor(private val packageManager: PackageManager)
         // Fill each list with its specific type
         packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
             .forEach { packageInfo: ApplicationInfo ->
-                Application(
+                ApplicationModel(
                     packageInfo,
                     packageManager
                 ).also {
