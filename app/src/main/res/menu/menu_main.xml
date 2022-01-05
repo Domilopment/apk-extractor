@@ -33,6 +33,10 @@
                     android:id="@+id/action_update_time"
                     android:title="@string/menu_sort_update"
                     app:showAsAction="never" />
+                <item
+                    android:id="@+id/action_apk_size"
+                    android:title="@string/menu_sort_apk"
+                    app:showAsAction="never" />
             </group>
         </menu>
     </item>

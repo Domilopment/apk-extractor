@@ -23,6 +23,7 @@ class SettingsManager(context: Context) {
         const val SORT_BY_PACKAGE = 1
         const val SORT_BY_INSTALL_TIME = 2
         const val SORT_BY_UPDATE_TIME = 3
+        const val SORT_BY_APK_SIZE = 5
     }
 
     /**
@@ -61,14 +62,18 @@ class SettingsManager(context: Context) {
         sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME)
     ): List<ApplicationModel> {
         return when (sortMode) {
-            SORT_BY_NAME -> data.sortedWith(Comparator.comparing(ApplicationModel::appName))
-            SORT_BY_PACKAGE -> data.sortedWith(Comparator.comparing(ApplicationModel::appPackageName))
+            SORT_BY_NAME ->
+                data.sortedWith(
+                    compareBy(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
+                )
+            SORT_BY_PACKAGE -> data.sortedWith(compareBy(ApplicationModel::appPackageName))
             SORT_BY_INSTALL_TIME -> data.sortedWith(
-                Comparator.comparing(ApplicationModel::appInstallTime).reversed()
+                compareBy(ApplicationModel::appInstallTime).reversed()
             )
             SORT_BY_UPDATE_TIME -> data.sortedWith(
-                Comparator.comparing(ApplicationModel::appUpdateTime).reversed()
+                compareBy(ApplicationModel::appUpdateTime).reversed()
             )
+            SORT_BY_APK_SIZE -> data.sortedWith(compareBy(ApplicationModel::apkSize))
             else -> throw Exception("No such sort type")
         }
     }
@@ -80,12 +85,14 @@ class SettingsManager(context: Context) {
     fun changeUIMode(
         newValue: String = sharedPreferences.getString(
             "list_preference_ui_mode",
-            "0"
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM.toString()
         )!!
     ) {
         when (newValue.toInt()) {
-            1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            AppCompatDelegate.MODE_NIGHT_YES ->
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            AppCompatDelegate.MODE_NIGHT_NO ->
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
     }

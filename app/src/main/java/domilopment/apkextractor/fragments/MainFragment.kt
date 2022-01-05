@@ -233,11 +233,13 @@ class MainFragment : Fragment() {
         val byPackage: MenuItem = menu.findItem(R.id.action_package_name)
         val byInstall: MenuItem = menu.findItem(R.id.action_install_time)
         val byUpdate: MenuItem = menu.findItem(R.id.action_update_time)
+        val byApkSize: MenuItem = menu.findItem(R.id.action_apk_size)
         when (sharedPreferences.getInt("app_sort", 0)) {
             0 -> byName.isChecked = true
             1 -> byPackage.isChecked = true
             2 -> byInstall.isChecked = true
             3 -> byUpdate.isChecked = true
+            5 -> byApkSize.isChecked = true
             else -> throw Exception("No such sort type")
         }
 
@@ -332,6 +334,7 @@ class MainFragment : Fragment() {
             R.id.action_package_name -> sortData(item, SettingsManager.SORT_BY_PACKAGE)
             R.id.action_install_time -> sortData(item, SettingsManager.SORT_BY_INSTALL_TIME)
             R.id.action_update_time -> sortData(item, SettingsManager.SORT_BY_UPDATE_TIME)
+            R.id.action_apk_size -> sortData(item, SettingsManager.SORT_BY_APK_SIZE)
             R.id.action_show_save_dir -> {
                 val destDir = SettingsManager(requireContext()).saveDir()
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {

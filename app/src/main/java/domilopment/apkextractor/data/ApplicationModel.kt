@@ -12,10 +12,7 @@ data class ApplicationModel(
     private val packageManager: PackageManager
 ) {
     private val packageInfo: PackageInfo
-        get() = packageManager.getPackageInfo(
-            applicationInfo.packageName,
-            0
-        )
+        get() = packageManager.getPackageInfo(applicationInfo.packageName, 0)
     val appName: String get() = packageManager.getApplicationLabel(applicationInfo).toString()
     val appPackageName: String = applicationInfo.packageName
     val appSourceDirectory: String = applicationInfo.sourceDir

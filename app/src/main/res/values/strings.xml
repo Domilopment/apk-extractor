@@ -73,6 +73,7 @@
     <string name="menu_sort_package">Package Name</string>
     <string name="menu_sort_install">Install Time</string>
     <string name="menu_sort_update">Update Time</string>
+    <string name="menu_sort_apk">Apk Size</string>
     <string name="menu_show_save_dir">Saved Apps</string>
     <string name="action_settings">Settings</string>
 

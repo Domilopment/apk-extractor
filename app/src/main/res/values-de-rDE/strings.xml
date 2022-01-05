@@ -72,6 +72,7 @@
     <string name="menu_sort_package">Paket Name</string>
     <string name="menu_sort_install">Zuletzt Installiert</string>
     <string name="menu_sort_update">Zuletzt Aktualisiert</string>
+    <string name="menu_sort_apk">Apk größe</string>
     <string name="menu_show_save_dir">Gespeicherte APKs</string>
     <string name="action_settings">Einstellungen</string>
 
