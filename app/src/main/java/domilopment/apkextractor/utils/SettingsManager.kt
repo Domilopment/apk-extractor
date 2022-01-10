@@ -66,7 +66,12 @@ class SettingsManager(context: Context) {
                 data.sortedWith(
                     compareBy(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
                 )
-            SORT_BY_PACKAGE -> data.sortedWith(compareBy(ApplicationModel::appPackageName))
+            SORT_BY_PACKAGE -> data.sortedWith(
+                compareBy(
+                    String.CASE_INSENSITIVE_ORDER,
+                    ApplicationModel::appPackageName
+                )
+            )
             SORT_BY_INSTALL_TIME -> data.sortedWith(
                 compareBy(ApplicationModel::appInstallTime).reversed()
             )
