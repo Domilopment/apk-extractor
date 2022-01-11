@@ -148,9 +148,13 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         }
 
         // Open App
-        binding.actionOpenApp.setOnClickListener {
-            requireContext().packageManager.getLaunchIntentForPackage(app.appPackageName)?.also {
-                startActivity(it)
+        binding.actionOpenApp.apply {
+            requireContext().packageManager.getLaunchIntentForPackage(app.appPackageName)?.also { launchIntent ->
+                setOnClickListener {
+                    startActivity(launchIntent)
+                }
+            } ?: run {
+                visibility = View.GONE
             }
         }
 
