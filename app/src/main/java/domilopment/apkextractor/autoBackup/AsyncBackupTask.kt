@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.AsyncTask
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import domilopment.apkextractor.MainActivity
@@ -16,6 +15,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import kotlinx.coroutines.*
 import java.io.FileNotFoundException
 
 /**
@@ -25,16 +25,16 @@ import java.io.FileNotFoundException
  * @param packageName Package name of Updated App
  */
 class AsyncBackupTask(
-    private val pendingResult: BroadcastReceiver.PendingResult?,
+    private val pendingResult: BroadcastReceiver.PendingResult,
     private val context: Context,
-    packageName: String
-) : AsyncTask<String, Int, Unit>() {
+    packageName: String,
+) : CoroutineScope by GlobalScope {
     companion object {
         private const val CHANNEL_ID = "domilopment.apkextractor.BROADCAST_RECEIVER"
         const val ACTION_DELETE_APK = "domilopment.apkextractor.DELETE_APK"
     }
 
-    private var success: Uri? = null
+    private val mainDispatcher get() = Dispatchers.Main
 
     // Get Application Info from Package
     private val app =
@@ -43,11 +43,22 @@ class AsyncBackupTask(
             context.packageManager
         )
 
-    override fun doInBackground(vararg params: String?) {
+    fun execute(dispatcher: CoroutineDispatcher = Dispatchers.Default) {
+        launch(mainDispatcher) {
+            val doInBackground = async(dispatcher) {
+                doInBackground()
+            }
+            withContext(mainDispatcher) {
+                onPostExecute(doInBackground.await())
+            }
+        }
+    }
+
+    private fun doInBackground(): Uri? {
         val path = SettingsManager(context).saveDir()
 
         // Try to Backup App
-        success = try {
+        return try {
             FileHelper(context).copy(
                 app.appSourceDirectory,
                 path!!,
@@ -59,23 +70,23 @@ class AsyncBackupTask(
         }
     }
 
-    override fun onPostExecute(result: Unit?) {
-        super.onPostExecute(result)
+    private fun onPostExecute(result: Uri?) {
         // Let User know when App is or should be Updated
         createNotificationChannel()
         with(NotificationManagerCompat.from(context)) {
-            success?.let {
+            result?.let {
                 // notificationId is a unique int for each notification that you must define
                 val id = AutoBackupService.getNewNotificationID()
-                notify(id, createNotificationSuccess(id).build())
+                notify(id, createNotificationSuccess(id, it).build())
             } ?: run {
                 // notificationId is a unique int for each notification that you must define
                 notify(AutoBackupService.getNewNotificationID(), createNotificationFailed().build())
             }
         }
         // Must call finish() so the BroadcastReceiver can be recycled.
-        pendingResult?.finish()
+        pendingResult.finish()
     }
+
 
     /**
      * Create notification Channel for auto Backup Apk results
@@ -103,11 +114,19 @@ class AsyncBackupTask(
      * @return Notification
      * Returns a Notification for Backup Apk
      */
-    private fun createNotificationSuccess(notificationID: Int): NotificationCompat.Builder {
+    private fun createNotificationSuccess(
+        notificationID: Int,
+        fileUri: Uri
+    ): NotificationCompat.Builder {
         // Call MainActivity an Notification Click
         val pendingIntent: PendingIntent =
             Intent(context, MainActivity::class.java).let { notificationIntent ->
-                PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.getActivity(
+                    context,
+                    0,
+                    notificationIntent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             }
 
         // Share APK on Button Click
@@ -115,7 +134,7 @@ class AsyncBackupTask(
             Intent.createChooser(
                 Intent(Intent.ACTION_SEND).apply {
                     type = FileHelper.MIME_TYPE
-                    putExtra(Intent.EXTRA_STREAM, success!!)
+                    putExtra(Intent.EXTRA_STREAM, fileUri)
                 },
                 context.getString(R.string.share_intent_title)
             ).let {
@@ -126,7 +145,7 @@ class AsyncBackupTask(
         val deletePendingIntent: PendingIntent =
             Intent(context, PackageBroadcastReceiver::class.java).apply {
                 action = ACTION_DELETE_APK
-                data = success!!
+                data = fileUri
                 putExtra("ID", notificationID)
             }.let { stopIntent ->
                 PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
@@ -163,7 +182,12 @@ class AsyncBackupTask(
         // Call MainActivity an Notification Click
         val pendingIntent: PendingIntent =
             Intent(context, MainActivity::class.java).let { notificationIntent ->
-                PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.getActivity(
+                    context,
+                    0,
+                    notificationIntent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             }
 
         // Build and return Notification
