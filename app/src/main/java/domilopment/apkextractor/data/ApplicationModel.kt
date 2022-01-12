@@ -1,5 +1,6 @@
 package domilopment.apkextractor.data
 
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -25,6 +26,7 @@ data class ApplicationModel(
     val appInstallTime: Long get() = packageInfo.firstInstallTime
     val appUpdateTime: Long get() = packageInfo.lastUpdateTime
     val apkSize: Float get() = File(applicationInfo.sourceDir).length() / (1000.0F * 1000.0F) // Calculate MB Size
+    val launchIntent: Intent? get() = packageManager.getLaunchIntentForPackage(appPackageName)
     var isChecked: Boolean = false
 
     fun getApplicationInfo() = applicationInfo

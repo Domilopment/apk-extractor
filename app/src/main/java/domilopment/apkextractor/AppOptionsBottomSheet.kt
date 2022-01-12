@@ -149,7 +149,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
         // Open App
         binding.actionOpenApp.apply {
-            requireContext().packageManager.getLaunchIntentForPackage(app.appPackageName)?.also { launchIntent ->
+            app.launchIntent?.also { launchIntent ->
                 setOnClickListener {
                     startActivity(launchIntent)
                 }
@@ -159,18 +159,20 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         }
 
         // Uninstall App
-        binding.actionUninstall.setOnClickListener {
-            Intent(
-                Intent.ACTION_DELETE,
-                Uri.fromParts("package", app.appPackageName, null)
-            ).also {
-                uninstallApp.launch(it)
+        binding.actionUninstall.apply {
+            setOnClickListener {
+                Intent(
+                    Intent.ACTION_DELETE,
+                    Uri.fromParts("package", app.appPackageName, null)
+                ).also {
+                    uninstallApp.launch(it)
+                }
             }
+            // If App is User App make Uninstall Option visible
+            isVisible =
+                (app.appFlags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM) || (app.appUpdateTime > app.appInstallTime)
         }
 
-        // If App is User App make Uninstall Option visible
-        if (::app.isInitialized && (app.appFlags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM))
-            binding.actionUninstall.isVisible = true
 
         // Save App Image
         binding.actionSaveImage.setOnClickListener { v ->
