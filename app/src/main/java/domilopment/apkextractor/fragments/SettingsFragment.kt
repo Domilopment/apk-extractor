@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -44,8 +45,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         super.onViewCreated(view, savedInstanceState)
 
         // Shows Version Number in Settings
-        findPreference<Preference>("version")!!.title =
-            getString(R.string.version, BuildConfig.VERSION_NAME)
+        findPreference<Preference>("version")!!
+            .title = getString(R.string.version, BuildConfig.VERSION_NAME)
+
         // A Link to Projects Github Repo
         findPreference<Preference>("github")!!.setOnPreferenceClickListener {
             CustomTabsIntent.Builder()
@@ -75,6 +77,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             return@setOnPreferenceClickListener true
         }
+
+        // A Link to my Privacy Policy Page
+        findPreference<Preference>("privacy_policy")?.setOnPreferenceClickListener {
+            CustomTabsIntent.Builder()
+                .build()
+                .launchUrl(
+                    requireContext(),
+                    Uri.parse("https://sites.google.com/view/domilopment/privacy-policy")
+                )
+            return@setOnPreferenceClickListener true
+        }
+
         // Select a Dir to Save APKs
         findPreference<Preference>("choose_dir")?.setOnPreferenceClickListener {
             FileHelper(requireActivity()).chooseDir(chooseSaveDir)
@@ -87,7 +101,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         findPreference<SwitchPreferenceCompat>("use_material_you")?.apply {
             setOnPreferenceChangeListener { _, _ ->
-                Toast.makeText(requireContext(), getString(R.string.use_material_you_toast), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.use_material_you_toast),
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnPreferenceChangeListener true
             }
             isVisible = DynamicColors.isDynamicColorAvailable()

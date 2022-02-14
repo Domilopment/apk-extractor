@@ -67,6 +67,9 @@
             app:summary="@string/googleplay_summary"
             app:title="@string/googleplay" />
         <Preference
+            app:key="privacy_policy"
+            app:title="@string/privacy_policy_title" />
+        <Preference
             app:enabled="false"
             app:key="version"
             app:title="@string/version" />

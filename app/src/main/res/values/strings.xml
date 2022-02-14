@@ -39,6 +39,8 @@
     <string name="googleplay">Google Play</string>
     <string name="googleplay_summary">View Play Store Page of App</string>
 
+    <string name="privacy_policy_title">Privacy Policy</string>
+
     <string name="version">Version: %s</string>
 
     <string name="advanced">Advanced Settings</string>

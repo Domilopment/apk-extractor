@@ -38,6 +38,8 @@
     <string name="googleplay">Google Play</string>
     <string name="googleplay_summary">Öffne die Play Store Seite der App</string>
 
+    <string name="privacy_policy_title">Datenschutzerklärung</string>
+
     <string name="version">Version: %s</string>
 
     <string name="advanced">Erweiterte Einstellungen</string>
