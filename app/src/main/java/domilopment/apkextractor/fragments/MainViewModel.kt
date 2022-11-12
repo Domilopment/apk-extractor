@@ -11,7 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    @NonNull application: Application
+    application: Application
 ) : AndroidViewModel(application), HasDefaultViewModelProviderFactory {
     private val applications: MutableLiveData<List<ApplicationModel>> by lazy {
         MutableLiveData<List<ApplicationModel>>().also {

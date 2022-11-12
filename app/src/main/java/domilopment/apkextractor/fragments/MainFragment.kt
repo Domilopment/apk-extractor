@@ -17,8 +17,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -80,8 +83,6 @@ class MainFragment : Fragment() {
         }.also {
             it.isEnabled = false
         }
-
-        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -95,6 +96,7 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupMenu()
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
@@ -115,13 +117,13 @@ class MainFragment : Fragment() {
             updateData()
         }
 
-        model.getApps().observe(viewLifecycleOwner, { apps ->
+        model.getApps().observe(viewLifecycleOwner) { apps ->
             viewAdapter.updateData(apps)
             if (::searchView.isInitialized) with(searchView.query) {
                 if (isNotBlank()) viewAdapter.filter.filter(this)
             }
             binding.refresh.isRefreshing = false
-        })
+        }
 
         binding.appMultiselectBottomSheet.apply {
             actionSaveApk.setOnClickListener {
@@ -218,65 +220,88 @@ class MainFragment : Fragment() {
         model.updateApps()
     }
 
-    /**
-     * Creates Options Menu
-     * @param menu
-     * @return Boolean
-     * True after Menu is Created
-     */
-    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        super.onCreateOptionsMenu(menu, menuInflater)
-        menuInflater.inflate(R.menu.menu_main, menu)
-
-        val byName: MenuItem = menu.findItem(R.id.action_app_name)
-        val byPackage: MenuItem = menu.findItem(R.id.action_package_name)
-        val byInstall: MenuItem = menu.findItem(R.id.action_install_time)
-        val byUpdate: MenuItem = menu.findItem(R.id.action_update_time)
-        val byApkSize: MenuItem = menu.findItem(R.id.action_apk_size)
-        when (sharedPreferences.getInt("app_sort", 0)) {
-            0 -> byName.isChecked = true
-            1 -> byPackage.isChecked = true
-            2 -> byInstall.isChecked = true
-            3 -> byUpdate.isChecked = true
-            5 -> byApkSize.isChecked = true
-            else -> throw Exception("No such sort type")
-        }
-
-        // Associate searchable configuration with the SearchView
-        searchView = (menu.findItem(R.id.action_search).actionView as SearchView).apply {
-            maxWidth = Int.MAX_VALUE
-            imeOptions = EditorInfo.IME_ACTION_SEARCH
-
-            // listening to search query text change
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    // filter recycler view when query submitted
-                    return onFilter(query)
+    private fun setupMenu() {
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
+            override fun onPrepareMenu(menu: Menu) {
+                val byName: MenuItem = menu.findItem(R.id.action_app_name)
+                val byPackage: MenuItem = menu.findItem(R.id.action_package_name)
+                val byInstall: MenuItem = menu.findItem(R.id.action_install_time)
+                val byUpdate: MenuItem = menu.findItem(R.id.action_update_time)
+                val byApkSize: MenuItem = menu.findItem(R.id.action_apk_size)
+                when (sharedPreferences.getInt("app_sort", 0)) {
+                    0 -> byName.isChecked = true
+                    1 -> byPackage.isChecked = true
+                    2 -> byInstall.isChecked = true
+                    3 -> byUpdate.isChecked = true
+                    5 -> byApkSize.isChecked = true
+                    else -> throw Exception("No such sort type")
                 }
 
-                override fun onQueryTextChange(query: String?): Boolean {
-                    // filter recycler view when text is changed
-                    return onFilter(query)
-                }
+                // Associate searchable configuration with the SearchView
+                searchView = (menu.findItem(R.id.action_search).actionView as SearchView).apply {
+                    maxWidth = Int.MAX_VALUE
+                    imeOptions = EditorInfo.IME_ACTION_SEARCH
 
-                fun onFilter(query: String?): Boolean {
-                    viewAdapter.filter.filter(query)
-                    return false
-                }
-            })
+                    // listening to search query text change
+                    setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                        override fun onQueryTextSubmit(query: String?): Boolean {
+                            // filter recycler view when query submitted
+                            return onFilter(query)
+                        }
 
-            // Enable on return Callback if user Opens SearchView
-            setOnSearchClickListener {
-                callback.isEnabled = true
+                        override fun onQueryTextChange(query: String?): Boolean {
+                            // filter recycler view when text is changed
+                            return onFilter(query)
+                        }
+
+                        fun onFilter(query: String?): Boolean {
+                            viewAdapter.filter.filter(query)
+                            return false
+                        }
+                    })
+
+                    // Enable on return Callback if user Opens SearchView
+                    setOnSearchClickListener {
+                        callback.isEnabled = true
+                    }
+
+                    // Disable on return Callback if user closes SearchView
+                    setOnCloseListener {
+                        callback.isEnabled = false
+                        return@setOnCloseListener false
+                    }
+                }
             }
 
-            // Disable on return Callback if user closes SearchView
-            setOnCloseListener {
-                callback.isEnabled = false
-                return@setOnCloseListener false
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_main, menu)
             }
-        }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Validate and handle the selected menu item
+                // Handle action bar item clicks here. The action bar will
+                // automatically handle clicks on the Home/Up button, so long
+                // as you specify a parent activity in AndroidManifest.xml.
+                when (menuItem.itemId) {
+                    R.id.action_settings ->
+                        findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
+                    R.id.action_app_name -> sortData(menuItem, SettingsManager.SORT_BY_NAME)
+                    R.id.action_package_name -> sortData(menuItem, SettingsManager.SORT_BY_PACKAGE)
+                    R.id.action_install_time -> sortData(menuItem, SettingsManager.SORT_BY_INSTALL_TIME)
+                    R.id.action_update_time -> sortData(menuItem, SettingsManager.SORT_BY_UPDATE_TIME)
+                    R.id.action_apk_size -> sortData(menuItem, SettingsManager.SORT_BY_APK_SIZE)
+                    R.id.action_show_save_dir -> {
+                        val destDir = SettingsManager(requireContext()).saveDir()
+                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                            putExtra(DocumentsContract.EXTRA_INITIAL_URI, destDir)
+                            setDataAndType(destDir, FileHelper.MIME_TYPE)
+                        }
+                        selectApk.launch(intent)
+                    }
+                }
+                return true
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     /**
@@ -316,37 +341,6 @@ class MainFragment : Fragment() {
         sharedPreferences.edit().putInt("app_sort", sortType).apply()
         item.isChecked = true
         model.sortApps()
-    }
-
-    /**
-     * Perform actions for menu Items
-     * @param item selected menu Item
-     * return Boolean
-     */
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
-            R.id.action_settings ->
-                findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
-            R.id.action_app_name -> sortData(item, SettingsManager.SORT_BY_NAME)
-            R.id.action_package_name -> sortData(item, SettingsManager.SORT_BY_PACKAGE)
-            R.id.action_install_time -> sortData(item, SettingsManager.SORT_BY_INSTALL_TIME)
-            R.id.action_update_time -> sortData(item, SettingsManager.SORT_BY_UPDATE_TIME)
-            R.id.action_apk_size -> sortData(item, SettingsManager.SORT_BY_APK_SIZE)
-            R.id.action_show_save_dir -> {
-                val destDir = SettingsManager(requireContext()).saveDir()
-                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    putExtra(DocumentsContract.EXTRA_INITIAL_URI, destDir)
-                    setDataAndType(destDir, FileHelper.MIME_TYPE)
-                }
-                selectApk.launch(intent)
-            }
-            else ->
-                return super.onOptionsItemSelected(item)
-        }
-        return true
     }
 
     /**

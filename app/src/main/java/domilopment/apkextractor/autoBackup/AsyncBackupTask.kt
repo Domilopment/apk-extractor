@@ -7,7 +7,9 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import domilopment.apkextractor.MainActivity
@@ -36,10 +38,15 @@ class AsyncBackupTask(
 
     private val mainDispatcher get() = Dispatchers.Main
 
+    private val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            context.packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0L))
+        else
+            context.packageManager.getPackageInfo(packageName, 0)
+
     // Get Application Info from Package
     private val app =
         ApplicationModel(
-            context.packageManager.getPackageInfo(packageName, 0).applicationInfo,
+            packageInfo.applicationInfo,
             context.packageManager
         )
 

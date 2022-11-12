@@ -86,7 +86,12 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.getParcelable<ApplicationInfo>("app")?.let {
+        val parcelable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getParcelable("app", ApplicationInfo::class.java)
+        } else {
+            arguments?.getParcelable("app")
+        }
+        parcelable?.let {
             app = ApplicationModel(it, requireContext().packageManager)
         } ?: return dismiss()
     }
@@ -231,7 +236,13 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
      */
     private fun isPackageInstalled(packageName: String): Boolean {
         return try {
-            requireContext().packageManager.getPackageInfo(packageName, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                requireContext().packageManager.getPackageInfo(
+                    packageName,
+                    PackageManager.PackageInfoFlags.of(0L)
+                )
+            else
+                requireContext().packageManager.getPackageInfo(packageName, 0)
             true
         } catch (e: PackageManager.NameNotFoundException) {
             false

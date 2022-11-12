@@ -13,7 +13,10 @@ data class ApplicationModel(
     private val packageManager: PackageManager
 ) {
     private val packageInfo: PackageInfo
-        get() = packageManager.getPackageInfo(applicationInfo.packageName, 0)
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            packageManager.getPackageInfo(applicationInfo.packageName, PackageManager.PackageInfoFlags.of(0L))
+        else
+            packageManager.getPackageInfo(applicationInfo.packageName, 0)
     val appName: String get() = packageManager.getApplicationLabel(applicationInfo).toString()
     val appPackageName: String = applicationInfo.packageName
     val appSourceDirectory: String = applicationInfo.sourceDir

@@ -62,7 +62,7 @@ class AutoBackupService : Service() {
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
         }
-        stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         // Restart Service if kill isn't called by user
         if (
             PreferenceManager.getDefaultSharedPreferences(applicationContext)

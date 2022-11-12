@@ -2,6 +2,7 @@ package domilopment.apkextractor.data
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.os.Build
 
 class ListOfAPKs private constructor(private val packageManager: PackageManager) {
     //Static Singleton Constructor
@@ -39,8 +40,15 @@ class ListOfAPKs private constructor(private val packageManager: PackageManager)
         systemApps.clear()
         updatedSystemApps.clear()
         // Fill each list with its specific type
-        packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-            .forEach { packageInfo: ApplicationInfo ->
+        val applicationsInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.getInstalledApplications(PackageManager.ApplicationInfoFlags.of(
+                PackageManager.GET_META_DATA.toLong()
+            ))
+        } else {
+            packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+        }
+
+        applicationsInfo.forEach { packageInfo: ApplicationInfo ->
                 ApplicationModel(
                     packageInfo,
                     packageManager
