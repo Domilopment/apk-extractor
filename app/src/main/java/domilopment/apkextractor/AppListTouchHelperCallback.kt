@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
+import android.util.TypedValue
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -73,7 +74,7 @@ class AppListTouchHelperCallback(
 
             val textPaint = Paint().apply {
                 color = colorSecondary
-                textSize = 50F
+                textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20F, mainFragment.resources.displayMetrics)
                 textAlign = Paint.Align.CENTER
             }
             val textYPos =
