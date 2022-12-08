@@ -183,6 +183,7 @@ class AppListAdapter(
             }
         }
         mainFragment.enableRefresh(false)
+        mainFragment.attachSwipeHelper(false)
         mainFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_EXPANDED)
         return true
     }
@@ -212,6 +213,7 @@ class AppListAdapter(
         myTitle = 0
         multiselect = false
         mainFragment.enableRefresh(true)
+        mainFragment.attachSwipeHelper(true)
         mainFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_COLLAPSED)
         this.mode = null
         notifyDataSetChanged()

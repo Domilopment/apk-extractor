@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -62,12 +63,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>("googleplay")?.setOnPreferenceClickListener {
             Intent(Intent.ACTION_VIEW).apply {
                 data = try {
-                    setPackage(
+                    val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                        requireContext().packageManager.getPackageInfo(
+                            "com.android.vending",
+                            PackageManager.PackageInfoFlags.of(0L)
+                        )
+                    else
                         requireContext().packageManager.getPackageInfo(
                             "com.android.vending",
                             0
-                        ).packageName
-                    )
+                        )
+                    setPackage(packageInfo.packageName)
                     Uri.parse("market://details?id=${requireContext().packageName}")
                 } catch (e: PackageManager.NameNotFoundException) {
                     Uri.parse("https://play.google.com/store/apps/details?id=${requireContext().packageName}")

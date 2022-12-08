@@ -24,7 +24,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
@@ -39,6 +41,7 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var viewAdapter: AppListAdapter
+    private lateinit var swipeHelper: ItemTouchHelper
     private lateinit var searchView: SearchView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var callback: OnBackPressedCallback
@@ -101,6 +104,51 @@ class MainFragment : Fragment() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         viewAdapter = AppListAdapter(this)
+
+        swipeHelper = ItemTouchHelper(AppListTouchHelperCallback(this,
+            { viewHolder: RecyclerView.ViewHolder ->
+                run {
+                    val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
+                    val settingsManager = SettingsManager(requireContext())
+
+                    FileHelper(requireActivity()).copy(
+                        app.appSourceDirectory,
+                        settingsManager.saveDir()!!,
+                        settingsManager.appName(app)
+                    )?.let {
+                        Snackbar.make(
+                            view,
+                            getString(R.string.snackbar_successful_extracted, app.appName),
+                            Snackbar.LENGTH_LONG
+                        ).setAnchorView(binding.appMultiselectBottomSheet.root).show()
+                    } ?: run {
+                        Snackbar.make(
+                            view,
+                            getString(R.string.snackbar_extraction_failed, app.appName),
+                            Snackbar.LENGTH_LONG
+                        ).setAnchorView(binding.appMultiselectBottomSheet.root)
+                            .setTextColor(Color.RED).show()
+                    }
+                    viewAdapter.notifyDataSetChanged()
+                }
+            },
+            { viewHolder: RecyclerView.ViewHolder ->
+                run {
+                    val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
+
+                    val file = FileHelper(requireContext()).shareURI(app)
+                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = FileHelper.MIME_TYPE
+                        putExtra(Intent.EXTRA_STREAM, file)
+                    }.let {
+                        Intent.createChooser(it, getString(R.string.share_intent_title))
+                    }
+                    shareApp.launch(shareIntent)
+                    viewAdapter.notifyDataSetChanged()
+                }
+            }
+        ))
+        swipeHelper.attachToRecyclerView(binding.listView.list)
 
         binding.listView.list.apply {
             // use this setting to improve performance if you know that changes
@@ -213,6 +261,12 @@ class MainFragment : Fragment() {
     }
 
     /**
+     * Remove or attach RecyclerView to SwipeHelper
+     */
+    fun attachSwipeHelper(attach: Boolean) =
+        swipeHelper.attachToRecyclerView(if (attach) binding.listView.list else null)
+
+    /**
      * Update Dataset
      */
     private fun updateData() {
@@ -287,8 +341,14 @@ class MainFragment : Fragment() {
                         findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
                     R.id.action_app_name -> sortData(menuItem, SettingsManager.SORT_BY_NAME)
                     R.id.action_package_name -> sortData(menuItem, SettingsManager.SORT_BY_PACKAGE)
-                    R.id.action_install_time -> sortData(menuItem, SettingsManager.SORT_BY_INSTALL_TIME)
-                    R.id.action_update_time -> sortData(menuItem, SettingsManager.SORT_BY_UPDATE_TIME)
+                    R.id.action_install_time -> sortData(
+                        menuItem,
+                        SettingsManager.SORT_BY_INSTALL_TIME
+                    )
+                    R.id.action_update_time -> sortData(
+                        menuItem,
+                        SettingsManager.SORT_BY_UPDATE_TIME
+                    )
                     R.id.action_apk_size -> sortData(menuItem, SettingsManager.SORT_BY_APK_SIZE)
                     R.id.action_show_save_dir -> {
                         val destDir = SettingsManager(requireContext()).saveDir()
