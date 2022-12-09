@@ -1,14 +1,16 @@
 package domilopment.apkextractor
 
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.drawable.ColorDrawable
-import android.util.TypedValue
+import android.graphics.*
+import android.graphics.drawable.Drawable
+import android.view.LayoutInflater
+import android.view.View
+import android.view.View.MeasureSpec
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.withTranslation
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.color.MaterialColors
+import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.textview.MaterialTextView
 import domilopment.apkextractor.fragments.MainFragment
 
 class AppListTouchHelperCallback(
@@ -19,6 +21,16 @@ class AppListTouchHelperCallback(
     0,
     ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
 ) {
+    private val swipeRightLayout: View
+    private val swipeLeftLayout: View
+
+    init {
+        val layoutInflater = LayoutInflater.from(mainFragment.requireContext())
+
+        swipeRightLayout = layoutInflater.inflate(R.layout.app_list_item_swipe_right, null, false)
+        swipeLeftLayout = layoutInflater.inflate(R.layout.app_list_item_swipe_left, null, false)
+    }
+
     override fun onMove(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,
@@ -41,6 +53,59 @@ class AppListTouchHelperCallback(
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
+        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && isCurrentlyActive) {
+            val itemView = viewHolder.itemView
+
+            val swipeLayout: View
+            val icon: Drawable?
+            val text: String
+            if (dX > 0) {
+                swipeLayout = swipeRightLayout
+                icon = AppCompatResources.getDrawable(
+                    mainFragment.requireContext(),
+                    R.drawable.ic_baseline_save_48
+                )
+                text =
+                    mainFragment.resources.getText(R.string.action_bottom_sheet_save)
+                        .toString()
+            } else {
+                swipeLayout = swipeLeftLayout
+                icon = AppCompatResources.getDrawable(
+                    mainFragment.requireContext(),
+                    R.drawable.ic_baseline_share_48
+                )
+                text =
+                    mainFragment.resources.getText(R.string.action_bottom_sheet_share)
+                        .toString()
+            }
+
+            val imageView =
+                swipeLayout.findViewById<ShapeableImageView>(R.id.swipeImageView)
+            imageView.setImageDrawable(icon)
+
+            val textView =
+                swipeLayout.findViewById<MaterialTextView>(R.id.swipeTextView)
+            textView.text = text
+
+            if (swipeLayout.isDirty) {
+                val widthMeasureSpec =
+                    MeasureSpec.makeMeasureSpec(itemView.width, MeasureSpec.EXACTLY)
+                val heightMeasureSpec =
+                    MeasureSpec.makeMeasureSpec(itemView.height, MeasureSpec.EXACTLY)
+                swipeLayout.measure(widthMeasureSpec, heightMeasureSpec)
+                swipeLayout.layout(
+                    itemView.left,
+                    itemView.top,
+                    itemView.right,
+                    itemView.bottom
+                )
+            }
+
+            canvas.withTranslation(
+                itemView.left.toFloat(),
+                itemView.top.toFloat()
+            ) { swipeLayout.draw(canvas) }
+        }
         super.onChildDraw(
             canvas,
             recyclerView,
@@ -50,95 +115,5 @@ class AppListTouchHelperCallback(
             actionState,
             isCurrentlyActive
         )
-        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && isCurrentlyActive) {
-            val itemView = viewHolder.itemView
-            val margin = 30
-
-            ColorDrawable().apply {
-                color = MaterialColors.getColor(
-                    mainFragment.requireContext(),
-                    R.attr.colorOnSecondary,
-                    null
-                )
-                bounds =
-                    Rect(itemView.left, itemView.top, itemView.right, itemView.bottom)
-            }.also {
-                it.draw(canvas)
-            }
-
-            val colorSecondary = MaterialColors.getColor(
-                mainFragment.requireContext(),
-                R.attr.colorSecondary,
-                null
-            )
-
-            val textPaint = Paint().apply {
-                color = colorSecondary
-                textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20F, mainFragment.resources.displayMetrics)
-                textAlign = Paint.Align.CENTER
-            }
-            val textYPos =
-                (itemView.top + itemView.height / 2 - (textPaint.descent() + textPaint.ascent()) / 2)
-
-            if (dX > 0) {
-                // Save Icon Drawable
-                AppCompatResources.getDrawable(
-                    mainFragment.requireContext(),
-                    R.drawable.ic_baseline_save_24
-                )
-                    ?.apply {
-                        bounds = Rect(
-                            margin,
-                            itemView.top + margin,
-                            itemView.bottom - itemView.top - margin,
-                            itemView.bottom - margin
-                        )
-                        setTint(colorSecondary)
-                    }.also {
-                        it?.draw(canvas)
-                    }
-
-                // Save Text
-                val text =
-                    mainFragment.resources.getText(R.string.action_bottom_sheet_save)
-                        .toString()
-                canvas.drawText(
-                    text,
-                    itemView.bottom - itemView.top + textPaint.measureText(text) / 2,
-                    textYPos,
-                    textPaint
-                )
-            } else {
-                // Share Icon Drawable
-                AppCompatResources.getDrawable(
-                    mainFragment.requireContext(),
-                    R.drawable.ic_share_24dp
-                )
-                    ?.apply {
-                        bounds = Rect(
-                            itemView.right - (itemView.bottom - itemView.top) + margin,
-                            itemView.top + margin,
-                            itemView.right - margin,
-                            itemView.bottom - margin
-                        )
-                        setTint(colorSecondary)
-                    }.also {
-                        it?.draw(canvas)
-                    }
-
-                // Share Text
-                val text =
-                    mainFragment.resources.getText(R.string.action_bottom_sheet_share)
-                        .toString()
-                canvas.drawText(
-                    text,
-                    itemView.right - (itemView.bottom - itemView.top) - textPaint.measureText(
-                        text
-                    ) / 2,
-                    textYPos,
-                    textPaint
-                )
-            }
-        }
     }
 }
