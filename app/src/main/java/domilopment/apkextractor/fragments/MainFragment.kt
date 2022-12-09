@@ -233,34 +233,38 @@ class MainFragment : Fragment() {
                 var failure = false
 
                 lifecycleScope.launch {
-                    list.forEach { app ->
-                        withContext(Dispatchers.Main) {
-                            progressDialog.setTitle(app.appPackageName)
-                        }
-                        withContext(Dispatchers.IO) {
-                            failure = fileHelper.copy(
-                                app.appSourceDirectory,
-                                settingsManager.saveDir()!!,
-                                settingsManager.appName(app)
-                            ) == null
-                        }
-                        withContext(Dispatchers.Main) {
-                            progressDialog.incrementProgress()
-                            if (failure) {
-                                Snackbar.make(
-                                    view,
-                                    getString(
-                                        R.string.snackbar_extraction_failed,
-                                        app.appPackageName
-                                    ),
-                                    Snackbar.LENGTH_LONG
-                                ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                                    .setTextColor(Color.RED)
-                                    .show()
+                    val job = launch extract@{
+                        list.forEach { app ->
+                            withContext(Dispatchers.Main) {
+                                progressDialog.setTitle(app.appPackageName)
                             }
+                            withContext(Dispatchers.IO) {
+                                failure = fileHelper.copy(
+                                    app.appSourceDirectory,
+                                    settingsManager.saveDir()!!,
+                                    settingsManager.appName(app)
+                                ) == null
+                            }
+                            withContext(Dispatchers.Main) {
+                                progressDialog.incrementProgress()
+                                if (failure) {
+                                    Snackbar.make(
+                                        view,
+                                        getString(
+                                            R.string.snackbar_extraction_failed,
+                                            app.appPackageName
+                                        ),
+                                        Snackbar.LENGTH_LONG
+                                    ).setAnchorView(binding.appMultiselectBottomSheet.root)
+                                        .setTextColor(Color.RED)
+                                        .show()
+                                }
+                            }
+                            if (failure) return@extract
                         }
-                        if (failure) return@launch
                     }
+                    job.join()
+
                     progressDialog.dismiss()
 
                     if (!failure) Snackbar.make(

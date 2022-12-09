@@ -44,8 +44,4 @@ class ProgressDialog(context: Context, max: Int) : AlertDialog(context) {
             WindowManager.LayoutParams.WRAP_CONTENT
         )
     }
-
-    fun setTitle(title: String) {
-        super.setTitle(title)
-    }
 }
