@@ -22,6 +22,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -33,6 +34,7 @@ import domilopment.apkextractor.*
 import domilopment.apkextractor.databinding.FragmentMainBinding
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import kotlinx.coroutines.*
 
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
@@ -220,42 +222,59 @@ class MainFragment : Fragment() {
                 R.string.toast_save_apps,
                 Toast.LENGTH_SHORT
             ).show()
-            else if (
-                kotlin.run success@{
-                    val settingsManager = SettingsManager(requireContext())
-                    val fileHelper = FileHelper(requireContext())
+            else {
+                val settingsManager = SettingsManager(requireContext())
+                val fileHelper = FileHelper(requireContext())
+
+                val progressDialog =
+                    ProgressDialog(this@MainFragment.requireContext(), list.size)
+                progressDialog.show()
+
+                var failure = false
+
+                lifecycleScope.launch {
                     list.forEach { app ->
-                        if (
-                            fileHelper.copy(
+                        withContext(Dispatchers.Main) {
+                            progressDialog.setTitle(app.appPackageName)
+                        }
+                        withContext(Dispatchers.IO) {
+                            failure = fileHelper.copy(
                                 app.appSourceDirectory,
                                 settingsManager.saveDir()!!,
                                 settingsManager.appName(app)
                             ) == null
-                        ) {
-                            Snackbar.make(
-                                view,
-                                getString(R.string.snackbar_extraction_failed, app.appPackageName),
-                                Snackbar.LENGTH_LONG
-                            ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                                .setTextColor(Color.RED)
-                                .show()
-                            return@success false
                         }
+                        withContext(Dispatchers.Main) {
+                            progressDialog.incrementProgress()
+                            if (failure) {
+                                Snackbar.make(
+                                    view,
+                                    getString(
+                                        R.string.snackbar_extraction_failed,
+                                        app.appPackageName
+                                    ),
+                                    Snackbar.LENGTH_LONG
+                                ).setAnchorView(binding.appMultiselectBottomSheet.root)
+                                    .setTextColor(Color.RED)
+                                    .show()
+                            }
+                        }
+                        if (failure) return@launch
                     }
-                    return@success true
+                    progressDialog.dismiss()
+
+                    if (!failure) Snackbar.make(
+                        view,
+                        resources.getQuantityString(
+                            R.plurals.snackbar_successful_extracted_multiple,
+                            list.size,
+                            list.last().appName,
+                            list.size - 1
+                        ),
+                        Snackbar.LENGTH_LONG
+                    ).setAnchorView(binding.appMultiselectBottomSheet.root)
+                        .show()
                 }
-            ) {
-                Snackbar.make(
-                    view,
-                    resources.getQuantityString(
-                        R.plurals.snackbar_successful_extracted_multiple,
-                        list.size,
-                        list.last().appName,
-                        list.size - 1
-                    ),
-                    Snackbar.LENGTH_LONG
-                ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                    .show()
             }
         }
     }

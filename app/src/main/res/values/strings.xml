@@ -140,4 +140,7 @@
     <string name="list_item_package_placeholder" translatable="false">com.placeholder.application</string>
     <string name="list_item_checkbox_description">Multiselect Checkbox</string>
 
+    <!-- App Extraction Progress Dialog -->
+    <string name="progress_dialog_percentage">%.2f %%</string>
+
 </resources>

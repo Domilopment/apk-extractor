@@ -137,4 +137,7 @@
     <string name="list_item_Image_description">App Icon</string>
     <string name="list_item_checkbox_description">Mehrfachauswahl Checkbox</string>
 
+    <!-- App Extraction Progress Dialog -->
+    <string name="progress_dialog_percentage">%.2f %%</string>
+
 </resources>
