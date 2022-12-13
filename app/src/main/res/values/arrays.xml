@@ -30,7 +30,9 @@
 
     <string-array name="selected_apk_options">
         <item>@string/alert_apk_selected_share</item>
+        <!--
         <item>@string/alert_apk_selected_install</item>
+        -->
         <item>@string/alert_apk_selected_delete</item>
     </string-array>
 </resources>

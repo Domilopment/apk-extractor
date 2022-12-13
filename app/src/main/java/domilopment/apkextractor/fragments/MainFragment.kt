@@ -478,6 +478,7 @@ class MainFragment : Fragment() {
                 }, getString(R.string.share_intent_title))
             )
             // Install Selected Apk File
+            /*
             1 -> startActivity(
                 Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(
@@ -487,8 +488,9 @@ class MainFragment : Fragment() {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 })
+            */
             // Delete Selected Apk File
-            2 -> DocumentsContract.deleteDocument(
+            1 -> DocumentsContract.deleteDocument(
                 requireContext().contentResolver,
                 data
             )
