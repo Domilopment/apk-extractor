@@ -181,10 +181,12 @@ class MainFragment : Fragment() {
             }
 
             actionShare.setOnClickListener {
-                getSelectedApps()?.let {
-                    Intent.createChooser(it, getString(R.string.share_intent_title))
-                }?.also {
-                    shareApp.launch(it)
+                lifecycleScope.launch {
+                    getSelectedApps()?.let {
+                        Intent.createChooser(it, getString(R.string.share_intent_title))
+                    }?.also {
+                        shareApp.launch(it)
+                    }
                 }
             }
         }
@@ -258,9 +260,9 @@ class MainFragment : Fragment() {
                                     ).setAnchorView(binding.appMultiselectBottomSheet.root)
                                         .setTextColor(Color.RED)
                                         .show()
+                                    this@extract.cancel()
                                 }
                             }
-                            if (failure) return@extract
                         }
                     }
                     job.join()
@@ -393,24 +395,41 @@ class MainFragment : Fragment() {
      * Returns Intent with selected app APKs
      * if no Apps Selected null
      */
-    private fun getSelectedApps(): Intent? {
+    private suspend fun getSelectedApps(): Intent? = coroutineScope {
         val files = ArrayList<Uri>()
         val fileHelper = FileHelper(requireContext())
+        val jobList = ArrayList<Deferred<Any>>()
+        val progressDialog: ProgressDialog
+
         viewAdapter.myDatasetFiltered.filter {
             it.isChecked
+        }.also {
+            if (it.isEmpty()) {
+                Toast.makeText(requireContext(), R.string.toast_share_app, Toast.LENGTH_SHORT)
+                    .show()
+                return@coroutineScope null
+            }
+            progressDialog =
+                ProgressDialog(this@MainFragment.requireContext(), it.size)
+            progressDialog.show()
         }.forEach { app ->
-            fileHelper.shareURI(app).also {
-                files.add(it)
-            }
+            jobList.add(async {
+                withContext(Dispatchers.IO) {
+                    fileHelper.shareURI(app).also {
+                        files.add(it)
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    progressDialog.incrementProgress()
+                }
+            })
         }
-        return if (files.isEmpty()) {
-            Toast.makeText(requireContext(), R.string.toast_share_app, Toast.LENGTH_SHORT).show()
-            null
-        } else {
-            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                type = FileHelper.MIME_TYPE
-                putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
-            }
+        jobList.awaitAll()
+        progressDialog.dismiss()
+
+        return@coroutineScope Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+            type = FileHelper.MIME_TYPE
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
         }
     }
 
