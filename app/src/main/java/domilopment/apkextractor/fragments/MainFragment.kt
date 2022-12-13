@@ -229,7 +229,9 @@ class MainFragment : Fragment() {
                 val fileHelper = FileHelper(requireContext())
 
                 val progressDialog =
-                    ProgressDialog(this@MainFragment.requireContext(), list.size)
+                    ProgressDialog(this@MainFragment.requireContext(), list.size).apply {
+                        setTitle(getString(R.string.progress_dialog_title_save))
+                    }
                 progressDialog.show()
 
                 var failure = false
@@ -238,7 +240,7 @@ class MainFragment : Fragment() {
                     val job = launch extract@{
                         list.forEach { app ->
                             withContext(Dispatchers.Main) {
-                                progressDialog.setTitle(app.appPackageName)
+                                progressDialog.setProcess(app.appPackageName)
                             }
                             withContext(Dispatchers.IO) {
                                 failure = fileHelper.copy(
@@ -410,7 +412,9 @@ class MainFragment : Fragment() {
                 return@coroutineScope null
             }
             progressDialog =
-                ProgressDialog(this@MainFragment.requireContext(), it.size)
+                ProgressDialog(this@MainFragment.requireContext(), it.size).apply {
+                    setTitle(getString(R.string.progress_dialog_title_share))
+                }
             progressDialog.show()
         }.forEach { app ->
             jobList.add(async {

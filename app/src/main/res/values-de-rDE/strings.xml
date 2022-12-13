@@ -140,5 +140,7 @@
     <!-- App Extraction Progress Dialog -->
     <string name="progress_dialog_percentage">%.2f %%</string>
     <string name="progress_dialog_value">%d/%d</string>
+    <string name="progress_dialog_title_save">Speichere APKs</string>
+    <string name="progress_dialog_title_share">Vornereite zum Teilen</string>
 
 </resources>

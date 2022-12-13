@@ -12,14 +12,15 @@ class ProgressDialog(context: Context, max: Int) : AlertDialog(context) {
     private val progressBar: ProgressBar
     private val textPercentages: MaterialTextView
     private val textValue: MaterialTextView
+    private val currentProcess: MaterialTextView
 
     init {
         setView(binding.root)
         progressBar = binding.progressHorizontal
         textPercentages = binding.progressPercentages
         textValue = binding.progressValue
+        currentProcess = binding.currentProcess
         setCancelable(false)
-        setTitle("Progress Dialog")
         progressBar.max = max
         textPercentages.text = getPercentageString(0F)
         textValue.text = getValueString(0)
@@ -43,6 +44,10 @@ class ProgressDialog(context: Context, max: Int) : AlertDialog(context) {
 
     private fun getValueString(progress: Int = progressBar.progress) =
         context.getString(R.string.progress_dialog_value, progress, progressBar.max)
+
+    fun setProcess(processName: String) {
+        currentProcess.text = processName
+    }
 
     override fun show() {
         super.show()
