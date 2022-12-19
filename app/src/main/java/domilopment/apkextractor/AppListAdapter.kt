@@ -226,7 +226,7 @@ class AppListAdapter(
         mode?.finish()
     }
 
-    fun setModeTitle(itemCount: Int, mode: ActionMode? = this.mode) {
+    private fun setModeTitle(itemCount: Int, mode: ActionMode? = this.mode) {
         mode?.title = mainFragment.getString(R.string.action_mode_title, itemCount)
     }
 }
