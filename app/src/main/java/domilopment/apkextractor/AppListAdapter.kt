@@ -83,7 +83,7 @@ class AppListAdapter(
                             .isChecked = false
                     }
 
-                    mode?.title = myTitle.toString()
+                    setModeTitle(myTitle)
 
                     checkBox.isVisible = app.isChecked
 
@@ -175,7 +175,7 @@ class AppListAdapter(
         val inflater: MenuInflater = mode.menuInflater
         inflater.inflate(R.menu.menu_multiselect, menu)
         this.mode = mode
-        mode.title = myTitle.toString()
+        setModeTitle(myTitle, mode)
         menu.findItem(R.id.action_select_all)?.also {
             (it.actionView as CheckBox).setOnCheckedChangeListener { _, isChecked ->
                 it.isChecked = isChecked
@@ -199,7 +199,7 @@ class AppListAdapter(
                     it.isChecked = true
                 }
                 myTitle = itemCount
-                mode.title = itemCount.toString()
+                setModeTitle(itemCount, mode)
                 notifyDataSetChanged()
             }
         }
@@ -224,5 +224,9 @@ class AppListAdapter(
      */
     fun finish() {
         mode?.finish()
+    }
+
+    fun setModeTitle(itemCount: Int, mode: ActionMode? = this.mode) {
+        mode?.title = mainFragment.getString(R.string.action_mode_title, itemCount)
     }
 }

@@ -23,11 +23,13 @@
         android:layout_gravity="center"
         android:layout_marginEnd="4dp"
         android:layout_weight="1"
-        android:background="?attr/selectableItemBackground"
+        android:foreground="?attr/selectableItemBackground"
+        android:background="?attr/colorOnPrimary"
         android:contentDescription="@string/action_multiselect_bottom_sheet_save_description"
         android:padding="4dp"
         app:srcCompat="@drawable/ic_baseline_save_24"
-        app:tint="?attr/colorOnPrimary" />
+        app:tint="?attr/colorPrimary"
+        app:shapeAppearanceOverlay="@style/roundedCornerImageView" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/action_share"
@@ -36,10 +38,12 @@
         android:layout_gravity="center"
         android:layout_marginStart="4dp"
         android:layout_weight="1"
-        android:background="?attr/selectableItemBackground"
+        android:foreground="?attr/selectableItemBackground"
+        android:background="?attr/colorOnPrimary"
         android:contentDescription="@string/action_multiselect_bottom_sheet_share_description"
         android:padding="4dp"
         app:srcCompat="@drawable/ic_share_24dp"
-        app:tint="?attr/colorOnPrimary" />
+        app:tint="?attr/colorPrimary"
+        app:shapeAppearanceOverlay="@style/roundedCornerImageView" />
 
 </LinearLayout>

@@ -146,4 +146,7 @@
     <string name="progress_dialog_title_save">Save APKs</string>
     <string name="progress_dialog_title_share">Prepare to Share</string>
 
+    <!-- Action Mode -->
+    <string name="action_mode_title">%d Selected</string>
+
 </resources>

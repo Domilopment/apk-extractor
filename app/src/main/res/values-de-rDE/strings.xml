@@ -141,6 +141,9 @@
     <string name="progress_dialog_percentage">%.2f %%</string>
     <string name="progress_dialog_value">%d/%d</string>
     <string name="progress_dialog_title_save">Speichere APKs</string>
-    <string name="progress_dialog_title_share">Vornereite zum Teilen</string>
+    <string name="progress_dialog_title_share">Vorbereite zum Teilen</string>
+
+    <!-- Action Mode -->
+    <string name="action_mode_title">%d Ausgewählt</string>
 
 </resources>
