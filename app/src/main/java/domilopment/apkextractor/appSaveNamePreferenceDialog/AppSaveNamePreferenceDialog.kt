@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import domilopment.apkextractor.R
@@ -41,10 +42,17 @@ class AppSaveNamePreferenceDialog(context: Context) : AlertDialog(context) {
         setView(binding.root)
         setTitle(R.string.app_save_name)
         setCancelable(false)
+
+        val adapter = AppNameListAdapter(this@AppSaveNamePreferenceDialog)
         list = binding.appNameList.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = AppNameListAdapter(this@AppSaveNamePreferenceDialog)
+            layoutManager = object : LinearLayoutManager(context) {
+                override fun canScrollVertically() = false
+            }
+            this.adapter = adapter
         }
+        val helper = ItemTouchHelper(AppNameListDragAdapter(adapter))
+        helper.attachToRecyclerView(list)
+
         setButton(
             BUTTON_POSITIVE,
             context.getString(R.string.app_name_dialog_ok)
