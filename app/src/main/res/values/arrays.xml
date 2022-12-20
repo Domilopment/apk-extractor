@@ -25,7 +25,7 @@
         <item>datetime</item>
     </string-array>
     <string-array name="app_save_name_default_values">
-        <item>name</item>
+        <item>0:name</item>
     </string-array>
 
     <string-array name="selected_apk_options">

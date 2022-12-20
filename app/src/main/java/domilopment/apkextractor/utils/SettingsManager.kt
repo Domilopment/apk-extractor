@@ -116,10 +116,18 @@ class SettingsManager(context: Context) {
             "datetime" to SimpleDateFormat.getDateTimeInstance().format(Date())
         )
         return StringBuilder().apply {
-            sharedPreferences.getStringSet("app_save_name", setOf()).also { prefs ->
-                if (prefs.isNullOrEmpty()) append(app.appName)
-                else names.filterKeys { prefs.contains(it) }.values.forEach { v ->
-                    append(" $v")
+            val prefs =
+                sharedPreferences.getStringSet("app_save_name", setOf("0:name"))
+            val processedPrefs = try {
+                prefs?.toSortedSet(compareBy<String> { it[0].digitToInt() })
+                    ?.map { it.removeRange(0, 2) }
+            } catch (e: Exception) {
+                prefs
+            }
+            processedPrefs.also {
+                if (it.isNullOrEmpty()) append(app.appName)
+                else it.forEach { v ->
+                    append(" ${names[v]}")
                 }
             }
             append(FileHelper.PREFIX)

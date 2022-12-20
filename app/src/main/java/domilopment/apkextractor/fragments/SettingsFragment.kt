@@ -22,6 +22,7 @@ import androidx.preference.*
 import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.*
 import domilopment.apkextractor.R
+import domilopment.apkextractor.appSaveNamePreferenceDialog.AppSaveNamePreferenceDialog
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ListOfAPKs
 import domilopment.apkextractor.utils.FileHelper
@@ -180,21 +181,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
         // Check if user has Selected Name Options
-        findPreference<MultiSelectListPreference>("app_save_name")?.apply {
-            setOnPreferenceChangeListener { _, newValue ->
-                return@setOnPreferenceChangeListener if (
-                    (newValue as Set<*>).contains("name") or (newValue).contains("package")
-                ) {
-                    true
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.app_save_name_toast),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    false
-                }
-            }
+        findPreference<Preference>("app_save_name")?.setOnPreferenceClickListener {
+            AppSaveNamePreferenceDialog(requireContext()).show()
+            return@setOnPreferenceClickListener true
         }
     }
 

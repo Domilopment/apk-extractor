@@ -68,6 +68,10 @@
     <string name="app_save_name_datetime">Date</string>
     <string name="app_save_name_toast">Please select at Least App or Package Name</string>
 
+    <!-- APK Name Preference Dialog -->
+    <string name="app_name_dialog_ok">OK</string>
+    <string name="app_name_dialog_cancel">Cancel</string>
+
     <!-- Menu -->
     <string name="menu_search">Search</string>
     <string name="menu_sort">Sort</string>
