@@ -1,4 +1,4 @@
-package domilopment.apkextractor.appSaveNamePreferenceDialog
+package domilopment.apkextractor.apkSaveNamePreferenceDialog
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,22 +7,22 @@ import android.widget.CheckBox
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import domilopment.apkextractor.R
-import domilopment.apkextractor.databinding.AppNameListItemBinding
+import domilopment.apkextractor.databinding.ApkNameListItemBinding
 import java.util.Collections
 
-class AppNameListAdapter(
-    private val appSaveNamePreferenceDialog: AppSaveNamePreferenceDialog
-) : RecyclerView.Adapter<AppNameListAdapter.MyViewHolder>() {
+class ApkNameListAdapter(
+    private val apkSaveNamePreferenceDialog: ApkSaveNamePreferenceDialog
+) : RecyclerView.Adapter<ApkNameListAdapter.MyViewHolder>() {
     private var itemList =
-        appSaveNamePreferenceDialog.selectedList + appSaveNamePreferenceDialog.unselectedList
+        apkSaveNamePreferenceDialog.selectedList + apkSaveNamePreferenceDialog.unselectedList
 
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView) {
-        val binding: AppNameListItemBinding = AppNameListItemBinding.bind(myView)
+        val binding: ApkNameListItemBinding = ApkNameListItemBinding.bind(myView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return LayoutInflater.from(parent.context)
-            .inflate(R.layout.app_name_list_item, parent, false)
+            .inflate(R.layout.apk_name_list_item, parent, false)
             .let {
                 MyViewHolder(it)
             }
@@ -33,33 +33,33 @@ class AppNameListAdapter(
     }
 
     fun getSelectetSize(): Int {
-        return appSaveNamePreferenceDialog.selectedList.size
+        return apkSaveNamePreferenceDialog.selectedList.size
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val key = itemList[position]
-        val name = appSaveNamePreferenceDialog.groundTruthMap[key]
+        val name = apkSaveNamePreferenceDialog.groundTruthMap[key]
         holder.binding.appNameListItemText.text = name
-        val isItemSelected = appSaveNamePreferenceDialog.selectedList.contains(key)
+        val isItemSelected = apkSaveNamePreferenceDialog.selectedList.contains(key)
         holder.binding.appNameListItemCheckbox.isChecked = isItemSelected
         holder.binding.appNameListItemDragHandle.isVisible = isItemSelected
         holder.binding.appNameListItemCheckbox.setOnClickListener { view ->
             run {
-                appSaveNamePreferenceDialog.selectedList.remove(key)
-                appSaveNamePreferenceDialog.unselectedList.remove(key)
+                apkSaveNamePreferenceDialog.selectedList.remove(key)
+                apkSaveNamePreferenceDialog.unselectedList.remove(key)
                 if ((view as CheckBox).isChecked) {
                     holder.binding.appNameListItemDragHandle.isVisible = true
-                    appSaveNamePreferenceDialog.selectedList.add(
+                    apkSaveNamePreferenceDialog.selectedList.add(
                         if (position > getSelectetSize()) getSelectetSize() else position,
                         key
                     )
                 } else {
                     holder.binding.appNameListItemDragHandle.isVisible = false
-                    appSaveNamePreferenceDialog.unselectedList.add(0, key)
+                    apkSaveNamePreferenceDialog.unselectedList.add(0, key)
                 }
-                appSaveNamePreferenceDialog.isSelectionPositive()
+                apkSaveNamePreferenceDialog.isSelectionPositive()
                 itemList =
-                    appSaveNamePreferenceDialog.selectedList + appSaveNamePreferenceDialog.unselectedList
+                    apkSaveNamePreferenceDialog.selectedList + apkSaveNamePreferenceDialog.unselectedList
                 notifyDataSetChanged()
             }
         }
@@ -86,9 +86,9 @@ class AppNameListAdapter(
      * @param toPosition The place the item is Dragged to
      */
     fun swapItems(fromPosition: Int, toPosition: Int) {
-        swapItems(fromPosition, toPosition, appSaveNamePreferenceDialog.selectedList)
+        swapItems(fromPosition, toPosition, apkSaveNamePreferenceDialog.selectedList)
         itemList =
-            appSaveNamePreferenceDialog.selectedList + appSaveNamePreferenceDialog.unselectedList
+            apkSaveNamePreferenceDialog.selectedList + apkSaveNamePreferenceDialog.unselectedList
         notifyItemMoved(fromPosition, toPosition)
     }
 }

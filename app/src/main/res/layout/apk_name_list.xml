@@ -7,4 +7,4 @@
     android:layout_height="match_parent"
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
-    tools:listitem="@layout/app_name_list_item" />
+    tools:listitem="@layout/apk_name_list_item" />

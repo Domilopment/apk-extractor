@@ -1,4 +1,4 @@
-package domilopment.apkextractor.appSaveNamePreferenceDialog
+package domilopment.apkextractor.apkSaveNamePreferenceDialog
 
 import android.content.Context
 import android.widget.Toast
@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import domilopment.apkextractor.R
-import domilopment.apkextractor.databinding.AppNameListBinding
+import domilopment.apkextractor.databinding.ApkNameListBinding
 
-class AppSaveNamePreferenceDialog(context: Context) : AlertDialog(context) {
-    private val binding = AppNameListBinding.inflate(this.layoutInflater)
+class ApkSaveNamePreferenceDialog(context: Context) : AlertDialog(context) {
+    private val binding = ApkNameListBinding.inflate(this.layoutInflater)
     private val list: RecyclerView
 
     private val defaultValues =
@@ -42,14 +42,14 @@ class AppSaveNamePreferenceDialog(context: Context) : AlertDialog(context) {
         setView(binding.root)
         setTitle(R.string.app_save_name)
 
-        val adapter = AppNameListAdapter(this@AppSaveNamePreferenceDialog)
+        val adapter = ApkNameListAdapter(this@ApkSaveNamePreferenceDialog)
         list = binding.appNameList.apply {
             layoutManager = object : LinearLayoutManager(context) {
                 override fun canScrollVertically() = false
             }
             this.adapter = adapter
         }
-        val helper = ItemTouchHelper(AppNameListDragAdapter(adapter))
+        val helper = ItemTouchHelper(ApkNameListDragAdapter(adapter))
         helper.attachToRecyclerView(list)
 
         setButton(

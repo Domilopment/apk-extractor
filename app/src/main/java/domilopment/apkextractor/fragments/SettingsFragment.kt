@@ -22,7 +22,7 @@ import androidx.preference.*
 import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.*
 import domilopment.apkextractor.R
-import domilopment.apkextractor.appSaveNamePreferenceDialog.AppSaveNamePreferenceDialog
+import domilopment.apkextractor.apkSaveNamePreferenceDialog.ApkSaveNamePreferenceDialog
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ListOfAPKs
 import domilopment.apkextractor.utils.FileHelper
@@ -182,7 +182,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         // Check if user has Selected Name Options
         findPreference<Preference>("app_save_name")?.setOnPreferenceClickListener {
-            AppSaveNamePreferenceDialog(requireContext()).show()
+            ApkSaveNamePreferenceDialog(requireContext()).show()
             return@setOnPreferenceClickListener true
         }
     }
