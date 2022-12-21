@@ -60,7 +60,7 @@
     <string name="clear_cache_failed">Cache could not be cleared</string>
 
     <string name="app_save_name">APK Name</string>
-    <string name="app_save_name_summary">Configure APK save name information, shall at Least include App or Package Name.</string>
+    <string name="app_save_name_summary">Configure APK save name information, use Drag on selected Elements to change position in File name.</string>
     <string name="app_save_name_name">App Name</string>
     <string name="app_save_name_package">Package Name</string>
     <string name="app_save_name_version_name">App Version Name</string>
