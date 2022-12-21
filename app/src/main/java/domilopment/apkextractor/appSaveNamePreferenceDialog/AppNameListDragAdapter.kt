@@ -10,6 +10,16 @@ class AppNameListDragAdapter(private val appNameListAdapter: AppNameListAdapter)
 
     override fun isItemViewSwipeEnabled(): Boolean = false
 
+    override fun getMovementFlags(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder
+    ): Int {
+        return if ((viewHolder as AppNameListAdapter.MyViewHolder).binding.appNameListItemCheckbox.isChecked) super.getMovementFlags(
+            recyclerView,
+            viewHolder
+        ) else 0
+    }
+
     override fun onMove(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,

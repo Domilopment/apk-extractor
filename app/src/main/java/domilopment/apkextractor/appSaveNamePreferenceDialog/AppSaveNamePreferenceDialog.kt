@@ -41,7 +41,6 @@ class AppSaveNamePreferenceDialog(context: Context) : AlertDialog(context) {
 
         setView(binding.root)
         setTitle(R.string.app_save_name)
-        setCancelable(false)
 
         val adapter = AppNameListAdapter(this@AppSaveNamePreferenceDialog)
         list = binding.appNameList.apply {
