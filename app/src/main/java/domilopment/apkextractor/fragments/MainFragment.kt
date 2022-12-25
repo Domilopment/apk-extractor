@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -50,6 +51,8 @@ class MainFragment : Fragment() {
     private val model by activityViewModels<MainViewModel> {
         MainViewModel(requireActivity().application).defaultViewModelProviderFactory
     }
+
+    private var progressDialog: ProgressDialog? = null
 
     private val shareApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -88,6 +91,24 @@ class MainFragment : Fragment() {
         }.also {
             it.isEnabled = false
         }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.progressDialogState.collect { uiState ->
+                    if (uiState.shouldBeShown and (progressDialog?.isShown != true)) {
+                        if (progressDialog == null) progressDialog =
+                            ProgressDialog(requireContext(), uiState.tasks).apply {
+                                setTitle(uiState.title)
+                            }
+                        progressDialog?.show()
+                    }
+                    progressDialog?.apply {
+                        setProcess(uiState.process ?: "")
+                        updateProgress(uiState.progress)
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -109,45 +130,41 @@ class MainFragment : Fragment() {
 
         swipeHelper = ItemTouchHelper(AppListTouchHelperCallback(this,
             { viewHolder: RecyclerView.ViewHolder ->
-                run {
-                    val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
-                    val settingsManager = SettingsManager(requireContext())
+                val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
+                val settingsManager = SettingsManager(requireContext())
 
-                    FileHelper(requireActivity()).copy(
-                        app.appSourceDirectory,
-                        settingsManager.saveDir()!!,
-                        settingsManager.appName(app)
-                    )?.let {
-                        Snackbar.make(
-                            view,
-                            getString(R.string.snackbar_successful_extracted, app.appName),
-                            Snackbar.LENGTH_LONG
-                        ).setAnchorView(binding.appMultiselectBottomSheet.root).show()
-                    } ?: run {
-                        Snackbar.make(
-                            view,
-                            getString(R.string.snackbar_extraction_failed, app.appName),
-                            Snackbar.LENGTH_LONG
-                        ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                            .setTextColor(Color.RED).show()
-                    }
-                    viewAdapter.notifyDataSetChanged()
+                FileHelper(requireActivity()).copy(
+                    app.appSourceDirectory,
+                    settingsManager.saveDir()!!,
+                    settingsManager.appName(app)
+                )?.let {
+                    Snackbar.make(
+                        view,
+                        getString(R.string.snackbar_successful_extracted, app.appName),
+                        Snackbar.LENGTH_LONG
+                    ).setAnchorView(binding.appMultiselectBottomSheet.root).show()
+                } ?: run {
+                    Snackbar.make(
+                        view,
+                        getString(R.string.snackbar_extraction_failed, app.appName),
+                        Snackbar.LENGTH_LONG
+                    ).setAnchorView(binding.appMultiselectBottomSheet.root)
+                        .setTextColor(Color.RED).show()
                 }
+                viewAdapter.notifyDataSetChanged()
             },
             { viewHolder: RecyclerView.ViewHolder ->
-                run {
-                    val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
+                val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
 
-                    val file = FileHelper(requireContext()).shareURI(app)
-                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                        type = FileHelper.MIME_TYPE
-                        putExtra(Intent.EXTRA_STREAM, file)
-                    }.let {
-                        Intent.createChooser(it, getString(R.string.share_intent_title))
-                    }
-                    shareApp.launch(shareIntent)
-                    viewAdapter.notifyDataSetChanged()
+                val file = FileHelper(requireContext()).shareURI(app)
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = FileHelper.MIME_TYPE
+                    putExtra(Intent.EXTRA_STREAM, file)
+                }.let {
+                    Intent.createChooser(it, getString(R.string.share_intent_title))
                 }
+                shareApp.launch(shareIntent)
+                viewAdapter.notifyDataSetChanged()
             }
         ))
         swipeHelper.attachToRecyclerView(binding.listView.list)
@@ -162,32 +179,80 @@ class MainFragment : Fragment() {
             adapter = viewAdapter
         }
 
-        // add Refresh Layout action on Swipe
-        binding.refresh.setOnRefreshListener {
-            updateData()
-        }
-
         model.getApps().observe(viewLifecycleOwner) { apps ->
             viewAdapter.updateData(apps)
             if (::searchView.isInitialized) with(searchView.query) {
                 if (isNotBlank()) viewAdapter.filter.filter(this)
             }
-            binding.refresh.isRefreshing = false
+        }
+
+        model.getIsRefreshing().observe(viewLifecycleOwner) { isRefreshing ->
+            binding.refresh.isRefreshing = isRefreshing
+        }
+
+        model.getExtractionResult().observe(viewLifecycleOwner) { result ->
+            result?.getContentIfNotHandled()?.let { (failed, app, size) ->
+                if (failed == true)
+                    Snackbar.make(
+                        view,
+                        getString(
+                            R.string.snackbar_extraction_failed,
+                            app?.appPackageName
+                        ),
+                        Snackbar.LENGTH_LONG
+                    ).setAnchorView(binding.appMultiselectBottomSheet.root)
+                        .setTextColor(Color.RED)
+                        .show()
+                else Snackbar.make(
+                    view,
+                    resources.getQuantityString(
+                        R.plurals.snackbar_successful_extracted_multiple,
+                        size,
+                        app?.appName,
+                        size - 1
+                    ),
+                    Snackbar.LENGTH_LONG
+                ).setAnchorView(binding.appMultiselectBottomSheet.root)
+                    .show()
+
+                progressDialog?.dismiss()
+                progressDialog = null
+                model.resetProgress()
+            }
+        }
+
+        /**
+         * Creates Intent for Apps to Share
+         */
+        model.getShareResult().observe(viewLifecycleOwner) { result ->
+            result?.getContentIfNotHandled()?.let { files ->
+                Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                    type = FileHelper.MIME_TYPE
+                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
+                }.let {
+                    Intent.createChooser(it, getString(R.string.share_intent_title))
+                }?.also {
+                    shareApp.launch(it)
+                }
+
+                progressDialog?.dismiss()
+                progressDialog = null
+                model.resetProgress()
+            }
+        }
+
+        // add Refresh Layout action on Swipe
+        binding.refresh.setOnRefreshListener {
+            updateData()
         }
 
         binding.appMultiselectBottomSheet.apply {
             actionSaveApk.setOnClickListener {
-                saveApps(it)
+                saveApps()
             }
 
             actionShare.setOnClickListener {
-                lifecycleScope.launch {
-                    getSelectedApps()?.let {
-                        Intent.createChooser(it, getString(R.string.share_intent_title))
-                    }?.also {
-                        shareApp.launch(it)
-                    }
-                }
+                shareApps()
             }
         }
     }
@@ -205,17 +270,16 @@ class MainFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
-
     /**
-     * Function Called on FloatingActionButton Click
+     * Function Called on BottomSheet Click
      * If backup was successful, print name of last app backup and number of additional
      * else break on first unsuccessful backup and print its name
-     * @param view
-     * The FloatingActionButton
      */
-    private fun saveApps(view: View) {
+    private fun saveApps() {
         viewAdapter.myDatasetFiltered.filter {
             it.isChecked
         }.also { list ->
@@ -225,64 +289,36 @@ class MainFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
             else {
-                val settingsManager = SettingsManager(requireContext())
-                val fileHelper = FileHelper(requireContext())
-
-                val progressDialog =
+                progressDialog =
                     ProgressDialog(this@MainFragment.requireContext(), list.size).apply {
                         setTitle(getString(R.string.progress_dialog_title_save))
                     }
-                progressDialog.show()
+                progressDialog?.show()
+                model.saveApps(list)
+            }
+        }
+    }
 
-                var failure = false
-
-                lifecycleScope.launch {
-                    val job = launch extract@{
-                        list.forEach { app ->
-                            withContext(Dispatchers.Main) {
-                                progressDialog.setProcess(app.appPackageName)
-                            }
-                            withContext(Dispatchers.IO) {
-                                failure = fileHelper.copy(
-                                    app.appSourceDirectory,
-                                    settingsManager.saveDir()!!,
-                                    settingsManager.appName(app)
-                                ) == null
-                            }
-                            withContext(Dispatchers.Main) {
-                                progressDialog.incrementProgress()
-                                if (failure) {
-                                    Snackbar.make(
-                                        view,
-                                        getString(
-                                            R.string.snackbar_extraction_failed,
-                                            app.appPackageName
-                                        ),
-                                        Snackbar.LENGTH_LONG
-                                    ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                                        .setTextColor(Color.RED)
-                                        .show()
-                                    this@extract.cancel()
-                                }
-                            }
-                        }
+    /**
+     * Function Called on BottomSheet Click
+     * If share Uri generation was successful, show Intent share Dialog
+     */
+    private fun shareApps() {
+        viewAdapter.myDatasetFiltered.filter {
+            it.isChecked
+        }.also {
+            if (it.isEmpty()) Toast.makeText(
+                requireContext(),
+                R.string.toast_share_app,
+                Toast.LENGTH_SHORT
+            ).show()
+            else {
+                progressDialog =
+                    ProgressDialog(this@MainFragment.requireContext(), it.size).apply {
+                        setTitle(getString(R.string.progress_dialog_title_save))
                     }
-                    job.join()
-
-                    progressDialog.dismiss()
-
-                    if (!failure) Snackbar.make(
-                        view,
-                        resources.getQuantityString(
-                            R.plurals.snackbar_successful_extracted_multiple,
-                            list.size,
-                            list.last().appName,
-                            list.size - 1
-                        ),
-                        Snackbar.LENGTH_LONG
-                    ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                        .show()
-                }
+                progressDialog?.show()
+                model.createShareUrisForApps(it)
             }
         }
     }
@@ -297,7 +333,6 @@ class MainFragment : Fragment() {
      * Update Dataset
      */
     private fun updateData() {
-        binding.refresh.isRefreshing = true
         model.updateApps()
     }
 
@@ -392,58 +427,11 @@ class MainFragment : Fragment() {
     }
 
     /**
-     * Creates Intent for Apps to Share
-     * @return Intent?
-     * Returns Intent with selected app APKs
-     * if no Apps Selected null
-     */
-    private suspend fun getSelectedApps(): Intent? = coroutineScope {
-        val files = ArrayList<Uri>()
-        val fileHelper = FileHelper(requireContext())
-        val jobList = ArrayList<Deferred<Any>>()
-        val progressDialog: ProgressDialog
-
-        viewAdapter.myDatasetFiltered.filter {
-            it.isChecked
-        }.also {
-            if (it.isEmpty()) {
-                Toast.makeText(requireContext(), R.string.toast_share_app, Toast.LENGTH_SHORT)
-                    .show()
-                return@coroutineScope null
-            }
-            progressDialog =
-                ProgressDialog(this@MainFragment.requireContext(), it.size).apply {
-                    setTitle(getString(R.string.progress_dialog_title_share))
-                }
-            progressDialog.show()
-        }.forEach { app ->
-            jobList.add(async {
-                withContext(Dispatchers.IO) {
-                    fileHelper.shareURI(app).also {
-                        files.add(it)
-                    }
-                }
-                withContext(Dispatchers.Main) {
-                    progressDialog.incrementProgress()
-                }
-            })
-        }
-        jobList.awaitAll()
-        progressDialog.dismiss()
-
-        return@coroutineScope Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-            type = FileHelper.MIME_TYPE
-            putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
-        }
-    }
-
-    /**
      * Set Preference for App List Sort Type and Apply
      * @param item Menu item for sortType
      * @param sortType Internal sort type number
      */
     private fun sortData(item: MenuItem, sortType: Int) {
-        binding.refresh.isRefreshing = true
         sharedPreferences.edit().putInt("app_sort", sortType).apply()
         item.isChecked = true
         model.sortApps()

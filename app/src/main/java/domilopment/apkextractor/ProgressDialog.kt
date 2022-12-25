@@ -2,7 +2,6 @@ package domilopment.apkextractor
 
 import android.app.AlertDialog
 import android.content.Context
-import android.view.WindowManager
 import android.widget.ProgressBar
 import com.google.android.material.textview.MaterialTextView
 import domilopment.apkextractor.databinding.ProgressDialogBinding
@@ -13,6 +12,9 @@ class ProgressDialog(context: Context, max: Int) : AlertDialog(context) {
     private val textPercentages: MaterialTextView
     private val textValue: MaterialTextView
     private val currentProcess: MaterialTextView
+
+    var isShown: Boolean = false
+        private set
 
     init {
         setView(binding.root)
@@ -26,16 +28,23 @@ class ProgressDialog(context: Context, max: Int) : AlertDialog(context) {
         textValue.text = getValueString(0)
     }
 
-    fun updateProgress(progress: Int) {
+    fun updateProgress(progress: Int): Int {
         progressBar.progress = progress
         textPercentages.text = getPercentageString()
         textValue.text = getValueString()
+        return progress
     }
 
-    fun incrementProgress() {
+    /**
+     * Increment Dialog Progress by one
+     * @return
+     * New Progress of Dialog
+     */
+    fun incrementProgress(): Int {
         progressBar.incrementProgressBy(1)
         textPercentages.text = getPercentageString()
         textValue.text = getValueString()
+        return progressBar.progress
     }
 
     private fun getPercentageString(
@@ -49,11 +58,17 @@ class ProgressDialog(context: Context, max: Int) : AlertDialog(context) {
         currentProcess.text = processName
     }
 
+    fun setTasksMax(tasks: Int) {
+        progressBar.max = tasks
+    }
+
     override fun show() {
         super.show()
-        this.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
+        isShown = true
+    }
+
+    override fun dismiss() {
+        super.dismiss()
+        isShown = false
     }
 }
