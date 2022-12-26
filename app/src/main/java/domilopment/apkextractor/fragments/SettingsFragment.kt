@@ -22,7 +22,7 @@ import androidx.preference.*
 import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.*
 import domilopment.apkextractor.R
-import domilopment.apkextractor.apkSaveNamePreferenceDialog.ApkSaveNamePreferenceDialog
+import domilopment.apkextractor.apkSaveNamePreferenceDialog.ApkNameDialogFragment
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ListOfAPKs
 import domilopment.apkextractor.utils.FileHelper
@@ -30,6 +30,8 @@ import domilopment.apkextractor.utils.SettingsManager
 import kotlinx.coroutines.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
+    private val apkNameDialogFragment = ApkNameDialogFragment()
+
     private val chooseSaveDir =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK)
@@ -182,7 +184,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         // Check if user has Selected Name Options
         findPreference<Preference>("app_save_name")?.setOnPreferenceClickListener {
-            ApkSaveNamePreferenceDialog(requireContext()).show()
+            apkNameDialogFragment.show(parentFragmentManager, "ApkNameDialogFragment")
             return@setOnPreferenceClickListener true
         }
     }

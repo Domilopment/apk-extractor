@@ -22,8 +22,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -35,7 +33,6 @@ import domilopment.apkextractor.*
 import domilopment.apkextractor.databinding.FragmentMainBinding
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
-import kotlinx.coroutines.*
 
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
@@ -52,7 +49,7 @@ class MainFragment : Fragment() {
         MainViewModel(requireActivity().application).defaultViewModelProviderFactory
     }
 
-    private var progressDialog: ProgressDialog? = null
+    private val progressDialog = ProgressDialogFragment()
 
     private val shareApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -90,24 +87,6 @@ class MainFragment : Fragment() {
             isEnabled = !searchView.isIconified
         }.also {
             it.isEnabled = false
-        }
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                model.progressDialogState.collect { uiState ->
-                    if (uiState.shouldBeShown and (progressDialog?.isShown != true)) {
-                        if (progressDialog == null) progressDialog =
-                            ProgressDialog(requireContext(), uiState.tasks).apply {
-                                setTitle(uiState.title)
-                            }
-                        progressDialog?.show()
-                    }
-                    progressDialog?.apply {
-                        setProcess(uiState.process ?: "")
-                        updateProgress(uiState.progress)
-                    }
-                }
-            }
         }
     }
 
@@ -215,8 +194,6 @@ class MainFragment : Fragment() {
                 ).setAnchorView(binding.appMultiselectBottomSheet.root)
                     .show()
 
-                progressDialog?.dismiss()
-                progressDialog = null
                 model.resetProgress()
             }
         }
@@ -235,8 +212,6 @@ class MainFragment : Fragment() {
                     shareApp.launch(it)
                 }
 
-                progressDialog?.dismiss()
-                progressDialog = null
                 model.resetProgress()
             }
         }
@@ -270,8 +245,6 @@ class MainFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        progressDialog?.dismiss()
-        progressDialog = null
     }
 
     /**
@@ -289,11 +262,7 @@ class MainFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
             else {
-                progressDialog =
-                    ProgressDialog(this@MainFragment.requireContext(), list.size).apply {
-                        setTitle(getString(R.string.progress_dialog_title_save))
-                    }
-                progressDialog?.show()
+                progressDialog.show(parentFragmentManager, "ProgressDialogFragment")
                 model.saveApps(list)
             }
         }
@@ -313,11 +282,7 @@ class MainFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
             else {
-                progressDialog =
-                    ProgressDialog(this@MainFragment.requireContext(), it.size).apply {
-                        setTitle(getString(R.string.progress_dialog_title_save))
-                    }
-                progressDialog?.show()
+                progressDialog.show(parentFragmentManager, "ProgressDialogFragment")
                 model.createShareUrisForApps(it)
             }
         }
