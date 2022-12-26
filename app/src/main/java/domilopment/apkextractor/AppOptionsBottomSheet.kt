@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.data.ApplicationModel
@@ -107,6 +108,12 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+       BottomSheetBehavior.from(view.parent as View).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+            skipCollapsed = true
+            peekHeight = 0
+        }
 
         // Save Apk
         binding.actionSaveApk.setOnClickListener { v ->

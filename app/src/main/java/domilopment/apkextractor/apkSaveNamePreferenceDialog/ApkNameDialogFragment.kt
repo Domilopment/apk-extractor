@@ -24,7 +24,7 @@ class ApkNameDialogFragment : DialogFragment() {
 
     lateinit var groundTruthMap: Map<String, String>
     lateinit var unselectedList: ArrayList<String>
-    var selectedList: ArrayList<String> = arrayListOf()
+    val selectedList: ArrayList<String> = arrayListOf()
 
     companion object {
         private const val selectedListSaveInstanceStateKey = "SELECTED_LIST"
