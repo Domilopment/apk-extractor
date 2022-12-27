@@ -80,4 +80,5 @@
     <style name="AppTheme.ActionMode.Title" parent="TextAppearance.Material3.ActionBar.Title">
         <item name="android:textColor">@android:color/white</item>
     </style>
+
 </resources>

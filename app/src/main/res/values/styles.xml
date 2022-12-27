@@ -10,6 +10,7 @@
         <item name="android:textSize">@dimen/bottom_sheet_text_size</item>
     </style>
 
+    <!-- App multiselect option sheet item style -->
     <style name="roundedCornerImageView">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">20dp</item>

@@ -109,11 +109,14 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-       BottomSheetBehavior.from(view.parent as View).apply {
+        BottomSheetBehavior.from(view.parent as View).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
             skipCollapsed = true
             peekHeight = 0
         }
+
+        // Selected App Name on top of Bottom Sheet
+        binding.selectedAppName.text = app.appName
 
         // Save Apk
         binding.actionSaveApk.setOnClickListener { v ->
