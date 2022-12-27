@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.autoBackup.AutoBackupService
@@ -160,5 +161,16 @@ class SettingsManager(context: Context) {
         val available = DynamicColors.isDynamicColorAvailable()
         val enabled = sharedPreferences.getBoolean("use_material_you", false)
         if (available && enabled) DynamicColors.applyToActivitiesIfAvailable(application)
+    }
+
+    /**
+     * Set App Locale Language for Tag and apply
+     * @param locale String Tag of Locale
+     */
+    fun setLocale(locale: String) {
+        val appLocale: LocaleListCompat =
+            LocaleListCompat.forLanguageTags(if (locale == "default") null else locale)
+        // Call this on the main thread as it may require Activity.restart()
+        AppCompatDelegate.setApplicationLocales(appLocale)
     }
 }

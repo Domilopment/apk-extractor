@@ -68,6 +68,12 @@
     <string name="app_save_name_datetime">Date</string>
     <string name="app_save_name_toast">Please select at Least App or Package Name</string>
 
+    <string name="locale_list_title">Language</string>
+    <string name="locale_list_summary">%s</string>
+    <string name="locale_list_default">System default</string>
+    <string name="locale_list_en_us" translatable="false">English (United States)</string>
+    <string name="locale_list_de_de" translatable="false">Deutsch (Deutschland)</string>
+
     <!-- APK Name Preference Dialog -->
     <string name="app_name_dialog_ok">OK</string>
     <string name="app_name_dialog_cancel">Cancel</string>

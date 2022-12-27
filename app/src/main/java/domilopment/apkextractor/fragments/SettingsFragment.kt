@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -28,9 +29,11 @@ import domilopment.apkextractor.data.ListOfAPKs
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
 import kotlinx.coroutines.*
+import java.util.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
     private val apkNameDialogFragment = ApkNameDialogFragment()
+    private lateinit var settingsManager: SettingsManager
 
     private val chooseSaveDir =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -42,6 +45,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
+        settingsManager = SettingsManager(requireContext())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -105,7 +109,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         // Change between Day and Night Mode
         findPreference<ListPreference>("list_preference_ui_mode")?.setOnPreferenceChangeListener { _, newValue ->
-            SettingsManager(requireContext()).changeUIMode(newValue.toString())
+            settingsManager.changeUIMode(newValue.toString())
             return@setOnPreferenceChangeListener true
         }
         findPreference<SwitchPreferenceCompat>("use_material_you")?.apply {
@@ -143,7 +147,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     val appEntries = mutableListOf<String>()
                     val appValues = mutableListOf<String>()
 
-                    SettingsManager(context).sortData(
+                    settingsManager.sortData(
                         ListOfAPKs(context.packageManager).userApps
                                 + ListOfAPKs(context.packageManager).updatedSystemApps,
                         SettingsManager.SORT_BY_NAME
@@ -187,6 +191,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
             apkNameDialogFragment.show(parentFragmentManager, "ApkNameDialogFragment")
             return@setOnPreferenceClickListener true
         }
+        // Change App Language
+        findPreference<ListPreference>("list_preference_locale_list")?.apply {
+            val localeMap = mapOf(
+                "null" to getString(R.string.locale_list_default),
+                "en_US" to getString(R.string.locale_list_en_us),
+                "de_DE" to getString(R.string.locale_list_de_de)
+            )
+            summary =
+                getString(
+                    R.string.locale_list_summary,
+                    localeMap[AppCompatDelegate.getApplicationLocales()[0].toString()]
+                )
+            setOnPreferenceChangeListener { _, n ->
+                settingsManager.setLocale(n as String)
+                return@setOnPreferenceChangeListener true
+            }
+        }
     }
 
     override fun onStart() {
@@ -222,7 +243,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
      */
     private fun takeUriPermission(data: Intent) {
         (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
-            SettingsManager(requireContext()).saveDir()?.also { oldPath ->
+            settingsManager.saveDir()?.also { oldPath ->
                 if (oldPath in requireContext().contentResolver.persistedUriPermissions.map { it.uri })
                     requireContext().contentResolver.releasePersistableUriPermission(oldPath, this)
             }
