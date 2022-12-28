@@ -38,7 +38,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/advanced">
         <ListPreference
-            android:defaultValue="0"
+            android:defaultValue="-1"
             android:entries="@array/ui_mode_names"
             android:entryValues="@array/ui_mode_values"
             android:key="list_preference_ui_mode"

@@ -70,6 +70,7 @@
     <string name="locale_list_title">Sprache</string>
     <string name="locale_list_summary">%s</string>
     <string name="locale_list_default">System Standartsprache</string>
+    <string name="locale_list_not_supported">Sprachversion %s noch nicht unterstützt</string>
 
     <!-- APK Name Preference Dialog -->
     <string name="app_name_dialog_ok">OK</string>
@@ -97,7 +98,7 @@
 
     <!-- MainActivity -->
     <string name="alert_save_path_title">Speicherort</string>
-    <string name="alert_save_path_message">Wähle wohin die APKs gespeichert werden sollen</string>
+    <string name="alert_save_path_message">Wähle den Ordner wohin die APKs gespeichert werden sollen</string>
     <string name="alert_save_path_ok">Ok</string>
     <string name="toast_save_apps">Wähle Apps die gespeichert werden sollen</string>
     <string name="snackbar_successful_extracted">%s erfolgreich extraiert</string>

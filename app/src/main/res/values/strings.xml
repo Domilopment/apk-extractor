@@ -71,6 +71,7 @@
     <string name="locale_list_title">Language</string>
     <string name="locale_list_summary">%s</string>
     <string name="locale_list_default">System default</string>
+    <string name="locale_list_not_supported">Locale %s not supported yet</string>
     <string name="locale_list_en" translatable="false">English</string>
     <string name="locale_list_de_de" translatable="false">Deutsch (Deutschland)</string>
 

@@ -197,11 +197,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 null to getString(R.string.locale_list_default),
                 Locale.ENGLISH.toLanguageTag() to getString(R.string.locale_list_en),
                 Locale.GERMANY.toLanguageTag() to getString(R.string.locale_list_de_de)
-            )
+            ).withDefault {
+                getString(
+                    R.string.locale_list_not_supported,
+                    Locale.forLanguageTag(it!!).displayName
+                )
+            }
             summary =
                 getString(
                     R.string.locale_list_summary,
-                    localeMap[AppCompatDelegate.getApplicationLocales()[0]?.toLanguageTag()]
+                    localeMap.getValue(AppCompatDelegate.getApplicationLocales()[0]?.toLanguageTag())
                 )
             setOnPreferenceChangeListener { _, n ->
                 settingsManager.setLocale(n as String)
