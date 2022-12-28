@@ -30,12 +30,12 @@
 
     <string-array name="locale_list_names">
         <item>@string/locale_list_default</item>
-        <item>@string/locale_list_en_us</item>
+        <item>@string/locale_list_en</item>
         <item>@string/locale_list_de_de</item>
     </string-array>
     <string-array name="locale_list_values">
         <item>default</item>
-        <item>en-US</item>
+        <item>en</item>
         <item>de-DE</item>
     </string-array>
 

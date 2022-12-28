@@ -194,14 +194,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // Change App Language
         findPreference<ListPreference>("list_preference_locale_list")?.apply {
             val localeMap = mapOf(
-                "null" to getString(R.string.locale_list_default),
-                "en_US" to getString(R.string.locale_list_en_us),
-                "de_DE" to getString(R.string.locale_list_de_de)
+                null to getString(R.string.locale_list_default),
+                Locale.ENGLISH.toLanguageTag() to getString(R.string.locale_list_en),
+                Locale.GERMANY.toLanguageTag() to getString(R.string.locale_list_de_de)
             )
             summary =
                 getString(
                     R.string.locale_list_summary,
-                    localeMap[AppCompatDelegate.getApplicationLocales()[0].toString()]
+                    localeMap[AppCompatDelegate.getApplicationLocales()[0]?.toLanguageTag()]
                 )
             setOnPreferenceChangeListener { _, n ->
                 settingsManager.setLocale(n as String)

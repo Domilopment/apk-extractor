@@ -3,7 +3,6 @@ package domilopment.apkextractor.apkSaveNamePreferenceDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import domilopment.apkextractor.R
@@ -43,17 +42,18 @@ class ApkNameListAdapter(
         val isItemSelected = apkSaveNamePreferenceDialog.selectedList.contains(key)
         holder.binding.appNameListItemCheckbox.isChecked = isItemSelected
         holder.binding.appNameListItemDragHandle.isVisible = isItemSelected
-        holder.binding.appNameListItemCheckbox.setOnClickListener { view ->
+        holder.binding.root.setOnClickListener {
+            val checkBox = holder.binding.appNameListItemCheckbox
+            checkBox.isChecked = !checkBox.isChecked
             apkSaveNamePreferenceDialog.selectedList.remove(key)
             apkSaveNamePreferenceDialog.unselectedList.remove(key)
-            if ((view as CheckBox).isChecked) {
-                holder.binding.appNameListItemDragHandle.isVisible = true
+            holder.binding.appNameListItemDragHandle.isVisible = checkBox.isChecked
+            if (checkBox.isChecked) {
                 apkSaveNamePreferenceDialog.selectedList.add(
                     if (position > getSelectetSize()) getSelectetSize() else position,
                     key
                 )
             } else {
-                holder.binding.appNameListItemDragHandle.isVisible = false
                 apkSaveNamePreferenceDialog.unselectedList.add(0, key)
             }
             apkSaveNamePreferenceDialog.isSelectionPositive()

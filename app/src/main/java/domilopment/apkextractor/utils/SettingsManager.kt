@@ -169,7 +169,8 @@ class SettingsManager(context: Context) {
      */
     fun setLocale(locale: String) {
         val appLocale: LocaleListCompat =
-            LocaleListCompat.forLanguageTags(if (locale == "default") null else locale)
+            if (locale == "default") LocaleListCompat.getEmptyLocaleList()
+            else LocaleListCompat.forLanguageTags(locale)
         // Call this on the main thread as it may require Activity.restart()
         AppCompatDelegate.setApplicationLocales(appLocale)
     }
