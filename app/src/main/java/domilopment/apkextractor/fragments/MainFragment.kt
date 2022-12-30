@@ -49,8 +49,6 @@ class MainFragment : Fragment() {
         MainViewModel(requireActivity().application).defaultViewModelProviderFactory
     }
 
-    private val progressDialog = ProgressDialogFragment()
-
     private val shareApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             requireContext().cacheDir.deleteRecursively()
@@ -262,6 +260,8 @@ class MainFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
             else {
+                val progressDialog =
+                    ProgressDialogFragment.newInstance(R.string.progress_dialog_title_save)
                 progressDialog.show(parentFragmentManager, "ProgressDialogFragment")
                 model.saveApps(list)
             }
@@ -282,6 +282,8 @@ class MainFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
             else {
+                val progressDialog =
+                    ProgressDialogFragment.newInstance(R.string.progress_dialog_title_share)
                 progressDialog.show(parentFragmentManager, "ProgressDialogFragment")
                 model.createShareUrisForApps(it)
             }

@@ -1,4 +1,4 @@
-package domilopment.apkextractor.apkSaveNamePreferenceDialog
+package domilopment.apkextractor.apkNamePreferenceDialog
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +10,10 @@ import domilopment.apkextractor.databinding.ApkNameListItemBinding
 import java.util.Collections
 
 class ApkNameListAdapter(
-    private val apkSaveNamePreferenceDialog: ApkNameDialogFragment
+    private val apkNamePreferenceDialog: ApkNamePreferenceDialogFragmentCompat
 ) : RecyclerView.Adapter<ApkNameListAdapter.MyViewHolder>() {
     private var itemList =
-        apkSaveNamePreferenceDialog.selectedList + apkSaveNamePreferenceDialog.unselectedList
+        apkNamePreferenceDialog.selectedList + apkNamePreferenceDialog.unselectedList
 
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView) {
         val binding: ApkNameListItemBinding = ApkNameListItemBinding.bind(myView)
@@ -32,33 +32,33 @@ class ApkNameListAdapter(
     }
 
     fun getSelectetSize(): Int {
-        return apkSaveNamePreferenceDialog.selectedList.size
+        return apkNamePreferenceDialog.selectedList.size
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val key = itemList[position]
-        val name = apkSaveNamePreferenceDialog.groundTruthMap[key]
+        val name = apkNamePreferenceDialog.getItemName(key)
         holder.binding.appNameListItemText.text = name
-        val isItemSelected = apkSaveNamePreferenceDialog.selectedList.contains(key)
+        val isItemSelected = apkNamePreferenceDialog.selectedList.contains(key)
         holder.binding.appNameListItemCheckbox.isChecked = isItemSelected
         holder.binding.appNameListItemDragHandle.isVisible = isItemSelected
         holder.binding.root.setOnClickListener {
             val checkBox = holder.binding.appNameListItemCheckbox
             checkBox.isChecked = !checkBox.isChecked
-            apkSaveNamePreferenceDialog.selectedList.remove(key)
-            apkSaveNamePreferenceDialog.unselectedList.remove(key)
+            apkNamePreferenceDialog.selectedList.remove(key)
+            apkNamePreferenceDialog.unselectedList.remove(key)
             holder.binding.appNameListItemDragHandle.isVisible = checkBox.isChecked
             if (checkBox.isChecked) {
-                apkSaveNamePreferenceDialog.selectedList.add(
+                apkNamePreferenceDialog.selectedList.add(
                     if (position > getSelectetSize()) getSelectetSize() else position,
                     key
                 )
             } else {
-                apkSaveNamePreferenceDialog.unselectedList.add(0, key)
+                apkNamePreferenceDialog.unselectedList.add(0, key)
             }
-            apkSaveNamePreferenceDialog.isSelectionPositive()
+            apkNamePreferenceDialog.isSelectionPositive()
             itemList =
-                apkSaveNamePreferenceDialog.selectedList + apkSaveNamePreferenceDialog.unselectedList
+                apkNamePreferenceDialog.selectedList + apkNamePreferenceDialog.unselectedList
             notifyDataSetChanged()
         }
     }
@@ -84,9 +84,9 @@ class ApkNameListAdapter(
      * @param toPosition The place the item is Dragged to
      */
     fun swapItems(fromPosition: Int, toPosition: Int) {
-        swapItems(fromPosition, toPosition, apkSaveNamePreferenceDialog.selectedList)
+        swapItems(fromPosition, toPosition, apkNamePreferenceDialog.selectedList)
         itemList =
-            apkSaveNamePreferenceDialog.selectedList + apkSaveNamePreferenceDialog.unselectedList
+            apkNamePreferenceDialog.selectedList + apkNamePreferenceDialog.unselectedList
         notifyItemMoved(fromPosition, toPosition)
     }
 }

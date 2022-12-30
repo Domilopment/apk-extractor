@@ -17,22 +17,23 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.*
 import domilopment.apkextractor.R
-import domilopment.apkextractor.apkSaveNamePreferenceDialog.ApkNameDialogFragment
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ListOfAPKs
+import domilopment.apkextractor.apkNamePreferenceDialog.ApkNamePreference
+import domilopment.apkextractor.apkNamePreferenceDialog.ApkNamePreferenceDialogFragmentCompat
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
 import kotlinx.coroutines.*
 import java.util.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
-    private val apkNameDialogFragment = ApkNameDialogFragment()
     private lateinit var settingsManager: SettingsManager
 
     private val chooseSaveDir =
@@ -46,6 +47,26 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         settingsManager = SettingsManager(requireContext())
+    }
+
+    override fun onDisplayPreferenceDialog(preference: Preference) {
+        // Try if the preference is one of our custom Preferences
+        var dialogFragment: DialogFragment? = null
+        if (preference is ApkNamePreference) {
+            // Create a new instance of ApkNamePreferenceDialogFragment with the key of the related Preference
+            dialogFragment = ApkNamePreferenceDialogFragmentCompat.newInstance(preference.key)
+        }
+
+        // If it was one of our custom Preferences, show its dialog
+        if (dialogFragment != null) {
+            dialogFragment.setTargetFragment(this, 0)
+            dialogFragment.show(
+                parentFragmentManager,
+                "androidx.preference.PreferenceFragment.DIALOG"
+            )
+        } else {
+            super.onDisplayPreferenceDialog(preference)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -185,11 +206,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
                 return@setOnPreferenceChangeListener true
             }
-        }
-        // Check if user has Selected Name Options
-        findPreference<Preference>("app_save_name")?.setOnPreferenceClickListener {
-            apkNameDialogFragment.show(parentFragmentManager, "ApkNameDialogFragment")
-            return@setOnPreferenceClickListener true
         }
         // Change App Language
         findPreference<ListPreference>("list_preference_locale_list")?.apply {

@@ -21,7 +21,6 @@ class ProgressDialogFragment : DialogFragment() {
     private var _binding: ProgressDialogBinding? = null
     private val binding get() = _binding!!
 
-    private val placeholderTitle = "Progress Dialog"
     private lateinit var progressBar: ProgressBar
     private lateinit var textPercentages: MaterialTextView
     private lateinit var textValue: MaterialTextView
@@ -44,7 +43,6 @@ class ProgressDialogFragment : DialogFragment() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.progressDialogState.collect { uiState ->
-                    dialog?.setTitle(uiState.title ?: placeholderTitle)
                     currentProcess.text = uiState.process ?: ""
                     progressBar.progress = uiState.progress
                     progressBar.max = uiState.tasks
@@ -57,6 +55,8 @@ class ProgressDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val title: Int = arguments?.getInt("title") ?: R.string.progress_dialog_title_placeholder
+
         _binding = ProgressDialogBinding.inflate(layoutInflater)
         progressBar = binding.progressHorizontal
         textPercentages = binding.progressPercentages
@@ -64,7 +64,7 @@ class ProgressDialogFragment : DialogFragment() {
         currentProcess = binding.currentProcess
 
         return activity?.let {
-            MaterialAlertDialogBuilder(it).setTitle(placeholderTitle).setView(binding.root)
+            MaterialAlertDialogBuilder(it).setTitle(title).setView(binding.root)
                 .setCancelable(false)
                 .create()
         } ?: throw IllegalStateException("Activity cannot be null")
@@ -80,4 +80,14 @@ class ProgressDialogFragment : DialogFragment() {
         progressBar.progress,
         progressBar.max
     )
+
+    companion object {
+        fun newInstance(title: Int): ProgressDialogFragment {
+            val fragment = ProgressDialogFragment()
+            val bundle = Bundle()
+            bundle.putInt("title", title)
+            fragment.arguments = bundle
+            return fragment
+        }
+    }
 }

@@ -156,6 +156,7 @@
     <string name="progress_dialog_value">%d/%d</string>
     <string name="progress_dialog_title_save">Save APKs</string>
     <string name="progress_dialog_title_share">Prepare to Share</string>
+    <string name="progress_dialog_title_placeholder" translatable="false">Progress Dialog</string>
 
     <!-- Action Mode -->
     <string name="action_mode_title">%d Selected</string>
