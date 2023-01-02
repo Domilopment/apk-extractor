@@ -380,10 +380,15 @@ class MainFragment : Fragment() {
                     )
                     R.id.action_apk_size -> sortData(menuItem, SettingsManager.SORT_BY_APK_SIZE)
                     R.id.action_show_save_dir -> {
-                        val destDir = SettingsManager(requireContext()).saveDir()
+                        val destDir = SettingsManager(requireContext()).saveDir().let {
+                            DocumentsContract.buildDocumentUriUsingTree(
+                                it,
+                                DocumentsContract.getTreeDocumentId(it)
+                            )
+                        }
                         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                            type = FileHelper.MIME_TYPE
                             putExtra(DocumentsContract.EXTRA_INITIAL_URI, destDir)
-                            setDataAndType(destDir, FileHelper.MIME_TYPE)
                         }
                         selectApk.launch(intent)
                     }
@@ -452,7 +457,13 @@ class MainFragment : Fragment() {
             1 -> DocumentsContract.deleteDocument(
                 requireContext().contentResolver,
                 data
-            )
+            ).let { deleted ->
+                Toast.makeText(
+                    context,
+                    getString(if (deleted) R.string.apk_aktion_delete_success else R.string.apk_aktion_delete_failed),
+                    Toast.LENGTH_SHORT
+                )
+            }.show()
         }
     }
 }

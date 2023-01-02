@@ -5,6 +5,8 @@
     <!-- Apk Options -->
     <string name="apk_action_share">Teilen</string>
     <string name="apk_action_delete">Löschen</string>
+    <string name="apk_action_delete_success">APK gelöscht</string>
+    <string name="apk_action_delete_failed">Löschen der APK fehlgeschlagen</string>
 
     <!-- Preference Header -->
     <string name="save_header">Speicher Optionen</string>
@@ -128,7 +130,7 @@
     <!-- App Options Bottom Sheet -->
     <string name="action_bottom_sheet_save">Speichern</string>
     <string name="action_bottom_sheet_share">@string/apk_action_share</string>
-    <string name="action_bottom_sheet_save_image">Speicher Icon</string>
+    <string name="action_bottom_sheet_save_image">Icon speichern</string>
     <string name="action_bottom_sheet_open">Öffnen</string>
     <string name="action_bottom_sheet_settings">Einstellungen</string>
     <string name="action_bottom_sheet_uninstall">Deinstallieren</string>

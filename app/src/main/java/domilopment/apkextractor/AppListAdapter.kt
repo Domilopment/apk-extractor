@@ -32,7 +32,6 @@ class AppListAdapter(
     }
 
     private var multiselect = false
-    private var myTitle = 0
     private var mode: ActionMode? = null
 
     /**
@@ -75,15 +74,10 @@ class AppListAdapter(
                 if (multiselect) {
                     app.isChecked = !app.isChecked
 
-                    if (app.isChecked)
-                        myTitle++
-                    else {
-                        myTitle--
-                        (mode?.menu?.findItem(R.id.action_select_all)?.actionView as CheckBox)
-                            .isChecked = false
-                    }
+                    if (!app.isChecked) (mode?.menu?.findItem(R.id.action_select_all)?.actionView as CheckBox)
+                        .isChecked = false
 
-                    setModeTitle(myTitle)
+                    setModeTitle()
 
                     checkBox.isVisible = app.isChecked
 
@@ -101,7 +95,6 @@ class AppListAdapter(
                     multiselect = true
                     checkBox.isVisible = true
                     app.isChecked = true
-                    myTitle++
                     (mainFragment.requireActivity() as AppCompatActivity).startSupportActionMode(
                         this@AppListAdapter
                     )
@@ -175,7 +168,7 @@ class AppListAdapter(
         val inflater: MenuInflater = mode.menuInflater
         inflater.inflate(R.menu.menu_multiselect, menu)
         this.mode = mode
-        setModeTitle(myTitle, mode)
+        setModeTitle(mode = mode)
         menu.findItem(R.id.action_select_all)?.also {
             (it.actionView as CheckBox).setOnCheckedChangeListener { _, isChecked ->
                 it.isChecked = isChecked
@@ -198,7 +191,6 @@ class AppListAdapter(
                 myDatasetFiltered.forEach {
                     it.isChecked = true
                 }
-                myTitle = itemCount
                 setModeTitle(itemCount, mode)
                 notifyDataSetChanged()
             }
@@ -210,7 +202,6 @@ class AppListAdapter(
         myDatasetFiltered.forEach {
             it.isChecked = false
         }
-        myTitle = 0
         multiselect = false
         mainFragment.enableRefresh(true)
         mainFragment.attachSwipeHelper(true)
@@ -226,7 +217,10 @@ class AppListAdapter(
         mode?.finish()
     }
 
-    private fun setModeTitle(itemCount: Int, mode: ActionMode? = this.mode) {
+    private fun setModeTitle(
+        itemCount: Int = myDatasetFiltered.filter { it.isChecked }.size,
+        mode: ActionMode? = this.mode
+    ) {
         mode?.title = mainFragment.getString(R.string.action_mode_title, itemCount)
     }
 }

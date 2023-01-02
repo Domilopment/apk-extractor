@@ -9,9 +9,10 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom" />
     <item
+        android:icon="@drawable/ic_baseline_sort_24"
         android:orderInCategory="1"
         android:title="@string/menu_sort"
-        app:showAsAction="never">
+        app:showAsAction="ifRoom">
         <menu>
             <group
                 android:checkableBehavior="single"
@@ -42,12 +43,14 @@
     </item>
     <item
         android:id="@+id/action_show_save_dir"
+        android:icon="@drawable/ic_baseline_folder_24"
         android:orderInCategory="2"
         android:title="@string/menu_show_save_dir"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_settings"
+        android:icon="@drawable/ic_baseline_settings_24"
         android:orderInCategory="3"
         android:title="@string/action_settings"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 </menu>

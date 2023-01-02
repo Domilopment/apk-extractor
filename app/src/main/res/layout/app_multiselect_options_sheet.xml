@@ -13,8 +13,8 @@
     app:behavior_draggable="false"
     app:behavior_peekHeight="0dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    tools:showIn="@layout/fragment_main"
-    tools:ignore="Overdraw">
+    tools:ignore="Overdraw"
+    tools:showIn="@layout/fragment_main">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/action_save_apk"
@@ -23,13 +23,14 @@
         android:layout_gravity="center"
         android:layout_marginEnd="4dp"
         android:layout_weight="1"
-        android:foreground="?attr/selectableItemBackground"
-        android:background="?attr/colorOnPrimary"
         android:contentDescription="@string/action_multiselect_bottom_sheet_save_description"
+        android:foreground="?attr/selectableItemBackground"
         android:padding="4dp"
+        app:shapeAppearanceOverlay="@style/roundedCornerImageView"
         app:srcCompat="@drawable/ic_baseline_save_24"
-        app:tint="?attr/colorPrimary"
-        app:shapeAppearanceOverlay="@style/roundedCornerImageView" />
+        app:strokeColor="?attr/colorOnPrimary"
+        app:strokeWidth="1dp"
+        app:tint="?attr/colorOnPrimary" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/action_share"
@@ -38,12 +39,13 @@
         android:layout_gravity="center"
         android:layout_marginStart="4dp"
         android:layout_weight="1"
-        android:foreground="?attr/selectableItemBackground"
-        android:background="?attr/colorOnPrimary"
         android:contentDescription="@string/action_multiselect_bottom_sheet_share_description"
+        android:foreground="?attr/selectableItemBackground"
         android:padding="4dp"
+        app:shapeAppearanceOverlay="@style/roundedCornerImageView"
         app:srcCompat="@drawable/ic_share_24dp"
-        app:tint="?attr/colorPrimary"
-        app:shapeAppearanceOverlay="@style/roundedCornerImageView" />
+        app:strokeColor="?attr/colorOnPrimary"
+        app:strokeWidth="1dp"
+        app:tint="?attr/colorOnPrimary" />
 
 </LinearLayout>

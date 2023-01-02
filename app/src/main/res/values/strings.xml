@@ -4,6 +4,8 @@
     <!-- Apk Options -->
     <string name="apk_action_share">Share</string>
     <string name="apk_action_delete">Delete</string>
+    <string name="apk_action_delete_success">APK deleted</string>
+    <string name="apk_action_delete_failed">APK deletion failed</string>
 
     <string name="title_activity_settings">Settings</string>
 
