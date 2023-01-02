@@ -460,7 +460,7 @@ class MainFragment : Fragment() {
             ).let { deleted ->
                 Toast.makeText(
                     context,
-                    getString(if (deleted) R.string.apk_aktion_delete_success else R.string.apk_aktion_delete_failed),
+                    getString(if (deleted) R.string.apk_action_delete_success else R.string.apk_action_delete_failed),
                     Toast.LENGTH_SHORT
                 )
             }.show()
