@@ -12,8 +12,7 @@ import java.util.Collections
 class ApkNameListAdapter(
     private val apkNamePreferenceDialog: ApkNamePreferenceDialogFragmentCompat
 ) : RecyclerView.Adapter<ApkNameListAdapter.MyViewHolder>() {
-    private var itemList =
-        apkNamePreferenceDialog.selectedList + apkNamePreferenceDialog.unselectedList
+    private val itemList get() = apkNamePreferenceDialog.selectedList + apkNamePreferenceDialog.unselectedList
 
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView) {
         val binding: ApkNameListItemBinding = ApkNameListItemBinding.bind(myView)
@@ -31,10 +30,6 @@ class ApkNameListAdapter(
         return itemList.size
     }
 
-    fun getSelectetSize(): Int {
-        return apkNamePreferenceDialog.selectedList.size
-    }
-
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val key = itemList[position]
         val name = apkNamePreferenceDialog.getItemName(key)
@@ -49,16 +44,11 @@ class ApkNameListAdapter(
             apkNamePreferenceDialog.unselectedList.remove(key)
             holder.binding.appNameListItemDragHandle.isVisible = checkBox.isChecked
             if (checkBox.isChecked) {
-                apkNamePreferenceDialog.selectedList.add(
-                    if (position > getSelectetSize()) getSelectetSize() else position,
-                    key
-                )
+                apkNamePreferenceDialog.selectedList.add(key)
             } else {
                 apkNamePreferenceDialog.unselectedList.add(0, key)
             }
             apkNamePreferenceDialog.isSelectionPositive()
-            itemList =
-                apkNamePreferenceDialog.selectedList + apkNamePreferenceDialog.unselectedList
             notifyDataSetChanged()
         }
     }
@@ -85,8 +75,6 @@ class ApkNameListAdapter(
      */
     fun swapItems(fromPosition: Int, toPosition: Int) {
         swapItems(fromPosition, toPosition, apkNamePreferenceDialog.selectedList)
-        itemList =
-            apkNamePreferenceDialog.selectedList + apkNamePreferenceDialog.unselectedList
         notifyItemMoved(fromPosition, toPosition)
     }
 }

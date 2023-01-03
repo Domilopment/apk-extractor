@@ -94,13 +94,14 @@
 
     <!-- APK Selected Alert -->
     <string name="alert_apk_selected_title">APK Verwendungszweck</string>
+    <string name="alert_apk_selected_failed">Öffnen der ausgewählten Apk fehlgeschlagen</string>
     <string name="alert_apk_selected_share">@string/apk_action_share</string>
     <string name="alert_apk_selected_install">Installieren</string>
     <string name="alert_apk_selected_delete">@string/apk_action_delete</string>
 
     <!-- MainActivity -->
-    <string name="alert_save_path_title">Speicherort</string>
-    <string name="alert_save_path_message">Wähle den Ordner wohin die APKs gespeichert werden sollen</string>
+    <string name="alert_save_path_title">Bitte einen Speicherort auswählen</string>
+    <string name="alert_save_path_message">Damit die App extrahierte APKs speichern kann, musst du einen Ordner wählen oder erstellen, auf dem die App Schreibzugriff erhält.</string>
     <string name="alert_save_path_ok">Ok</string>
     <string name="toast_save_apps">Wähle Apps die gespeichert werden sollen</string>
     <string name="snackbar_successful_extracted">%s erfolgreich extraiert</string>

@@ -97,13 +97,14 @@
 
     <!-- APK Selected Alert -->
     <string name="alert_apk_selected_title">How to use APK</string>
+    <string name="alert_apk_selected_failed">Failed to open Selected Apk</string>
     <string name="alert_apk_selected_share">@string/apk_action_share</string>
     <string name="alert_apk_selected_install">Install</string>
     <string name="alert_apk_selected_delete">@string/apk_action_delete</string>
 
     <!-- MainActivity -->
-    <string name="alert_save_path_title">Save Dir</string>
-    <string name="alert_save_path_message">Choose a Directory to Save APKs</string>
+    <string name="alert_save_path_title">Please select a Save Directory</string>
+    <string name="alert_save_path_message">In order to save extracted APKs you have to choose or create a Directory granting the App writing Permission to.</string>
     <string name="alert_save_path_ok">OK</string>
     <string name="toast_save_apps">Select Apps to Save</string>
     <string name="snackbar_successful_extracted">%s successful extracted</string>

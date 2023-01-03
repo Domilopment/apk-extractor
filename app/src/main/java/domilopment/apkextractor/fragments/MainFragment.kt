@@ -57,21 +57,22 @@ class MainFragment : Fragment() {
     private val selectApk =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK)
-                MaterialAlertDialogBuilder(requireContext()).apply {
-                    setTitle(getString(R.string.alert_apk_selected_title))
-                    setItems(R.array.selected_apk_options) { _, i: Int ->
-                        try {
-                            it.data?.data?.let { apkUri -> apkFileOptions(i, apkUri) }
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                context,
-                                "Something went wrong, couldn't perform action on Selected Apk",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            Log.e("Apk Extractor: Saved Apps Dialog", e.toString())
+                it.data?.data?.let { apkUri ->
+                    MaterialAlertDialogBuilder(requireContext()).apply {
+                        setTitle(getString(R.string.alert_apk_selected_title))
+                        setItems(R.array.selected_apk_options) { _, i: Int ->
+                            try {
+                                apkFileOptions(i, apkUri)
+                            } catch (e: Exception) {
+                                Log.e("Apk Extractor: Saved Apps Dialog", e.toString())
+                            }
                         }
-                    }
-                }.show()
+                    }.show()
+                } ?: Toast.makeText(
+                    context,
+                    getString(R.string.alert_apk_selected_failed),
+                    Toast.LENGTH_LONG
+                ).show()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {

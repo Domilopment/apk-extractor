@@ -10,7 +10,6 @@ import androidx.preference.MultiSelectListPreference
 import androidx.preference.PreferenceDialogFragmentCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import domilopment.apkextractor.R
 import domilopment.apkextractor.databinding.ApkNameListBinding
 
@@ -18,14 +17,12 @@ class ApkNamePreferenceDialogFragmentCompat : PreferenceDialogFragmentCompat() {
     private var _binding: ApkNameListBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var list: RecyclerView
-
     private lateinit var entries: Array<CharSequence>
     private lateinit var entryValues: Array<CharSequence>
     private lateinit var defaultValues: Array<String>
     private lateinit var persistedStrings: Array<CharSequence>
 
-    var unselectedList: ArrayList<String> = arrayListOf()
+    val unselectedList: ArrayList<String> = arrayListOf()
     val selectedList: ArrayList<String> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +59,7 @@ class ApkNamePreferenceDialogFragmentCompat : PreferenceDialogFragmentCompat() {
         _binding = ApkNameListBinding.inflate(layoutInflater)
 
         val adapter = ApkNameListAdapter(this)
-        list = binding.appNameList.apply {
+        val list = binding.appNameList.apply {
             layoutManager = LinearLayoutManager(context)
             this.adapter = adapter
         }
