@@ -16,7 +16,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="6dip"
         android:contentDescription="@string/list_item_Image_description"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@android:drawable/sym_def_app_icon" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/secondLine"

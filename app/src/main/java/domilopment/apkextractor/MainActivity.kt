@@ -16,6 +16,7 @@ import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.databinding.ActivityMainBinding
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import java.io.FileNotFoundException
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -98,7 +99,16 @@ class MainActivity : AppCompatActivity() {
             DocumentsContract.buildDocumentUriUsingTree(
                 path, DocumentsContract.getTreeDocumentId(path)
             )
-        )
+        ) || try {
+            DocumentsContract.findDocumentPath(
+                contentResolver,
+                DocumentsContract.buildDocumentUriUsingTree(
+                    path, DocumentsContract.getTreeDocumentId(path)
+                )
+            ) == null
+        } catch (e: FileNotFoundException) {
+            true
+        }
     }
 
     /**
