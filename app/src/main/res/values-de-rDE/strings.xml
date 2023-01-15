@@ -124,6 +124,8 @@
     <string name="auto_backup_notification_title">Überwache App Updates</string>
     <string name="auto_backup_notification_content_text">Überwache Updates für ausgewählte Pakete</string>
     <string name="auto_backup_notification_action_stop">STOPPE SERVICE</string>
+    <string name="auto_backup_notification_permission_request_rejected">Bitte erlaube benachrichtigungs berechtigung (in den App Einstellungen), sonst wird der Backup Service nicht in der lage sein mitzuteilen, ob er noch aktiv ist, oder ein Backup im hintergrund erzeugt hat.</string>
+
     <string name="auto_backup_broadcast_receiver_backup_success">Backup %s erfolgreich</string>
     <string name="auto_backup_broadcast_receiver_backup_failed">Backup %s fehlgeschlagen</string>
     <string name="auto_backup_broadcast_receiver_notification_title">Auto Backup</string>

@@ -1,5 +1,6 @@
 package domilopment.apkextractor.autoBackup
 
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,6 +11,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import domilopment.apkextractor.MainActivity
@@ -39,9 +41,9 @@ class AsyncBackupTask(
     private val mainDispatcher get() = Dispatchers.Main
 
     private val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            context.packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0L))
-        else
-            context.packageManager.getPackageInfo(packageName, 0)
+        context.packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0L))
+    else
+        context.packageManager.getPackageInfo(packageName, 0)
 
     // Get Application Info from Package
     private val app =
@@ -81,13 +83,23 @@ class AsyncBackupTask(
         // Let User know when App is or should be Updated
         createNotificationChannel()
         with(NotificationManagerCompat.from(context)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
             result?.let {
                 // notificationId is a unique int for each notification that you must define
                 val id = AutoBackupService.getNewNotificationID()
                 notify(id, createNotificationSuccess(id, it).build())
             } ?: run {
                 // notificationId is a unique int for each notification that you must define
-                notify(AutoBackupService.getNewNotificationID(), createNotificationFailed().build())
+                notify(
+                    AutoBackupService.getNewNotificationID(),
+                    createNotificationFailed().build()
+                )
             }
         }
         // Must call finish() so the BroadcastReceiver can be recycled.

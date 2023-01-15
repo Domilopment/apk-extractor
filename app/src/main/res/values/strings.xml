@@ -127,6 +127,8 @@
     <string name="auto_backup_notification_title">Watching for Updates</string>
     <string name="auto_backup_notification_content_text">Watching for Updates on Selected Packages</string>
     <string name="auto_backup_notification_action_stop">STOP SERVICE</string>
+    <string name="auto_backup_notification_permission_request_rejected">Please grant Notification permission (from App Settings), else auto backup service isn\'t able to tell if it is still running or created a backup in background.</string>
+
     <string name="auto_backup_broadcast_receiver_backup_success">Backup %s successfully</string>
     <string name="auto_backup_broadcast_receiver_backup_failed">Backup %s failed</string>
     <string name="auto_backup_broadcast_receiver_notification_title">Auto Backup</string>

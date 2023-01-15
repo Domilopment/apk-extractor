@@ -1,6 +1,10 @@
 package domilopment.apkextractor.fragments
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -10,11 +14,13 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.DialogFragment
@@ -22,6 +28,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
@@ -41,6 +48,24 @@ class SettingsFragment : PreferenceFragmentCompat() {
             if (it.resultCode == Activity.RESULT_OK)
                 it.data?.also { saveDirUri -> takeUriPermission(saveDirUri) }
         }
+
+    @SuppressLint("RestrictedApi")
+    private val allowNotifications = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        if (it)
+            findPreference<SwitchPreferenceCompat>("auto_backup")?.performClick()
+        else {
+            Snackbar.make(
+                requireView(),
+                getString(R.string.auto_backup_notification_permission_request_rejected),
+                Snackbar.LENGTH_LONG
+            ).apply {
+                (view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView)
+                    .maxLines = 5
+            }.show()
+        }
+    }
 
     private val ioDispatcher get() = Dispatchers.IO
 
@@ -161,7 +186,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     .show()
             return@setOnPreferenceClickListener true
         }
-        // Fill List of Apps for Aut Backup with Installed or Updated Apps
+        // Fill List of Apps for Auto Backup with Installed or Updated Apps
         findPreference<MultiSelectListPreference>("app_list_auto_backup")?.apply {
             lifecycleScope.launch {
                 val load = async(ioDispatcher) {
@@ -189,6 +214,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
         findPreference<SwitchPreferenceCompat>("auto_backup")?.apply {
             setOnPreferenceChangeListener { _, newValue ->
                 newValue as Boolean
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (newValue && ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.POST_NOTIFICATIONS,
+                        ) == PackageManager.PERMISSION_DENIED
+                    ) {
+                        allowNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        return@setOnPreferenceChangeListener false
+                    }
+                }
+
                 if (newValue and !AutoBackupService.isRunning)
                     requireActivity().startService(
                         Intent(
@@ -204,7 +241,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         )
                     )
 
-                return@setOnPreferenceChangeListener true
+                val notificationManager =
+                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                return@setOnPreferenceChangeListener notificationManager.areNotificationsEnabled() || !newValue
             }
         }
         // Change App Language
