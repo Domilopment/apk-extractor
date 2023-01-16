@@ -225,7 +225,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
 
-               handleAutoBackupService(newValue)
+                handleAutoBackupService(newValue)
 
                 val notificationManager =
                     context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
