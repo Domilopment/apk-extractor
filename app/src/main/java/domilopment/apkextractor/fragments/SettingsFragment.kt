@@ -1,7 +1,6 @@
 package domilopment.apkextractor.fragments
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.NotificationManager
 import android.content.Context
@@ -49,13 +48,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 it.data?.also { saveDirUri -> takeUriPermission(saveDirUri) }
         }
 
-    @SuppressLint("RestrictedApi")
     private val allowNotifications = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) {
-        if (it)
-            findPreference<SwitchPreferenceCompat>("auto_backup")?.performClick()
-        else {
+        if (it) {
+            handleAutoBackupService(true)
+            findPreference<SwitchPreferenceCompat>("auto_backup")?.isChecked = true
+        } else {
             Snackbar.make(
                 requireView(),
                 getString(R.string.auto_backup_notification_permission_request_rejected),
@@ -226,20 +225,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
 
-                if (newValue and !AutoBackupService.isRunning)
-                    requireActivity().startService(
-                        Intent(
-                            requireContext(),
-                            AutoBackupService::class.java
-                        )
-                    )
-                else if (!newValue and AutoBackupService.isRunning)
-                    requireActivity().stopService(
-                        Intent(
-                            requireContext(),
-                            AutoBackupService::class.java
-                        )
-                    )
+               handleAutoBackupService(newValue)
 
                 val notificationManager =
                     context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -295,6 +281,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 return true
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun handleAutoBackupService(newValue: Boolean) {
+        if (newValue and !AutoBackupService.isRunning)
+            requireActivity().startService(
+                Intent(
+                    requireContext(),
+                    AutoBackupService::class.java
+                )
+            )
+        else if (!newValue and AutoBackupService.isRunning)
+            requireActivity().stopService(
+                Intent(
+                    requireContext(),
+                    AutoBackupService::class.java
+                )
+            )
     }
 
     /**
