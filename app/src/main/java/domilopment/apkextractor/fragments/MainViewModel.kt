@@ -85,9 +85,9 @@ class MainViewModel(
     fun removeApp(app: ApplicationModel) {
         applications.value?.toMutableList()
             ?.apply {
-                remove(app)
+                removeIf { it.appPackageName == app.appPackageName }
             }?.also {
-                applications.postValue(it)
+                applications.value = it
             }
     }
 
