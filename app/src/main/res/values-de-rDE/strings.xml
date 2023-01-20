@@ -83,9 +83,9 @@
     <string name="menu_sort">Sortieren</string>
     <string name="menu_sort_name">App Name</string>
     <string name="menu_sort_package">Paket Name</string>
-    <string name="menu_sort_install">Zuletzt Installiert</string>
-    <string name="menu_sort_update">Zuletzt Aktualisiert</string>
-    <string name="menu_sort_apk">Apk größe</string>
+    <string name="menu_sort_install">Zuletzt installiert</string>
+    <string name="menu_sort_update">Zuletzt aktualisiert</string>
+    <string name="menu_sort_apk">APK größe</string>
     <string name="menu_show_save_dir">Gespeicherte APKs</string>
     <string name="action_settings">Einstellungen</string>
 
@@ -131,6 +131,13 @@
     <string name="auto_backup_broadcast_receiver_notification_title">Auto Backup</string>
 
     <!-- App Options Bottom Sheet -->
+    <string name="info_bottom_sheet_source_directory">Apk Quellverzeichnis: %s</string>
+    <string name="info_bottom_sheet_apk_size">Apk größe: %.2f MB</string>
+    <string name="info_bottom_sheet_version_name">Versions Name: %s</string>
+    <string name="info_bottom_sheet_version_number">Versions Nummer: %d</string>
+    <string name="info_bottom_sheet_install_time">Installiert: %s</string>
+    <string name="info_bottom_sheet_update_time">Zuletzt aktualisiert: %s</string>
+
     <string name="action_bottom_sheet_save">Speichern</string>
     <string name="action_bottom_sheet_share">@string/apk_action_share</string>
     <string name="action_bottom_sheet_save_image">Icon speichern</string>

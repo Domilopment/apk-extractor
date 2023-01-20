@@ -3,9 +3,6 @@
     <style name="BottomSheetItem">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:drawablePadding">@dimen/bottom_sheet_drawable_padding</item>
-        <item name="android:gravity">center_vertical</item>
         <item name="android:padding">@dimen/bottom_sheet_padding</item>
         <item name="android:textSize">@dimen/bottom_sheet_text_size</item>
     </style>

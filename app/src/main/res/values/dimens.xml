@@ -1,5 +1,4 @@
 <resources>
-    <dimen name="bottom_sheet_text_size">20sp</dimen>
-    <dimen name="bottom_sheet_padding">15dp</dimen>
-    <dimen name="bottom_sheet_drawable_padding">20dp</dimen>
+    <dimen name="bottom_sheet_text_size">14sp</dimen>
+    <dimen name="bottom_sheet_padding">4dp</dimen>
 </resources>

@@ -30,6 +30,8 @@ import domilopment.apkextractor.fragments.MainViewModel
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     private var _binding: AppOptionsBottomSheetBinding? = null
@@ -48,8 +50,8 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (!isPackageInstalled(app.appPackageName)) {
-                dismiss()
                 model.removeApp(app)
+                dismiss()
             }
         }
 
@@ -115,9 +117,54 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             peekHeight = 0
         }
 
+        setupApplicationInfo()
+        setupApplicationActions()
+    }
+
+    /**
+     * set up information from selected APK in bottom sheet layout
+     */
+    private fun setupApplicationInfo() {
+        // Selected App Icon
+        binding.selectedAppIcon.setImageDrawable(app.appIcon)
+
         // Selected App Name on top of Bottom Sheet
         binding.selectedAppName.text = app.appName
 
+        // Selected App Package Name
+        binding.selectedAppPackageName.text = app.appPackageName
+
+        // Selected App source directory
+        binding.selectedAppSourceDirectory.text =
+            getString(R.string.info_bottom_sheet_source_directory, app.appSourceDirectory)
+
+        // Selected App APK size
+        binding.selectedAppApkSize.text =
+            getString(R.string.info_bottom_sheet_apk_size, app.apkSize)
+
+        // Selected App version name
+        binding.selectedAppVersionName.text =
+            getString(R.string.info_bottom_sheet_version_name, app.appVersionName)
+
+        // Selected App version code
+        binding.selectedAppVersionNumber.text =
+            getString(R.string.info_bottom_sheet_version_number, app.appVersionCode)
+
+        // Selected App installation time
+        binding.selectedAppInstallTime.text = getString(
+            R.string.info_bottom_sheet_install_time,
+            getAsFormatedDate(app.appInstallTime)
+        )
+
+        // Selected App last update time
+        binding.selectedAppUpdateTime.text =
+            getString(R.string.info_bottom_sheet_update_time, getAsFormatedDate(app.appUpdateTime))
+    }
+
+    /**
+     * set up actions for selected APK
+     */
+    private fun setupApplicationActions() {
         // Save Apk
         binding.actionSaveApk.setOnClickListener { v ->
             val settingsManager = SettingsManager(requireContext())
@@ -257,5 +304,14 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
+    }
+
+    /**
+     * Formats a Date-Time string into default Locale format
+     * @param mills milliseconds since January 1, 1970, 00:00:00 GMT
+     * @return formatted date-time string
+     */
+    private fun getAsFormatedDate(mills: Long): String {
+        return SimpleDateFormat.getDateTimeInstance().format(Date(mills))
     }
 }

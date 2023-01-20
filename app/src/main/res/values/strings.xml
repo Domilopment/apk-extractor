@@ -86,9 +86,9 @@
     <string name="menu_sort">Sort</string>
     <string name="menu_sort_name">App Name</string>
     <string name="menu_sort_package">Package Name</string>
-    <string name="menu_sort_install">Install Time</string>
-    <string name="menu_sort_update">Update Time</string>
-    <string name="menu_sort_apk">Apk Size</string>
+    <string name="menu_sort_install">Recently installed</string>
+    <string name="menu_sort_update">Recently updated</string>
+    <string name="menu_sort_apk">APK size</string>
     <string name="menu_show_save_dir">Saved Apps</string>
     <string name="action_settings">Settings</string>
 
@@ -97,7 +97,7 @@
 
     <!-- APK Selected Alert -->
     <string name="alert_apk_selected_title">How to use APK</string>
-    <string name="alert_apk_selected_failed">Failed to open Selected Apk</string>
+    <string name="alert_apk_selected_failed">Failed to open selected Apk</string>
     <string name="alert_apk_selected_share">@string/apk_action_share</string>
     <string name="alert_apk_selected_install">Install</string>
     <string name="alert_apk_selected_delete">@string/apk_action_delete</string>
@@ -134,9 +134,16 @@
     <string name="auto_backup_broadcast_receiver_notification_title">Auto Backup</string>
 
     <!-- App Options Bottom Sheet -->
+    <string name="info_bottom_sheet_source_directory">Apk source dir: %s</string>
+    <string name="info_bottom_sheet_apk_size">Apk size: %.2f MB</string>
+    <string name="info_bottom_sheet_version_name">Version name: %s</string>
+    <string name="info_bottom_sheet_version_number">Version number: %d</string>
+    <string name="info_bottom_sheet_install_time">Installed: %s</string>
+    <string name="info_bottom_sheet_update_time">Last updated: %s</string>
+
     <string name="action_bottom_sheet_save">Save</string>
     <string name="action_bottom_sheet_share">@string/apk_action_share</string>
-    <string name="action_bottom_sheet_save_image">Save Icon</string>
+    <string name="action_bottom_sheet_save_image">Save icon</string>
     <string name="action_bottom_sheet_open">Open</string>
     <string name="action_bottom_sheet_settings">Settings</string>
     <string name="action_bottom_sheet_uninstall">Uninstall</string>

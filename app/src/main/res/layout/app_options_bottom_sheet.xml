@@ -1,19 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="8dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehaviorandroid.support.design.widget.BottomSheetBehavior">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/selected_app_name"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="72dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/selected_app_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@android:drawable/sym_def_app_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/selected_app_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/selected_app_package_name"
+            app:layout_constraintEnd_toStartOf="@id/action_show_app_settings"
+            app:layout_constraintStart_toEndOf="@id/selected_app_icon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/selected_app_package_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/action_show_app_settings"
+            app:layout_constraintStart_toEndOf="@id/selected_app_icon"
+            app:layout_constraintTop_toTopOf="@id/selected_app_name" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/action_show_app_settings"
+            style="?attr/materialIconButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_baseline_settings_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/action_bottom_sheet_settings" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:layout_marginVertical="4dp" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -25,49 +73,92 @@
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/action_save_apk"
+                android:id="@+id/selected_app_source_directory"
                 style="@style/BottomSheetItem"
-                android:text="@string/action_bottom_sheet_save"
-                app:drawableStartCompat="@drawable/ic_baseline_save_24"
-                app:drawableTint="?attr/colorSecondary" />
+                android:ellipsize="middle"
+                android:singleLine="true" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/action_share"
+                android:id="@+id/selected_app_apk_size"
                 style="@style/BottomSheetItem"
-                android:text="@string/action_bottom_sheet_share"
-                app:drawableStartCompat="@drawable/ic_share_24dp"
-                app:drawableTint="?attr/colorSecondary" />
+                android:singleLine="true" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/action_save_image"
+                android:id="@+id/selected_app_version_name"
                 style="@style/BottomSheetItem"
-                android:text="@string/action_bottom_sheet_save_image"
-                app:drawableStartCompat="@drawable/ic_baseline_image_24"
-                app:drawableTint="?attr/colorSecondary" />
+                android:singleLine="true" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/action_open_app"
+                android:id="@+id/selected_app_version_number"
                 style="@style/BottomSheetItem"
-                android:text="@string/action_bottom_sheet_open"
-                app:drawableStartCompat="@drawable/ic_baseline_android_24"
-                app:drawableTint="?attr/colorSecondary" />
+                android:singleLine="true" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/action_show_app_settings"
+                android:id="@+id/selected_app_install_time"
                 style="@style/BottomSheetItem"
-                android:text="@string/action_bottom_sheet_settings"
-                app:drawableStartCompat="@drawable/ic_baseline_settings_24"
-                app:drawableTint="?attr/colorSecondary" />
+                android:singleLine="true" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/action_uninstall"
+                android:id="@+id/selected_app_update_time"
                 style="@style/BottomSheetItem"
-                android:text="@string/action_bottom_sheet_uninstall"
-                android:visibility="gone"
-                app:drawableStartCompat="@drawable/ic_baseline_delete_24"
-                app:drawableTint="?attr/colorSecondary" />
+                android:singleLine="true" />
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="4dp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/action_save_apk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_bottom_sheet_save"
+                app:chipIcon="@drawable/ic_baseline_save_24" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/action_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_bottom_sheet_share"
+                app:chipIcon="@drawable/ic_share_24dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/action_save_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_bottom_sheet_save_image"
+                app:chipIcon="@drawable/ic_baseline_image_24" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/action_open_app"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_bottom_sheet_open"
+                app:chipIcon="@drawable/ic_baseline_android_24" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/action_uninstall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_bottom_sheet_uninstall"
+                android:visibility="gone"
+                app:chipIcon="@drawable/ic_baseline_delete_24" />
+        </com.google.android.material.chip.ChipGroup>
+
+    </HorizontalScrollView>
+
 </LinearLayout>
