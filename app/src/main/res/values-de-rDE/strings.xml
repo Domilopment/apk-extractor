@@ -94,7 +94,7 @@
 
     <!-- APK Selected Alert -->
     <string name="alert_apk_selected_title">APK Verwendungszweck</string>
-    <string name="alert_apk_selected_failed">Öffnen der ausgewählten Apk fehlgeschlagen</string>
+    <string name="alert_apk_selected_failed">Öffnen der ausgewählten APK fehlgeschlagen</string>
     <string name="alert_apk_selected_share">@string/apk_action_share</string>
     <string name="alert_apk_selected_install">Installieren</string>
     <string name="alert_apk_selected_delete">@string/apk_action_delete</string>
@@ -131,8 +131,8 @@
     <string name="auto_backup_broadcast_receiver_notification_title">Auto Backup</string>
 
     <!-- App Options Bottom Sheet -->
-    <string name="info_bottom_sheet_source_directory">Apk Quellverzeichnis: %s</string>
-    <string name="info_bottom_sheet_apk_size">Apk größe: %.2f MB</string>
+    <string name="info_bottom_sheet_source_directory">APK Quellverzeichnis: %s</string>
+    <string name="info_bottom_sheet_apk_size">APK größe: %.2f MB</string>
     <string name="info_bottom_sheet_version_name">Versions Name: %s</string>
     <string name="info_bottom_sheet_version_number">Versions Nummer: %d</string>
     <string name="info_bottom_sheet_install_time">Installiert: %s</string>
@@ -148,7 +148,7 @@
     <string name="snackbar_need_permission_save_image">Benötige Speicher Berechtigung um Icons zu speichern</string>
 
     <!-- App Multiselect Options Bottom Sheet -->
-    <string name="action_multiselect_bottom_sheet_save_description">Speichere Apks</string>
+    <string name="action_multiselect_bottom_sheet_save_description">Speichere APKs</string>
     <string name="action_multiselect_bottom_sheet_share_description">@string/apk_action_share</string>
 
     <!-- App List Adapter -->

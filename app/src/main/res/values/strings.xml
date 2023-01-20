@@ -134,8 +134,8 @@
     <string name="auto_backup_broadcast_receiver_notification_title">Auto Backup</string>
 
     <!-- App Options Bottom Sheet -->
-    <string name="info_bottom_sheet_source_directory">Apk source dir: %s</string>
-    <string name="info_bottom_sheet_apk_size">Apk size: %.2f MB</string>
+    <string name="info_bottom_sheet_source_directory">APK source dir: %s</string>
+    <string name="info_bottom_sheet_apk_size">APK size: %.2f MB</string>
     <string name="info_bottom_sheet_version_name">Version name: %s</string>
     <string name="info_bottom_sheet_version_number">Version number: %d</string>
     <string name="info_bottom_sheet_install_time">Installed: %s</string>
@@ -151,7 +151,7 @@
     <string name="snackbar_need_permission_save_image">Need Storage Permission to Save Images</string>
 
     <!-- App Multiselect Options Bottom Sheet -->
-    <string name="action_multiselect_bottom_sheet_save_description">Save Apks</string>
+    <string name="action_multiselect_bottom_sheet_save_description">Save APKs</string>
     <string name="action_multiselect_bottom_sheet_share_description">@string/apk_action_share</string>
 
     <!-- App List Adapter -->
