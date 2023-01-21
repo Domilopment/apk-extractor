@@ -83,7 +83,7 @@ class AppListAdapter(
 
                 } else {
                     mainFragment.requireActivity().supportFragmentManager.let {
-                        AppOptionsBottomSheet.newInstance(app.getApplicationInfo()).apply {
+                        AppOptionsBottomSheet.newInstance(app.appPackageName).apply {
                             show(it, AppOptionsBottomSheet.TAG)
                         }
                     }
@@ -147,7 +147,9 @@ class AppListAdapter(
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
                 @Suppress("UNCHECKED_CAST")
-                myDatasetFiltered = filterResults.values as MutableList<ApplicationModel>
+                myDatasetFiltered =
+                    if ((filterResults.values as List<Any>).isNotEmpty()) filterResults.values as MutableList<ApplicationModel>
+                    else mutableListOf()
                 notifyDataSetChanged()
             }
         }

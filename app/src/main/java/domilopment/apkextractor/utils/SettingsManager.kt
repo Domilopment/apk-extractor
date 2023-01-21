@@ -27,22 +27,33 @@ class SettingsManager(context: Context) {
         const val SORT_BY_APK_SIZE = 5
     }
 
+    fun getApps(): Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>> {
+        val apks = ListOfAPKs(packageManager)
+        return apks.apps
+    }
+
     /**
      * Creates a List containing of all Types the User Selected in Settings
      * @return List of Selected App Types
      */
-    fun selectedAppTypes(): List<ApplicationModel> {
+    fun selectedAppTypes(
+        applications: Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>,
+        selectUpdatedSystemApps: Boolean = sharedPreferences.getBoolean(
+            "updated_system_apps",
+            false
+        ),
+        selectSystemApps: Boolean = sharedPreferences.getBoolean("system_apps", false),
+        selectUserApps: Boolean = sharedPreferences.getBoolean("user_apps", true)
+    ): List<ApplicationModel> {
+        val (updatedSystemApps, systemApps, userApps) = applications
         val mData: MutableList<ApplicationModel> = mutableListOf()
-        if (sharedPreferences.getBoolean("updated_system_apps", false)) {
-            mData.addAll(ListOfAPKs(packageManager).updatedSystemApps)
-            if (sharedPreferences.getBoolean("system_apps", false))
-                mData.addAll(ListOfAPKs(packageManager).systemApps)
+        if (selectUpdatedSystemApps) {
+            mData.addAll(updatedSystemApps)
+            if (selectSystemApps) mData.addAll(systemApps)
         }
-        if (sharedPreferences.getBoolean("user_apps", true))
-            mData.addAll(ListOfAPKs(packageManager).userApps)
+        if (selectUserApps) mData.addAll(userApps)
         return sortData(mData)
     }
-
 
     /**
      * Gives back in SharedPreferences Saved Directory Path

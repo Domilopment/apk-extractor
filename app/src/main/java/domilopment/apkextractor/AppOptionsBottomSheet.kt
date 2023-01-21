@@ -21,6 +21,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
@@ -29,6 +32,7 @@ import domilopment.apkextractor.databinding.AppOptionsBottomSheetBinding
 import domilopment.apkextractor.fragments.MainViewModel
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -76,11 +80,11 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
         @JvmStatic
         fun newInstance(
-            app: ApplicationInfo
+            packageName: String
         ): AppOptionsBottomSheet {
             val appOptionsBottomSheet = AppOptionsBottomSheet()
-            val args: Bundle = Bundle().apply {
-                putParcelable("app", app)
+            val args: Bundle = Bundle(1).apply {
+                putString("package_name", packageName)
             }
             appOptionsBottomSheet.arguments = args
             return appOptionsBottomSheet
@@ -89,14 +93,20 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val parcelable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getParcelable("app", ApplicationInfo::class.java)
-        } else {
-            arguments?.getParcelable("app")
-        }
-        parcelable?.let {
-            app = ApplicationModel(it, requireContext().packageManager)
+        val packageName = arguments?.getString("package_name")
+        packageName?.let {
+            model.selectApplication(packageName)
         } ?: return dismiss()
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                model.appOptionsBottomSheetUIState.collect { uiState ->
+                    uiState.selectedApplicationModel?.let {
+                        app = it
+                    } ?: dismiss()
+                }
+            }
+        }
     }
 
     override fun onCreateView(

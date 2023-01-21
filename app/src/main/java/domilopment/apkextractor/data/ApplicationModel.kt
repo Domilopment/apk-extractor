@@ -14,7 +14,10 @@ data class ApplicationModel(
 ) {
     private val packageInfo: PackageInfo
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            packageManager.getPackageInfo(applicationInfo.packageName, PackageManager.PackageInfoFlags.of(0L))
+            packageManager.getPackageInfo(
+                applicationInfo.packageName,
+                PackageManager.PackageInfoFlags.of(0L)
+            )
         else
             packageManager.getPackageInfo(applicationInfo.packageName, 0)
     val appName: String get() = packageManager.getApplicationLabel(applicationInfo).toString()
@@ -31,6 +34,4 @@ data class ApplicationModel(
     val apkSize: Float get() = File(applicationInfo.sourceDir).length() / (1000.0F * 1000.0F) // Calculate MB Size
     val launchIntent: Intent? get() = packageManager.getLaunchIntentForPackage(appPackageName)
     var isChecked: Boolean = false
-
-    fun getApplicationInfo() = applicationInfo
 }

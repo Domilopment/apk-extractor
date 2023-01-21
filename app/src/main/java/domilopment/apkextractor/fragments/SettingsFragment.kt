@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
@@ -31,7 +32,6 @@ import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
-import domilopment.apkextractor.data.ListOfAPKs
 import domilopment.apkextractor.apkNamePreferenceDialog.ApkNamePreference
 import domilopment.apkextractor.apkNamePreferenceDialog.ApkNamePreferenceDialogFragmentCompat
 import domilopment.apkextractor.utils.FileHelper
@@ -41,6 +41,23 @@ import java.util.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var settingsManager: SettingsManager
+    private var chooseDir: Preference? = null
+    private var autoBackup: SwitchPreferenceCompat? = null
+    private var appListAutoBackup: MultiSelectListPreference? = null
+    private var updatedSystemApps: SwitchPreferenceCompat? = null
+    private var systemApps: SwitchPreferenceCompat? = null
+    private var userApps: SwitchPreferenceCompat? = null
+    private var listPreferenceUiMode: ListPreference? = null
+    private var useMaterialYou: SwitchPreferenceCompat? = null
+    private var listPreferenceLocaleList: ListPreference? = null
+    private var clearCache: Preference? = null
+    private var github: Preference? = null
+    private var googlePlay: Preference? = null
+    private var privacyPolicy: Preference? = null
+    private var version: Preference? = null
+    private val model by activityViewModels<MainViewModel> {
+        MainViewModel(requireActivity().application).defaultViewModelProviderFactory
+    }
 
     private val chooseSaveDir =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -53,7 +70,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     ) {
         if (it) {
             handleAutoBackupService(true)
-            findPreference<SwitchPreferenceCompat>("auto_backup")?.isChecked = true
+            autoBackup?.isChecked = true
         } else {
             Snackbar.make(
                 requireView(),
@@ -97,22 +114,37 @@ class SettingsFragment : PreferenceFragmentCompat() {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
 
+        chooseDir = findPreference("choose_dir")
+        autoBackup = findPreference("auto_backup")
+        appListAutoBackup = findPreference("app_list_auto_backup")
+        updatedSystemApps = findPreference("updated_system_apps")
+        systemApps = findPreference("system_apps")
+        userApps = findPreference("user_apps")
+        listPreferenceUiMode = findPreference("list_preference_ui_mode")
+        useMaterialYou = findPreference("use_material_you")
+        listPreferenceLocaleList = findPreference("list_preference_locale_list")
+        clearCache = findPreference("clear_cache")
+        github = findPreference("github")
+        googlePlay = findPreference("googleplay")
+        privacyPolicy = findPreference("privacy_policy")
+        version = findPreference("version")
+
         // Shows Version Number in Settings
-        findPreference<Preference>("version")!!
-            .title = getString(R.string.version, BuildConfig.VERSION_NAME)
+        version?.title = getString(R.string.version, BuildConfig.VERSION_NAME)
 
         // A Link to Projects Github Repo
-        findPreference<Preference>("github")!!.setOnPreferenceClickListener {
+        github?.setOnPreferenceClickListener {
             CustomTabsIntent.Builder()
                 .build()
                 .launchUrl(
                     requireContext(),
-                    Uri.parse("https://github.com/domilopment/apkextractor")
+                    Uri.parse("https://github.com/domilopment/apk-extractor")
                 )
             return@setOnPreferenceClickListener true
         }
+
         // A Link to Apps Google Play Page
-        findPreference<Preference>("googleplay")?.setOnPreferenceClickListener {
+        googlePlay?.setOnPreferenceClickListener {
             Intent(Intent.ACTION_VIEW).apply {
                 data = try {
                     val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -137,7 +169,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         // A Link to my Privacy Policy Page
-        findPreference<Preference>("privacy_policy")?.setOnPreferenceClickListener {
+        privacyPolicy?.setOnPreferenceClickListener {
             CustomTabsIntent.Builder()
                 .build()
                 .launchUrl(
@@ -148,16 +180,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         // Select a Dir to Save APKs
-        findPreference<Preference>("choose_dir")?.setOnPreferenceClickListener {
+        chooseDir?.setOnPreferenceClickListener {
             FileHelper(requireActivity()).chooseDir(chooseSaveDir)
             return@setOnPreferenceClickListener true
         }
+
         // Change between Day and Night Mode
-        findPreference<ListPreference>("list_preference_ui_mode")?.setOnPreferenceChangeListener { _, newValue ->
+        listPreferenceUiMode?.setOnPreferenceChangeListener { _, newValue ->
             settingsManager.changeUIMode(newValue.toString())
             return@setOnPreferenceChangeListener true
         }
-        findPreference<SwitchPreferenceCompat>("use_material_you")?.apply {
+
+        // Aktivate or decactivate Material You Color scheme
+        useMaterialYou?.apply {
             setOnPreferenceChangeListener { _, _ ->
                 Toast.makeText(
                     requireContext(),
@@ -168,8 +203,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             isVisible = DynamicColors.isDynamicColorAvailable()
         }
+
         // Clear App cache
-        findPreference<Preference>("clear_cache")?.setOnPreferenceClickListener {
+        clearCache?.setOnPreferenceClickListener {
             if (activity?.cacheDir!!.deleteRecursively())
                 Toast.makeText(
                     activity,
@@ -185,32 +221,40 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     .show()
             return@setOnPreferenceClickListener true
         }
+
         // Fill List of Apps for Auto Backup with Installed or Updated Apps
-        findPreference<MultiSelectListPreference>("app_list_auto_backup")?.apply {
-            lifecycleScope.launch {
-                val load = async(ioDispatcher) {
-                    val appEntries = mutableListOf<String>()
-                    val appValues = mutableListOf<String>()
+        model.applications.observe(viewLifecycleOwner) {
+            appListAutoBackup?.apply {
+                lifecycleScope.launch {
+                    val load = async(ioDispatcher) {
+                        val appEntries = mutableListOf<String>()
+                        val appValues = mutableListOf<String>()
 
-                    settingsManager.sortData(
-                        ListOfAPKs(context.packageManager).userApps
-                                + ListOfAPKs(context.packageManager).updatedSystemApps,
-                        SettingsManager.SORT_BY_NAME
-                    ).forEach {
-                        appEntries.add(it.appName)
-                        appValues.add(it.appPackageName)
+                        settingsManager.sortData(
+                            settingsManager.selectedAppTypes(
+                                it,
+                                selectUpdatedSystemApps = true,
+                                selectSystemApps = false,
+                                selectUserApps = true
+                            ),
+                            SettingsManager.SORT_BY_NAME
+                        ).forEach {
+                            appEntries.add(it.appName)
+                            appValues.add(it.appPackageName)
+                        }
+
+                        entries = appEntries.toTypedArray()
+                        entryValues = appValues.toTypedArray()
+
+                        return@async true
                     }
-
-                    entries = appEntries.toTypedArray()
-                    entryValues = appValues.toTypedArray()
-
-                    return@async true
+                    isEnabled = load.await()
                 }
-                isEnabled = load.await()
             }
         }
+
         // Start and Stop AutoBackupService
-        findPreference<SwitchPreferenceCompat>("auto_backup")?.apply {
+        autoBackup?.apply {
             setOnPreferenceChangeListener { _, newValue ->
                 newValue as Boolean
 
@@ -232,8 +276,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 return@setOnPreferenceChangeListener notificationManager.areNotificationsEnabled() || !newValue
             }
         }
+
         // Change App Language
-        findPreference<ListPreference>("list_preference_locale_list")?.apply {
+        listPreferenceLocaleList?.apply {
             val localeMap = mapOf(
                 null to getString(R.string.locale_list_default),
                 Locale.ENGLISH.toLanguageTag() to getString(R.string.locale_list_en),
@@ -254,6 +299,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 return@setOnPreferenceChangeListener true
             }
         }
+
+        // Change selected app in MainFragmentUiState after selection
+        val appsChangeListener = Preference.OnPreferenceChangeListener { prefrence, newValue ->
+            model.changeSelection(prefrence.key, newValue as Boolean)
+            return@OnPreferenceChangeListener true
+        }
+        updatedSystemApps?.onPreferenceChangeListener = appsChangeListener
+        systemApps?.onPreferenceChangeListener = appsChangeListener
+        userApps?.onPreferenceChangeListener = appsChangeListener
     }
 
     override fun onStart() {
@@ -283,6 +337,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
+    /**
+     * Manage auto backup service start and stop behaviour
+     * Start, if it should be running and isn't
+     * Stop, if it is running and shouldn't be
+     * @param newValue boolean of service should be running
+     */
     private fun handleAutoBackupService(newValue: Boolean) {
         if (newValue and !AutoBackupService.isRunning)
             requireActivity().startService(

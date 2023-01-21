@@ -6,12 +6,12 @@
             app:summary="@string/choose_save_dir_summary"
             app:title="@string/choose_save_dir" />
         <domilopment.apkextractor.apkNamePreferenceDialog.ApkNamePreference
-            android:key="app_save_name"
-            android:summary="@string/app_save_name_summary"
-            android:title="@string/app_save_name"
             android:defaultValue="@array/app_save_name_default_values"
             android:entries="@array/app_save_name_names"
-            android:entryValues="@array/app_save_name_values" />
+            android:entryValues="@array/app_save_name_values"
+            android:key="app_save_name"
+            android:summary="@string/app_save_name_summary"
+            android:title="@string/app_save_name" />
         <SwitchPreferenceCompat
             app:key="auto_backup"
             app:summary="@string/auto_backup_summary"
@@ -53,10 +53,10 @@
             app:summary="@string/use_material_you_summary"
             app:title="@string/use_material_you" />
         <ListPreference
-            android:key="list_preference_locale_list"
             android:defaultValue="default"
             android:entries="@array/locale_list_names"
             android:entryValues="@array/locale_list_values"
+            android:key="list_preference_locale_list"
             android:summary="@string/locale_list_summary"
             android:title="@string/locale_list_title" />
         <Preference

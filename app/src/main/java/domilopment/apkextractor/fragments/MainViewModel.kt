@@ -5,11 +5,9 @@ import android.net.Uri
 import androidx.lifecycle.*
 import domilopment.apkextractor.Event
 import domilopment.apkextractor.R
-import domilopment.apkextractor.utils.SettingsManager
-import domilopment.apkextractor.data.ApplicationModel
-import domilopment.apkextractor.data.ListOfAPKs
-import domilopment.apkextractor.data.ProgressDialogUiState
+import domilopment.apkextractor.data.*
 import domilopment.apkextractor.utils.FileHelper
+import domilopment.apkextractor.utils.SettingsManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,15 +17,32 @@ import kotlinx.coroutines.flow.update
 class MainViewModel(
     application: Application
 ) : AndroidViewModel(application), HasDefaultViewModelProviderFactory {
-    private val applications: MutableLiveData<List<ApplicationModel>> by lazy {
-        MutableLiveData<List<ApplicationModel>>().also {
-            it.value = loadApps()
+    private val _applications: MutableLiveData<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> by lazy {
+        MutableLiveData<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>>().also {
+            viewModelScope.launch {
+                it.value = loadApps()
+            }
         }
     }
-    private val isRefreshing: MutableLiveData<Boolean> = MutableLiveData(false)
+    val applications: LiveData<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> =
+        _applications
+
+    private val _mainFragmantState: MutableStateFlow<MainFragmentUIState> =
+        MutableStateFlow(MainFragmentUIState())
+    val mainFragmantState: StateFlow<MainFragmentUIState> = _mainFragmantState.asStateFlow()
+
     private val _progressDialogState: MutableStateFlow<ProgressDialogUiState> =
         MutableStateFlow(ProgressDialogUiState())
     val progressDialogState: StateFlow<ProgressDialogUiState> = _progressDialogState.asStateFlow()
+
+    private val _appOptionsBottomSheetState: MutableStateFlow<AppOptionsBottomSheetUIState> =
+        MutableStateFlow(AppOptionsBottomSheetUIState())
+    val appOptionsBottomSheetUIState: StateFlow<AppOptionsBottomSheetUIState> =
+        _appOptionsBottomSheetState.asStateFlow()
+
+    private val _searchQuery: MutableLiveData<String> = MutableLiveData(String())
+    val searchQuery: LiveData<String> = _searchQuery
+
     private val extractionResult: MutableLiveData<Event<Triple<Boolean?, ApplicationModel?, Int>>> =
         MutableLiveData(null)
     private val shareResult: MutableLiveData<Event<ArrayList<Uri>?>> = MutableLiveData(null)
@@ -36,22 +51,34 @@ class MainViewModel(
 
     private val ioDispatcher get() = Dispatchers.IO
 
-    /**
-     * Get app list from ViewModel
-     * @return
-     * List of APKs
-     */
-    fun getApps(): LiveData<List<ApplicationModel>> {
-        return applications
+    init {
+        _applications.observeForever { apps ->
+            _mainFragmantState.update { state ->
+                state.copy(
+                    appList = SettingsManager(context).let {
+                        it.sortData(it.selectedAppTypes(apps))
+                    },
+                    isRefreshing = false
+                )
+            }
+        }
+    }
+
+    fun selectApplication(packageName: String) {
+        val app = _mainFragmantState.value.appList.find { it.appPackageName == packageName }
+        _appOptionsBottomSheetState.update { state ->
+            state.copy(
+                selectedApplicationModel = app
+            )
+        }
     }
 
     /**
-     * Get if app list dataset is updated or sorted
-     * @return
-     * Refresh state
+     * Set query string from search in App List, sets empty string if null
+     * @param query last input Search String
      */
-    fun getIsRefreshing(): LiveData<Boolean> {
-        return isRefreshing
+    fun searchQuery(query: String?) {
+        _searchQuery.value = query ?: ""
     }
 
     fun getExtractionResult(): LiveData<Event<Triple<Boolean?, ApplicationModel?, Int>>> {
@@ -66,14 +93,16 @@ class MainViewModel(
      * Update App list
      */
     fun updateApps() {
-        isRefreshing.value = true
+        _mainFragmantState.update {
+            it.copy(isRefreshing = true)
+        }
         viewModelScope.launch {
             val load = async(ioDispatcher) {
                 ListOfAPKs(context.packageManager).updateData()
                 return@async loadApps()
             }
-            applications.postValue(load.await())
-            isRefreshing.value = false
+            val apps = load.await()
+            _applications.postValue(apps)
         }
     }
 
@@ -83,27 +112,58 @@ class MainViewModel(
      * uninstalled app
      */
     fun removeApp(app: ApplicationModel) {
-        applications.value?.toMutableList()
-            ?.apply {
-                removeIf { it.appPackageName == app.appPackageName }
-            }?.also {
-                applications.value = it
+        _applications.value = _applications.value?.also {
+            it.third.toMutableList().apply {
+                removeIf { userApp -> userApp.appPackageName == app.appPackageName }
+            }.let { newUserApps ->
+                Triple(it.first, it.second, newUserApps)
             }
+        }
     }
 
     /**
      * Sorts data on Call after Selected Sort type
      */
     fun sortApps() {
-        isRefreshing.value = true
+        _mainFragmantState.update {
+            it.copy(isRefreshing = true)
+        }
         viewModelScope.launch {
-            val load = async(ioDispatcher) {
-                applications.value?.let {
-                    return@async SettingsManager(context).sortData(it)
+            _mainFragmantState.update { state ->
+                state.copy(
+                    appList = withContext(Dispatchers.IO) {
+                        SettingsManager(
+                            context
+                        ).sortData(state.appList)
+                    },
+                    isRefreshing = false
+                )
+            }
+        }
+    }
+
+    fun changeSelection(key: String, b: Boolean) {
+        val settingsManager = SettingsManager(context)
+        _applications.value?.let {
+            when (key) {
+                "updated_system_apps" -> settingsManager.selectedAppTypes(
+                    it,
+                    selectUpdatedSystemApps = b
+                )
+                "system_apps" -> settingsManager.selectedAppTypes(it, selectSystemApps = b)
+                "user_apps" -> settingsManager.selectedAppTypes(it, selectUserApps = b)
+                else -> null
+            }?.let { selectesAppTypes ->
+                viewModelScope.launch {
+                    _mainFragmantState.update { state ->
+                        state.copy(
+                            appList = withContext(Dispatchers.IO) {
+                                settingsManager.sortData(selectesAppTypes)
+                            }
+                        )
+                    }
                 }
             }
-            applications.postValue(load.await())
-            isRefreshing.postValue(false)
         }
     }
 
@@ -202,10 +262,11 @@ class MainViewModel(
     /**
      * Load apps from device
      */
-    private fun loadApps(): List<ApplicationModel> {
-        // Do an asynchronous operation to fetch users.
-        return SettingsManager(context).selectedAppTypes()
-    }
+    private suspend fun loadApps(): Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>> =
+        withContext(Dispatchers.IO) {
+            // Do an asynchronous operation to fetch users.
+            return@withContext SettingsManager(context).getApps()
+        }
 
     override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
         return object : ViewModelProvider.Factory {

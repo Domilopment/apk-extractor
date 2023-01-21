@@ -21,6 +21,8 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -33,6 +35,7 @@ import domilopment.apkextractor.*
 import domilopment.apkextractor.databinding.FragmentMainBinding
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import kotlinx.coroutines.launch
 
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
@@ -86,6 +89,15 @@ class MainFragment : Fragment() {
             isEnabled = !searchView.isIconified
         }.also {
             it.isEnabled = false
+        }
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.mainFragmantState.collect { uiState ->
+                    binding.refresh.isRefreshing = uiState.isRefreshing
+                    viewAdapter.updateData(uiState.appList)
+                }
+            }
         }
     }
 
@@ -157,17 +169,6 @@ class MainFragment : Fragment() {
             adapter = viewAdapter
         }
 
-        model.getApps().observe(viewLifecycleOwner) { apps ->
-            viewAdapter.updateData(apps)
-            if (::searchView.isInitialized) with(searchView.query) {
-                if (isNotBlank()) viewAdapter.filter.filter(this)
-            }
-        }
-
-        model.getIsRefreshing().observe(viewLifecycleOwner) { isRefreshing ->
-            binding.refresh.isRefreshing = isRefreshing
-        }
-
         model.getExtractionResult().observe(viewLifecycleOwner) { result ->
             result?.getContentIfNotHandled()?.let { (failed, app, size) ->
                 if (failed == true)
@@ -217,7 +218,7 @@ class MainFragment : Fragment() {
 
         // add Refresh Layout action on Swipe
         binding.refresh.setOnRefreshListener {
-            updateData()
+            model.updateApps()
         }
 
         binding.appMultiselectBottomSheet.apply {
@@ -238,7 +239,6 @@ class MainFragment : Fragment() {
             setDisplayHomeAsUpEnabled(false)
             title = getString(R.string.app_name)
         }
-        updateData()
     }
 
     override fun onDestroyView() {
@@ -297,13 +297,6 @@ class MainFragment : Fragment() {
     fun attachSwipeHelper(attach: Boolean) =
         swipeHelper.attachToRecyclerView(if (attach) binding.listView.list else null)
 
-    /**
-     * Update Dataset
-     */
-    private fun updateData() {
-        model.updateApps()
-    }
-
     private fun setupMenu() {
         (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
@@ -339,7 +332,7 @@ class MainFragment : Fragment() {
                         }
 
                         fun onFilter(query: String?): Boolean {
-                            viewAdapter.filter.filter(query)
+                            model.searchQuery(query)
                             return false
                         }
                     })
@@ -354,6 +347,12 @@ class MainFragment : Fragment() {
                         callback.isEnabled = false
                         return@setOnCloseListener false
                     }
+                }
+
+                model.searchQuery.observe(viewLifecycleOwner) {
+                    viewAdapter.filter.filter(it)
+                    searchView.setQuery(it, false)
+                    searchView.isIconified = it.isBlank()
                 }
             }
 

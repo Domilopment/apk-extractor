@@ -14,7 +14,7 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/selected_app_icon"
-            android:layout_width="wrap_content"
+            android:layout_width="72dp"
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:src="@android:drawable/sym_def_app_icon"
@@ -24,25 +24,27 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/selected_app_name"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="72dp"
             android:singleLine="true"
             android:textAlignment="center"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/selected_app_package_name"
-            app:layout_constraintEnd_toStartOf="@id/action_show_app_settings"
-            app:layout_constraintStart_toEndOf="@id/selected_app_icon"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/selected_app_package_name"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="72dp"
             android:singleLine="true"
             android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/action_show_app_settings"
-            app:layout_constraintStart_toEndOf="@id/selected_app_icon"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/selected_app_name" />
 
         <com.google.android.material.button.MaterialButton
@@ -50,6 +52,7 @@
             style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             app:icon="@drawable/ic_baseline_settings_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -72,11 +75,11 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.google.android.material.textview.MaterialTextView
+            <domilopment.apkextractor.ExpandableTextView
                 android:id="@+id/selected_app_source_directory"
                 style="@style/BottomSheetItem"
                 android:ellipsize="middle"
-                android:singleLine="true" />
+                android:maxLines="1" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/selected_app_apk_size"
