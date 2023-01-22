@@ -43,7 +43,9 @@ class SettingsManager(context: Context) {
             false
         ),
         selectSystemApps: Boolean = sharedPreferences.getBoolean("system_apps", false),
-        selectUserApps: Boolean = sharedPreferences.getBoolean("user_apps", true)
+        selectUserApps: Boolean = sharedPreferences.getBoolean("user_apps", true),
+        sortApps: Boolean = true,
+        sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME)
     ): List<ApplicationModel> {
         val (updatedSystemApps, systemApps, userApps) = applications
         val mData: MutableList<ApplicationModel> = mutableListOf()
@@ -52,7 +54,7 @@ class SettingsManager(context: Context) {
             if (selectSystemApps) mData.addAll(systemApps)
         }
         if (selectUserApps) mData.addAll(userApps)
-        return sortData(mData)
+        return if (sortApps) sortData(mData, sortMode) else mData
     }
 
     /**
