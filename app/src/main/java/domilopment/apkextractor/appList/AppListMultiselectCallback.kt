@@ -63,13 +63,6 @@ class AppListMultiselectCallback(
         mainFragment.startSupportActionMode(false)
     }
 
-    /**
-     * Destroy action Mode if active
-     */
-    fun finish() {
-        mode?.finish()
-    }
-
     fun setModeTitle(
         itemCount: Int = appListAdapter.myDatasetFiltered.filter { it.isChecked }.size,
         mode: ActionMode? = this.mode
