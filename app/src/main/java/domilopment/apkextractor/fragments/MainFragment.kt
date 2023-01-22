@@ -97,9 +97,12 @@ class MainFragment : Fragment() {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.mainFragmantState.collect { uiState ->
                     binding.refresh.isRefreshing = uiState.isRefreshing
-                    viewAdapter.updateData(uiState.appList)
                     if (uiState.actionMode) (requireActivity() as AppCompatActivity)
                         .startSupportActionMode(viewAdapter.actionModeCallback)
+                    viewAdapter.updateData(uiState.appList)
+                    if (::searchView.isInitialized) with(searchView.query) {
+                        if (isNotBlank()) viewAdapter.filter.filter(this)
+                    }
                 }
             }
         }

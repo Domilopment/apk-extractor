@@ -159,6 +159,7 @@ class AppListAdapter(
      * @param apps Updated set of Applications
      */
     fun updateData(apps: List<ApplicationModel>) {
+        if (apps == myDataset) return
         myDataset = apps
         myDatasetFiltered = myDataset.toMutableList()
         notifyDataSetChanged()

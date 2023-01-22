@@ -87,7 +87,7 @@ class MainViewModel(
 
     /**
      * Set View state of action mode
-     * @param Boolean of action mode is active
+     * @param actionMode Boolean of action mode is active
      */
     fun addActionModeCallback(actionMode: Boolean) {
         _mainFragmantState.update { state ->
