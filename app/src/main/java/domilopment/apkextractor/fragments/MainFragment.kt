@@ -34,6 +34,7 @@ import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import domilopment.apkextractor.appList.AppListAdapter
 import domilopment.apkextractor.appList.AppListTouchHelperCallback
+import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.FragmentMainBinding
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
@@ -439,6 +440,14 @@ class MainFragment : Fragment() {
      */
     fun startSupportActionMode(actionMode: Boolean) {
         model.addActionModeCallback(actionMode)
+    }
+
+    /**
+     * Set ApplicationModel for AppOptionsBottomSheet flow
+     * @param app Selected Application from App list
+     */
+    fun selectApplication(app: ApplicationModel) {
+        model.selectApplication(app)
     }
 
     /**

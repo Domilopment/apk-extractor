@@ -68,8 +68,7 @@ class MainViewModel(
      * and set it in BottomSheet state
      * @param packageName package name of application, want to select
      */
-    fun selectApplication(packageName: String) {
-        val app = _mainFragmantState.value.appList.find { it.appPackageName == packageName }
+    fun selectApplication(app: ApplicationModel) {
         _appOptionsBottomSheetState.update { state ->
             state.copy(
                 selectedApplicationModel = app
@@ -137,12 +136,10 @@ class MainViewModel(
      * uninstalled app
      */
     fun removeApp(app: ApplicationModel) {
-        _applications.value = _applications.value?.also {
-            it.third.toMutableList().apply {
-                removeIf { userApp -> userApp.appPackageName == app.appPackageName }
-            }.let { newUserApps ->
-                Triple(it.first, it.second, newUserApps)
-            }
+        _mainFragmantState.update { state ->
+            state.copy(appList = state.appList.toMutableList().apply {
+                remove(app)
+            })
         }
     }
 

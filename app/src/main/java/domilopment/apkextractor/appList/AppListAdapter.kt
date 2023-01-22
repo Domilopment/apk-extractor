@@ -72,9 +72,12 @@ class AppListAdapter(
             // ItemView on Click
             root.setOnClickListener {
                 when (actionMode) {
-                    null -> mainFragment.requireActivity().supportFragmentManager.let {
-                        AppOptionsBottomSheet.newInstance(app.appPackageName).apply {
-                            show(it, AppOptionsBottomSheet.TAG)
+                    null -> {
+                        mainFragment.selectApplication(app)
+                        mainFragment.requireActivity().supportFragmentManager.let {
+                            AppOptionsBottomSheet.newInstance(app.appPackageName).apply {
+                                show(it, AppOptionsBottomSheet.TAG)
+                            }
                         }
                     }
                     else -> {

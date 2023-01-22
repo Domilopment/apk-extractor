@@ -93,11 +93,6 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val packageName = arguments?.getString("package_name")
-        packageName?.let {
-            model.selectApplication(packageName)
-        } ?: return dismiss()
-
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 model.appOptionsBottomSheetUIState.collect { uiState ->

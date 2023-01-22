@@ -84,7 +84,7 @@ class ProgressDialogFragment : DialogFragment() {
     companion object {
         fun newInstance(title: Int): ProgressDialogFragment {
             val fragment = ProgressDialogFragment()
-            val bundle = Bundle()
+            val bundle = Bundle(1)
             bundle.putInt("title", title)
             fragment.arguments = bundle
             return fragment
