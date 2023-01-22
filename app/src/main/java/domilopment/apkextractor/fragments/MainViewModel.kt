@@ -52,18 +52,22 @@ class MainViewModel(
     private val ioDispatcher get() = Dispatchers.IO
 
     init {
+        // Set applications in view once they are loaded
         _applications.observeForever { apps ->
             _mainFragmantState.update { state ->
                 state.copy(
-                    appList = SettingsManager(context).let {
-                        it.sortData(it.selectedAppTypes(apps))
-                    },
+                    appList = SettingsManager(context).selectedAppTypes(apps),
                     isRefreshing = false
                 )
             }
         }
     }
 
+    /**
+     * Select a specific Application from list in view
+     * and set it in BottomSheet state
+     * @param packageName package name of application, want to select
+     */
     fun selectApplication(packageName: String) {
         val app = _mainFragmantState.value.appList.find { it.appPackageName == packageName }
         _appOptionsBottomSheetState.update { state ->
@@ -81,10 +85,21 @@ class MainViewModel(
         _searchQuery.value = query ?: ""
     }
 
+    /**
+     * Get result of last multiple apps extraction performance
+     * @return Triple of:
+     * Boolean, was extraction successful
+     * ApplicationModel, of last extracted app
+     * Int, count of extracted apps
+     */
     fun getExtractionResult(): LiveData<Event<Triple<Boolean?, ApplicationModel?, Int>>> {
         return extractionResult
     }
 
+    /**
+     * Get result of last multiple apps share performance
+     * @return List of Uris for all apps user want to share
+     */
     fun getShareResult(): LiveData<Event<ArrayList<Uri>?>> {
         return shareResult
     }
@@ -142,31 +157,45 @@ class MainViewModel(
         }
     }
 
+    /**
+     * update State for List view inside UI once user changed selected app types inside the Settings
+     * @param key key of switch preference who has changed
+     * @param b true for should be selected, false if no longer should be included
+     * @throws Exception if key is not "updated_system_apps", "system_apps" or "user_apps"
+     */
+    @Throws(Exception::class)
     fun changeSelection(key: String, b: Boolean) {
+        if (key !in listOf("updated_system_apps", "system_apps", "user_apps"))
+            throw Exception("No available key provided!")
+
         val settingsManager = SettingsManager(context)
+
         _applications.value?.let {
-            when (key) {
-                "updated_system_apps" -> settingsManager.selectedAppTypes(
-                    it,
-                    selectUpdatedSystemApps = b
-                )
-                "system_apps" -> settingsManager.selectedAppTypes(it, selectSystemApps = b)
-                "user_apps" -> settingsManager.selectedAppTypes(it, selectUserApps = b)
-                else -> null
-            }?.let { selectesAppTypes ->
-                viewModelScope.launch {
+            viewModelScope.launch {
+                val selectedAppTypes = async(Dispatchers.IO) {
+                    return@async when (key) {
+                        "updated_system_apps" -> settingsManager
+                            .selectedAppTypes(it, selectUpdatedSystemApps = b)
+                        "system_apps" -> settingsManager
+                            .selectedAppTypes(it, selectSystemApps = b)
+                        "user_apps" -> settingsManager
+                            .selectedAppTypes(it, selectUserApps = b)
+                        else -> null
+                    }
+                }
+                selectedAppTypes.await()?.let {
                     _mainFragmantState.update { state ->
-                        state.copy(
-                            appList = withContext(Dispatchers.IO) {
-                                settingsManager.sortData(selectesAppTypes)
-                            }
-                        )
+                        state.copy(appList = it)
                     }
                 }
             }
         }
     }
 
+    /**
+     * save multiple apps to filesystem
+     * @param list of apps user wants to save
+     */
     fun saveApps(list: List<ApplicationModel>) {
         viewModelScope.launch {
             val settingsManager = SettingsManager(context)
@@ -218,6 +247,10 @@ class MainViewModel(
         }
     }
 
+    /**
+     * create temp files for apps user want to save and get share Uris for them
+     * @param list list of all apps
+     */
     fun createShareUrisForApps(list: List<ApplicationModel>) {
         viewModelScope.launch {
             val files = ArrayList<Uri>()
@@ -255,6 +288,9 @@ class MainViewModel(
         }
     }
 
+    /**
+     * Reset Progress dialog state back to default
+     */
     fun resetProgress() {
         _progressDialogState.value = ProgressDialogUiState()
     }
