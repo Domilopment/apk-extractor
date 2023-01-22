@@ -1,14 +1,15 @@
-package domilopment.apkextractor
+package domilopment.apkextractor.appList
 
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.Filter
 import android.widget.Filterable
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ActionMode
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetBehavior
+import domilopment.apkextractor.AppOptionsBottomSheet
+import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.AppListItemBinding
 import domilopment.apkextractor.fragments.MainFragment
@@ -18,8 +19,7 @@ class AppListAdapter(
     private val mainFragment: MainFragment
 ) :
     RecyclerView.Adapter<AppListAdapter.MyViewHolder>(),
-    Filterable,
-    ActionMode.Callback {
+    Filterable {
     // Static Dataset for Smoother transition
     private var myDataset = listOf<ApplicationModel>()
 
@@ -31,8 +31,8 @@ class AppListAdapter(
         val binding: AppListItemBinding = AppListItemBinding.bind(myView)
     }
 
-    private var multiselect = false
-    private var mode: ActionMode? = null
+    val actionModeCallback = AppListMultiselectCallback(mainFragment, this)
+    private val actionMode get() = actionModeCallback.mode
 
     /**
      * Creates ViewHolder with Layout
@@ -71,36 +71,35 @@ class AppListAdapter(
             checkBox.isVisible = app.isChecked
             // ItemView on Click
             root.setOnClickListener {
-                if (multiselect) {
-                    app.isChecked = !app.isChecked
-
-                    if (!app.isChecked) (mode?.menu?.findItem(R.id.action_select_all)?.actionView as CheckBox)
-                        .isChecked = false
-
-                    setModeTitle()
-
-                    checkBox.isVisible = app.isChecked
-
-                } else {
-                    mainFragment.requireActivity().supportFragmentManager.let {
+                when (actionMode) {
+                    null -> mainFragment.requireActivity().supportFragmentManager.let {
                         AppOptionsBottomSheet.newInstance(app.appPackageName).apply {
                             show(it, AppOptionsBottomSheet.TAG)
                         }
+                    }
+                    else -> {
+                        app.isChecked = !app.isChecked
+
+                        if (!app.isChecked) (actionMode?.menu?.findItem(R.id.action_select_all)?.actionView as CheckBox)
+                            .isChecked = false
+
+                        actionModeCallback.setModeTitle()
+
+                        checkBox.isVisible = app.isChecked
                     }
                 }
             }
             // ItemView on Long Click
             root.setOnLongClickListener {
-                return@setOnLongClickListener if (!multiselect) {
-                    multiselect = true
-                    checkBox.isVisible = true
-                    app.isChecked = true
-                    (mainFragment.requireActivity() as AppCompatActivity).startSupportActionMode(
-                        this@AppListAdapter
-                    )
-                    true
-                } else
-                    false
+                when (actionMode) {
+                    null -> {
+                        checkBox.isVisible = true
+                        app.isChecked = true
+                        mainFragment.startSupportActionMode(true)
+                        true
+                    }
+                    else -> false
+                }
             }
         }
     }
@@ -163,66 +162,5 @@ class AppListAdapter(
         myDataset = apps
         myDatasetFiltered = myDataset.toMutableList()
         notifyDataSetChanged()
-    }
-
-    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-        // Inflate the menu resource providing context menu items
-        val inflater: MenuInflater = mode.menuInflater
-        inflater.inflate(R.menu.menu_multiselect, menu)
-        this.mode = mode
-        setModeTitle(mode = mode)
-        menu.findItem(R.id.action_select_all)?.also {
-            (it.actionView as CheckBox).setOnCheckedChangeListener { _, isChecked ->
-                it.isChecked = isChecked
-                onActionItemClicked(mode, it)
-            }
-        }
-        mainFragment.enableRefresh(false)
-        mainFragment.attachSwipeHelper(false)
-        mainFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_EXPANDED)
-        return true
-    }
-
-    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-        return false
-    }
-
-    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_select_all -> if (item.isChecked) {
-                myDatasetFiltered.forEach {
-                    it.isChecked = true
-                }
-                setModeTitle(itemCount, mode)
-                notifyDataSetChanged()
-            }
-        }
-        return true
-    }
-
-    override fun onDestroyActionMode(mode: ActionMode?) {
-        myDatasetFiltered.forEach {
-            it.isChecked = false
-        }
-        multiselect = false
-        mainFragment.enableRefresh(true)
-        mainFragment.attachSwipeHelper(true)
-        mainFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_COLLAPSED)
-        this.mode = null
-        notifyDataSetChanged()
-    }
-
-    /**
-     * Destroy action Mode if active
-     */
-    fun finish() {
-        mode?.finish()
-    }
-
-    private fun setModeTitle(
-        itemCount: Int = myDatasetFiltered.filter { it.isChecked }.size,
-        mode: ActionMode? = this.mode
-    ) {
-        mode?.title = mainFragment.getString(R.string.action_mode_title, itemCount)
     }
 }

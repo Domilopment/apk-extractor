@@ -86,6 +86,16 @@ class MainViewModel(
     }
 
     /**
+     * Set View state of action mode
+     * @param Boolean of action mode is active
+     */
+    fun addActionModeCallback(actionMode: Boolean) {
+        _mainFragmantState.update { state ->
+            state.copy(actionMode = actionMode)
+        }
+    }
+
+    /**
      * Get result of last multiple apps extraction performance
      * @return Triple of:
      * Boolean, was extraction successful

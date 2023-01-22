@@ -1,4 +1,4 @@
-package domilopment.apkextractor
+package domilopment.apkextractor.appList
 
 import android.graphics.*
 import android.graphics.drawable.Drawable
@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
+import domilopment.apkextractor.R
 import domilopment.apkextractor.fragments.MainFragment
 
 class AppListTouchHelperCallback(

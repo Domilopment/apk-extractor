@@ -32,6 +32,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
+import domilopment.apkextractor.appList.AppListAdapter
+import domilopment.apkextractor.appList.AppListTouchHelperCallback
 import domilopment.apkextractor.databinding.FragmentMainBinding
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
@@ -96,6 +98,8 @@ class MainFragment : Fragment() {
                 model.mainFragmantState.collect { uiState ->
                     binding.refresh.isRefreshing = uiState.isRefreshing
                     viewAdapter.updateData(uiState.appList)
+                    if (uiState.actionMode) (requireActivity() as AppCompatActivity)
+                        .startSupportActionMode(viewAdapter.actionModeCallback)
                 }
             }
         }
@@ -234,7 +238,6 @@ class MainFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewAdapter.finish()
         (requireActivity() as AppCompatActivity).supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(false)
             title = getString(R.string.app_name)
@@ -425,6 +428,14 @@ class MainFragment : Fragment() {
      */
     fun stateBottomSheetBehaviour(state: Int) {
         BottomSheetBehavior.from(binding.appMultiselectBottomSheet.root).state = state
+    }
+
+    /**
+     * set if App multiselect action mode should be restored on start
+     * @param actionMode Boolean if action mode callback should be enabled
+     */
+    fun startSupportActionMode(actionMode: Boolean) {
+        model.addActionModeCallback(actionMode)
     }
 
     /**
