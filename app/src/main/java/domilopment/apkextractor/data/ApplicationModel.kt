@@ -2,6 +2,7 @@ package domilopment.apkextractor.data
 
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.content.pm.InstallSourceInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
@@ -33,5 +34,10 @@ data class ApplicationModel(
     val appUpdateTime: Long get() = packageInfo.lastUpdateTime
     val apkSize: Float get() = File(applicationInfo.sourceDir).length() / (1000.0F * 1000.0F) // Calculate MB Size
     val launchIntent: Intent? get() = packageManager.getLaunchIntentForPackage(appPackageName)
+    val installationSource: String? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        packageManager.getInstallSourceInfo(appPackageName).installingPackageName
+    } else {
+        packageManager.getInstallerPackageName(appPackageName)
+    }
     var isChecked: Boolean = false
 }
