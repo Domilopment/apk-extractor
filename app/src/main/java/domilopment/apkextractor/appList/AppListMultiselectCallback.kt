@@ -1,5 +1,6 @@
 package domilopment.apkextractor.appList
 
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -13,8 +14,7 @@ class AppListMultiselectCallback(
     private val mainFragment: MainFragment,
     private val appListAdapter: AppListAdapter
 ) : ActionMode.Callback {
-    var mode: ActionMode? = null
-        private set
+    private var mode: ActionMode? = null
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
         // Inflate the menu resource providing context menu items
@@ -23,9 +23,10 @@ class AppListMultiselectCallback(
         this.mode = mode
         setModeTitle(mode = mode)
         menu.findItem(R.id.action_select_all)?.also {
-            (it.actionView as CheckBox).setOnCheckedChangeListener { _, isChecked ->
+            (it.actionView as CheckBox).setOnCheckedChangeListener { buttonView, isChecked ->
                 it.isChecked = isChecked
                 onActionItemClicked(mode, it)
+                buttonView.isChecked = false
             }
         }
         mainFragment.enableRefresh(false)
@@ -44,7 +45,7 @@ class AppListMultiselectCallback(
                 appListAdapter.myDatasetFiltered.forEach {
                     it.isChecked = true
                 }
-                setModeTitle(appListAdapter.itemCount, mode)
+                setModeTitle(mode = mode)
                 appListAdapter.notifyDataSetChanged()
             }
         }
@@ -58,10 +59,16 @@ class AppListMultiselectCallback(
         mainFragment.enableRefresh(true)
         mainFragment.attachSwipeHelper(true)
         mainFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_COLLAPSED)
+        mainFragment.showSearchView()
         this.mode = null
         appListAdapter.notifyDataSetChanged()
         mainFragment.startSupportActionMode(false)
     }
+
+    /**
+     * Boolean for checking if action mode is active or not
+     */
+    fun isActionModeActive(): Boolean = mode != null
 
     fun setModeTitle(
         itemCount: Int = appListAdapter.myDatasetFiltered.filter { it.isChecked }.size,
