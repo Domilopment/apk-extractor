@@ -3,6 +3,7 @@ package domilopment.apkextractor.fragments
 import android.Manifest
 import android.app.Activity
 import android.app.NotificationManager
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -36,6 +37,7 @@ import domilopment.apkextractor.apkNamePreferenceDialog.ApkNamePreference
 import domilopment.apkextractor.apkNamePreferenceDialog.ApkNamePreferenceDialogFragmentCompat
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -145,25 +147,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         // A Link to Apps Google Play Page
         googlePlay?.setOnPreferenceClickListener {
-            Intent(Intent.ACTION_VIEW).apply {
-                data = try {
-                    val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                        requireContext().packageManager.getPackageInfo(
-                            "com.android.vending",
-                            PackageManager.PackageInfoFlags.of(0L)
-                        )
-                    else
-                        requireContext().packageManager.getPackageInfo(
-                            "com.android.vending",
-                            0
-                        )
-                    setPackage(packageInfo.packageName)
-                    Uri.parse("market://details?id=${requireContext().packageName}")
-                } catch (e: PackageManager.NameNotFoundException) {
-                    Uri.parse("https://play.google.com/store/apps/details?id=${requireContext().packageName}")
+            try {
+                Intent(Intent.ACTION_VIEW).apply {
+                    data = try {
+                        val packageInfo =
+                            Utils.getPackageInfo(
+                                requireContext().packageManager,
+                                "com.android.vending"
+                            )
+                        setPackage(packageInfo.packageName)
+                        Uri.parse("market://details?id=${requireContext().packageName}")
+                    } catch (e: PackageManager.NameNotFoundException) { // If Play Store is not installed
+                        Uri.parse("https://play.google.com/store/apps/details?id=${requireContext().packageName}")
+                    }
+                }.also {
+                    startActivity(it)
                 }
-            }.also {
-                startActivity(it)
+            } catch (e: ActivityNotFoundException) { // If Play Store is Installed, but deactivated
+                startActivity(Intent(Intent.ACTION_VIEW).apply {
+                    data =
+                        Uri.parse("https://play.google.com/store/apps/details?id=${requireContext().packageName}")
+                })
             }
             return@setOnPreferenceClickListener true
         }

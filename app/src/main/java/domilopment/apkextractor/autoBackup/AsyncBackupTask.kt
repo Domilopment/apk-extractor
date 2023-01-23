@@ -19,6 +19,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.*
 import java.io.FileNotFoundException
 
@@ -40,10 +41,7 @@ class AsyncBackupTask(
 
     private val mainDispatcher get() = Dispatchers.Main
 
-    private val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-        context.packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0L))
-    else
-        context.packageManager.getPackageInfo(packageName, 0)
+    private val packageInfo = Utils.getPackageInfo(context.packageManager, packageName)
 
     // Get Application Info from Package
     private val app =

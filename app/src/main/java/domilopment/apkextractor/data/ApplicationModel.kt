@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
+import domilopment.apkextractor.utils.Utils
 import java.io.File
 
 data class ApplicationModel(
@@ -13,13 +14,7 @@ data class ApplicationModel(
     private val packageManager: PackageManager
 ) {
     private val packageInfo: PackageInfo
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            packageManager.getPackageInfo(
-                applicationInfo.packageName,
-                PackageManager.PackageInfoFlags.of(0L)
-            )
-        else
-            packageManager.getPackageInfo(applicationInfo.packageName, 0)
+        get() = Utils.getPackageInfo(packageManager, applicationInfo.packageName)
     val appName: String get() = packageManager.getApplicationLabel(applicationInfo).toString()
     val appPackageName: String = applicationInfo.packageName
     val appSourceDirectory: String = applicationInfo.sourceDir

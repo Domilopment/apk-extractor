@@ -33,6 +33,7 @@ import domilopment.apkextractor.databinding.AppOptionsBottomSheetBinding
 import domilopment.apkextractor.fragments.MainViewModel
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
@@ -277,10 +278,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         binding.actionOpenShop.apply {
             val packageManager = requireContext().packageManager
             app.installationSource?.runCatching {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) packageManager.getPackageInfo(
-                    this, PackageManager.PackageInfoFlags.of(0L)
-                )
-                else requireContext().packageManager.getPackageInfo(this, 0)
+                Utils.getPackageInfo(packageManager, this)
             }?.onSuccess {
                 text = packageManager.getApplicationLabel(it.applicationInfo)
             }
@@ -318,10 +316,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
      */
     private fun isPackageInstalled(packageName: String): Boolean {
         return try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) requireContext().packageManager.getPackageInfo(
-                packageName, PackageManager.PackageInfoFlags.of(0L)
-            )
-            else requireContext().packageManager.getPackageInfo(packageName, 0)
+            Utils.getPackageInfo(requireContext().packageManager, packageName)
             true
         } catch (e: PackageManager.NameNotFoundException) {
             false

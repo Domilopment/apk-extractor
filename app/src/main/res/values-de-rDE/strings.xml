@@ -20,8 +20,8 @@
     <string name="auto_backup">Auto Backup</string>
     <string name="auto_backup_summary">Auto Backup Apps nach Update</string>
 
-    <string name="auto_backup_app_list">Wähle Apps zum backupen</string>
-    <string name="auto_backup_app_list_summary">Wähle Apps aus die Automatisch geackupt werden sollen</string>
+    <string name="auto_backup_app_list">Wähle Apps für das Auto Backup</string>
+    <string name="auto_backup_app_list_summary">Wähle Apps aus die Automatisch von denen ein Backup nach dem aktualisieren erzeugt werden soll</string>
 
     <!-- Preferences Apps -->
     <string name="app_type_system">System Apps</string>
