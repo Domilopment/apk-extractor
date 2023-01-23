@@ -38,6 +38,7 @@ import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.FragmentMainBinding
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainFragment : Fragment() {
@@ -62,23 +63,20 @@ class MainFragment : Fragment() {
 
     private val selectApk =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK)
-                it.data?.data?.let { apkUri ->
-                    MaterialAlertDialogBuilder(requireContext()).apply {
-                        setTitle(getString(R.string.alert_apk_selected_title))
-                        setItems(R.array.selected_apk_options) { _, i: Int ->
-                            try {
-                                apkFileOptions(i, apkUri)
-                            } catch (e: Exception) {
-                                Log.e("Apk Extractor: Saved Apps Dialog", e.toString())
-                            }
+            if (it.resultCode == Activity.RESULT_OK) it.data?.data?.let { apkUri ->
+                MaterialAlertDialogBuilder(requireContext()).apply {
+                    setTitle(getString(R.string.alert_apk_selected_title))
+                    setItems(R.array.selected_apk_options) { _, i: Int ->
+                        try {
+                            apkFileOptions(i, apkUri)
+                        } catch (e: Exception) {
+                            Log.e("Apk Extractor: Saved Apps Dialog", e.toString())
                         }
-                    }.show()
-                } ?: Toast.makeText(
-                    context,
-                    getString(R.string.alert_apk_selected_failed),
-                    Toast.LENGTH_LONG
-                ).show()
+                    }
+                }.show()
+            } ?: Toast.makeText(
+                context, getString(R.string.alert_apk_selected_failed), Toast.LENGTH_LONG
+            ).show()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,9 +84,7 @@ class MainFragment : Fragment() {
 
         callback = requireActivity().onBackPressedDispatcher.addCallback {
             // close search view on back button pressed
-            if (!searchView.isIconified)
-                searchView.isIconified = true
-
+            if (!searchView.isIconified) searchView.isIconified = true
             isEnabled = !searchView.isIconified
         }.also {
             it.isEnabled = false
@@ -102,17 +98,16 @@ class MainFragment : Fragment() {
                     if (::searchView.isInitialized) with(searchView.query) {
                         if (isNotBlank()) viewAdapter.filter.filter(this)
                     }
-                    if (uiState.actionMode) (requireActivity() as AppCompatActivity)
-                        .startSupportActionMode(viewAdapter.actionModeCallback)
+                    if (uiState.actionMode) (requireActivity() as AppCompatActivity).startSupportActionMode(
+                        viewAdapter.actionModeCallback
+                    )
                 }
             }
         }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root
@@ -126,45 +121,47 @@ class MainFragment : Fragment() {
 
         viewAdapter = AppListAdapter(this)
 
-        swipeHelper = ItemTouchHelper(AppListTouchHelperCallback(this,
-            { viewHolder: RecyclerView.ViewHolder ->
-                val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
-                val settingsManager = SettingsManager(requireContext())
+        swipeHelper = ItemTouchHelper(
+            AppListTouchHelperCallback(this,
+                { viewHolder: RecyclerView.ViewHolder ->
+                    val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
+                    val settingsManager = SettingsManager(requireContext())
 
-                FileHelper(requireActivity()).copy(
-                    app.appSourceDirectory,
-                    settingsManager.saveDir()!!,
-                    settingsManager.appName(app)
-                )?.let {
-                    Snackbar.make(
-                        view,
-                        getString(R.string.snackbar_successful_extracted, app.appName),
-                        Snackbar.LENGTH_LONG
-                    ).setAnchorView(binding.appMultiselectBottomSheet.root).show()
-                } ?: run {
-                    Snackbar.make(
-                        view,
-                        getString(R.string.snackbar_extraction_failed, app.appName),
-                        Snackbar.LENGTH_LONG
-                    ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                        .setTextColor(Color.RED).show()
-                }
-                viewAdapter.notifyDataSetChanged()
-            },
-            { viewHolder: RecyclerView.ViewHolder ->
-                val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
+                    FileHelper(requireActivity()).copy(
+                        app.appSourceDirectory,
+                        settingsManager.saveDir()!!,
+                        settingsManager.appName(app)
+                    )?.let {
+                        Snackbar.make(
+                            view,
+                            getString(R.string.snackbar_successful_extracted, app.appName),
+                            Snackbar.LENGTH_LONG
+                        ).setAnchorView(binding.appMultiselectBottomSheet.root).show()
+                    } ?: run {
+                        Snackbar.make(
+                            view,
+                            getString(R.string.snackbar_extraction_failed, app.appName),
+                            Snackbar.LENGTH_LONG
+                        ).setAnchorView(binding.appMultiselectBottomSheet.root)
+                            .setTextColor(Color.RED)
+                            .show()
+                    }
+                    viewAdapter.notifyDataSetChanged()
+                },
+                { viewHolder: RecyclerView.ViewHolder ->
+                    val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
 
-                val file = FileHelper(requireContext()).shareURI(app)
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    type = FileHelper.MIME_TYPE
-                    putExtra(Intent.EXTRA_STREAM, file)
-                }.let {
-                    Intent.createChooser(it, getString(R.string.share_intent_title))
-                }
-                shareApp.launch(shareIntent)
-                viewAdapter.notifyDataSetChanged()
-            }
-        ))
+                    val file = FileHelper(requireContext()).shareURI(app)
+                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = FileHelper.MIME_TYPE
+                        putExtra(Intent.EXTRA_STREAM, file)
+                    }.let {
+                        Intent.createChooser(it, getString(R.string.share_intent_title))
+                    }
+                    shareApp.launch(shareIntent)
+                    viewAdapter.notifyDataSetChanged()
+                })
+        )
         swipeHelper.attachToRecyclerView(binding.listView.list)
 
         binding.listView.list.apply {
@@ -179,28 +176,20 @@ class MainFragment : Fragment() {
 
         model.getExtractionResult().observe(viewLifecycleOwner) { result ->
             result?.getContentIfNotHandled()?.let { (failed, app, size) ->
-                if (failed == true)
-                    Snackbar.make(
-                        view,
-                        getString(
-                            R.string.snackbar_extraction_failed,
-                            app?.appPackageName
-                        ),
-                        Snackbar.LENGTH_LONG
-                    ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                        .setTextColor(Color.RED)
-                        .show()
+                if (failed == true) Snackbar.make(
+                    view, getString(
+                        R.string.snackbar_extraction_failed, app?.appPackageName
+                    ), Snackbar.LENGTH_LONG
+                ).setAnchorView(binding.appMultiselectBottomSheet.root).setTextColor(Color.RED)
+                    .show()
                 else Snackbar.make(
-                    view,
-                    resources.getQuantityString(
+                    view, resources.getQuantityString(
                         R.plurals.snackbar_successful_extracted_multiple,
                         size,
                         app?.appName,
                         size - 1
-                    ),
-                    Snackbar.LENGTH_LONG
-                ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                    .show()
+                    ), Snackbar.LENGTH_LONG
+                ).setAnchorView(binding.appMultiselectBottomSheet.root).show()
 
                 model.resetProgress()
             }
@@ -263,9 +252,7 @@ class MainFragment : Fragment() {
             it.isChecked
         }.also { list ->
             if (list.isEmpty()) Toast.makeText(
-                requireContext(),
-                R.string.toast_save_apps,
-                Toast.LENGTH_SHORT
+                requireContext(), R.string.toast_save_apps, Toast.LENGTH_SHORT
             ).show()
             else {
                 val progressDialog =
@@ -285,9 +272,7 @@ class MainFragment : Fragment() {
             it.isChecked
         }.also {
             if (it.isEmpty()) Toast.makeText(
-                requireContext(),
-                R.string.toast_share_app,
-                Toast.LENGTH_SHORT
+                requireContext(), R.string.toast_share_app, Toast.LENGTH_SHORT
             ).show()
             else {
                 val progressDialog =
@@ -354,12 +339,15 @@ class MainFragment : Fragment() {
                         callback.isEnabled = false
                         return@setOnCloseListener false
                     }
-                }
-
-                model.searchQuery.observe(viewLifecycleOwner) {
-                    viewAdapter.filter.filter(it)
-                    searchView.setQuery(it, false)
-                    searchView.isIconified = it.isBlank()
+                }.also { searchView ->
+                    model.searchQuery.observe(viewLifecycleOwner) {
+                        it?.also {
+                            viewAdapter.filter.filter(it)
+                            searchView.setQuery(it, false)
+                            if (!viewAdapter.actionModeCallback.isActionModeActive() && it.isNotBlank())
+                                searchView.isIconified = false
+                        }
+                    }
                 }
             }
 
@@ -373,24 +361,20 @@ class MainFragment : Fragment() {
                 // automatically handle clicks on the Home/Up button, so long
                 // as you specify a parent activity in AndroidManifest.xml.
                 when (menuItem.itemId) {
-                    R.id.action_settings ->
-                        findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
+                    R.id.action_settings -> findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
                     R.id.action_app_name -> sortData(menuItem, SettingsManager.SORT_BY_NAME)
                     R.id.action_package_name -> sortData(menuItem, SettingsManager.SORT_BY_PACKAGE)
                     R.id.action_install_time -> sortData(
-                        menuItem,
-                        SettingsManager.SORT_BY_INSTALL_TIME
+                        menuItem, SettingsManager.SORT_BY_INSTALL_TIME
                     )
                     R.id.action_update_time -> sortData(
-                        menuItem,
-                        SettingsManager.SORT_BY_UPDATE_TIME
+                        menuItem, SettingsManager.SORT_BY_UPDATE_TIME
                     )
                     R.id.action_apk_size -> sortData(menuItem, SettingsManager.SORT_BY_APK_SIZE)
                     R.id.action_show_save_dir -> {
                         val destDir = SettingsManager(requireContext()).saveDir().let {
                             DocumentsContract.buildDocumentUriUsingTree(
-                                it,
-                                DocumentsContract.getTreeDocumentId(it)
+                                it, DocumentsContract.getTreeDocumentId(it)
                             )
                         }
                         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -403,6 +387,13 @@ class MainFragment : Fragment() {
                 return true
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    /**
+     * Show Search View Input after ActionMode has ended if a search query is present
+     */
+    fun showSearchView() {
+        if (::searchView.isInitialized) searchView.isIconified = searchView.query.isBlank()
     }
 
     /**
@@ -431,7 +422,13 @@ class MainFragment : Fragment() {
      * State to apply
      */
     fun stateBottomSheetBehaviour(state: Int) {
-        BottomSheetBehavior.from(binding.appMultiselectBottomSheet.root).state = state
+        lifecycleScope.launch {
+            if (::searchView.isInitialized  && searchView.hasFocus()) {
+                searchView.clearFocus()
+                delay(100)
+            }
+            BottomSheetBehavior.from(binding.appMultiselectBottomSheet.root).state = state
+        }
     }
 
     /**
@@ -478,8 +475,7 @@ class MainFragment : Fragment() {
             */
             // Delete Selected Apk File
             1 -> DocumentsContract.deleteDocument(
-                requireContext().contentResolver,
-                data
+                requireContext().contentResolver, data
             ).let { deleted ->
                 Toast.makeText(
                     context,
