@@ -136,9 +136,9 @@ class MainViewModel(
      * uninstalled app
      */
     fun removeApp(app: ApplicationModel) {
-        _mainFragmantState.update { state ->
-            state.copy(appList = state.appList.toMutableList().apply {
-                remove(app)
+        _applications.value = _applications.value?.let { apps ->
+            Triple(apps.first, apps.second, apps.third.toMutableList().apply {
+                removeIf { it.appPackageName == app.appPackageName }
             })
         }
     }

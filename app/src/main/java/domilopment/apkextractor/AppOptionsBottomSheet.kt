@@ -240,7 +240,6 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                 (app.appFlags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM) || (app.appUpdateTime > app.appInstallTime)
         }
 
-
         // Save App Image
         binding.actionSaveImage.setOnClickListener { v ->
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(
@@ -283,6 +282,29 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                         Snackbar.LENGTH_LONG
                     ).setAnchorView(this.view).show()
             }
+        }
+
+        // Open installer store
+        binding.actionOpenShop.apply {
+            when (app.installationSource) {
+                "com.android.vending" -> R.string.google_play_store
+                "com.sec.android.app.samsungapps" -> R.string.galaxy_store
+                else -> null
+            }?.let {
+                text = getString(it)
+            }
+            setOnClickListener {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=${app.appPackageName}")
+                    )
+                )
+            }
+            isVisible = app.installationSource in listOf(
+                "com.android.vending",
+                "com.sec.android.app.samsungapps"
+            )
         }
     }
 

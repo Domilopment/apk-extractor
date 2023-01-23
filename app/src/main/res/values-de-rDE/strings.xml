@@ -167,4 +167,8 @@
     <!-- Action Mode -->
     <string name="action_mode_title">%d Ausgewählt</string>
 
+    <!-- Store Names -->
+    <string name="google_play_store">Google Play Store</string>
+    <string name="galaxy_store">Galaxy Store</string>
+
 </resources>
