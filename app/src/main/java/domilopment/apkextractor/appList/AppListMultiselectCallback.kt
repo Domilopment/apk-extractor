@@ -1,6 +1,5 @@
 package domilopment.apkextractor.appList
 
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
