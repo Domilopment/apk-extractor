@@ -3,7 +3,6 @@ package domilopment.apkextractor.appList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.core.view.isVisible
@@ -32,7 +31,6 @@ class AppListAdapter(
     }
 
     val actionModeCallback = AppListMultiselectCallback(mainFragment, this)
-    private val actionMode get() = actionModeCallback.mode
 
     /**
      * Creates ViewHolder with Layout
@@ -71,38 +69,29 @@ class AppListAdapter(
             checkBox.isVisible = app.isChecked
             // ItemView on Click
             root.setOnClickListener {
-                when (actionMode) {
-                    null -> {
-                        mainFragment.selectApplication(app)
-                        mainFragment.requireActivity().supportFragmentManager.let {
-                            AppOptionsBottomSheet.newInstance(app.appPackageName).apply {
-                                show(it, AppOptionsBottomSheet.TAG)
-                            }
+                if (!actionModeCallback.isActionModeActive()) {
+                    mainFragment.selectApplication(app)
+                    mainFragment.requireActivity().supportFragmentManager.let {
+                        AppOptionsBottomSheet.newInstance(app.appPackageName).apply {
+                            show(it, AppOptionsBottomSheet.TAG)
                         }
                     }
-                    else -> {
-                        app.isChecked = !app.isChecked
+                } else {
+                    app.isChecked = !app.isChecked
 
-                        if (!app.isChecked) (actionMode?.menu?.findItem(R.id.action_select_all)?.actionView as CheckBox)
-                            .isChecked = false
+                    actionModeCallback.setModeTitle()
 
-                        actionModeCallback.setModeTitle()
-
-                        checkBox.isVisible = app.isChecked
-                    }
+                    checkBox.isVisible = app.isChecked
                 }
             }
             // ItemView on Long Click
             root.setOnLongClickListener {
-                when (actionMode) {
-                    null -> {
-                        checkBox.isVisible = true
-                        app.isChecked = true
-                        mainFragment.startSupportActionMode(true)
-                        true
-                    }
-                    else -> false
-                }
+                if (!actionModeCallback.isActionModeActive()) {
+                    checkBox.isVisible = true
+                    app.isChecked = true
+                    mainFragment.startSupportActionMode(true)
+                    true
+                } else false
             }
         }
     }
@@ -127,7 +116,7 @@ class AppListAdapter(
              */
             override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString().lowercase()
-                val myDatasetFiltered = if (charString.isEmpty()) {
+                val myDatasetFiltered = if (charString.isBlank()) {
                     myDataset
                 } else {
                     myDataset.filter {
@@ -149,9 +138,7 @@ class AppListAdapter(
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
                 @Suppress("UNCHECKED_CAST")
-                myDatasetFiltered =
-                    if ((filterResults.values as List<Any>).isNotEmpty()) filterResults.values as MutableList<ApplicationModel>
-                    else mutableListOf()
+                myDatasetFiltered = (filterResults.values as List<ApplicationModel>).toMutableList()
                 notifyDataSetChanged()
             }
         }

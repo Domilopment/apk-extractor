@@ -40,8 +40,8 @@ class MainViewModel(
     val appOptionsBottomSheetUIState: StateFlow<AppOptionsBottomSheetUIState> =
         _appOptionsBottomSheetState.asStateFlow()
 
-    private val _searchQuery: MutableLiveData<String> = MutableLiveData(String())
-    val searchQuery: LiveData<String> = _searchQuery
+    private val _searchQuery: MutableLiveData<String?> = MutableLiveData(null)
+    val searchQuery: LiveData<String?> = _searchQuery
 
     private val extractionResult: MutableLiveData<Event<Triple<Boolean?, ApplicationModel?, Int>>> =
         MutableLiveData(null)
@@ -81,7 +81,7 @@ class MainViewModel(
      * @param query last input Search String
      */
     fun searchQuery(query: String?) {
-        _searchQuery.value = query ?: ""
+        _searchQuery.value = query
     }
 
     /**
@@ -178,6 +178,9 @@ class MainViewModel(
         val settingsManager = SettingsManager(context)
 
         _applications.value?.let {
+            _mainFragmantState.update { state ->
+                state.copy(isRefreshing = true)
+            }
             viewModelScope.launch {
                 val selectedAppTypes = async(Dispatchers.IO) {
                     return@async when (key) {
@@ -192,7 +195,7 @@ class MainViewModel(
                 }
                 selectedAppTypes.await()?.let {
                     _mainFragmantState.update { state ->
-                        state.copy(appList = it)
+                        state.copy(appList = it, isRefreshing = false)
                     }
                 }
             }
