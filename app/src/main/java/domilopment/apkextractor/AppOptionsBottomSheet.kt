@@ -1,6 +1,7 @@
 package domilopment.apkextractor
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -61,14 +62,12 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private val saveImage =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true)
-                binding.actionSaveImage.callOnClick()
-            else
-                Snackbar.make(
-                    binding.actionSaveImage,
-                    getString(R.string.snackbar_need_permission_save_image),
-                    Snackbar.LENGTH_LONG
-                ).setTextColor(Color.RED).setAnchorView(this.view).show()
+            if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true) binding.actionSaveImage.callOnClick()
+            else Snackbar.make(
+                binding.actionSaveImage,
+                getString(R.string.snackbar_need_permission_save_image),
+                Snackbar.LENGTH_LONG
+            ).setTextColor(Color.RED).setAnchorView(this.view).show()
         }
 
     private val model by activityViewModels<MainViewModel> {
@@ -105,9 +104,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = AppOptionsBottomSheetBinding.inflate(inflater, container, false)
         return binding.root
@@ -157,8 +154,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
         // Selected App installation time
         binding.selectedAppInstallTime.text = getString(
-            R.string.info_bottom_sheet_install_time,
-            getAsFormatedDate(app.appInstallTime)
+            R.string.info_bottom_sheet_install_time, getAsFormatedDate(app.appInstallTime)
         )
 
         // Selected App last update time
@@ -175,9 +171,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             val settingsManager = SettingsManager(requireContext())
 
             FileHelper(requireActivity()).copy(
-                app.appSourceDirectory,
-                settingsManager.saveDir()!!,
-                settingsManager.appName(app)
+                app.appSourceDirectory, settingsManager.saveDir()!!, settingsManager.appName(app)
             )?.let {
                 Snackbar.make(
                     v,
@@ -229,8 +223,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         binding.actionUninstall.apply {
             setOnClickListener {
                 Intent(
-                    Intent.ACTION_DELETE,
-                    Uri.fromParts("package", app.appPackageName, null)
+                    Intent.ACTION_DELETE, Uri.fromParts("package", app.appPackageName, null)
                 ).also {
                     uninstallApp.launch(it)
                 }
@@ -243,8 +236,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         // Save App Image
         binding.actionSaveImage.setOnClickListener { v ->
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 saveImage.launch(
@@ -256,54 +248,60 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, app.appName)
                 put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                    put(
-                        MediaStore.MediaColumns.RELATIVE_PATH,
-                        Environment.DIRECTORY_PICTURES + File.separator + getString(R.string.app_name)
-                    )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) put(
+                    MediaStore.MediaColumns.RELATIVE_PATH,
+                    Environment.DIRECTORY_PICTURES + File.separator + getString(R.string.app_name)
+                )
             }
             // Find all image files on the primary external storage device.
-            val imageCollection =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.Images.Media.getContentUri(
-                        MediaStore.VOLUME_EXTERNAL_PRIMARY
-                    )
-                } else {
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                }
+            val imageCollection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                MediaStore.Images.Media.getContentUri(
+                    MediaStore.VOLUME_EXTERNAL_PRIMARY
+                )
+            } else {
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            }
 
             resolver.insert(imageCollection, contentValues)?.let {
                 resolver.openOutputStream(it)
             }.use {
-                if (app.appIcon.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, it))
-                    Snackbar.make(
-                        v,
-                        getString(R.string.snackbar_successful_save_image),
-                        Snackbar.LENGTH_LONG
-                    ).setAnchorView(this.view).show()
+                if (app.appIcon.toBitmap()
+                        .compress(Bitmap.CompressFormat.PNG, 100, it)
+                ) Snackbar.make(
+                    v, getString(R.string.snackbar_successful_save_image), Snackbar.LENGTH_LONG
+                ).setAnchorView(this.view).show()
             }
         }
 
         // Open installer store
         binding.actionOpenShop.apply {
-            when (app.installationSource) {
-                "com.android.vending" -> R.string.google_play_store
-                "com.sec.android.app.samsungapps" -> R.string.galaxy_store
-                else -> null
-            }?.let {
-                text = getString(it)
+            val packageManager = requireContext().packageManager
+            app.installationSource?.runCatching {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) packageManager.getPackageInfo(
+                    this, PackageManager.PackageInfoFlags.of(0L)
+                )
+                else requireContext().packageManager.getPackageInfo(this, 0)
+            }?.onSuccess {
+                text = packageManager.getApplicationLabel(it.applicationInfo)
             }
             setOnClickListener {
-                startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("market://details?id=${app.appPackageName}")
+                try {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id=${app.appPackageName}")
+                        )
                     )
-                )
+                } catch (e: ActivityNotFoundException) {
+                    Snackbar.make(
+                        it,
+                        getString(R.string.snackbar_no_activity_for_market_intent),
+                        Snackbar.LENGTH_LONG
+                    ).setAnchorView(this@AppOptionsBottomSheet.view).show()
+                }
             }
             isVisible = app.installationSource in listOf(
-                "com.android.vending",
-                "com.sec.android.app.samsungapps"
+                "com.android.vending", "com.sec.android.app.samsungapps", "com.amazon.venezia"
             )
         }
     }
@@ -320,13 +318,10 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
      */
     private fun isPackageInstalled(packageName: String): Boolean {
         return try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                requireContext().packageManager.getPackageInfo(
-                    packageName,
-                    PackageManager.PackageInfoFlags.of(0L)
-                )
-            else
-                requireContext().packageManager.getPackageInfo(packageName, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) requireContext().packageManager.getPackageInfo(
+                packageName, PackageManager.PackageInfoFlags.of(0L)
+            )
+            else requireContext().packageManager.getPackageInfo(packageName, 0)
             true
         } catch (e: PackageManager.NameNotFoundException) {
             false

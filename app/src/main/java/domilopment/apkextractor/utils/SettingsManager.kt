@@ -9,7 +9,6 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ApplicationModel
-import domilopment.apkextractor.data.ListOfAPKs
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.jvm.Throws

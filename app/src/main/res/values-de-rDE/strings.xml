@@ -146,6 +146,7 @@
     <string name="action_bottom_sheet_uninstall">Deinstallieren</string>
     <string name="snackbar_successful_save_image">Icon gespeichert</string>
     <string name="snackbar_need_permission_save_image">Benötige Speicher Berechtigung um Icons zu speichern</string>
+    <string name="snackbar_no_activity_for_market_intent">Store seite konnte nicht geöffnet werden</string>
 
     <!-- App Multiselect Options Bottom Sheet -->
     <string name="action_multiselect_bottom_sheet_save_description">Speichere APKs</string>
@@ -166,9 +167,5 @@
 
     <!-- Action Mode -->
     <string name="action_mode_title">%d Ausgewählt</string>
-
-    <!-- Store Names -->
-    <string name="google_play_store">Google Play Store</string>
-    <string name="galaxy_store">Galaxy Store</string>
 
 </resources>

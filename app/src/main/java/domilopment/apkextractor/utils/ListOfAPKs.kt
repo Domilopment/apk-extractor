@@ -1,8 +1,9 @@
-package domilopment.apkextractor.data
+package domilopment.apkextractor.utils
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
+import domilopment.apkextractor.data.ApplicationModel
 
 class ListOfAPKs(private val packageManager: PackageManager) {
     //Lists of APK Types

@@ -149,6 +149,7 @@
     <string name="action_bottom_sheet_uninstall">Uninstall</string>
     <string name="snackbar_successful_save_image">Icon Saved</string>
     <string name="snackbar_need_permission_save_image">Need Storage Permission to Save Images</string>
+    <string name="snackbar_no_activity_for_market_intent">Could not open Store page</string>
 
     <!-- App Multiselect Options Bottom Sheet -->
     <string name="action_multiselect_bottom_sheet_save_description">Save APKs</string>
@@ -172,9 +173,5 @@
 
     <!-- Action Mode -->
     <string name="action_mode_title">%d Selected</string>
-
-    <!-- Store Names -->
-    <string name="google_play_store">Google Play Store</string>
-    <string name="galaxy_store">Galaxy Store</string>
 
 </resources>
