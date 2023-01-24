@@ -149,25 +149,28 @@ class SettingsFragment : PreferenceFragmentCompat() {
         googlePlay?.setOnPreferenceClickListener {
             try {
                 Intent(Intent.ACTION_VIEW).apply {
-                    data = try {
+                    try {
                         val packageInfo =
                             Utils.getPackageInfo(
                                 requireContext().packageManager,
                                 "com.android.vending"
                             )
                         setPackage(packageInfo.packageName)
-                        Uri.parse("market://details?id=${requireContext().packageName}")
-                    } catch (e: PackageManager.NameNotFoundException) { // If Play Store is not installed
-                        Uri.parse("https://play.google.com/store/apps/details?id=${requireContext().packageName}")
+                    } catch (e: PackageManager.NameNotFoundException) {
+                        // If Play Store is not installed
                     }
+                    data =
+                        Uri.parse("https://play.google.com/store/apps/details?id=${requireContext().packageName}")
                 }.also {
                     startActivity(it)
                 }
             } catch (e: ActivityNotFoundException) { // If Play Store is Installed, but deactivated
-                startActivity(Intent(Intent.ACTION_VIEW).apply {
-                    data =
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
                         Uri.parse("https://play.google.com/store/apps/details?id=${requireContext().packageName}")
-                })
+                    )
+                )
             }
             return@setOnPreferenceClickListener true
         }

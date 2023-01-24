@@ -279,28 +279,40 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             val packageManager = requireContext().packageManager
             app.installationSource?.runCatching {
                 Utils.getPackageInfo(packageManager, this)
-            }?.onSuccess {
-                text = packageManager.getApplicationLabel(it.applicationInfo)
-            }
-            setOnClickListener {
-                try {
-                    startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("market://details?id=${app.appPackageName}")
+            }?.onSuccess { installationSource ->
+                text =
+                    packageManager.getApplicationLabel(installationSource.applicationInfo)
+                setOnClickListener {
+                    try {
+                        startActivity(
+                            Intent(Intent.ACTION_VIEW).apply {
+                                data = Uri.parse(
+                                    when (installationSource.packageName) {
+                                        "com.android.vending" -> {
+                                            setPackage(installationSource.packageName)
+                                            "https://play.google.com/store/apps/details?id=${app.appPackageName}"
+                                        }
+                                        "com.sec.android.app.samsungapps" -> "samsungapps://ProductDetail/${app.appPackageName}"
+                                        "com.amazon.venezia" -> "amzn://apps/android?p=${app.appPackageName}"
+                                        else -> "market://details?id=${app.appPackageName}"
+                                    }
+                                )
+                            }
                         )
-                    )
-                } catch (e: ActivityNotFoundException) {
-                    Snackbar.make(
-                        it,
-                        getString(R.string.snackbar_no_activity_for_market_intent),
-                        Snackbar.LENGTH_LONG
-                    ).setAnchorView(this@AppOptionsBottomSheet.view).show()
+                    } catch (e: ActivityNotFoundException) {
+                        Snackbar.make(
+                            it,
+                            getString(R.string.snackbar_no_activity_for_market_intent),
+                            Snackbar.LENGTH_LONG
+                        ).setAnchorView(this@AppOptionsBottomSheet.view).show()
+                    }
                 }
+                isVisible = installationSource.packageName in listOf(
+                    "com.android.vending",
+                    "com.sec.android.app.samsungapps",
+                    "com.amazon.venezia"
+                )
             }
-            isVisible = app.installationSource in listOf(
-                "com.android.vending", "com.sec.android.app.samsungapps", "com.amazon.venezia"
-            )
         }
     }
 
