@@ -17,11 +17,11 @@
     <string name="choose_save_dir">Wähle Speicherpfad</string>
     <string name="choose_save_dir_summary">Wähle oder ändere den Ort um APKs zu Speichern</string>
 
-    <string name="auto_backup">Auto Backup</string>
-    <string name="auto_backup_summary">Auto Backup Apps nach Update</string>
+    <string name="auto_backup">Auto Backup Service</string>
+    <string name="auto_backup_summary">Automatisches Backup von Apps nach Update</string>
 
     <string name="auto_backup_app_list">Wähle Apps für das Auto Backup</string>
-    <string name="auto_backup_app_list_summary">Wähle Apps aus die Automatisch von denen ein Backup nach dem aktualisieren erzeugt werden soll</string>
+    <string name="auto_backup_app_list_summary">Wähle Apps aus von denen ein automatisches Backup nach dem aktualisieren erzeugt werden soll</string>
 
     <!-- Preferences Apps -->
     <string name="app_type_system">System Apps</string>
