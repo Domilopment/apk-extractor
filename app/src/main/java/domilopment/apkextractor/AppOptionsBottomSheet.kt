@@ -155,12 +155,12 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
         // Selected App installation time
         binding.selectedAppInstallTime.text = getString(
-            R.string.info_bottom_sheet_install_time, getAsFormatedDate(app.appInstallTime)
+            R.string.info_bottom_sheet_install_time, getAsFormattedDate(app.appInstallTime)
         )
 
         // Selected App last update time
         binding.selectedAppUpdateTime.text =
-            getString(R.string.info_bottom_sheet_update_time, getAsFormatedDate(app.appUpdateTime))
+            getString(R.string.info_bottom_sheet_update_time, getAsFormattedDate(app.appUpdateTime))
     }
 
     /**
@@ -290,12 +290,12 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                                     when (installationSource.packageName) {
                                         "com.android.vending" -> {
                                             setPackage(installationSource.packageName)
-                                            "https://play.google.com/store/apps/details?id=${app.appPackageName}"
+                                            "https://play.google.com/store/apps/details?id="
                                         }
-                                        "com.sec.android.app.samsungapps" -> "samsungapps://ProductDetail/${app.appPackageName}"
-                                        "com.amazon.venezia" -> "amzn://apps/android?p=${app.appPackageName}"
-                                        else -> "market://details?id=${app.appPackageName}"
-                                    }
+                                        "com.sec.android.app.samsungapps" -> "samsungapps://ProductDetail/"
+                                        "com.amazon.venezia" -> "amzn://apps/android?p="
+                                        else -> "market://details?id="
+                                    } + app.appPackageName
                                 )
                             }
                         )
@@ -340,7 +340,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
      * @param mills milliseconds since January 1, 1970, 00:00:00 GMT
      * @return formatted date-time string
      */
-    private fun getAsFormatedDate(mills: Long): String {
+    private fun getAsFormattedDate(mills: Long): String {
         return SimpleDateFormat.getDateTimeInstance().format(Date(mills))
     }
 }

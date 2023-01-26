@@ -306,9 +306,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         // Change selected app in MainFragmentUiState after selection
-        val appsChangeListener = Preference.OnPreferenceChangeListener { prefrence, newValue ->
+        val appsChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
             return@OnPreferenceChangeListener try {
-                model.changeSelection(prefrence.key, newValue as Boolean)
+                model.changeSelection(preference.key, newValue as Boolean)
                 true
             } catch (e: Exception) {
                 false
