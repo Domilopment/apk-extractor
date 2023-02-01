@@ -56,10 +56,8 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                model.removeApp(app)
-                if (!isPackageInstalled(app.appPackageName)) dismiss()
-            }
+            model.removeApp(app)
+            if (!isPackageInstalled(app.appPackageName)) dismiss()
         }
 
     private val saveImage =
