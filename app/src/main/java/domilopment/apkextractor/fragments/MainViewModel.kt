@@ -1,6 +1,7 @@
 package domilopment.apkextractor.fragments
 
 import android.app.Application
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.lifecycle.*
 import domilopment.apkextractor.Event
@@ -9,6 +10,7 @@ import domilopment.apkextractor.data.*
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.ListOfAPKs
 import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,8 +59,7 @@ class MainViewModel(
         _applications.observeForever { apps ->
             _mainFragmantState.update { state ->
                 state.copy(
-                    appList = SettingsManager(context).selectedAppTypes(apps),
-                    isRefreshing = false
+                    appList = SettingsManager(context).selectedAppTypes(apps), isRefreshing = false
                 )
             }
         }
@@ -138,9 +139,27 @@ class MainViewModel(
      */
     fun removeApp(app: ApplicationModel) {
         _applications.value = _applications.value?.let { apps ->
-            Triple(apps.first, apps.second, apps.third.toMutableList().apply {
+            val updatedSystemApps = apps.first.toMutableList()
+            val systemApps =
+                if (updatedSystemApps.removeIf { it.appPackageName == app.appPackageName }) {
+                    val appModel = ApplicationModel(
+                        context.packageManager.getApplicationInfo(
+                            app.appPackageName, PackageManager.ApplicationInfoFlags.of(
+                                PackageManager.GET_META_DATA.toLong()
+                            )
+                        ), context.packageManager
+                    )
+                    _appOptionsBottomSheetState.update { state ->
+                        state.copy(selectedApplicationModel = appModel)
+                    }
+                    apps.second.toMutableList().apply {
+                        add(appModel)
+                    }
+                } else apps.second
+            val userApps = apps.third.toMutableList().apply {
                 removeIf { it.appPackageName == app.appPackageName }
-            })
+            }
+            return@let Triple(updatedSystemApps, systemApps, userApps)
         }
     }
 
@@ -158,8 +177,7 @@ class MainViewModel(
                         SettingsManager(
                             context
                         ).sortData(state.appList)
-                    },
-                    isRefreshing = false
+                    }, isRefreshing = false
                 )
             }
         }
@@ -173,8 +191,10 @@ class MainViewModel(
      */
     @Throws(Exception::class)
     fun changeSelection(key: String, b: Boolean) {
-        if (key !in listOf("updated_system_apps", "system_apps", "user_apps"))
-            throw Exception("No available key provided!")
+        if (key !in listOf(
+                "updated_system_apps", "system_apps", "user_apps"
+            )
+        ) throw Exception("No available key provided!")
 
         val settingsManager = SettingsManager(context)
 
@@ -185,12 +205,11 @@ class MainViewModel(
             viewModelScope.launch {
                 val selectedAppTypes = async(Dispatchers.IO) {
                     return@async when (key) {
-                        "updated_system_apps" -> settingsManager
-                            .selectedAppTypes(it, selectUpdatedSystemApps = b)
-                        "system_apps" -> settingsManager
-                            .selectedAppTypes(it, selectSystemApps = b)
-                        "user_apps" -> settingsManager
-                            .selectedAppTypes(it, selectUserApps = b)
+                        "updated_system_apps" -> settingsManager.selectedAppTypes(
+                            it, selectUpdatedSystemApps = b
+                        )
+                        "system_apps" -> settingsManager.selectedAppTypes(it, selectSystemApps = b)
+                        "user_apps" -> settingsManager.selectedAppTypes(it, selectUserApps = b)
                         else -> null
                     }
                 }
@@ -228,8 +247,7 @@ class MainViewModel(
                     withContext(Dispatchers.Main) {
                         _progressDialogState.update { state ->
                             state.copy(
-                                process = app.appPackageName,
-                                progress = state.progress
+                                process = app.appPackageName, progress = state.progress
                             )
                         }
                     }
@@ -243,8 +261,7 @@ class MainViewModel(
                     withContext(Dispatchers.Main) {
                         _progressDialogState.update { state ->
                             state.copy(
-                                process = app.appPackageName,
-                                progress = state.progress + 1
+                                process = app.appPackageName, progress = state.progress + 1
                             )
                         }
                     }

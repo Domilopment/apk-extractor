@@ -1,6 +1,7 @@
 package domilopment.apkextractor
 
 import android.Manifest
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
@@ -55,9 +56,9 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (!isPackageInstalled(app.appPackageName)) {
+            if (it.resultCode == Activity.RESULT_OK) {
                 model.removeApp(app)
-                dismiss()
+                if (!isPackageInstalled(app.appPackageName)) dismiss()
             }
         }
 
@@ -96,8 +97,12 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 model.appOptionsBottomSheetUIState.collect { uiState ->
-                    uiState.selectedApplicationModel?.let {
+                    uiState.selectedApplicationModel?.also {
                         app = it
+                        view?.also {
+                            setupApplicationInfo()
+                            setupApplicationActions()
+                        }
                     } ?: dismiss()
                 }
             }
@@ -120,8 +125,21 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             peekHeight = 0
         }
 
-        setupApplicationInfo()
-        setupApplicationActions()
+        try {
+            setupApplicationInfo()
+            setupApplicationActions()
+        } catch (e: Exception) {
+            // Catch error if app info's not available
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // dismiss dialog and remove app from list, if it was uninstalled while apk extractor was in background
+        if (!isPackageInstalled(app.appPackageName)) {
+            model.removeApp(app)
+            dismiss()
+        }
     }
 
     /**
@@ -280,25 +298,22 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             app.installationSource?.runCatching {
                 Utils.getPackageInfo(packageManager, this)
             }?.onSuccess { installationSource ->
-                text =
-                    packageManager.getApplicationLabel(installationSource.applicationInfo)
+                text = packageManager.getApplicationLabel(installationSource.applicationInfo)
                 setOnClickListener {
                     try {
-                        startActivity(
-                            Intent(Intent.ACTION_VIEW).apply {
-                                data = Uri.parse(
-                                    when (installationSource.packageName) {
-                                        "com.android.vending" -> {
-                                            setPackage(installationSource.packageName)
-                                            "https://play.google.com/store/apps/details?id="
-                                        }
-                                        "com.sec.android.app.samsungapps" -> "samsungapps://ProductDetail/"
-                                        "com.amazon.venezia" -> "amzn://apps/android?p="
-                                        else -> "market://details?id="
-                                    } + app.appPackageName
-                                )
-                            }
-                        )
+                        startActivity(Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(
+                                when (installationSource.packageName) {
+                                    "com.android.vending" -> {
+                                        setPackage(installationSource.packageName)
+                                        "https://play.google.com/store/apps/details?id="
+                                    }
+                                    "com.sec.android.app.samsungapps" -> "samsungapps://ProductDetail/"
+                                    "com.amazon.venezia" -> "amzn://apps/android?p="
+                                    else -> "market://details?id="
+                                } + app.appPackageName
+                            )
+                        })
                     } catch (e: ActivityNotFoundException) {
                         Snackbar.make(
                             it,
@@ -308,9 +323,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                     }
                 }
                 isVisible = installationSource.packageName in listOf(
-                    "com.android.vending",
-                    "com.sec.android.app.samsungapps",
-                    "com.amazon.venezia"
+                    "com.android.vending", "com.sec.android.app.samsungapps", "com.amazon.venezia"
                 )
             }
         }
