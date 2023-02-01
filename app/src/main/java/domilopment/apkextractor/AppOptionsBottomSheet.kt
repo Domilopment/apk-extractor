@@ -1,7 +1,6 @@
 package domilopment.apkextractor
 
 import android.Manifest
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
