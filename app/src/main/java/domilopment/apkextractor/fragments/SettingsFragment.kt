@@ -63,8 +63,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private val chooseSaveDir =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK)
-                it.data?.also { saveDirUri -> takeUriPermission(saveDirUri) }
+            if (it.resultCode == Activity.RESULT_OK) it.data?.also { saveDirUri ->
+                takeUriPermission(
+                    saveDirUri
+                )
+            }
         }
 
     private val allowNotifications = registerForActivityResult(
@@ -79,8 +82,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 getString(R.string.auto_backup_notification_permission_request_rejected),
                 Snackbar.LENGTH_LONG
             ).apply {
-                (view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView)
-                    .maxLines = 5
+                (view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView).maxLines =
+                    5
             }.show()
         }
     }
@@ -104,8 +107,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (dialogFragment != null) {
             dialogFragment.setTargetFragment(this, 0)
             dialogFragment.show(
-                parentFragmentManager,
-                "androidx.preference.PreferenceFragment.DIALOG"
+                parentFragmentManager, "androidx.preference.PreferenceFragment.DIALOG"
             )
         } else {
             super.onDisplayPreferenceDialog(preference)
@@ -136,12 +138,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         // A Link to Projects Github Repo
         github?.setOnPreferenceClickListener {
-            CustomTabsIntent.Builder()
-                .build()
-                .launchUrl(
-                    requireContext(),
-                    Uri.parse("https://github.com/domilopment/apk-extractor")
-                )
+            CustomTabsIntent.Builder().build().launchUrl(
+                requireContext(), Uri.parse("https://github.com/domilopment/apk-extractor")
+            )
             return@setOnPreferenceClickListener true
         }
 
@@ -150,11 +149,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             try {
                 Intent(Intent.ACTION_VIEW).apply {
                     try {
-                        val packageInfo =
-                            Utils.getPackageInfo(
-                                requireContext().packageManager,
-                                "com.android.vending"
-                            )
+                        val packageInfo = Utils.getPackageInfo(
+                            requireContext().packageManager, "com.android.vending"
+                        )
                         setPackage(packageInfo.packageName)
                     } catch (e: PackageManager.NameNotFoundException) {
                         // If Play Store is not installed
@@ -177,12 +174,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         // A Link to my Privacy Policy Page
         privacyPolicy?.setOnPreferenceClickListener {
-            CustomTabsIntent.Builder()
-                .build()
-                .launchUrl(
-                    requireContext(),
-                    Uri.parse("https://sites.google.com/view/domilopment/privacy-policy")
-                )
+            CustomTabsIntent.Builder().build().launchUrl(
+                requireContext(),
+                Uri.parse("https://sites.google.com/view/domilopment/privacy-policy")
+            )
             return@setOnPreferenceClickListener true
         }
 
@@ -200,11 +195,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         // Aktivate or decactivate Material You Color scheme
         useMaterialYou?.apply {
-            setOnPreferenceChangeListener { _, _ ->
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.use_material_you_toast),
-                    Toast.LENGTH_SHORT
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue as Boolean) {
+                    settingsManager.useMaterialYou(requireActivity().application, newValue)
+                    requireActivity().recreate()
+                } else Toast.makeText(
+                    requireContext(), getString(R.string.use_material_you_toast), Toast.LENGTH_SHORT
                 ).show()
                 return@setOnPreferenceChangeListener true
             }
@@ -213,19 +209,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         // Clear App cache
         clearCache?.setOnPreferenceClickListener {
-            if (activity?.cacheDir!!.deleteRecursively())
-                Toast.makeText(
-                    activity,
-                    getString(R.string.clear_cache_success),
-                    Toast.LENGTH_SHORT
-                ).show()
-            else
-                Toast.makeText(
-                    activity,
-                    getString(R.string.clear_cache_failed),
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+            if (activity?.cacheDir!!.deleteRecursively()) Toast.makeText(
+                activity, getString(R.string.clear_cache_success), Toast.LENGTH_SHORT
+            ).show()
+            else Toast.makeText(
+                activity, getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT
+            ).show()
             return@setOnPreferenceClickListener true
         }
 
@@ -290,15 +279,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 Locale.GERMANY.toLanguageTag() to getString(R.string.locale_list_de_de)
             ).withDefault {
                 getString(
-                    R.string.locale_list_not_supported,
-                    Locale.forLanguageTag(it!!).displayName
+                    R.string.locale_list_not_supported, Locale.forLanguageTag(it!!).displayName
                 )
             }
-            summary =
-                getString(
-                    R.string.locale_list_summary,
-                    localeMap.getValue(AppCompatDelegate.getApplicationLocales()[0]?.toLanguageTag())
-                )
+            summary = getString(
+                R.string.locale_list_summary,
+                localeMap.getValue(AppCompatDelegate.getApplicationLocales()[0]?.toLanguageTag())
+            )
             setOnPreferenceChangeListener { _, n ->
                 settingsManager.setLocale(n as String)
                 return@setOnPreferenceChangeListener true
@@ -353,20 +340,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
      * @param newValue boolean of service should be running
      */
     private fun handleAutoBackupService(newValue: Boolean) {
-        if (newValue and !AutoBackupService.isRunning)
-            requireActivity().startService(
-                Intent(
-                    requireContext(),
-                    AutoBackupService::class.java
-                )
+        if (newValue and !AutoBackupService.isRunning) requireActivity().startService(
+            Intent(
+                requireContext(), AutoBackupService::class.java
             )
-        else if (!newValue and AutoBackupService.isRunning)
-            requireActivity().stopService(
-                Intent(
-                    requireContext(),
-                    AutoBackupService::class.java
-                )
+        )
+        else if (!newValue and AutoBackupService.isRunning) requireActivity().stopService(
+            Intent(
+                requireContext(), AutoBackupService::class.java
             )
+        )
     }
 
     /**
@@ -376,8 +359,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun takeUriPermission(data: Intent) {
         (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
             settingsManager.saveDir()?.also { oldPath ->
-                if (oldPath in requireContext().contentResolver.persistedUriPermissions.map { it.uri })
-                    requireContext().contentResolver.releasePersistableUriPermission(oldPath, this)
+                if (oldPath in requireContext().contentResolver.persistedUriPermissions.map { it.uri }) requireContext().contentResolver.releasePersistableUriPermission(
+                    oldPath, this
+                )
             }
             PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
                 .putString("dir", data.data.toString()).apply()

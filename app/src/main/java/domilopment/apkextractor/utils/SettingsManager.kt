@@ -1,14 +1,19 @@
 package domilopment.apkextractor.utils
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.DynamicColorsOptions
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ApplicationModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.jvm.Throws
@@ -38,8 +43,7 @@ class SettingsManager(context: Context) {
     fun selectedAppTypes(
         applications: Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>,
         selectUpdatedSystemApps: Boolean = sharedPreferences.getBoolean(
-            "updated_system_apps",
-            false
+            "updated_system_apps", false
         ),
         selectSystemApps: Boolean = sharedPreferences.getBoolean("system_apps", false),
         selectUserApps: Boolean = sharedPreferences.getBoolean("user_apps", true),
@@ -75,14 +79,12 @@ class SettingsManager(context: Context) {
         sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME)
     ): List<ApplicationModel> {
         return when (sortMode) {
-            SORT_BY_NAME ->
-                data.sortedWith(
-                    compareBy(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
-                )
+            SORT_BY_NAME -> data.sortedWith(
+                compareBy(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
+            )
             SORT_BY_PACKAGE -> data.sortedWith(
                 compareBy(
-                    String.CASE_INSENSITIVE_ORDER,
-                    ApplicationModel::appPackageName
+                    String.CASE_INSENSITIVE_ORDER, ApplicationModel::appPackageName
                 )
             )
             SORT_BY_INSTALL_TIME -> data.sortedWith(
@@ -102,15 +104,16 @@ class SettingsManager(context: Context) {
      */
     fun changeUIMode(
         newValue: String = sharedPreferences.getString(
-            "list_preference_ui_mode",
-            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM.toString()
+            "list_preference_ui_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM.toString()
         )!!
     ) {
         when (newValue.toInt()) {
-            AppCompatDelegate.MODE_NIGHT_YES ->
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            AppCompatDelegate.MODE_NIGHT_NO ->
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_YES
+            )
+            AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_NO
+            )
             else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
     }
@@ -129,8 +132,7 @@ class SettingsManager(context: Context) {
             "datetime" to SimpleDateFormat.getDateTimeInstance().format(Date())
         )
         return StringBuilder().apply {
-            val prefs =
-                sharedPreferences.getStringSet("app_save_name", setOf("0:name"))
+            val prefs = sharedPreferences.getStringSet("app_save_name", setOf("0:name"))
             val processedPrefs = try {
                 prefs?.toSortedSet(compareBy<String> { it[0].digitToInt() })
                     ?.map { it.removeRange(0, 2) }
@@ -169,9 +171,11 @@ class SettingsManager(context: Context) {
      * Enable Material You if it's turned on and the User wishes to (Only after app Restart)
      * @param application Application reference to enable Dynamic Colors
      */
-    fun useMaterialYou(application: Application) {
+    fun useMaterialYou(
+        application: Application,
+        enabled: Boolean = sharedPreferences.getBoolean("use_material_you", false)
+    ) {
         val available = DynamicColors.isDynamicColorAvailable()
-        val enabled = sharedPreferences.getBoolean("use_material_you", false)
         if (available && enabled) DynamicColors.applyToActivitiesIfAvailable(application)
     }
 
