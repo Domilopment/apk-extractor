@@ -1,19 +1,14 @@
 package domilopment.apkextractor.utils
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
-import com.google.android.material.color.DynamicColorsOptions
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ApplicationModel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.jvm.Throws
