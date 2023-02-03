@@ -55,8 +55,11 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            model.removeApp(app)
-            if (!isPackageInstalled(app.appPackageName)) dismiss()
+            val appUninstalled = !isPackageInstalled(app.appPackageName)
+            if (appUninstalled || hasAppInfoChanged()) {
+                model.removeApp(app)
+                if (appUninstalled) dismiss()
+            }
         }
 
     private val saveImage =
@@ -343,6 +346,17 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
+    }
+
+    /**
+     * check for displayed app, if app info (update time, version-name or code, sourceDir) has changed
+     * @return Boolean true if app info had changed
+     */
+    private fun hasAppInfoChanged(): Boolean {
+        val packageInfo = Utils.getPackageInfo(requireContext().packageManager, app.appPackageName)
+        return packageInfo.lastUpdateTime != app.appUpdateTime || packageInfo.versionName != app.appVersionName || Utils.versionCode(
+            packageInfo
+        ) != app.appVersionCode || packageInfo.applicationInfo.sourceDir != app.appSourceDirectory
     }
 
     /**

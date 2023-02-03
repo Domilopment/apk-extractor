@@ -10,8 +10,7 @@ import domilopment.apkextractor.utils.Utils
 import java.io.File
 
 data class ApplicationModel(
-    private val applicationInfo: ApplicationInfo,
-    private val packageManager: PackageManager
+    private val applicationInfo: ApplicationInfo, private val packageManager: PackageManager
 ) {
     private val packageInfo: PackageInfo
         get() = Utils.getPackageInfo(packageManager, applicationInfo.packageName)
@@ -20,9 +19,7 @@ data class ApplicationModel(
     val appSourceDirectory: String = applicationInfo.sourceDir
     val appIcon: Drawable get() = packageManager.getApplicationIcon(applicationInfo)
     val appVersionName: String get() = packageInfo.versionName
-    val appVersionCode: Long
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) packageInfo.longVersionCode
-        else packageInfo.versionCode.toLong()
+    val appVersionCode: Long get() = Utils.versionCode(packageInfo)
     val appFlags: Int = applicationInfo.flags
     val appInstallTime: Long get() = packageInfo.firstInstallTime
     val appUpdateTime: Long get() = packageInfo.lastUpdateTime

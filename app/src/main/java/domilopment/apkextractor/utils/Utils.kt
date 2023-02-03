@@ -12,4 +12,9 @@ object Utils {
         )
         else packageManager.getPackageInfo(packageName, 0)
     }
+
+    fun versionCode(packageInfo: PackageInfo): Long {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) packageInfo.longVersionCode
+        else packageInfo.versionCode.toLong()
+    }
 }
