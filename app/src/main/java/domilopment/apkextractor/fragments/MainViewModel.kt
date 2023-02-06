@@ -1,14 +1,12 @@
 package domilopment.apkextractor.fragments
 
 import android.app.Application
-import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.lifecycle.*
 import domilopment.apkextractor.Event
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.*
 import domilopment.apkextractor.utils.FileHelper
-import domilopment.apkextractor.utils.ListOfAPKs
 import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.*
@@ -52,8 +50,6 @@ class MainViewModel(
 
     private val context get() = getApplication<Application>().applicationContext
 
-    private val ioDispatcher get() = Dispatchers.IO
-
     init {
         // Set applications in view once they are loaded
         _applications.observeForever { apps ->
@@ -68,7 +64,7 @@ class MainViewModel(
     /**
      * Select a specific Application from list in view
      * and set it in BottomSheet state
-     * @param packageName package name of application, want to select
+     * @param app selected application
      */
     fun selectApplication(app: ApplicationModel) {
         _appOptionsBottomSheetState.update { state ->
@@ -123,8 +119,7 @@ class MainViewModel(
             it.copy(isRefreshing = true)
         }
         viewModelScope.launch {
-            val load = async(ioDispatcher) {
-                ListOfAPKs(context.packageManager).updateData()
+            val load = async(Dispatchers.IO) {
                 return@async loadApps()
             }
             val apps = load.await()
@@ -142,13 +137,10 @@ class MainViewModel(
             val updatedSystemApps = apps.first.toMutableList()
             val systemApps =
                 if (updatedSystemApps.removeIf { it.appPackageName == app.appPackageName }) {
-                    val appModel = ApplicationModel(
-                        context.packageManager.getApplicationInfo(
-                            app.appPackageName, PackageManager.ApplicationInfoFlags.of(
-                                PackageManager.GET_META_DATA.toLong()
-                            )
-                        ), context.packageManager
-                    )
+                    val applicationInfo = Utils.getPackageInfo(
+                        context.packageManager, app.appPackageName
+                    ).applicationInfo
+                    val appModel = ApplicationModel(applicationInfo, context.packageManager)
                     _appOptionsBottomSheetState.update { state ->
                         state.copy(selectedApplicationModel = appModel)
                     }
