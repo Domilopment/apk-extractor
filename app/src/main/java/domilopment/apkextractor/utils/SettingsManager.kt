@@ -9,6 +9,7 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.jvm.Throws
@@ -184,5 +185,34 @@ class SettingsManager(context: Context) {
             else LocaleListCompat.forLanguageTags(locale)
         // Call this on the main thread as it may require Activity.restart()
         AppCompatDelegate.setApplicationLocales(appLocale)
+    }
+
+    /**
+     * Get selected swipe actions from settings
+     * @param preferenceValue value string from multiselect preference
+     * @return ApkActionsOptions enum with information for selected option or null
+     */
+    private fun getSwipeActionByPreferenceValue(preferenceValue: String?): ApkActionsOptions? {
+        return ApkActionsOptions.values().firstOrNull { it.preferenceValue == preferenceValue }
+    }
+
+    /**
+     * Get selected right swipe actions from settings
+     * @return ApkActionsOptions enum with information for selected option or null
+     */
+    fun getRightSwipeAction(): ApkActionsOptions? {
+        val preferenceVal =
+            sharedPreferences.getString("list_preference_swipe_actions_right", "save_apk")
+        return getSwipeActionByPreferenceValue(preferenceVal)
+    }
+
+    /**
+     * Get selected left swipe actions from settings
+     * @return ApkActionsOptions enum with information for selected option or null
+     */
+    fun getLeftSwipeAction(): ApkActionsOptions? {
+        val preferenceVal =
+            sharedPreferences.getString("list_preference_swipe_actions_left", "share_apk")
+        return getSwipeActionByPreferenceValue(preferenceVal)
     }
 }

@@ -13,14 +13,15 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
 import domilopment.apkextractor.R
 import domilopment.apkextractor.fragments.MainFragment
+import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
+import domilopment.apkextractor.utils.SettingsManager
 
 class AppListTouchHelperCallback(
     private val mainFragment: MainFragment,
     private val rightSwipeCallback: (viewHolder: RecyclerView.ViewHolder) -> Unit,
     private val leftSwipeCallback: (viewHolder: RecyclerView.ViewHolder) -> Unit
 ) : ItemTouchHelper.SimpleCallback(
-    0,
-    ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+    0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
 ) {
     private val swipeRightLayout: View
     private val swipeLeftLayout: View
@@ -56,36 +57,33 @@ class AppListTouchHelperCallback(
     ) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && isCurrentlyActive) {
             val itemView = viewHolder.itemView
+            val settingsManager = SettingsManager(mainFragment.requireContext())
 
             val swipeLayout: View
             val icon: Drawable?
             val text: String
             if (dX > 0) {
                 swipeLayout = swipeRightLayout
+                val apkActionsOptions =
+                    settingsManager.getRightSwipeAction() ?: ApkActionsOptions.SAVE
                 icon = AppCompatResources.getDrawable(
-                    mainFragment.requireContext(),
-                    R.drawable.ic_baseline_save_48
+                    mainFragment.requireContext(), apkActionsOptions.icon
                 )
-                text =
-                    mainFragment.resources.getText(R.string.action_bottom_sheet_save)
-                        .toString()
+                text = mainFragment.resources.getText(apkActionsOptions.title).toString()
             } else {
                 swipeLayout = swipeLeftLayout
+                val apkActionsOptions =
+                    settingsManager.getLeftSwipeAction() ?: ApkActionsOptions.SHARE
                 icon = AppCompatResources.getDrawable(
-                    mainFragment.requireContext(),
-                    R.drawable.ic_baseline_share_48
+                    mainFragment.requireContext(), apkActionsOptions.icon
                 )
-                text =
-                    mainFragment.resources.getText(R.string.action_bottom_sheet_share)
-                        .toString()
+                text = mainFragment.resources.getText(apkActionsOptions.title).toString()
             }
 
-            val imageView =
-                swipeLayout.findViewById<ShapeableImageView>(R.id.swipeImageView)
+            val imageView = swipeLayout.findViewById<ShapeableImageView>(R.id.swipeImageView)
             imageView.setImageDrawable(icon)
 
-            val textView =
-                swipeLayout.findViewById<MaterialTextView>(R.id.swipeTextView)
+            val textView = swipeLayout.findViewById<MaterialTextView>(R.id.swipeTextView)
             textView.text = text
 
             if (swipeLayout.isDirty) {
@@ -95,26 +93,16 @@ class AppListTouchHelperCallback(
                     MeasureSpec.makeMeasureSpec(itemView.height, MeasureSpec.EXACTLY)
                 swipeLayout.measure(widthMeasureSpec, heightMeasureSpec)
                 swipeLayout.layout(
-                    itemView.left,
-                    itemView.top,
-                    itemView.right,
-                    itemView.bottom
+                    itemView.left, itemView.top, itemView.right, itemView.bottom
                 )
             }
 
             canvas.withTranslation(
-                itemView.left.toFloat(),
-                itemView.top.toFloat()
+                itemView.left.toFloat(), itemView.top.toFloat()
             ) { swipeLayout.draw(canvas) }
         }
         super.onChildDraw(
-            canvas,
-            recyclerView,
-            viewHolder,
-            dX,
-            dY,
-            actionState,
-            isCurrentlyActive
+            canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
         )
     }
 }

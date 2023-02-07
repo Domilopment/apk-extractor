@@ -44,7 +44,7 @@
 
     <string name="version">Version: %s</string>
 
-    <string name="advanced">Erweiterte Einstellungen</string>
+    <string name="appearance">Erscheinungsbild</string>
     <string name="ui_mode">Nacht Modus</string>
     <string name="ui_mode_summary">Ändere das Erscheinungsbild der App</string>
     <string name="ui_follow_os">System einstellungen</string>
@@ -54,6 +54,13 @@
     <string name="use_material_you">Aktiviere Material You</string>
     <string name="use_material_you_summary">Benutze die Dynamische Farbpalette, welche durch das ändern des Hintergrundes ab Android 12 Bereitgestellt wird.</string>
     <string name="use_material_you_toast">Änderung nach neustart</string>
+
+    <string name="advanced">Erweiterte Einstellungen</string>
+    <string name="apk_swipe_action_right_title">Wischaktion nach rechts</string>
+    <string name="apk_swipe_action_right_summary">Suche aus, was passiert, wenn du auf einem Eintrag in der App-Liste nach rechts wischst</string>
+
+    <string name="apk_swipe_action_left_title">Wischaktion nach links</string>
+    <string name="apk_swipe_action_left_summary">Suche aus, was passiert, wenn du auf einem Eintrag in der App-Liste nach links wischst</string>
 
     <string name="clear_cache">Cache leeren</string>
     <string name="clear_cache_summary">Leere App cache</string>
@@ -137,6 +144,7 @@
     <string name="info_bottom_sheet_version_number">Versions Nummer: %d</string>
     <string name="info_bottom_sheet_install_time">Installiert: %s</string>
     <string name="info_bottom_sheet_update_time">Zuletzt aktualisiert: %s</string>
+    <string name="info_bottom_sheet_installation_source">Installationsquelle: %s</string>
 
     <string name="action_bottom_sheet_save">Speichern</string>
     <string name="action_bottom_sheet_share">@string/apk_action_share</string>

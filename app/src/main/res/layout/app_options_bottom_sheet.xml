@@ -106,6 +106,12 @@
                 style="@style/BottomSheetItem"
                 android:singleLine="true" />
 
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/selected_app_installer"
+                style="@style/BottomSheetItem"
+                android:singleLine="true"
+                android:visibility="gone" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

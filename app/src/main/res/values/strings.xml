@@ -45,7 +45,7 @@
 
     <string name="version">Version: %s</string>
 
-    <string name="advanced">Advanced Settings</string>
+    <string name="appearance">Appearance</string>
     <string name="ui_mode">Night Mode</string>
     <string name="ui_mode_summary">Change App Appearance</string>
     <string name="ui_follow_os">Follow OS</string>
@@ -55,6 +55,13 @@
     <string name="use_material_you">Use Material You</string>
     <string name="use_material_you_summary">Use Dynamic Color Theme, provided by Wallpaper colors in Android 12 und upwards</string>
     <string name="use_material_you_toast">Changes after restart</string>
+
+    <string name="advanced">Advanced Settings</string>
+    <string name="apk_swipe_action_right_title">Right swipe action</string>
+    <string name="apk_swipe_action_right_summary">Select what happens if you swipe to the right on an entry in the App list</string>
+
+    <string name="apk_swipe_action_left_title">Left swipe action</string>
+    <string name="apk_swipe_action_left_summary">Select what happens if you swipe to the left on an entry in the App list</string>
 
     <string name="clear_cache">Clear cache</string>
     <string name="clear_cache_summary">Clear App cache</string>
@@ -140,6 +147,7 @@
     <string name="info_bottom_sheet_version_number">Version number: %d</string>
     <string name="info_bottom_sheet_install_time">Installed: %s</string>
     <string name="info_bottom_sheet_update_time">Last updated: %s</string>
+    <string name="info_bottom_sheet_installation_source">Installation source: %s</string>
 
     <string name="action_bottom_sheet_save">Save</string>
     <string name="action_bottom_sheet_share">@string/apk_action_share</string>

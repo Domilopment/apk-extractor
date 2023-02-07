@@ -46,4 +46,17 @@
         -->
         <item>@string/alert_apk_selected_delete</item>
     </string-array>
+
+    <string-array name="apk_swipe_options_entries">
+        <item>@string/action_bottom_sheet_save</item>
+        <item>@string/action_bottom_sheet_share</item>
+        <item>@string/action_bottom_sheet_save_image</item>
+        <item>@string/action_bottom_sheet_settings</item>
+    </string-array>
+    <string-array name="apk_swipe_options_values">
+        <item>save_apk</item>
+        <item>share_apk</item>
+        <item>save_icon</item>
+        <item>open_settings</item>
+    </string-array>
 </resources>

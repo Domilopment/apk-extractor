@@ -36,6 +36,8 @@ import domilopment.apkextractor.appList.AppListAdapter
 import domilopment.apkextractor.appList.AppListTouchHelperCallback
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.FragmentMainBinding
+import domilopment.apkextractor.utils.apkActions.ApkActionsManager
+import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
 import kotlinx.coroutines.delay
@@ -121,46 +123,21 @@ class MainFragment : Fragment() {
 
         viewAdapter = AppListAdapter(this)
 
-        swipeHelper = ItemTouchHelper(
-            AppListTouchHelperCallback(this,
-                { viewHolder: RecyclerView.ViewHolder ->
-                    val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
-                    val settingsManager = SettingsManager(requireContext())
-
-                    FileHelper(requireActivity()).copy(
-                        app.appSourceDirectory,
-                        settingsManager.saveDir()!!,
-                        settingsManager.appName(app)
-                    )?.let {
-                        Snackbar.make(
-                            view,
-                            getString(R.string.snackbar_successful_extracted, app.appName),
-                            Snackbar.LENGTH_LONG
-                        ).setAnchorView(binding.appMultiselectBottomSheet.root).show()
-                    } ?: run {
-                        Snackbar.make(
-                            view,
-                            getString(R.string.snackbar_extraction_failed, app.appName),
-                            Snackbar.LENGTH_LONG
-                        ).setAnchorView(binding.appMultiselectBottomSheet.root)
-                            .setTextColor(Color.RED)
-                            .show()
-                    }
-                    viewAdapter.notifyDataSetChanged()
-                },
-                { viewHolder: RecyclerView.ViewHolder ->
-                    val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
-
-                    val file = FileHelper(requireContext()).shareURI(app)
-                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                        type = FileHelper.MIME_TYPE
-                        putExtra(Intent.EXTRA_STREAM, file)
-                    }.let {
-                        Intent.createChooser(it, getString(R.string.share_intent_title))
-                    }
-                    shareApp.launch(shareIntent)
-                    viewAdapter.notifyDataSetChanged()
-                })
+        swipeHelper = ItemTouchHelper(AppListTouchHelperCallback(this,
+            { viewHolder: RecyclerView.ViewHolder ->
+                val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
+                getSwipeAction(
+                    SettingsManager(requireContext()).getRightSwipeAction(), app, view
+                )
+                viewAdapter.notifyDataSetChanged()
+            },
+            { viewHolder: RecyclerView.ViewHolder ->
+                val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
+                getSwipeAction(
+                    SettingsManager(requireContext()).getLeftSwipeAction(), app, view
+                )
+                viewAdapter.notifyDataSetChanged()
+            })
         )
         swipeHelper.attachToRecyclerView(binding.listView.list)
 
@@ -344,8 +321,8 @@ class MainFragment : Fragment() {
                         it?.also {
                             viewAdapter.filter.filter(it)
                             searchView.setQuery(it, false)
-                            if (!viewAdapter.actionModeCallback.isActionModeActive() && it.isNotBlank())
-                                searchView.isIconified = false
+                            if (!viewAdapter.actionModeCallback.isActionModeActive() && it.isNotBlank()) searchView.isIconified =
+                                false
                         }
                     }
                 }
@@ -423,7 +400,7 @@ class MainFragment : Fragment() {
      */
     fun stateBottomSheetBehaviour(state: Int) {
         lifecycleScope.launch {
-            if (::searchView.isInitialized  && searchView.hasFocus()) {
+            if (::searchView.isInitialized && searchView.hasFocus()) {
                 searchView.clearFocus()
                 delay(100)
             }
@@ -445,6 +422,28 @@ class MainFragment : Fragment() {
      */
     fun selectApplication(app: ApplicationModel) {
         model.selectApplication(app)
+    }
+
+    /**
+     * Get action to perform from selected swipe action option
+     * @param action selected action from ApkActionOptions
+     * @param app ApplicationModel to perform action with
+     * @param view Parent view we calling action from
+     */
+    private fun getSwipeAction(action: ApkActionsOptions?, app: ApplicationModel, view: View) {
+        val apkActions = ApkActionsManager(requireContext(), app)
+        when (action) {
+            ApkActionsOptions.SAVE -> apkActions.actionSave(
+                view, binding.appMultiselectBottomSheet.root
+            )
+            ApkActionsOptions.SHARE -> shareApp.launch(apkActions.actionShare())
+            ApkActionsOptions.ICON -> apkActions.actionSaveImage(
+                view, binding.appMultiselectBottomSheet.root
+            )
+            ApkActionsOptions.SETTINGS -> apkActions.actionShowSettings()
+            else -> { /* do nothing */
+            }
+        }
     }
 
     /**

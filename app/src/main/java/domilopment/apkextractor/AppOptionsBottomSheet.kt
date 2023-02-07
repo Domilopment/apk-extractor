@@ -2,24 +2,16 @@ package domilopment.apkextractor
 
 import android.Manifest
 import android.content.ActivityNotFoundException
-import android.content.ContentValues
-import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -31,11 +23,9 @@ import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.AppOptionsBottomSheetBinding
 import domilopment.apkextractor.fragments.MainViewModel
-import domilopment.apkextractor.utils.FileHelper
-import domilopment.apkextractor.utils.SettingsManager
-import domilopment.apkextractor.utils.Utils
+import domilopment.apkextractor.utils.*
+import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import kotlinx.coroutines.launch
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -179,57 +169,46 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         // Selected App last update time
         binding.selectedAppUpdateTime.text =
             getString(R.string.info_bottom_sheet_update_time, getAsFormattedDate(app.appUpdateTime))
+
+        // Selected app installation source
+        binding.selectedAppInstaller.apply {
+            app.installationSource?.runCatching {
+                Utils.getPackageInfo(requireContext().packageManager, this).applicationInfo
+            }?.onSuccess {
+                val sourceName = requireContext().packageManager.getApplicationLabel(it)
+                text = getString(R.string.info_bottom_sheet_installation_source, sourceName)
+                isVisible = true
+            }
+        }
     }
 
     /**
      * set up actions for selected APK
      */
     private fun setupApplicationActions() {
+        val apkOptions = ApkActionsManager(requireContext(), app)
+
         // Save Apk
         binding.actionSaveApk.setOnClickListener { v ->
-            val settingsManager = SettingsManager(requireContext())
-
-            FileHelper(requireActivity()).copy(
-                app.appSourceDirectory, settingsManager.saveDir()!!, settingsManager.appName(app)
-            )?.let {
-                Snackbar.make(
-                    v,
-                    getString(R.string.snackbar_successful_extracted, app.appName),
-                    Snackbar.LENGTH_LONG
-                ).setAnchorView(this.view).show()
-            } ?: run {
-                Snackbar.make(
-                    v,
-                    getString(R.string.snackbar_extraction_failed, app.appName),
-                    Snackbar.LENGTH_LONG
-                ).setAnchorView(this.view).setTextColor(Color.RED).show()
-            }
+            apkOptions.actionSave(v, requireView())
         }
 
         // Share APK
         binding.actionShare.setOnClickListener {
-            val file = FileHelper(requireContext()).shareURI(app)
-            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                type = FileHelper.MIME_TYPE
-                putExtra(Intent.EXTRA_STREAM, file)
-            }.let {
-                Intent.createChooser(it, getString(R.string.share_intent_title))
-            }
+            val shareIntent = apkOptions.actionShare()
             shareApp.launch(shareIntent)
         }
 
         // Show app Settings
         binding.actionShowAppSettings.setOnClickListener {
-            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", app.appPackageName, null)
-            }.also {
+            apkOptions.actionShowSettings().also {
                 requireActivity().startActivity(it)
             }
         }
 
         // Open App
         binding.actionOpenApp.apply {
-            app.launchIntent?.also { launchIntent ->
+            apkOptions.actionOpenApp()?.also { launchIntent ->
                 setOnClickListener {
                     startActivity(launchIntent)
                 }
@@ -241,9 +220,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         // Uninstall App
         binding.actionUninstall.apply {
             setOnClickListener {
-                Intent(
-                    Intent.ACTION_DELETE, Uri.fromParts("package", app.appPackageName, null)
-                ).also {
+                apkOptions.actionUninstall().also {
                     uninstallApp.launch(it)
                 }
             }
@@ -263,33 +240,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                 )
                 return@setOnClickListener
             }
-            val resolver = requireContext().contentResolver
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, app.appName)
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) put(
-                    MediaStore.MediaColumns.RELATIVE_PATH,
-                    Environment.DIRECTORY_PICTURES + File.separator + getString(R.string.app_name)
-                )
-            }
-            // Find all image files on the primary external storage device.
-            val imageCollection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                MediaStore.Images.Media.getContentUri(
-                    MediaStore.VOLUME_EXTERNAL_PRIMARY
-                )
-            } else {
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            }
-
-            resolver.insert(imageCollection, contentValues)?.let {
-                resolver.openOutputStream(it)
-            }.use {
-                if (app.appIcon.toBitmap()
-                        .compress(Bitmap.CompressFormat.PNG, 100, it)
-                ) Snackbar.make(
-                    v, getString(R.string.snackbar_successful_save_image), Snackbar.LENGTH_LONG
-                ).setAnchorView(this.view).show()
-            }
+            apkOptions.actionSaveImage(v, requireView())
         }
 
         // Open installer store
@@ -301,19 +252,8 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                 text = packageManager.getApplicationLabel(installationSource.applicationInfo)
                 setOnClickListener {
                     try {
-                        startActivity(Intent(Intent.ACTION_VIEW).apply {
-                            data = Uri.parse(
-                                when (installationSource.packageName) {
-                                    "com.android.vending" -> {
-                                        setPackage(installationSource.packageName)
-                                        "https://play.google.com/store/apps/details?id="
-                                    }
-                                    "com.sec.android.app.samsungapps" -> "samsungapps://ProductDetail/"
-                                    "com.amazon.venezia" -> "amzn://apps/android?p="
-                                    else -> "market://details?id="
-                                } + app.appPackageName
-                            )
-                        })
+                        val shopIntent = apkOptions.actionOpenShop()
+                        startActivity(shopIntent)
                     } catch (e: ActivityNotFoundException) {
                         Snackbar.make(
                             it,
