@@ -441,7 +441,8 @@ class MainFragment : Fragment() {
                 view, binding.appMultiselectBottomSheet.root
             )
             ApkActionsOptions.SETTINGS -> apkActions.actionShowSettings()
-            else -> { /* do nothing */
+            else -> {
+                /* do nothing */
             }
         }
     }
