@@ -63,6 +63,9 @@
     <string name="apk_swipe_action_left_title">Left swipe action</string>
     <string name="apk_swipe_action_left_summary">Select what happens if you swipe to the left on an entry in the App list</string>
 
+    <string name="ignore_battery_optimization_title">Disable Battery Optimization</string>
+    <string name="ignore_battery_optimization_summary">If the Auto Backup Service gets killed in background without restarting, you might consider disable battery optimization for this app so it keeps running in background</string>
+
     <string name="clear_cache">Clear cache</string>
     <string name="clear_cache_summary">Clear App cache</string>
     <string name="clear_cache_success">Cache cleared</string>

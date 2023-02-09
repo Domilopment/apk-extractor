@@ -1,5 +1,6 @@
 package domilopment.apkextractor.utils.apkActions
 
+import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.R
@@ -48,13 +50,15 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * Creates an share Intent for apk source file of selected app
      * @return Intent with mime type and stream info of apk file
      */
-    fun actionShare(): Intent {
+    fun actionShare(shareApp: ActivityResultLauncher<Intent>) {
         val file = FileHelper(context).shareURI(app)
-        return Intent(Intent.ACTION_SEND).apply {
+        Intent(Intent.ACTION_SEND).apply {
             type = FileHelper.MIME_TYPE
             putExtra(Intent.EXTRA_STREAM, file)
         }.let {
             Intent.createChooser(it, context.getString(R.string.share_intent_title))
+        }.also {
+            shareApp.launch(it)
         }
     }
 
@@ -62,10 +66,12 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * Creates an Intent to open settings page of app
      * @return Intent for ACTION_APPLICATION_DETAILS_SETTINGS for selected app
      */
-    fun actionShowSettings(): Intent {
-        return Intent(
-            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            Uri.fromParts("package", app.appPackageName, null)
+    fun actionShowSettings() {
+        context.startActivity(
+            Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", app.appPackageName, null)
+            )
         )
     }
 
@@ -73,15 +79,19 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * Returns launch Intent for app
      * @return launchIntent for app ;P
      */
-    fun actionOpenApp(): Intent? = app.launchIntent
+    fun actionOpenApp() {
+        context.startActivity(app.launchIntent)
+    }
 
     /**
      * Creates an Intent to delete selected app
      * @return ACTION_DELETE Intent with package uri information
      */
-    fun actionUninstall(): Intent {
-        return Intent(
-            Intent.ACTION_DELETE, Uri.fromParts("package", app.appPackageName, null)
+    fun actionUninstall(uninstallApp: ActivityResultLauncher<Intent>) {
+        uninstallApp.launch(
+            Intent(
+                Intent.ACTION_DELETE, Uri.fromParts("package", app.appPackageName, null)
+            )
         )
     }
 
@@ -126,19 +136,28 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * Supports Google Play Store, Samsung Galaxy Store and Amazon Appstore for now
      * other installation Sources just call market uri
      */
-    fun actionOpenShop(): Intent {
-        return Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(
-                when (app.installationSource) {
-                    "com.android.vending" -> {
-                        setPackage(app.installationSource)
-                        "https://play.google.com/store/apps/details?id="
-                    }
-                    "com.sec.android.app.samsungapps" -> "samsungapps://ProductDetail/"
-                    "com.amazon.venezia" -> "amzn://apps/android?p="
-                    else -> "market://details?id="
-                } + app.appPackageName
-            )
+    fun actionOpenShop(view: View, anchorView: View = view) {
+        try {
+            val shopIntent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(
+                    when (app.installationSource) {
+                        "com.android.vending" -> {
+                            setPackage(app.installationSource)
+                            "https://play.google.com/store/apps/details?id="
+                        }
+                        "com.sec.android.app.samsungapps" -> "samsungapps://ProductDetail/"
+                        "com.amazon.venezia" -> "amzn://apps/android?p="
+                        else -> "market://details?id="
+                    } + app.appPackageName
+                )
+            }
+            context.startActivity(shopIntent)
+        } catch (e: ActivityNotFoundException) {
+            Snackbar.make(
+                view,
+                context.getString(R.string.snackbar_no_activity_for_market_intent),
+                Snackbar.LENGTH_LONG
+            ).setAnchorView(anchorView).show()
         }
     }
 }

@@ -62,6 +62,9 @@
     <string name="apk_swipe_action_left_title">Wischaktion nach links</string>
     <string name="apk_swipe_action_left_summary">Suche aus, was passiert, wenn du auf einem Eintrag in der App-Liste nach links wischst</string>
 
+    <string name="ignore_battery_optimization_title">Hintergrundaktivität</string>
+    <string name="ignore_battery_optimization_summary">Falls der Auto Backup Service im Hintergrung gestoppt wird, ohne neu zu starten, ziehen sie es vielleicht in betracht, das einschränken der Hintergrundaktivität für diese app zu deaktivieren</string>
+
     <string name="clear_cache">Cache leeren</string>
     <string name="clear_cache_summary">Leere App cache</string>
     <string name="clear_cache_success">Cache gesäubert!</string>

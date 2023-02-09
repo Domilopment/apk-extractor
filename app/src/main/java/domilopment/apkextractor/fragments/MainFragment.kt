@@ -123,22 +123,19 @@ class MainFragment : Fragment() {
 
         viewAdapter = AppListAdapter(this)
 
-        swipeHelper = ItemTouchHelper(AppListTouchHelperCallback(this,
-            { viewHolder: RecyclerView.ViewHolder ->
-                val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
-                getSwipeAction(
-                    SettingsManager(requireContext()).getRightSwipeAction(), app, view
-                )
-                viewAdapter.notifyDataSetChanged()
-            },
-            { viewHolder: RecyclerView.ViewHolder ->
-                val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
-                getSwipeAction(
-                    SettingsManager(requireContext()).getLeftSwipeAction(), app, view
-                )
-                viewAdapter.notifyDataSetChanged()
-            })
-        )
+        swipeHelper = ItemTouchHelper(AppListTouchHelperCallback(
+            this
+        ) { viewHolder: RecyclerView.ViewHolder, apkAction: ApkActionsOptions ->
+            val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
+            apkAction.getAction(
+                requireContext(),
+                app,
+                ApkActionsOptions.ApkActionOptionParams.Builder()
+                    .setViews(view, binding.appMultiselectBottomSheet.root).setShareResult(shareApp)
+                    .build()
+            )
+            viewAdapter.notifyDataSetChanged()
+        })
         swipeHelper.attachToRecyclerView(binding.listView.list)
 
         binding.listView.list.apply {
@@ -422,29 +419,6 @@ class MainFragment : Fragment() {
      */
     fun selectApplication(app: ApplicationModel) {
         model.selectApplication(app)
-    }
-
-    /**
-     * Get action to perform from selected swipe action option
-     * @param action selected action from ApkActionOptions
-     * @param app ApplicationModel to perform action with
-     * @param view Parent view we calling action from
-     */
-    private fun getSwipeAction(action: ApkActionsOptions?, app: ApplicationModel, view: View) {
-        val apkActions = ApkActionsManager(requireContext(), app)
-        when (action) {
-            ApkActionsOptions.SAVE -> apkActions.actionSave(
-                view, binding.appMultiselectBottomSheet.root
-            )
-            ApkActionsOptions.SHARE -> shareApp.launch(apkActions.actionShare())
-            ApkActionsOptions.ICON -> apkActions.actionSaveImage(
-                view, binding.appMultiselectBottomSheet.root
-            )
-            ApkActionsOptions.SETTINGS -> apkActions.actionShowSettings()
-            else -> {
-                /* do nothing */
-            }
-        }
     }
 
     /**

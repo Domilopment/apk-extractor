@@ -75,6 +75,10 @@
             android:key="list_preference_swipe_actions_left"
             android:summary="@string/apk_swipe_action_left_summary"
             android:title="@string/apk_swipe_action_left_title" />
+        <SwitchPreferenceCompat
+            app:key="ignore_battery_optimization"
+            app:summary="@string/ignore_battery_optimization_summary"
+            app:title="@string/ignore_battery_optimization_title" />
         <Preference
             app:key="clear_cache"
             app:summary="@string/clear_cache_summary"

@@ -1,7 +1,6 @@
 package domilopment.apkextractor
 
 import android.Manifest
-import android.content.ActivityNotFoundException
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -195,24 +194,20 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
         // Share APK
         binding.actionShare.setOnClickListener {
-            val shareIntent = apkOptions.actionShare()
-            shareApp.launch(shareIntent)
+            apkOptions.actionShare(shareApp)
         }
 
         // Show app Settings
         binding.actionShowAppSettings.setOnClickListener {
-            apkOptions.actionShowSettings().also {
-                requireActivity().startActivity(it)
-            }
+            apkOptions.actionShowSettings()
         }
 
         // Open App
         binding.actionOpenApp.apply {
-            apkOptions.actionOpenApp()?.also { launchIntent ->
-                setOnClickListener {
-                    startActivity(launchIntent)
-                }
-            } ?: run {
+            setOnClickListener {
+                apkOptions.actionOpenApp()
+            }
+            app.launchIntent ?: {
                 visibility = View.GONE
             }
         }
@@ -220,9 +215,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         // Uninstall App
         binding.actionUninstall.apply {
             setOnClickListener {
-                apkOptions.actionUninstall().also {
-                    uninstallApp.launch(it)
-                }
+                apkOptions.actionUninstall(uninstallApp)
             }
             // If App is User App make Uninstall Option visible
             isVisible =
@@ -251,16 +244,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             }?.onSuccess { installationSource ->
                 text = packageManager.getApplicationLabel(installationSource.applicationInfo)
                 setOnClickListener {
-                    try {
-                        val shopIntent = apkOptions.actionOpenShop()
-                        startActivity(shopIntent)
-                    } catch (e: ActivityNotFoundException) {
-                        Snackbar.make(
-                            it,
-                            getString(R.string.snackbar_no_activity_for_market_intent),
-                            Snackbar.LENGTH_LONG
-                        ).setAnchorView(this@AppOptionsBottomSheet.view).show()
-                    }
+                    apkOptions.actionOpenShop(it, this@AppOptionsBottomSheet.requireView())
                 }
                 isVisible = installationSource.packageName in listOf(
                     "com.android.vending", "com.sec.android.app.samsungapps", "com.amazon.venezia"

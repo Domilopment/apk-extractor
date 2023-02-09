@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -52,6 +53,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var listPreferenceUiMode: ListPreference? = null
     private var useMaterialYou: SwitchPreferenceCompat? = null
     private var listPreferenceLocaleList: ListPreference? = null
+    private var ignoreBatteryOptimization: SwitchPreferenceCompat? = null
     private var clearCache: Preference? = null
     private var github: Preference? = null
     private var googlePlay: Preference? = null
@@ -87,6 +89,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }.show()
         }
     }
+
+    private val ignoreBatteryOptimizationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            val isIgnoringBatteryOptimization =
+                (requireContext().getSystemService(Context.POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(
+                    requireContext().packageName
+                )
+            ignoreBatteryOptimization?.isChecked = isIgnoringBatteryOptimization
+        }
 
     private val ioDispatcher get() = Dispatchers.IO
 
@@ -127,6 +138,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         listPreferenceUiMode = findPreference("list_preference_ui_mode")
         useMaterialYou = findPreference("use_material_you")
         listPreferenceLocaleList = findPreference("list_preference_locale_list")
+        ignoreBatteryOptimization = findPreference("ignore_battery_optimization")
         clearCache = findPreference("clear_cache")
         github = findPreference("github")
         googlePlay = findPreference("googleplay")
@@ -304,6 +316,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
         updatedSystemApps?.onPreferenceChangeListener = appsChangeListener
         systemApps?.onPreferenceChangeListener = appsChangeListener
         userApps?.onPreferenceChangeListener = appsChangeListener
+
+        // Request Ignoring Battery Optimization for Auto Backup Service
+        ignoreBatteryOptimization?.apply {
+            val pm = requireContext().getSystemService(Context.POWER_SERVICE) as PowerManager
+            isChecked = pm.isIgnoringBatteryOptimizations(requireContext().packageName)
+            setOnPreferenceChangeListener { _, newValue ->
+                newValue as Boolean
+                val isIgnoringBatteryOptimization =
+                    pm.isIgnoringBatteryOptimizations(requireContext().packageName)
+                return@setOnPreferenceChangeListener if ((!isIgnoringBatteryOptimization and newValue) or (isIgnoringBatteryOptimization and !newValue)) {
+                    ignoreBatteryOptimizationResult.launch(Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                    false
+                } else true
+            }
+        }
     }
 
     override fun onStart() {
