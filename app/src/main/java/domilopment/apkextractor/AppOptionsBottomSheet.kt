@@ -207,7 +207,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             setOnClickListener {
                 apkOptions.actionOpenApp()
             }
-            app.launchIntent ?: {
+            if (app.launchIntent == null) {
                 visibility = View.GONE
             }
         }
