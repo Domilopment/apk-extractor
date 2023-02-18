@@ -174,7 +174,10 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             app.installationSource?.runCatching {
                 Utils.getPackageInfo(requireContext().packageManager, this).applicationInfo
             }?.onSuccess {
-                val sourceName = requireContext().packageManager.getApplicationLabel(it)
+                val sourceName =
+                    if (it.packageName in Utils.listOfKnownStores) "" else requireContext().packageManager.getApplicationLabel(
+                        it
+                    )
                 text = getString(R.string.info_bottom_sheet_installation_source, sourceName)
                 isVisible = true
             }
@@ -246,9 +249,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                 setOnClickListener {
                     apkOptions.actionOpenShop(it, this@AppOptionsBottomSheet.requireView())
                 }
-                isVisible = installationSource.packageName in listOf(
-                    "com.android.vending", "com.sec.android.app.samsungapps", "com.amazon.venezia"
-                )
+                isVisible = installationSource.packageName in Utils.listOfKnownStores
             }
         }
     }

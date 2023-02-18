@@ -68,7 +68,8 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -106,11 +107,25 @@
                 style="@style/BottomSheetItem"
                 android:singleLine="true" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/selected_app_installer"
-                style="@style/BottomSheetItem"
-                android:singleLine="true"
-                android:visibility="gone" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/selected_app_installer"
+                    style="@style/BottomSheetItem"
+                    android:layout_width="wrap_content"
+                    android:singleLine="true"
+                    android:visibility="gone" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/action_open_shop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:chipIcon="@drawable/ic_baseline_shop_24" />
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -158,13 +173,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/action_bottom_sheet_open"
                 app:chipIcon="@drawable/ic_baseline_android_24" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/action_open_shop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:chipIcon="@drawable/ic_baseline_shop_24" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/action_uninstall"

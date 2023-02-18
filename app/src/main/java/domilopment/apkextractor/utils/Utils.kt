@@ -17,4 +17,8 @@ object Utils {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) packageInfo.longVersionCode
         else packageInfo.versionCode.toLong()
     }
+
+    val listOfKnownStores: List<String> = listOf(
+        "com.android.vending", "com.sec.android.app.samsungapps", "com.amazon.venezia"
+    )
 }
