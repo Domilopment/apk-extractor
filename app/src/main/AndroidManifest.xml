@@ -3,9 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!--
@@ -36,21 +38,34 @@
                 android:value="true" />
         </service>
 
-
-        <receiver android:name=".autoBackup.PackageBroadcastReceiver"
+        <service
+            android:name=".autoBackup.AutoBackupTileService"
             android:exported="true"
-            android:enabled="true">
+            android:icon="@drawable/ic_small_notification_icon_24"
+            android:label="@string/auto_backup"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
+        </service>
+
+        <receiver
+            android:name=".autoBackup.PackageBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:exported="true">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
