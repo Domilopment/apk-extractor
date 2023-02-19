@@ -27,4 +27,18 @@ object Utils {
     ).withDefault {
         "market://details?id="
     }
+
+    /**
+     * Check if Application is Installed
+     * @param packageName
+     * Package Name of App
+     */
+    fun isPackageInstalled(packageManager: PackageManager, packageName: String): Boolean {
+        return try {
+            getPackageInfo(packageManager, packageName)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
 }

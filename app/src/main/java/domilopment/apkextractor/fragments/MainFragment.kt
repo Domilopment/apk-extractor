@@ -36,10 +36,10 @@ import domilopment.apkextractor.appList.AppListAdapter
 import domilopment.apkextractor.appList.AppListTouchHelperCallback
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.FragmentMainBinding
-import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -61,6 +61,17 @@ class MainFragment : Fragment() {
     private val shareApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             requireContext().cacheDir.deleteRecursively()
+        }
+
+    var appToUninstall: ApplicationModel? = null
+    private val uninstallApp =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            appToUninstall?.also {
+                if (!Utils.isPackageInstalled(requireContext().packageManager, it.appPackageName)) {
+                    model.removeApp(it)
+                }
+            }
+            appToUninstall = null
         }
 
     private val selectApk =
@@ -127,11 +138,13 @@ class MainFragment : Fragment() {
             this
         ) { viewHolder: RecyclerView.ViewHolder, apkAction: ApkActionsOptions ->
             val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
+            appToUninstall = app
             apkAction.getAction(
                 requireContext(),
                 app,
                 ApkActionsOptions.ApkActionOptionParams.Builder()
                     .setViews(view, binding.appMultiselectBottomSheet.root).setShareResult(shareApp)
+                    .setDeleteResult(uninstallApp)
                     .build()
             )
             viewAdapter.notifyDataSetChanged()

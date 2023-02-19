@@ -52,11 +52,15 @@
         <item>@string/action_bottom_sheet_share</item>
         <item>@string/action_bottom_sheet_save_image</item>
         <item>@string/action_bottom_sheet_settings</item>
+        <item>@string/action_bottom_sheet_open</item>
+        <item>@string/action_bottom_sheet_uninstall</item>
     </string-array>
     <string-array name="apk_swipe_options_values">
         <item>save_apk</item>
         <item>share_apk</item>
         <item>save_icon</item>
         <item>open_settings</item>
+        <item>open_app</item>
+        <item>uninstall_app</item>
     </string-array>
 </resources>

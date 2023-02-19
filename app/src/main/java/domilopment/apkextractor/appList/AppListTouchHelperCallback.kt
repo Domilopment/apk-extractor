@@ -1,5 +1,6 @@
 package domilopment.apkextractor.appList
 
+import android.content.pm.ApplicationInfo
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
@@ -38,6 +39,31 @@ class AppListTouchHelperCallback(
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean = true
+
+    /**
+     * Only allow all swipe dirs if selected action can be performed on app
+     * means don't allow trying uninstall system apps or open app without launch intent
+     */
+    override fun getSwipeDirs(
+        recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder
+    ): Int {
+        val settingsManager = SettingsManager(mainFragment.requireContext())
+        val leftSwipeAction = settingsManager.getLeftSwipeAction()
+        val rightSwipeAction = settingsManager.getRightSwipeAction()
+        val app =
+            (recyclerView.adapter as AppListAdapter).myDatasetFiltered[viewHolder.bindingAdapterPosition]
+        var swipeDirs = 0
+
+        if (((leftSwipeAction) != ApkActionsOptions.OPEN || app.launchIntent != null) &&
+            (leftSwipeAction != ApkActionsOptions.UNINSTALL || ((app.appFlags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM) || (app.appUpdateTime > app.appInstallTime)))
+        ) swipeDirs = swipeDirs or ItemTouchHelper.LEFT
+
+        if (((rightSwipeAction) != ApkActionsOptions.OPEN || app.launchIntent != null) &&
+            (rightSwipeAction != ApkActionsOptions.UNINSTALL || ((app.appFlags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM) || (app.appUpdateTime > app.appInstallTime)))
+        ) swipeDirs = swipeDirs or ItemTouchHelper.RIGHT
+
+        return super.getSwipeDirs(recyclerView, viewHolder) and swipeDirs
+    }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         when (direction) {

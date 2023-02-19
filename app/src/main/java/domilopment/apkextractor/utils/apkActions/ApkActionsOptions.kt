@@ -43,6 +43,24 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         ) {
             ApkActionsManager(context, app).actionShowSettings()
         }
+    },
+    OPEN(
+        "open_app", R.string.action_bottom_sheet_open, R.drawable.ic_baseline_android_24
+    ) {
+        override fun getAction(
+            context: Context, app: ApplicationModel, params: ApkActionOptionParams
+        ) {
+            ApkActionsManager(context, app).actionOpenApp()
+        }
+    },
+    UNINSTALL(
+        "uninstall_app", R.string.action_bottom_sheet_uninstall, R.drawable.ic_baseline_delete_24
+    ) {
+        override fun getAction(
+            context: Context, app: ApplicationModel, params: ApkActionOptionParams
+        ) {
+            params.deleteResult?.let { ApkActionsManager(context, app).actionUninstall(it) }
+        }
     };
 
     abstract fun getAction(

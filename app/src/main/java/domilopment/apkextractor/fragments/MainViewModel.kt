@@ -129,16 +129,16 @@ class MainViewModel(
 
     /**
      * Remove app from app list, for example on uninstall
-     * @param app
-     * uninstalled app
+     * @param packageName
+     * Package name of uninstalled app
      */
-    fun removeApp(app: ApplicationModel) {
+    private fun removeApp(packageName: String) {
         _applications.value = _applications.value?.let { apps ->
             val updatedSystemApps = apps.first.toMutableList()
             val systemApps =
-                if (updatedSystemApps.removeIf { it.appPackageName == app.appPackageName }) {
+                if (updatedSystemApps.removeIf { it.appPackageName == packageName }) {
                     val applicationInfo = Utils.getPackageInfo(
-                        context.packageManager, app.appPackageName
+                        context.packageManager, packageName
                     ).applicationInfo
                     val appModel = ApplicationModel(applicationInfo, context.packageManager)
                     _appOptionsBottomSheetState.update { state ->
@@ -149,10 +149,19 @@ class MainViewModel(
                     }
                 } else apps.second
             val userApps = apps.third.toMutableList().apply {
-                removeIf { it.appPackageName == app.appPackageName }
+                removeIf { it.appPackageName == packageName }
             }
             return@let Triple(updatedSystemApps, systemApps, userApps)
         }
+    }
+
+    /**
+     * Remove app from app list, for example on uninstall
+     * @param app
+     * uninstalled app
+     */
+    fun removeApp(app: ApplicationModel) {
+        removeApp(app.appPackageName)
     }
 
     /**

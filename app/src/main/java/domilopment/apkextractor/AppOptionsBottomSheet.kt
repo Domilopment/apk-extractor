@@ -44,8 +44,9 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val appUninstalled = !isPackageInstalled(app.appPackageName)
-            if (appUninstalled || hasAppInfoChanged()) {
+            val appUninstalled =
+                !Utils.isPackageInstalled(requireContext().packageManager, app.appPackageName)
+            if (appUninstalled || hasAppInfoChanged(app)) {
                 model.removeApp(app)
                 if (appUninstalled) dismiss()
             }
@@ -125,7 +126,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     override fun onStart() {
         super.onStart()
         // dismiss dialog and remove app from list, if it was uninstalled while apk extractor was in background
-        if (!isPackageInstalled(app.appPackageName)) {
+        if (!Utils.isPackageInstalled(requireContext().packageManager, app.appPackageName)) {
             model.removeApp(app)
             dismiss()
         }
@@ -260,24 +261,10 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     }
 
     /**
-     * Check if Application is Installed
-     * @param packageName
-     * Package Name of App
-     */
-    private fun isPackageInstalled(packageName: String): Boolean {
-        return try {
-            Utils.getPackageInfo(requireContext().packageManager, packageName)
-            true
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
-    }
-
-    /**
      * check for displayed app, if app info (update time, version-name or code, sourceDir) has changed
      * @return Boolean true if app info had changed
      */
-    private fun hasAppInfoChanged(): Boolean {
+    private fun hasAppInfoChanged(app: ApplicationModel): Boolean {
         val packageInfo = Utils.getPackageInfo(requireContext().packageManager, app.appPackageName)
         return packageInfo.lastUpdateTime != app.appUpdateTime || packageInfo.versionName != app.appVersionName || Utils.versionCode(
             packageInfo
