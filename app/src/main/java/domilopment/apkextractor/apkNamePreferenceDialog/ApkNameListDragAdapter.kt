@@ -10,16 +10,6 @@ class ApkNameListDragAdapter(private val apkNameListAdapter: ApkNameListAdapter)
 
     override fun isItemViewSwipeEnabled(): Boolean = false
 
-    override fun getMovementFlags(
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder
-    ): Int {
-        return if ((viewHolder as ApkNameListAdapter.MyViewHolder).binding.appNameListItemCheckbox.isChecked) super.getMovementFlags(
-            recyclerView,
-            viewHolder
-        ) else 0
-    }
-
     override fun onMove(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,
@@ -27,8 +17,28 @@ class ApkNameListDragAdapter(private val apkNameListAdapter: ApkNameListAdapter)
     ): Boolean {
         viewHolder as ApkNameListAdapter.MyViewHolder
         target as ApkNameListAdapter.MyViewHolder
-        return if (viewHolder.binding.appNameListItemCheckbox.isChecked and target.binding.appNameListItemCheckbox.isChecked) {
-            apkNameListAdapter.swapItems(
+        val fromCheckValue = viewHolder.binding.appNameListItemCheckbox.isChecked
+        val toCheckValue = target.binding.appNameListItemCheckbox.isChecked
+        return if (fromCheckValue and toCheckValue) {
+            apkNameListAdapter.swapSelected(
+                viewHolder.bindingAdapterPosition,
+                target.bindingAdapterPosition
+            )
+            true
+        } else if (fromCheckValue and !toCheckValue) {
+            apkNameListAdapter.moveFromSelectedToUnselected(
+                viewHolder,
+                target.bindingAdapterPosition
+            )
+            true
+        } else if (!fromCheckValue and toCheckValue) {
+            apkNameListAdapter.moveFromUnselectedToSelected(
+                viewHolder,
+                target.bindingAdapterPosition
+            )
+            true
+        } else if (!fromCheckValue and !toCheckValue) {
+            apkNameListAdapter.swapUnselected(
                 viewHolder.bindingAdapterPosition,
                 target.bindingAdapterPosition
             )

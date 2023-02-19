@@ -3,8 +3,8 @@ package domilopment.apkextractor.apkNamePreferenceDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import domilopment.apkextractor.R
 import domilopment.apkextractor.databinding.ApkNameListItemBinding
 import java.util.Collections
@@ -36,13 +36,11 @@ class ApkNameListAdapter(
         holder.binding.appNameListItemText.text = name
         val isItemSelected = apkNamePreferenceDialog.selectedList.contains(key)
         holder.binding.appNameListItemCheckbox.isChecked = isItemSelected
-        holder.binding.appNameListItemDragHandle.isVisible = isItemSelected
         holder.binding.root.setOnClickListener {
             val checkBox = holder.binding.appNameListItemCheckbox
             checkBox.isChecked = !checkBox.isChecked
             apkNamePreferenceDialog.selectedList.remove(key)
             apkNamePreferenceDialog.unselectedList.remove(key)
-            holder.binding.appNameListItemDragHandle.isVisible = checkBox.isChecked
             if (checkBox.isChecked) {
                 apkNamePreferenceDialog.selectedList.add(key)
             } else {
@@ -73,8 +71,54 @@ class ApkNameListAdapter(
      * @param fromPosition The place the item was at the beginning
      * @param toPosition The place the item is Dragged to
      */
-    fun swapItems(fromPosition: Int, toPosition: Int) {
+    fun swapSelected(fromPosition: Int, toPosition: Int) {
         swapItems(fromPosition, toPosition, apkNamePreferenceDialog.selectedList)
         notifyItemMoved(fromPosition, toPosition)
+    }
+
+    /**
+     * Function called to swap dragged items in Unselected Items
+     * @param fromPosition The place the item was at the beginning
+     * @param toPosition The place the item is Dragged to
+     */
+    fun swapUnselected(fromPosition: Int, toPosition: Int) {
+        val selectedListSize = apkNamePreferenceDialog.selectedList.size
+        swapItems(
+            fromPosition - selectedListSize,
+            toPosition - selectedListSize,
+            apkNamePreferenceDialog.unselectedList
+        )
+        notifyItemMoved(fromPosition, toPosition)
+    }
+
+    /**
+     * Function called to move dragged item from Selected to Unelected Items
+     * @param from ViewHolder of dragged item
+     * @param toPosition The place the item is Dragged to
+     */
+    fun moveFromSelectedToUnselected(from: ViewHolder, toPosition: Int) {
+        val fromPosition = from.bindingAdapterPosition
+        val fromItem = itemList[fromPosition]
+        val posInUnselected = toPosition - apkNamePreferenceDialog.selectedList.size
+        apkNamePreferenceDialog.selectedList.remove(fromItem)
+        apkNamePreferenceDialog.unselectedList.add(posInUnselected, fromItem)
+        (from as MyViewHolder).binding.appNameListItemCheckbox.isChecked = false
+        notifyItemMoved(fromPosition, toPosition)
+        apkNamePreferenceDialog.isSelectionPositive()
+    }
+
+    /**
+     * Function called to move dragged item from Unselected to Selected Items
+     * @param from ViewHolder of dragged item
+     * @param toPosition The place the item is Dragged to
+     */
+    fun moveFromUnselectedToSelected(from: ViewHolder, toPosition: Int) {
+        val fromPosition = from.bindingAdapterPosition
+        val fromItem = itemList[fromPosition]
+        apkNamePreferenceDialog.unselectedList.remove(fromItem)
+        apkNamePreferenceDialog.selectedList.add(toPosition, fromItem)
+        (from as MyViewHolder).binding.appNameListItemCheckbox.isChecked = true
+        notifyItemMoved(fromPosition, toPosition)
+        apkNamePreferenceDialog.isSelectionPositive()
     }
 }
