@@ -19,6 +19,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.Utils
 import java.io.File
 
 class ApkActionsManager(private val context: Context, private val app: ApplicationModel) {
@@ -137,27 +138,20 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * other installation Sources just call market uri
      */
     fun actionOpenShop(view: View, anchorView: View = view) {
-        try {
-            val shopIntent = Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(
-                    when (app.installationSource) {
-                        "com.android.vending" -> {
-                            setPackage(app.installationSource)
-                            "https://play.google.com/store/apps/details?id="
-                        }
-                        "com.sec.android.app.samsungapps" -> "samsungapps://ProductDetail/"
-                        "com.amazon.venezia" -> "amzn://apps/android?p="
-                        else -> "market://details?id="
-                    } + app.appPackageName
-                )
+        app.installationSource?.also {
+            try {
+                val shopIntent = Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(Utils.listOfKnownStores.getValue(it) + app.appPackageName)
+                    if (it in Utils.listOfKnownStores) setPackage(it)
+                }
+                context.startActivity(shopIntent)
+            } catch (e: ActivityNotFoundException) {
+                Snackbar.make(
+                    view,
+                    context.getString(R.string.snackbar_no_activity_for_market_intent),
+                    Snackbar.LENGTH_LONG
+                ).setAnchorView(anchorView).show()
             }
-            context.startActivity(shopIntent)
-        } catch (e: ActivityNotFoundException) {
-            Snackbar.make(
-                view,
-                context.getString(R.string.snackbar_no_activity_for_market_intent),
-                Snackbar.LENGTH_LONG
-            ).setAnchorView(anchorView).show()
         }
     }
 }

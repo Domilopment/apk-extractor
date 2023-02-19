@@ -3,6 +3,7 @@ package domilopment.apkextractor.utils
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
+import java.util.*
 
 object Utils {
     @Throws(PackageManager.NameNotFoundException::class)
@@ -18,7 +19,12 @@ object Utils {
         else packageInfo.versionCode.toLong()
     }
 
-    val listOfKnownStores: List<String> = listOf(
-        "com.android.vending", "com.sec.android.app.samsungapps", "com.amazon.venezia"
-    )
+    val listOfKnownStores: Map<String, String> = mapOf(
+        "com.android.vending" to "https://play.google.com/store/apps/details?id=",
+        "com.sec.android.app.samsungapps" to "samsungapps://ProductDetail/",
+        "com.amazon.venezia" to "amzn://apps/android?p=",
+        "org.fdroid.fdroid" to "fdroid.app://details?id="
+    ).withDefault {
+        "market://details?id="
+    }
 }
