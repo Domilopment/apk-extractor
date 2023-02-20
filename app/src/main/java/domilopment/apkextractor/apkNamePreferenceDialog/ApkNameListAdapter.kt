@@ -39,11 +39,11 @@ class ApkNameListAdapter(
         holder.binding.root.setOnClickListener {
             val checkBox = holder.binding.appNameListItemCheckbox
             checkBox.isChecked = !checkBox.isChecked
-            apkNamePreferenceDialog.selectedList.remove(key)
-            apkNamePreferenceDialog.unselectedList.remove(key)
             if (checkBox.isChecked) {
+                apkNamePreferenceDialog.unselectedList.remove(key)
                 apkNamePreferenceDialog.selectedList.add(key)
             } else {
+                apkNamePreferenceDialog.selectedList.remove(key)
                 apkNamePreferenceDialog.unselectedList.add(0, key)
             }
             apkNamePreferenceDialog.isSelectionPositive()
@@ -99,7 +99,7 @@ class ApkNameListAdapter(
     fun moveFromSelectedToUnselected(from: ViewHolder, toPosition: Int) {
         val fromPosition = from.bindingAdapterPosition
         val fromItem = itemList[fromPosition]
-        val posInUnselected = toPosition - apkNamePreferenceDialog.selectedList.size
+        val posInUnselected = toPosition - apkNamePreferenceDialog.selectedList.size + 1
         apkNamePreferenceDialog.selectedList.remove(fromItem)
         apkNamePreferenceDialog.unselectedList.add(posInUnselected, fromItem)
         (from as MyViewHolder).binding.appNameListItemCheckbox.isChecked = false
