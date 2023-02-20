@@ -246,6 +246,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             app.installationSource?.runCatching {
                 Utils.getPackageInfo(packageManager, this)
             }?.onSuccess { installationSource ->
+                chipIcon = packageManager.getApplicationIcon(installationSource.applicationInfo)
                 text = packageManager.getApplicationLabel(installationSource.applicationInfo)
                 setOnClickListener {
                     apkOptions.actionOpenShop(it, this@AppOptionsBottomSheet.requireView())
