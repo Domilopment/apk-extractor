@@ -119,12 +119,13 @@
                     android:singleLine="true"
                     android:visibility="gone" />
 
-                <com.google.android.material.chip.Chip
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/action_open_shop"
+                    style="@style/Widget.Material3.Button.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    app:chipIcon="@drawable/ic_baseline_shop_24" />
+                    app:icon="@drawable/ic_baseline_shop_24" />
             </LinearLayout>
 
         </LinearLayout>
