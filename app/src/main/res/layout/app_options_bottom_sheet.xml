@@ -123,7 +123,7 @@
                     android:id="@+id/action_open_shop"
                     style="@style/Widget.Material3.Button.Icon"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="42dp"
                     android:visibility="gone"
                     app:icon="@drawable/ic_baseline_shop_24" />
             </LinearLayout>
