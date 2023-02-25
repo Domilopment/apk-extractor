@@ -8,7 +8,6 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.*
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
-import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
