@@ -38,16 +38,14 @@ class ListOfAPKs(private val packageManager: PackageManager) {
 
         applicationsInfo.forEach { packageInfo: ApplicationInfo ->
             ApplicationModel(
-                packageInfo,
-                packageManager
+                packageManager, packageInfo.packageName
             ).also {
                 when {
                     (it.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP ->
                         updatedSystemApps.add(it)
                     (it.appFlags and ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM ->
                         systemApps.add(it)
-                    else ->
-                        userApps.add(it)
+                    else -> userApps.add(it)
                 }
             }
         }

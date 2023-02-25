@@ -44,12 +44,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val appUninstalled =
-                !Utils.isPackageInstalled(requireContext().packageManager, app.appPackageName)
-            if (appUninstalled || hasAppInfoChanged(app)) {
-                model.removeApp(app)
-                if (appUninstalled) dismiss()
-            }
+            setupSheet()
         }
 
     private val saveImage =
@@ -114,22 +109,13 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             skipCollapsed = true
             peekHeight = 0
         }
-
-        try {
-            setupApplicationInfo()
-            setupApplicationActions()
-        } catch (e: Exception) {
-            // Catch error if app info's not available
-        }
     }
 
     override fun onStart() {
         super.onStart()
         // dismiss dialog and remove app from list, if it was uninstalled while apk extractor was in background
-        if (!Utils.isPackageInstalled(requireContext().packageManager, app.appPackageName)) {
-            model.removeApp(app)
-            dismiss()
-        }
+        // Set or Update Application Info
+        setupSheet()
     }
 
     /**
@@ -181,7 +167,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                     )
                 text = getString(R.string.info_bottom_sheet_installation_source, sourceName)
                 isVisible = true
-            }
+            } ?: run { isVisible = false }
         }
     }
 
@@ -253,7 +239,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                     apkOptions.actionOpenShop(it, this@AppOptionsBottomSheet.requireView())
                 }
                 isVisible = installationSource.packageName in Utils.listOfKnownStores
-            }
+            } ?: run { isVisible = false }
         }
     }
 
@@ -263,22 +249,27 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     }
 
     /**
-     * check for displayed app, if app info (update time, version-name or code, sourceDir) has changed
-     * @return Boolean true if app info had changed
-     */
-    private fun hasAppInfoChanged(app: ApplicationModel): Boolean {
-        val packageInfo = Utils.getPackageInfo(requireContext().packageManager, app.appPackageName)
-        return packageInfo.lastUpdateTime != app.appUpdateTime || packageInfo.versionName != app.appVersionName || Utils.versionCode(
-            packageInfo
-        ) != app.appVersionCode || packageInfo.applicationInfo.sourceDir != app.appSourceDirectory
-    }
-
-    /**
      * Formats a Date-Time string into default Locale format
      * @param mills milliseconds since January 1, 1970, 00:00:00 GMT
      * @return formatted date-time string
      */
     private fun getAsFormattedDate(mills: Long): String {
         return SimpleDateFormat.getDateTimeInstance().format(Date(mills))
+    }
+
+    /**
+     * if App is uninstalled, remove it from data source in ViewModel and dismiss dialog
+     * else set application info and actions
+     */
+    private fun setupSheet() {
+        val isAppUninstalled =
+            !Utils.isPackageInstalled(requireContext().packageManager, app.appPackageName)
+        if (isAppUninstalled) {
+            model.removeApp(app)
+            dismiss()
+        } else {
+            setupApplicationInfo()
+            setupApplicationActions()
+        }
     }
 }

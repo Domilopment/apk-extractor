@@ -41,14 +41,10 @@ class AsyncBackupTask(
 
     private val mainDispatcher get() = Dispatchers.Main
 
-    private val packageInfo = Utils.getPackageInfo(context.packageManager, packageName)
-
     // Get Application Info from Package
-    private val app =
-        ApplicationModel(
-            packageInfo.applicationInfo,
-            context.packageManager
-        )
+    private val app = ApplicationModel(
+        context.packageManager, packageName
+    )
 
     fun execute(dispatcher: CoroutineDispatcher = Dispatchers.Default) {
         launch(mainDispatcher) {
@@ -67,9 +63,7 @@ class AsyncBackupTask(
         // Try to Backup App
         return try {
             FileHelper(context).copy(
-                app.appSourceDirectory,
-                path!!,
-                SettingsManager(context).appName(app)
+                app.appSourceDirectory, path!!, SettingsManager(context).appName(app)
             )
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
@@ -82,8 +76,7 @@ class AsyncBackupTask(
         createNotificationChannel()
         with(NotificationManagerCompat.from(context)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.POST_NOTIFICATIONS
+                    context, Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 return
@@ -95,8 +88,7 @@ class AsyncBackupTask(
             } ?: run {
                 // notificationId is a unique int for each notification that you must define
                 notify(
-                    AutoBackupService.getNewNotificationID(),
-                    createNotificationFailed().build()
+                    AutoBackupService.getNewNotificationID(), createNotificationFailed().build()
                 )
             }
         }
@@ -111,9 +103,7 @@ class AsyncBackupTask(
     private fun createNotificationChannel() {
         // Create Notification Channel
         val channel = NotificationChannel(
-            CHANNEL_ID,
-            "App Backup Created",
-            NotificationManager.IMPORTANCE_DEFAULT
+            CHANNEL_ID, "App Backup Created", NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
             lightColor = R.attr.colorPrimary
             enableLights(true)
@@ -121,8 +111,7 @@ class AsyncBackupTask(
         }
 
         // Open Channel with Notification Service
-        val service =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val service = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         service.createNotificationChannel(channel)
     }
 
@@ -132,31 +121,25 @@ class AsyncBackupTask(
      * Returns a Notification for Backup Apk
      */
     private fun createNotificationSuccess(
-        notificationID: Int,
-        fileUri: Uri
+        notificationID: Int, fileUri: Uri
     ): NotificationCompat.Builder {
         // Call MainActivity an Notification Click
         val pendingIntent: PendingIntent =
             Intent(context, MainActivity::class.java).let { notificationIntent ->
                 PendingIntent.getActivity(
-                    context,
-                    0,
-                    notificationIntent,
-                    PendingIntent.FLAG_IMMUTABLE
+                    context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE
                 )
             }
 
         // Share APK on Button Click
-        val sharePendingIntent: PendingIntent =
-            Intent.createChooser(
-                Intent(Intent.ACTION_SEND).apply {
-                    type = FileHelper.MIME_TYPE
-                    putExtra(Intent.EXTRA_STREAM, fileUri)
-                },
-                context.getString(R.string.share_intent_title)
-            ).let {
-                PendingIntent.getActivity(context, 0, it, PendingIntent.FLAG_IMMUTABLE)
-            }
+        val sharePendingIntent: PendingIntent = Intent.createChooser(
+            Intent(Intent.ACTION_SEND).apply {
+                type = FileHelper.MIME_TYPE
+                putExtra(Intent.EXTRA_STREAM, fileUri)
+            }, context.getString(R.string.share_intent_title)
+        ).let {
+            PendingIntent.getActivity(context, 0, it, PendingIntent.FLAG_IMMUTABLE)
+        }
 
         // Delete APK on Button Click
         val deletePendingIntent: PendingIntent =
@@ -173,12 +156,10 @@ class AsyncBackupTask(
             .setContentTitle(context.getString(R.string.auto_backup_broadcast_receiver_notification_title))
             .setContentText(
                 context.getString(
-                    R.string.auto_backup_broadcast_receiver_backup_success,
-                    app.appName
+                    R.string.auto_backup_broadcast_receiver_backup_success, app.appName
                 )
             ).setSmallIcon(R.drawable.ic_small_notification_icon_24)
-            .setColor(context.getColor(R.color.notificationColor))
-            .setContentIntent(pendingIntent)
+            .setColor(context.getColor(R.color.notificationColor)).setContentIntent(pendingIntent)
             .addAction(
                 R.drawable.ic_small_notification_icon_24,
                 context.getString(R.string.action_bottom_sheet_share),
@@ -200,10 +181,7 @@ class AsyncBackupTask(
         val pendingIntent: PendingIntent =
             Intent(context, MainActivity::class.java).let { notificationIntent ->
                 PendingIntent.getActivity(
-                    context,
-                    0,
-                    notificationIntent,
-                    PendingIntent.FLAG_IMMUTABLE
+                    context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE
                 )
             }
 
@@ -212,12 +190,10 @@ class AsyncBackupTask(
             .setContentTitle(context.getString(R.string.auto_backup_broadcast_receiver_notification_title))
             .setContentText(
                 context.getString(
-                    R.string.auto_backup_broadcast_receiver_backup_failed,
-                    app.appName
+                    R.string.auto_backup_broadcast_receiver_backup_failed, app.appName
                 )
             ).setSmallIcon(R.drawable.ic_small_notification_icon_24)
-            .setColor(context.getColor(R.color.notificationColor))
-            .setContentIntent(pendingIntent)
+            .setColor(context.getColor(R.color.notificationColor)).setContentIntent(pendingIntent)
             .setAutoCancel(true)
     }
 }

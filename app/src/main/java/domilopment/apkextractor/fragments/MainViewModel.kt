@@ -134,24 +134,10 @@ class MainViewModel(
      */
     private fun removeApp(packageName: String) {
         _applications.value = _applications.value?.let { apps ->
-            val updatedSystemApps = apps.first.toMutableList()
-            val systemApps =
-                if (updatedSystemApps.removeIf { it.appPackageName == packageName }) {
-                    val applicationInfo = Utils.getPackageInfo(
-                        context.packageManager, packageName
-                    ).applicationInfo
-                    val appModel = ApplicationModel(applicationInfo, context.packageManager)
-                    _appOptionsBottomSheetState.update { state ->
-                        state.copy(selectedApplicationModel = appModel)
-                    }
-                    apps.second.toMutableList().apply {
-                        add(appModel)
-                    }
-                } else apps.second
             val userApps = apps.third.toMutableList().apply {
                 removeIf { it.appPackageName == packageName }
             }
-            return@let Triple(updatedSystemApps, systemApps, userApps)
+            return@let Triple(apps.first, apps.second, userApps)
         }
     }
 
