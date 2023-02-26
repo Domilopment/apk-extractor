@@ -58,8 +58,6 @@ class AppListAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         // - get element from your dataset at this position
         val app = myDatasetFiltered[position]
-        // say holder should not be re used for other Dataset members
-        holder.setIsRecyclable(false)
         // Apply data from Dataset item to holder
         holder.binding.apply {
             firstLine.text =
@@ -78,9 +76,7 @@ class AppListAdapter(
                     }
                 } else {
                     app.isChecked = !app.isChecked
-
                     actionModeCallback.setModeTitle()
-
                     checkBox.isVisible = app.isChecked
                 }
             }
