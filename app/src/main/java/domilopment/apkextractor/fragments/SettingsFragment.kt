@@ -367,15 +367,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
      * @param newValue boolean of service should be running
      */
     private fun handleAutoBackupService(newValue: Boolean) {
-        if (newValue and !AutoBackupService.isRunning) requireActivity().startService(
-            Intent(
-                requireContext(), AutoBackupService::class.java
-            )
+        if (newValue and !AutoBackupService.isRunning) requireContext().startForegroundService(
+            Intent(requireContext(), AutoBackupService::class.java)
         )
-        else if (!newValue and AutoBackupService.isRunning) requireActivity().stopService(
-            Intent(
-                requireContext(), AutoBackupService::class.java
-            )
+        else if (!newValue and AutoBackupService.isRunning) requireContext().stopService(
+            Intent(requireContext(), AutoBackupService::class.java)
         )
     }
 

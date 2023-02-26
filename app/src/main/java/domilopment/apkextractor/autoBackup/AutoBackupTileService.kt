@@ -34,7 +34,7 @@ class AutoBackupTileService : TileService() {
             qsTile.state = Tile.STATE_INACTIVE
         } else {
             updateAutoBackupPreference(true)
-            startService(Intent(this, AutoBackupService::class.java))
+            startForegroundService(Intent(this, AutoBackupService::class.java))
             qsTile.state = Tile.STATE_ACTIVE
         }
         qsTile.updateTile()

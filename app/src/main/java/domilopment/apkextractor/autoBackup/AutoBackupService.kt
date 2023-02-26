@@ -116,6 +116,7 @@ class AutoBackupService : Service() {
                 getString(R.string.auto_backup_notification_action_stop),
                 stopPendingIntent
             )
+            .setOngoing(true)
             .build()
     }
 
