@@ -149,12 +149,8 @@ class MainViewModel(
         _applications.value = _applications.value?.let { apps ->
             val updatedSystemApps = apps.first.toMutableList()
             val systemApps = if (updatedSystemApps.remove(app)) {
-                val appModel = ApplicationModel(context.packageManager, app.appPackageName)
-                _appOptionsBottomSheetState.update { state ->
-                    state.copy(selectedApplicationModel = appModel)
-                }
                 apps.second.toMutableList().apply {
-                    add(appModel)
+                    add(app)
                 }
             } else apps.second
             return@let Triple(updatedSystemApps, systemApps, apps.third)
