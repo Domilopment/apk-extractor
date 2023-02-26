@@ -62,7 +62,6 @@ class SettingsManager(context: Context) {
      */
     fun saveDir(): Uri? = sharedPreferences.getString("dir", null)?.let { Uri.parse(it) }
 
-
     /**
      * Sorts Data by user selected Order
      * @param data Unsorted List of APKs

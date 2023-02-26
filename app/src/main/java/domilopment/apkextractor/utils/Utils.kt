@@ -1,8 +1,10 @@
 package domilopment.apkextractor.utils
 
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
+import domilopment.apkextractor.data.ApplicationModel
 import java.util.*
 
 object Utils {
@@ -40,5 +42,14 @@ object Utils {
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
+    }
+
+    /**
+     * Checks if app is a System app
+     * @param app
+     * App to check
+     */
+    fun isSystemApp(app: ApplicationModel): Boolean {
+        return app.appFlags and ApplicationInfo.FLAG_SYSTEM == ApplicationInfo.FLAG_SYSTEM
     }
 }

@@ -16,6 +16,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.fragments.MainFragment
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.Utils
 
 class AppListTouchHelperCallback(
     private val mainFragment: MainFragment,
@@ -54,13 +55,13 @@ class AppListTouchHelperCallback(
             (recyclerView.adapter as AppListAdapter).myDatasetFiltered[viewHolder.bindingAdapterPosition]
         var swipeDirs = 0
 
-        if (((leftSwipeAction) != ApkActionsOptions.OPEN || app.launchIntent != null) &&
-            (leftSwipeAction != ApkActionsOptions.UNINSTALL || ((app.appFlags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM) || (app.appUpdateTime > app.appInstallTime)))
+        if (((leftSwipeAction) != ApkActionsOptions.OPEN || app.launchIntent != null) && (leftSwipeAction != ApkActionsOptions.UNINSTALL || (!Utils.isSystemApp(
+                app
+            ) || (app.appUpdateTime > app.appInstallTime)))
         ) swipeDirs = swipeDirs or ItemTouchHelper.LEFT
 
-        if (((rightSwipeAction) != ApkActionsOptions.OPEN || app.launchIntent != null) &&
-            (rightSwipeAction != ApkActionsOptions.UNINSTALL || ((app.appFlags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM) || (app.appUpdateTime > app.appInstallTime)))
-        ) swipeDirs = swipeDirs or ItemTouchHelper.RIGHT
+        if (((rightSwipeAction) != ApkActionsOptions.OPEN || app.launchIntent != null) && (rightSwipeAction != ApkActionsOptions.UNINSTALL || ((app.appFlags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM) || (app.appUpdateTime > app.appInstallTime)))) swipeDirs =
+            swipeDirs or ItemTouchHelper.RIGHT
 
         return super.getSwipeDirs(recyclerView, viewHolder) and swipeDirs
     }

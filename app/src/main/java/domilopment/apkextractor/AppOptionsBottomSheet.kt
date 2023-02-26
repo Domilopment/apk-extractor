@@ -44,7 +44,18 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            setupSheet()
+            val isAppUninstalled =
+                !Utils.isPackageInstalled(requireContext().packageManager, app.appPackageName)
+            if (isAppUninstalled) {
+                model.removeApp(app)
+                dismiss()
+            } else {
+                if (Utils.isSystemApp(app) && app.appInstallTime == app.appUpdateTime) model.moveFromUpdatedToSystemApps(
+                    app
+                )
+                setupApplicationInfo()
+                setupApplicationActions()
+            }
         }
 
     private val saveImage =
@@ -115,7 +126,15 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         super.onStart()
         // dismiss dialog and remove app from list, if it was uninstalled while apk extractor was in background
         // Set or Update Application Info
-        setupSheet()
+        val isAppUninstalled =
+            !Utils.isPackageInstalled(requireContext().packageManager, app.appPackageName)
+        if (isAppUninstalled) {
+            model.removeApp(app)
+            dismiss()
+        } else {
+            setupApplicationInfo()
+            setupApplicationActions()
+        }
     }
 
     /**
@@ -255,21 +274,5 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
      */
     private fun getAsFormattedDate(mills: Long): String {
         return SimpleDateFormat.getDateTimeInstance().format(Date(mills))
-    }
-
-    /**
-     * if App is uninstalled, remove it from data source in ViewModel and dismiss dialog
-     * else set application info and actions
-     */
-    private fun setupSheet() {
-        val isAppUninstalled =
-            !Utils.isPackageInstalled(requireContext().packageManager, app.appPackageName)
-        if (isAppUninstalled) {
-            model.removeApp(app)
-            dismiss()
-        } else {
-            setupApplicationInfo()
-            setupApplicationActions()
-        }
     }
 }

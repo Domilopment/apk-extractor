@@ -67,8 +67,12 @@ class MainFragment : Fragment() {
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             appToUninstall?.also {
-                if (!Utils.isPackageInstalled(requireContext().packageManager, it.appPackageName)) {
+                val isAppUninstalled =
+                    !Utils.isPackageInstalled(requireContext().packageManager, it.appPackageName)
+                if (isAppUninstalled) {
                     model.removeApp(it)
+                } else if (Utils.isSystemApp(it) && it.appInstallTime == it.appUpdateTime) {
+                    model.moveFromUpdatedToSystemApps(it)
                 }
             }
             appToUninstall = null
@@ -144,8 +148,7 @@ class MainFragment : Fragment() {
                 app,
                 ApkActionsOptions.ApkActionOptionParams.Builder()
                     .setViews(view, binding.appMultiselectBottomSheet.root).setShareResult(shareApp)
-                    .setDeleteResult(uninstallApp)
-                    .build()
+                    .setDeleteResult(uninstallApp).build()
             )
             viewAdapter.notifyDataSetChanged()
         })
