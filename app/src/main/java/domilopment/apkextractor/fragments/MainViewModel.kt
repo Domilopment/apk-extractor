@@ -201,10 +201,14 @@ class MainViewModel(
                 val selectedAppTypes = async(Dispatchers.IO) {
                     return@async when (key) {
                         "updated_system_apps" -> settingsManager.selectedAppTypes(
-                            it, selectUpdatedSystemApps = b
+                            it, selectUpdatedSystemApps = b, sortFavorites = true
                         )
-                        "system_apps" -> settingsManager.selectedAppTypes(it, selectSystemApps = b)
-                        "user_apps" -> settingsManager.selectedAppTypes(it, selectUserApps = b)
+                        "system_apps" -> settingsManager.selectedAppTypes(
+                            it, selectSystemApps = b, sortFavorites = true
+                        )
+                        "user_apps" -> settingsManager.selectedAppTypes(
+                            it, selectUserApps = b, sortFavorites = true
+                        )
                         else -> null
                     }
                 }
