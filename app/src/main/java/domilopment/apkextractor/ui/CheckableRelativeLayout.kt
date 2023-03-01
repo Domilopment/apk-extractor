@@ -12,7 +12,7 @@ class CheckableRelativeLayout(
     private var isChecked = false
 
     companion object {
-        private val STATE_CHECKABLE = intArrayOf(R.attr.state_pressed)
+        private val STATE_CHECKED = intArrayOf(R.attr.state_checked)
     }
 
     override fun setChecked(checked: Boolean) {
@@ -25,12 +25,13 @@ class CheckableRelativeLayout(
     }
 
     override fun toggle() {
-        setChecked(!isChecked)
+        isChecked = !isChecked
+        refreshDrawableState()
     }
 
     override fun onCreateDrawableState(extraSpace: Int): IntArray? {
         val drawableState = super.onCreateDrawableState(extraSpace + 1)
-        if (isChecked) mergeDrawableStates(drawableState, STATE_CHECKABLE)
+        if (isChecked) mergeDrawableStates(drawableState, STATE_CHECKED)
         return drawableState
     }
 }
