@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<domilopment.apkextractor.ui.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/list_element"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
-    android:background="?android:colorBackground"
+    android:background="@color/app_list_item_background"
     android:foreground="?attr/selectableItemBackground"
     android:padding="6dip">
 
@@ -65,4 +65,4 @@
         android:visibility="invisible"
         app:srcCompat="@drawable/baseline_star_24" />
 
-</RelativeLayout>
+</domilopment.apkextractor.ui.CheckableRelativeLayout>

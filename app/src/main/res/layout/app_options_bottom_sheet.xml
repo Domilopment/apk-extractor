@@ -74,7 +74,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <domilopment.apkextractor.ExpandableTextView
+            <domilopment.apkextractor.ui.ExpandableTextView
                 android:id="@+id/selected_app_source_directory"
                 style="@style/BottomSheetItem"
                 android:ellipsize="middle"

@@ -64,6 +64,7 @@ class AppListAdapter(
             icon.setImageDrawable(app.appIcon)
             checkCircle.isVisible = app.isChecked
             favoriteStar.isVisible = app.isFavorite
+            root.isChecked = app.isChecked
             // ItemView on Click
             root.setOnClickListener {
                 if (!actionModeCallback.isActionModeActive()) {
@@ -77,12 +78,14 @@ class AppListAdapter(
                     app.isChecked = !app.isChecked
                     actionModeCallback.setModeTitle()
                     checkCircle.isVisible = app.isChecked
+                    root.isChecked = app.isChecked
                 }
             }
             // ItemView on Long Click
             root.setOnLongClickListener {
                 if (!actionModeCallback.isActionModeActive()) {
                     checkCircle.isVisible = true
+                    root.isChecked = true
                     app.isChecked = true
                     mainFragment.startSupportActionMode(true)
                     true
