@@ -16,9 +16,7 @@ import java.util.*
 
 class AppListAdapter(
     private val mainFragment: MainFragment
-) :
-    RecyclerView.Adapter<AppListAdapter.MyViewHolder>(),
-    Filterable {
+) : RecyclerView.Adapter<AppListAdapter.MyViewHolder>(), Filterable {
     // Static Dataset for Smoother transition
     private var myDataset = listOf<ApplicationModel>()
 
@@ -64,7 +62,8 @@ class AppListAdapter(
                 mainFragment.getString(R.string.holder_app_name, app.appName, app.apkSize)
             secondLine.text = app.appPackageName
             icon.setImageDrawable(app.appIcon)
-            checkBox.isVisible = app.isChecked
+            checkCircle.isVisible = app.isChecked
+            favoriteStar.isVisible = app.isFavorite
             // ItemView on Click
             root.setOnClickListener {
                 if (!actionModeCallback.isActionModeActive()) {
@@ -77,13 +76,13 @@ class AppListAdapter(
                 } else {
                     app.isChecked = !app.isChecked
                     actionModeCallback.setModeTitle()
-                    checkBox.isVisible = app.isChecked
+                    checkCircle.isVisible = app.isChecked
                 }
             }
             // ItemView on Long Click
             root.setOnLongClickListener {
                 if (!actionModeCallback.isActionModeActive()) {
-                    checkBox.isVisible = true
+                    checkCircle.isVisible = true
                     app.isChecked = true
                     mainFragment.startSupportActionMode(true)
                     true
@@ -116,8 +115,9 @@ class AppListAdapter(
                     myDataset
                 } else {
                     myDataset.filter {
-                        it.appName.lowercase().contains(charString)
-                                || it.appPackageName.contains(charSequence)
+                        it.appName.lowercase().contains(charString) || it.appPackageName.contains(
+                            charSequence
+                        )
                     }
                 }
                 return FilterResults().apply {
@@ -133,8 +133,8 @@ class AppListAdapter(
              * Apps that match charSequence
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
-                @Suppress("UNCHECKED_CAST")
-                myDatasetFiltered = (filterResults.values as List<ApplicationModel>).toMutableList()
+                @Suppress("UNCHECKED_CAST") myDatasetFiltered =
+                    (filterResults.values as List<ApplicationModel>).toMutableList()
                 notifyDataSetChanged()
             }
         }

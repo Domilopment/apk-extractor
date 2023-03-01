@@ -30,4 +30,5 @@ data class ApplicationModel(
         ).installingPackageName
         else packageManager.getInstallerPackageName(appPackageName)
     var isChecked: Boolean = false
+    var isFavorite: Boolean = false
 }

@@ -18,12 +18,24 @@
         android:contentDescription="@string/list_item_Image_description"
         android:src="@android:drawable/sym_def_app_icon" />
 
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/checkCircle"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignEnd="@id/icon"
+        android:layout_alignBottom="@id/icon"
+        android:contentDescription="@string/list_item_checkbox_description"
+        android:src="@drawable/baseline_check_circle_24"
+        android:translationX="6dp"
+        android:translationY="2dp"
+        android:visibility="invisible" />
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/secondLine"
         android:layout_width="wrap_content"
         android:layout_height="26dip"
         android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@id/checkBox"
+        android:layout_toStartOf="@id/favoriteStar"
         android:layout_toEndOf="@id/icon"
         android:singleLine="true"
         android:text="@string/list_item_package_placeholder"
@@ -36,7 +48,7 @@
         android:layout_alignWithParentIfMissing="true"
         android:layout_above="@id/secondLine"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@id/checkBox"
+        android:layout_toStartOf="@id/favoriteStar"
         android:layout_toEndOf="@id/icon"
         android:gravity="center_vertical"
         android:singleLine="true"
@@ -44,14 +56,13 @@
         android:textSize="16sp" />
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/checkBox"
+        android:id="@+id/favoriteStar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:contentDescription="@string/list_item_checkbox_description"
         android:visibility="invisible"
-        app:srcCompat="@drawable/ic_baseline_check_box_24" />
+        app:srcCompat="@drawable/baseline_star_24" />
 
 </RelativeLayout>

@@ -44,7 +44,8 @@ class SettingsManager(context: Context) {
         selectSystemApps: Boolean = sharedPreferences.getBoolean("system_apps", false),
         selectUserApps: Boolean = sharedPreferences.getBoolean("user_apps", true),
         sortApps: Boolean = true,
-        sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME)
+        sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME),
+        sortFavorites: Boolean = false
     ): List<ApplicationModel> {
         val (updatedSystemApps, systemApps, userApps) = applications
         val mData: MutableList<ApplicationModel> = mutableListOf()
@@ -53,7 +54,7 @@ class SettingsManager(context: Context) {
             if (selectSystemApps) mData.addAll(systemApps)
         }
         if (selectUserApps) mData.addAll(userApps)
-        return if (sortApps) sortData(mData, sortMode) else mData
+        return if (sortApps) sortData(mData, sortMode, sortFavorites) else mData
     }
 
     /**
@@ -71,9 +72,10 @@ class SettingsManager(context: Context) {
     @Throws(Exception::class)
     fun sortData(
         data: List<ApplicationModel>,
-        sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME)
+        sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME),
+        sortFavorites: Boolean = false
     ): List<ApplicationModel> {
-        return when (sortMode) {
+        val sortedList = when (sortMode) {
             SORT_BY_NAME -> data.sortedWith(
                 compareBy(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
             )
@@ -90,6 +92,13 @@ class SettingsManager(context: Context) {
             )
             SORT_BY_APK_SIZE -> data.sortedWith(compareBy(ApplicationModel::apkSize))
             else -> throw Exception("No such sort type")
+        }
+        return sortedList.let {
+            if (sortFavorites) it.sortedBy { app ->
+                (app.appPackageName !in sharedPreferences.getStringSet(
+                    "favorites", setOf()
+                )!!).also { isFavorite -> app.isFavorite = !isFavorite }
+            } else it
         }
     }
 
@@ -213,5 +222,18 @@ class SettingsManager(context: Context) {
         val preferenceVal =
             sharedPreferences.getString("list_preference_swipe_actions_left", "share_apk")
         return getSwipeActionByPreferenceValue(preferenceVal)
+    }
+
+    /**
+     * Add an app as package name to preference favorite set or remove it
+     * @param packageName name of package for state change
+     * @param isFavorite true if it should be added to favorites, false if it should be removed
+     */
+    fun editFavorites(packageName: String, isFavorite: Boolean) {
+        val favorites: MutableSet<String> =
+            sharedPreferences.getStringSet("favorites", setOf())!!.toMutableSet()
+        if (isFavorite) favorites.add(packageName)
+        else favorites.remove(packageName)
+        sharedPreferences.edit().putStringSet("favorites", favorites).commit()
     }
 }

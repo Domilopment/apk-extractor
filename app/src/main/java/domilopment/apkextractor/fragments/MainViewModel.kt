@@ -54,7 +54,8 @@ class MainViewModel(
         _applications.observeForever { apps ->
             _mainFragmantState.update { state ->
                 state.copy(
-                    appList = SettingsManager(context).selectedAppTypes(apps), isRefreshing = false
+                    appList = SettingsManager(context).selectedAppTypes(apps, sortFavorites = true),
+                    isRefreshing = false
                 )
             }
         }
@@ -170,7 +171,7 @@ class MainViewModel(
                     appList = withContext(Dispatchers.IO) {
                         SettingsManager(
                             context
-                        ).sortData(state.appList)
+                        ).sortData(state.appList, sortFavorites = true)
                     }, isRefreshing = false
                 )
             }

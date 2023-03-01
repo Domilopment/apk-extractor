@@ -196,6 +196,15 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     private fun setupApplicationActions() {
         val apkOptions = ApkActionsManager(requireContext(), app)
 
+        // Switch from and to favorites
+        binding.addToFavorites.apply {
+            isChecked = app.isFavorite
+            setOnCheckedChangeListener { _, isChecked ->
+                SettingsManager(requireContext()).editFavorites(app.appPackageName, isChecked)
+                model.sortApps()
+            }
+        }
+
         // Save Apk
         binding.actionSaveApk.setOnClickListener { v ->
             apkOptions.actionSave(v, requireView())
