@@ -63,6 +63,9 @@
     <string name="apk_swipe_action_left_title">Left swipe action</string>
     <string name="apk_swipe_action_left_summary">Select what happens if you swipe to the left on an entry in the App list</string>
 
+    <string name="sort_favorites_title">Sort Favorites</string>
+    <string name="sort_favorites_summary">Enable if Favorites should be shown on top of App list</string>
+
     <string name="ignore_battery_optimization_title">Disable Battery Optimization</string>
     <string name="ignore_battery_optimization_summary">If the Auto Backup Service gets killed in background without restarting, you might consider disable battery optimization for this app so it keeps running in background</string>
 

@@ -136,7 +136,8 @@ class AppListAdapter(
              * Apps that match charSequence
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
-                @Suppress("UNCHECKED_CAST") myDatasetFiltered =
+                @Suppress("UNCHECKED_CAST")
+                myDatasetFiltered =
                     (filterResults.values as List<ApplicationModel>).toMutableList()
                 notifyDataSetChanged()
             }
@@ -148,7 +149,6 @@ class AppListAdapter(
      * @param apps Updated set of Applications
      */
     fun updateData(apps: List<ApplicationModel>) {
-        if (apps == myDataset) return
         myDataset = apps
         myDatasetFiltered = myDataset.toMutableList()
         notifyDataSetChanged()

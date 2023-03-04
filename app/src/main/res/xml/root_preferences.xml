@@ -76,6 +76,11 @@
             android:summary="@string/apk_swipe_action_left_summary"
             android:title="@string/apk_swipe_action_left_title" />
         <SwitchPreferenceCompat
+            android:defaultValue="true"
+            app:key="sort_favorites"
+            app:summary="@string/sort_favorites_summary"
+            app:title="@string/sort_favorites_title" />
+        <SwitchPreferenceCompat
             app:key="ignore_battery_optimization"
             app:summary="@string/ignore_battery_optimization_summary"
             app:title="@string/ignore_battery_optimization_title" />

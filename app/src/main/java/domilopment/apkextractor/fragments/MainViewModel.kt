@@ -54,8 +54,7 @@ class MainViewModel(
         _applications.observeForever { apps ->
             _mainFragmantState.update { state ->
                 state.copy(
-                    appList = SettingsManager(context).selectedAppTypes(apps, sortFavorites = true),
-                    isRefreshing = false
+                    appList = SettingsManager(context).selectedAppTypes(apps), isRefreshing = false
                 )
             }
         }
@@ -169,11 +168,23 @@ class MainViewModel(
             _mainFragmantState.update { state ->
                 state.copy(
                     appList = withContext(Dispatchers.IO) {
-                        SettingsManager(
-                            context
-                        ).sortData(state.appList, sortFavorites = true)
+                        SettingsManager(context).sortData(state.appList)
                     }, isRefreshing = false
                 )
+            }
+        }
+    }
+
+    /**
+     * if new Favorite is added, sort to top of the list, if removed sort back in list with selected options
+     */
+    fun sortFavorites(sortFavorites: Boolean) {
+        val settingsManager = SettingsManager(context)
+        viewModelScope.launch {
+            _mainFragmantState.update { state ->
+                state.copy(appList = withContext(Dispatchers.IO) {
+                    settingsManager.sortData(state.appList, sortFavorites = sortFavorites)
+                }, updateTrigger = !state.updateTrigger)
             }
         }
     }
@@ -201,13 +212,13 @@ class MainViewModel(
                 val selectedAppTypes = async(Dispatchers.IO) {
                     return@async when (key) {
                         "updated_system_apps" -> settingsManager.selectedAppTypes(
-                            it, selectUpdatedSystemApps = b, sortFavorites = true
+                            it, selectUpdatedSystemApps = b
                         )
                         "system_apps" -> settingsManager.selectedAppTypes(
-                            it, selectSystemApps = b, sortFavorites = true
+                            it, selectSystemApps = b
                         )
                         "user_apps" -> settingsManager.selectedAppTypes(
-                            it, selectUserApps = b, sortFavorites = true
+                            it, selectUserApps = b
                         )
                         else -> null
                     }

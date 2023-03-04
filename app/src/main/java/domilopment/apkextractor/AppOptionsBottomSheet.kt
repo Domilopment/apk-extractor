@@ -200,8 +200,10 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         binding.addToFavorites.apply {
             isChecked = app.isFavorite
             setOnCheckedChangeListener { _, isChecked ->
-                SettingsManager(requireContext()).editFavorites(app.appPackageName, isChecked)
-                model.sortApps()
+                val settingsManager = SettingsManager(requireContext())
+                settingsManager.editFavorites(app.appPackageName, isChecked)
+                app.isFavorite = isChecked
+                model.sortFavorites(settingsManager.isSortPreferencesEnabled())
             }
         }
 

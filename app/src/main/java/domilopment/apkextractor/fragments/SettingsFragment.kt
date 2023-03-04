@@ -53,6 +53,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var listPreferenceUiMode: ListPreference? = null
     private var useMaterialYou: SwitchPreferenceCompat? = null
     private var listPreferenceLocaleList: ListPreference? = null
+    private var sortFavorites: SwitchPreferenceCompat? = null
     private var ignoreBatteryOptimization: SwitchPreferenceCompat? = null
     private var clearCache: Preference? = null
     private var github: Preference? = null
@@ -138,6 +139,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         listPreferenceUiMode = findPreference("list_preference_ui_mode")
         useMaterialYou = findPreference("use_material_you")
         listPreferenceLocaleList = findPreference("list_preference_locale_list")
+        sortFavorites = findPreference("sort_favorites")
         ignoreBatteryOptimization = findPreference("ignore_battery_optimization")
         clearCache = findPreference("clear_cache")
         github = findPreference("github")
@@ -243,7 +245,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                             selectUpdatedSystemApps = true,
                             selectSystemApps = false,
                             selectUserApps = true,
-                            sortMode = SettingsManager.SORT_BY_NAME
+                            sortMode = SettingsManager.SORT_BY_NAME,
+                            sortFavorites = false
                         ).forEach {
                             appEntries.add(it.appName)
                             appValues.add(it.appPackageName)
@@ -330,6 +333,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     false
                 } else true
             }
+        }
+
+        sortFavorites?.setOnPreferenceChangeListener { _, newValue ->
+            model.sortFavorites(newValue as Boolean)
+            return@setOnPreferenceChangeListener true
         }
     }
 

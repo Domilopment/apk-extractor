@@ -45,7 +45,7 @@ class SettingsManager(context: Context) {
         selectUserApps: Boolean = sharedPreferences.getBoolean("user_apps", true),
         sortApps: Boolean = true,
         sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME),
-        sortFavorites: Boolean = false
+        sortFavorites: Boolean = sharedPreferences.getBoolean("sort_favorites", true)
     ): List<ApplicationModel> {
         val (updatedSystemApps, systemApps, userApps) = applications
         val mData: MutableList<ApplicationModel> = mutableListOf()
@@ -54,6 +54,10 @@ class SettingsManager(context: Context) {
             if (selectSystemApps) mData.addAll(systemApps)
         }
         if (selectUserApps) mData.addAll(userApps)
+        mData.forEach {
+            it.isFavorite =
+                it.appPackageName in sharedPreferences.getStringSet("favorites", setOf())!!
+        }
         return if (sortApps) sortData(mData, sortMode, sortFavorites) else mData
     }
 
@@ -73,32 +77,29 @@ class SettingsManager(context: Context) {
     fun sortData(
         data: List<ApplicationModel>,
         sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME),
-        sortFavorites: Boolean = false
+        sortFavorites: Boolean = sharedPreferences.getBoolean("sort_favorites", true)
     ): List<ApplicationModel> {
-        val sortedList = when (sortMode) {
-            SORT_BY_NAME -> data.sortedWith(
-                compareBy(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
+        val comparator = when (sortMode) {
+            SORT_BY_NAME -> compareBy(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
+            SORT_BY_PACKAGE -> compareBy(
+                String.CASE_INSENSITIVE_ORDER, ApplicationModel::appPackageName
             )
-            SORT_BY_PACKAGE -> data.sortedWith(
-                compareBy(
-                    String.CASE_INSENSITIVE_ORDER, ApplicationModel::appPackageName
-                )
-            )
-            SORT_BY_INSTALL_TIME -> data.sortedWith(
-                compareBy(ApplicationModel::appInstallTime).reversed()
-            )
-            SORT_BY_UPDATE_TIME -> data.sortedWith(
-                compareBy(ApplicationModel::appUpdateTime).reversed()
-            )
-            SORT_BY_APK_SIZE -> data.sortedWith(compareBy(ApplicationModel::apkSize))
+            SORT_BY_INSTALL_TIME -> compareByDescending(ApplicationModel::appInstallTime)
+            SORT_BY_UPDATE_TIME -> compareByDescending(ApplicationModel::appUpdateTime)
+            SORT_BY_APK_SIZE -> compareBy(ApplicationModel::apkSize)
             else -> throw Exception("No such sort type")
         }
-        return sortedList.let {
-            if (sortFavorites) it.sortedBy { app ->
-                (app.appPackageName !in sharedPreferences.getStringSet(
-                    "favorites", setOf()
-                )!!).also { isFavorite -> app.isFavorite = !isFavorite }
-            } else it
+        val sortedList = data.sortedWith(comparator)
+        return if (sortFavorites) sortFavorites(sortedList) else sortedList
+    }
+
+    /**
+     * Sorts Favorites to top of the app list
+     * @param data List of APKs
+     */
+    private fun sortFavorites(data: List<ApplicationModel>): List<ApplicationModel> {
+        return data.sortedBy { app ->
+            app.appPackageName !in sharedPreferences.getStringSet("favorites", setOf())!!
         }
     }
 
@@ -235,5 +236,13 @@ class SettingsManager(context: Context) {
         if (isFavorite) favorites.add(packageName)
         else favorites.remove(packageName)
         sharedPreferences.edit().putStringSet("favorites", favorites).commit()
+    }
+
+    /**
+     * Check if sort favorites is enabled
+     * @return enabled state of sort favorites
+     */
+    fun isSortPreferencesEnabled(): Boolean {
+        return sharedPreferences.getBoolean("sort_favorites", true)
     }
 }
