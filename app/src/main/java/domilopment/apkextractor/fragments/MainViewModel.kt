@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.*
 import domilopment.apkextractor.Event
 import domilopment.apkextractor.R
+import domilopment.apkextractor.UpdateTrigger
 import domilopment.apkextractor.data.*
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
@@ -182,9 +183,12 @@ class MainViewModel(
         val settingsManager = SettingsManager(context)
         viewModelScope.launch {
             _mainFragmantState.update { state ->
-                state.copy(appList = withContext(Dispatchers.IO) {
+                val sortedList = withContext(Dispatchers.IO) {
                     settingsManager.sortData(state.appList, sortFavorites = sortFavorites)
-                }, updateTrigger = !state.updateTrigger)
+                }
+                state.copy(
+                    appList = sortedList, updateTrigger = UpdateTrigger(state.appList == sortedList)
+                )
             }
         }
     }

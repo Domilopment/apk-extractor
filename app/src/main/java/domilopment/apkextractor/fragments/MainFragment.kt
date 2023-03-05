@@ -40,6 +40,8 @@ import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.utils.Utils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -111,7 +113,7 @@ class MainFragment : Fragment() {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.mainFragmantState.collect { uiState ->
                     binding.refresh.isRefreshing = uiState.isRefreshing
-                    viewAdapter.updateData(uiState.appList)
+                    viewAdapter.updateData(uiState.appList, uiState.updateTrigger.getTriggerIfNotHandled())
                     if (::searchView.isInitialized) with(searchView.query) {
                         if (isNotBlank()) viewAdapter.filter.filter(this)
                     }
@@ -308,9 +310,19 @@ class MainFragment : Fragment() {
                             return onFilter(query)
                         }
 
+                        var queryTextChangedJob: Job? = null
                         override fun onQueryTextChange(query: String?): Boolean {
                             // filter recycler view when text is changed
-                            return onFilter(query)
+                            if (query.isNullOrBlank())
+                                onFilter(query)
+                            else {
+                                queryTextChangedJob?.cancel()
+                                queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
+                                    delay(500)
+                                    onFilter(query)
+                                }
+                            }
+                            return false
                         }
 
                         fun onFilter(query: String?): Boolean {
@@ -333,7 +345,7 @@ class MainFragment : Fragment() {
                     model.searchQuery.observe(viewLifecycleOwner) {
                         it?.also {
                             viewAdapter.filter.filter(it)
-                            searchView.setQuery(it, false)
+                            if (it != searchView.query.toString()) searchView.setQuery(it, false)
                             if (!viewAdapter.actionModeCallback.isActionModeActive() && it.isNotBlank()) searchView.isIconified =
                                 false
                         }
