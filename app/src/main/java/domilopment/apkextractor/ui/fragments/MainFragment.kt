@@ -314,10 +314,10 @@ class MainFragment : Fragment() {
                         var queryTextChangedJob: Job? = null
                         override fun onQueryTextChange(query: String?): Boolean {
                             // filter recycler view when text is changed
+                            queryTextChangedJob?.cancel()
                             if (query.isNullOrBlank())
                                 onFilter(query)
                             else {
-                                queryTextChangedJob?.cancel()
                                 queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
                                     delay(500)
                                     onFilter(query)
