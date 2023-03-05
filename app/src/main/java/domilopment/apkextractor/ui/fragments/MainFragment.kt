@@ -1,4 +1,4 @@
-package domilopment.apkextractor.fragments
+package domilopment.apkextractor.ui.fragments
 
 import android.app.Activity
 import android.content.Intent
@@ -32,10 +32,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
-import domilopment.apkextractor.appList.AppListAdapter
-import domilopment.apkextractor.appList.AppListTouchHelperCallback
+import domilopment.apkextractor.ui.appList.AppListAdapter
+import domilopment.apkextractor.ui.appList.AppListTouchHelperCallback
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.FragmentMainBinding
+import domilopment.apkextractor.ui.ProgressDialogFragment
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
@@ -113,7 +114,7 @@ class MainFragment : Fragment() {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.mainFragmantState.collect { uiState ->
                     binding.refresh.isRefreshing = uiState.isRefreshing
-                    viewAdapter.updateData(uiState.appList, uiState.updateTrigger.getTriggerIfNotHandled())
+                    viewAdapter.updateData(uiState.appList, uiState.updateTrigger.handleTrigger())
                     if (::searchView.isInitialized) with(searchView.query) {
                         if (isNotBlank()) viewAdapter.filter.filter(this)
                     }

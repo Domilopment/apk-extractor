@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui
+package domilopment.apkextractor.ui.components
 
 import android.R
 import android.content.Context

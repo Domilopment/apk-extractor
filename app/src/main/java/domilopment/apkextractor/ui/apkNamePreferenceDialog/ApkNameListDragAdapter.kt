@@ -1,4 +1,4 @@
-package domilopment.apkextractor.apkNamePreferenceDialog
+package domilopment.apkextractor.ui.apkNamePreferenceDialog
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView

@@ -6,7 +6,7 @@
     app:startDestination="@id/mainFragment">
     <fragment
         android:id="@+id/mainFragment"
-        android:name="domilopment.apkextractor.fragments.MainFragment"
+        android:name="domilopment.apkextractor.ui.fragments.MainFragment"
         android:label="MainFragment"
         tools:layout="@layout/fragment_main">
         <action
@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="domilopment.apkextractor.fragments.SettingsFragment"
+        android:name="domilopment.apkextractor.ui.fragments.SettingsFragment"
         android:label="SettingsFragment"
         tools:layout="@layout/settings_fragment"/>
 </navigation>

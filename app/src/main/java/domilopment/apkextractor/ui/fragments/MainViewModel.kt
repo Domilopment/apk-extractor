@@ -1,4 +1,4 @@
-package domilopment.apkextractor.fragments
+package domilopment.apkextractor.ui.fragments
 
 import android.app.Application
 import android.net.Uri

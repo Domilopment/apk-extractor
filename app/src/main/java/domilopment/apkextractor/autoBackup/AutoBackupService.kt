@@ -6,7 +6,7 @@ import android.os.IBinder
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
-import domilopment.apkextractor.MainActivity
+import domilopment.apkextractor.ui.MainActivity
 import domilopment.apkextractor.R
 import java.lang.IllegalArgumentException
 import java.util.concurrent.atomic.AtomicInteger

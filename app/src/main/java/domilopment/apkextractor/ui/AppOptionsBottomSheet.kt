@@ -1,4 +1,4 @@
-package domilopment.apkextractor
+package domilopment.apkextractor.ui
 
 import android.Manifest
 import android.content.pm.ApplicationInfo
@@ -19,9 +19,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
+import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.AppOptionsBottomSheetBinding
-import domilopment.apkextractor.fragments.MainViewModel
+import domilopment.apkextractor.ui.fragments.MainViewModel
 import domilopment.apkextractor.utils.*
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import kotlinx.coroutines.launch

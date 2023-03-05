@@ -5,7 +5,7 @@
             app:key="choose_dir"
             app:summary="@string/choose_save_dir_summary"
             app:title="@string/choose_save_dir" />
-        <domilopment.apkextractor.apkNamePreferenceDialog.ApkNamePreference
+        <domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreference
             android:defaultValue="@array/app_save_name_default_values"
             android:entries="@array/app_save_name_names"
             android:entryValues="@array/app_save_name_values"

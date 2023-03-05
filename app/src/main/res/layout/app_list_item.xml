@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domilopment.apkextractor.ui.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<domilopment.apkextractor.ui.components.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/list_element"
     android:layout_width="fill_parent"
@@ -65,4 +65,4 @@
         android:visibility="invisible"
         app:srcCompat="@drawable/baseline_star_24" />
 
-</domilopment.apkextractor.ui.CheckableRelativeLayout>
+</domilopment.apkextractor.ui.components.CheckableRelativeLayout>

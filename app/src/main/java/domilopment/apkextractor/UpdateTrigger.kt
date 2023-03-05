@@ -4,7 +4,7 @@ open class UpdateTrigger(private val trigger: Boolean) {
     var hasBeenHandaled = false
         private set
 
-    fun getTriggerIfNotHandled(): Boolean {
+    fun handleTrigger(): Boolean {
         return if (hasBeenHandaled)
             false
         else {

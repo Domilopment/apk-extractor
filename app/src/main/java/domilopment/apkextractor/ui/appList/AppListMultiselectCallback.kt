@@ -1,4 +1,4 @@
-package domilopment.apkextractor.appList
+package domilopment.apkextractor.ui.appList
 
 import android.view.Menu
 import android.view.MenuInflater
@@ -7,7 +7,7 @@ import android.widget.CheckBox
 import androidx.appcompat.view.ActionMode
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import domilopment.apkextractor.R
-import domilopment.apkextractor.fragments.MainFragment
+import domilopment.apkextractor.ui.fragments.MainFragment
 
 class AppListMultiselectCallback(
     private val mainFragment: MainFragment,

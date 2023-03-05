@@ -1,4 +1,4 @@
-package domilopment.apkextractor
+package domilopment.apkextractor.ui
 
 import android.app.Dialog
 import android.os.Bundle
@@ -13,8 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
+import domilopment.apkextractor.R
 import domilopment.apkextractor.databinding.ProgressDialogBinding
-import domilopment.apkextractor.fragments.MainViewModel
+import domilopment.apkextractor.ui.fragments.MainViewModel
 import kotlinx.coroutines.launch
 
 class ProgressDialogFragment : DialogFragment() {

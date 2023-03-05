@@ -1,4 +1,4 @@
-package domilopment.apkextractor.fragments
+package domilopment.apkextractor.ui.fragments
 
 import android.Manifest
 import android.app.Activity
@@ -34,8 +34,8 @@ import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
-import domilopment.apkextractor.apkNamePreferenceDialog.ApkNamePreference
-import domilopment.apkextractor.apkNamePreferenceDialog.ApkNamePreferenceDialogFragmentCompat
+import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreference
+import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreferenceDialogFragmentCompat
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.utils.Utils

@@ -1,4 +1,4 @@
-package domilopment.apkextractor.appList
+package domilopment.apkextractor.ui.appList
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,11 +7,11 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import domilopment.apkextractor.AppOptionsBottomSheet
+import domilopment.apkextractor.ui.AppOptionsBottomSheet
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.AppListItemBinding
-import domilopment.apkextractor.fragments.MainFragment
+import domilopment.apkextractor.ui.fragments.MainFragment
 import java.util.*
 
 class AppListAdapter(

@@ -1,4 +1,4 @@
-package domilopment.apkextractor.apkNamePreferenceDialog
+package domilopment.apkextractor.ui.apkNamePreferenceDialog
 
 import android.content.Context
 import android.util.AttributeSet

@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui
+package domilopment.apkextractor.ui.components
 
 import android.animation.ObjectAnimator
 import android.content.Context

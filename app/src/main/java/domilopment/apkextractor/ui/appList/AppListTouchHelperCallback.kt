@@ -1,4 +1,4 @@
-package domilopment.apkextractor.appList
+package domilopment.apkextractor.ui.appList
 
 import android.content.pm.ApplicationInfo
 import android.graphics.*
@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
 import domilopment.apkextractor.R
-import domilopment.apkextractor.fragments.MainFragment
+import domilopment.apkextractor.ui.fragments.MainFragment
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.utils.Utils
