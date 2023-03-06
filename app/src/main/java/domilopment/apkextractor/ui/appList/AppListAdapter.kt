@@ -113,13 +113,14 @@ class AppListAdapter(
              * Apps that match charSequence
              */
             override fun performFiltering(charSequence: CharSequence): FilterResults {
-                val charString = charSequence.toString().lowercase()
+                val charString = charSequence.toString().trim()
                 val myDatasetFiltered = if (charString.isBlank()) {
                     myDataset
                 } else {
                     myDataset.filter {
-                        it.appName.lowercase().contains(charString) || it.appPackageName.contains(
-                            charSequence
+                        it.appName.lowercase()
+                            .contains(charString, ignoreCase = true) || it.appPackageName.contains(
+                            charSequence, ignoreCase = true
                         )
                     }
                 }
@@ -137,8 +138,7 @@ class AppListAdapter(
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
                 @Suppress("UNCHECKED_CAST")
-                myDatasetFiltered =
-                    (filterResults.values as List<ApplicationModel>).toMutableList()
+                myDatasetFiltered = (filterResults.values as List<ApplicationModel>).toMutableList()
                 notifyDataSetChanged()
             }
         }

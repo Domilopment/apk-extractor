@@ -308,15 +308,15 @@ class MainFragment : Fragment() {
                     setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                         override fun onQueryTextSubmit(query: String?): Boolean {
                             // filter recycler view when query submitted
-                            return onFilter(query)
+                            onFilter(query)
+                            return false
                         }
 
                         var queryTextChangedJob: Job? = null
                         override fun onQueryTextChange(query: String?): Boolean {
                             // filter recycler view when text is changed
                             queryTextChangedJob?.cancel()
-                            if (query.isNullOrBlank())
-                                onFilter(query)
+                            if (query.isNullOrBlank()) onFilter(query)
                             else {
                                 queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
                                     delay(500)
@@ -326,9 +326,8 @@ class MainFragment : Fragment() {
                             return false
                         }
 
-                        fun onFilter(query: String?): Boolean {
+                        fun onFilter(query: String?) {
                             model.searchQuery(query)
-                            return false
                         }
                     })
 
@@ -346,7 +345,10 @@ class MainFragment : Fragment() {
                     model.searchQuery.observe(viewLifecycleOwner) {
                         it?.also {
                             viewAdapter.filter.filter(it)
-                            if (it != searchView.query.toString()) searchView.setQuery(it, false)
+                            if (it != searchView.query.toString() && it !in searchView.query.toString()) searchView.setQuery(
+                                it,
+                                false
+                            )
                             if (!viewAdapter.actionModeCallback.isActionModeActive() && it.isNotBlank()) searchView.isIconified =
                                 false
                         }
