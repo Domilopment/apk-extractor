@@ -118,9 +118,10 @@ class AppListAdapter(
                     myDataset
                 } else {
                     myDataset.filter {
-                        it.appName.lowercase()
-                            .contains(charString, ignoreCase = true) || it.appPackageName.contains(
-                            charSequence, ignoreCase = true
+                        it.appName.contains(
+                            charString, ignoreCase = true
+                        ) || it.appPackageName.contains(
+                            charString, ignoreCase = true
                         )
                     }
                 }
