@@ -306,20 +306,22 @@ class MainFragment : Fragment() {
 
                     // listening to search query text change
                     setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                        var queryTextChangedJob: Job? = null
+
                         override fun onQueryTextSubmit(query: String?): Boolean {
                             // filter recycler view when query submitted
+                            queryTextChangedJob?.cancel()
                             onFilter(query)
                             return false
                         }
 
-                        var queryTextChangedJob: Job? = null
                         override fun onQueryTextChange(query: String?): Boolean {
                             // filter recycler view when text is changed
                             queryTextChangedJob?.cancel()
                             if (query.isNullOrBlank()) onFilter(query)
                             else {
                                 queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
-                                    delay(500)
+                                    delay(300)
                                     onFilter(query)
                                 }
                             }
@@ -345,9 +347,8 @@ class MainFragment : Fragment() {
                     model.searchQuery.observe(viewLifecycleOwner) {
                         it?.also {
                             viewAdapter.filter.filter(it)
-                            if (it != searchView.query.toString() && it !in searchView.query.toString()) searchView.setQuery(
-                                it,
-                                false
+                            if (it.isNotBlank() && searchView.query.isBlank()) searchView.setQuery(
+                                it, false
                             )
                             if (!viewAdapter.actionModeCallback.isActionModeActive() && it.isNotBlank()) searchView.isIconified =
                                 false
