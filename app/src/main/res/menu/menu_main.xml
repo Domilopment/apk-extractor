@@ -9,38 +9,11 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom" />
     <item
-        android:icon="@drawable/ic_baseline_sort_24"
+        android:id="@+id/action_filter"
+        android:icon="@drawable/baseline_filter_list_24"
         android:orderInCategory="1"
-        android:title="@string/menu_sort"
-        app:showAsAction="ifRoom">
-        <menu>
-            <group
-                android:checkableBehavior="single"
-                android:enabled="true"
-                android:visible="true">
-                <item
-                    android:id="@+id/action_app_name"
-                    android:title="@string/menu_sort_name"
-                    app:showAsAction="never" />
-                <item
-                    android:id="@+id/action_package_name"
-                    android:title="@string/menu_sort_package"
-                    app:showAsAction="never" />
-                <item
-                    android:id="@+id/action_install_time"
-                    android:title="@string/menu_sort_install"
-                    app:showAsAction="never" />
-                <item
-                    android:id="@+id/action_update_time"
-                    android:title="@string/menu_sort_update"
-                    app:showAsAction="never" />
-                <item
-                    android:id="@+id/action_apk_size"
-                    android:title="@string/menu_sort_apk"
-                    app:showAsAction="never" />
-            </group>
-        </menu>
-    </item>
+        android:title="@string/filter_title"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_show_save_dir"
         android:icon="@drawable/ic_baseline_folder_24"

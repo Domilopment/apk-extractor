@@ -36,6 +36,7 @@ import domilopment.apkextractor.ui.appList.AppListAdapter
 import domilopment.apkextractor.ui.appList.AppListTouchHelperCallback
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.FragmentMainBinding
+import domilopment.apkextractor.ui.AppFilterBottomSheet
 import domilopment.apkextractor.ui.ProgressDialogFragment
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.FileHelper
@@ -285,20 +286,6 @@ class MainFragment : Fragment() {
     private fun setupMenu() {
         (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
-                val byName: MenuItem = menu.findItem(R.id.action_app_name)
-                val byPackage: MenuItem = menu.findItem(R.id.action_package_name)
-                val byInstall: MenuItem = menu.findItem(R.id.action_install_time)
-                val byUpdate: MenuItem = menu.findItem(R.id.action_update_time)
-                val byApkSize: MenuItem = menu.findItem(R.id.action_apk_size)
-                when (sharedPreferences.getInt("app_sort", 0)) {
-                    0 -> byName.isChecked = true
-                    1 -> byPackage.isChecked = true
-                    2 -> byInstall.isChecked = true
-                    3 -> byUpdate.isChecked = true
-                    5 -> byApkSize.isChecked = true
-                    else -> throw Exception("No such sort type")
-                }
-
                 // Associate searchable configuration with the SearchView
                 searchView = (menu.findItem(R.id.action_search).actionView as SearchView).apply {
                     maxWidth = Int.MAX_VALUE
@@ -368,15 +355,6 @@ class MainFragment : Fragment() {
                 // as you specify a parent activity in AndroidManifest.xml.
                 when (menuItem.itemId) {
                     R.id.action_settings -> findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
-                    R.id.action_app_name -> sortData(menuItem, SettingsManager.SORT_BY_NAME)
-                    R.id.action_package_name -> sortData(menuItem, SettingsManager.SORT_BY_PACKAGE)
-                    R.id.action_install_time -> sortData(
-                        menuItem, SettingsManager.SORT_BY_INSTALL_TIME
-                    )
-                    R.id.action_update_time -> sortData(
-                        menuItem, SettingsManager.SORT_BY_UPDATE_TIME
-                    )
-                    R.id.action_apk_size -> sortData(menuItem, SettingsManager.SORT_BY_APK_SIZE)
                     R.id.action_show_save_dir -> {
                         val destDir = SettingsManager(requireContext()).saveDir().let {
                             DocumentsContract.buildDocumentUriUsingTree(
@@ -388,6 +366,9 @@ class MainFragment : Fragment() {
                             putExtra(DocumentsContract.EXTRA_INITIAL_URI, destDir)
                         }
                         selectApk.launch(intent)
+                    }
+                    R.id.action_filter -> AppFilterBottomSheet.newInstance().apply {
+                        show(this@MainFragment.parentFragmentManager, AppFilterBottomSheet.TAG)
                     }
                 }
                 return true

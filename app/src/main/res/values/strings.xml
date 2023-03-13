@@ -25,14 +25,9 @@
     <string name="auto_backup_app_list_summary">Select Apps from which to create an automatic backup after update </string>
 
     <!-- Preferences Apps -->
-    <string name="app_type_system">System Apps</string>
-    <string name="app_type_system_summary">Show all System Apps</string>
-
-    <string name="app_type_system_updated">Updated System Apps</string>
-    <string name="app_type_system_updated_summary">Show all updated System Apps</string>
-
-    <string name="app_type_user">User Apps</string>
-    <string name="app_type_user_summary">Show all Apps Installed by User</string>
+    <string name="app_type_system">System</string>
+    <string name="app_type_system_updated">System updated</string>
+    <string name="app_type_user">User</string>
 
     <!-- Preferences Info -->
     <string name="github">GitHub</string>
@@ -63,8 +58,10 @@
     <string name="apk_swipe_action_left_title">Left swipe action</string>
     <string name="apk_swipe_action_left_summary">Select what happens if you swipe to the left on an entry in the App list</string>
 
-    <string name="sort_favorites_title">Sort Favorites</string>
-    <string name="sort_favorites_summary">Enable if Favorites should be shown on top of App list</string>
+    <string name="favorites">Favorites</string>
+    <string name="sort_favorites">Sort Favorites on top</string>
+
+    <string name="filter_title">Filter</string>
 
     <string name="ignore_battery_optimization_title">Disable Battery Optimization</string>
     <string name="ignore_battery_optimization_summary">If the Auto Backup Service gets killed in background without restarting, you might consider disable battery optimization for this app so it keeps running in background</string>
@@ -104,6 +101,9 @@
     <string name="menu_sort_apk">APK size</string>
     <string name="menu_show_save_dir">Saved Apps</string>
     <string name="action_settings">Settings</string>
+
+    <string name="sort_order_asc">ASC</string>
+    <string name="sort_order_desc">DESC</string>
 
     <!-- Menu Multiselect -->
     <string name="multiselect_select_all">Select all</string>

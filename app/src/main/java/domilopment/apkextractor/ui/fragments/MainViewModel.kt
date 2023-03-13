@@ -54,8 +54,10 @@ class MainViewModel(
         // Set applications in view once they are loaded
         _applications.observeForever { apps ->
             _mainFragmantState.update { state ->
+                val settingsManager = SettingsManager(context)
                 state.copy(
-                    appList = SettingsManager(context).selectedAppTypes(apps), isRefreshing = false
+                    appList = settingsManager.filterApps(settingsManager.selectedAppTypes(apps)),
+                    isRefreshing = false
                 )
             }
         }
@@ -179,16 +181,34 @@ class MainViewModel(
     /**
      * if new Favorite is added, sort to top of the list, if removed sort back in list with selected options
      */
-    fun sortFavorites(sortFavorites: Boolean) {
+    fun sortFavorites() {
         val settingsManager = SettingsManager(context)
         viewModelScope.launch {
             _mainFragmantState.update { state ->
                 val sortedList = withContext(Dispatchers.IO) {
-                    settingsManager.sortData(state.appList, sortFavorites = sortFavorites)
+                    settingsManager.sortData(state.appList)
                 }
                 state.copy(
                     appList = sortedList, updateTrigger = UpdateTrigger(state.appList == sortedList)
                 )
+            }
+        }
+    }
+
+    fun filterApps() {
+        val settingsManager = SettingsManager(context)
+        viewModelScope.launch {
+            applications.value?.let {
+                _mainFragmantState.update { state ->
+                    val sortedList = withContext(Dispatchers.IO) {
+                        settingsManager.filterApps(
+                            SettingsManager(context).selectedAppTypes(
+                                it
+                            )
+                        )
+                    }
+                    state.copy(appList = sortedList)
+                }
             }
         }
     }

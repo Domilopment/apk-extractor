@@ -24,14 +24,9 @@
     <string name="auto_backup_app_list_summary">Wähle Apps aus von denen ein automatisches Backup nach dem aktualisieren erzeugt werden soll</string>
 
     <!-- Preferences Apps -->
-    <string name="app_type_system">System Apps</string>
-    <string name="app_type_system_summary">Zeige alle System Apps</string>
-
-    <string name="app_type_system_updated">Aktualisierte System Apps</string>
-    <string name="app_type_system_updated_summary">Zeige alle aktualisierten System Apps</string>
-
-    <string name="app_type_user">Benutzer Apps</string>
-    <string name="app_type_user_summary">Zeige alle vom Nutzer Installierten Apps</string>
+    <string name="app_type_system">System</string>
+    <string name="app_type_system_updated">System aktualisiert</string>
+    <string name="app_type_user">Benutzer</string>
 
     <!-- Preferences Info -->
     <string name="github">GitHub</string>
@@ -62,8 +57,10 @@
     <string name="apk_swipe_action_left_title">Wischaktion nach links</string>
     <string name="apk_swipe_action_left_summary">Suche aus, was passiert, wenn du auf einem Eintrag in der App-Liste nach links wischst</string>
 
-    <string name="sort_favorites_title">Sortiere Favoriten</string>
-    <string name="sort_favorites_summary">Aktivire diese einstellung um als Favoriten markierte apps am anfang der Liste anzuzeigen.</string>
+    <string name="favorites">Favoriten</string>
+    <string name="sort_favorites">Sortiere Favoriten nach oben</string>
+
+    <string name="filter_title">Filter</string>
 
     <string name="ignore_battery_optimization_title">Hintergrundaktivität</string>
     <string name="ignore_battery_optimization_summary">Falls der Auto Backup Service im Hintergrung gestoppt wird, ohne neu zu starten, ziehen sie es vielleicht in betracht, das einschränken der Hintergrundaktivität für diese app zu deaktivieren</string>
@@ -101,6 +98,9 @@
     <string name="menu_sort_apk">APK größe</string>
     <string name="menu_show_save_dir">Gespeicherte APKs</string>
     <string name="action_settings">Einstellungen</string>
+
+    <string name="sort_order_asc">ASC</string>
+    <string name="sort_order_desc">DESC</string>
 
     <!-- Menu Multiselect -->
     <string name="multiselect_select_all">Alle auswählen</string>

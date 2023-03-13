@@ -12,7 +12,6 @@ import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.jvm.Throws
 
 class SettingsManager(context: Context) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -24,7 +23,7 @@ class SettingsManager(context: Context) {
         const val SORT_BY_PACKAGE = 1
         const val SORT_BY_INSTALL_TIME = 2
         const val SORT_BY_UPDATE_TIME = 3
-        const val SORT_BY_APK_SIZE = 5
+        const val SORT_BY_APK_SIZE = 4
     }
 
     fun getApps(): Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>> {
@@ -73,21 +72,37 @@ class SettingsManager(context: Context) {
      * @return Sorted List of APKs
      * @throws Exception if given sort type doesn't exist
      */
-    @Throws(Exception::class)
     fun sortData(
         data: List<ApplicationModel>,
         sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME),
         sortFavorites: Boolean = sharedPreferences.getBoolean("sort_favorites", true)
     ): List<ApplicationModel> {
-        val comparator = when (sortMode) {
+        val comparator = if (sharedPreferences.getBoolean("app_sort_asc", true)) when (sortMode) {
             SORT_BY_NAME -> compareBy(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
             SORT_BY_PACKAGE -> compareBy(
                 String.CASE_INSENSITIVE_ORDER, ApplicationModel::appPackageName
             )
+            SORT_BY_INSTALL_TIME -> compareBy(ApplicationModel::appInstallTime)
+            SORT_BY_UPDATE_TIME -> compareBy(ApplicationModel::appUpdateTime)
+            SORT_BY_APK_SIZE -> compareBy(ApplicationModel::apkSize)
+            else -> {
+                sharedPreferences.edit().remove("app_sort").apply()
+                compareBy(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
+            }
+        } else when (sortMode) {
+            SORT_BY_NAME -> compareByDescending(
+                String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName
+            )
+            SORT_BY_PACKAGE -> compareByDescending(
+                String.CASE_INSENSITIVE_ORDER, ApplicationModel::appPackageName
+            )
             SORT_BY_INSTALL_TIME -> compareByDescending(ApplicationModel::appInstallTime)
             SORT_BY_UPDATE_TIME -> compareByDescending(ApplicationModel::appUpdateTime)
-            SORT_BY_APK_SIZE -> compareBy(ApplicationModel::apkSize)
-            else -> throw Exception("No such sort type")
+            SORT_BY_APK_SIZE -> compareByDescending(ApplicationModel::apkSize)
+            else -> {
+                sharedPreferences.edit().remove("app_sort").apply()
+                compareByDescending(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
+            }
         }
         val sortedList = data.sortedWith(comparator)
         return if (sortFavorites) sortFavorites(sortedList) else sortedList
@@ -101,6 +116,27 @@ class SettingsManager(context: Context) {
         return data.sortedBy { app ->
             app.appPackageName !in sharedPreferences.getStringSet("favorites", setOf())!!
         }
+    }
+
+    /**
+     * Filter Apps out of List
+     * @param data List of Apps
+     * @param filter Filter options for list, is favorite, installed from- google play, galaxy store, amazon store
+     * @return filtered list of Applications
+     */
+    fun filterApps(
+        data: List<ApplicationModel>, filter: Int = sharedPreferences.getInt("filter", 0)
+    ): List<ApplicationModel> {
+        var dataFiltered = data
+        if (filter and AppFilterOptions.FAVORITES.getByte() == AppFilterOptions.FAVORITES.getByte()) dataFiltered =
+            dataFiltered.filter { it.isFavorite }
+        if (filter and AppFilterOptions.GOOGLE.getByte() == AppFilterOptions.GOOGLE.getByte()) dataFiltered =
+            dataFiltered.filter { it.installationSource == "com.android.vending" }
+        if (filter and AppFilterOptions.SAMSUNG.getByte() == AppFilterOptions.SAMSUNG.getByte()) dataFiltered =
+            dataFiltered.filter { it.installationSource == "com.sec.android.app.samsungapps" }
+        if (filter and AppFilterOptions.AMAZON.getByte() == AppFilterOptions.AMAZON.getByte()) dataFiltered =
+            dataFiltered.filter { it.installationSource == "com.amazon.venezia" }
+        return dataFiltered
     }
 
     /**
@@ -236,13 +272,5 @@ class SettingsManager(context: Context) {
         if (isFavorite) favorites.add(packageName)
         else favorites.remove(packageName)
         sharedPreferences.edit().putStringSet("favorites", favorites).commit()
-    }
-
-    /**
-     * Check if sort favorites is enabled
-     * @return enabled state of sort favorites
-     */
-    fun isSortPreferencesEnabled(): Boolean {
-        return sharedPreferences.getBoolean("sort_favorites", true)
     }
 }

@@ -47,13 +47,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var chooseDir: Preference? = null
     private var autoBackup: SwitchPreferenceCompat? = null
     private var appListAutoBackup: MultiSelectListPreference? = null
-    private var updatedSystemApps: SwitchPreferenceCompat? = null
-    private var systemApps: SwitchPreferenceCompat? = null
-    private var userApps: SwitchPreferenceCompat? = null
     private var listPreferenceUiMode: ListPreference? = null
     private var useMaterialYou: SwitchPreferenceCompat? = null
     private var listPreferenceLocaleList: ListPreference? = null
-    private var sortFavorites: SwitchPreferenceCompat? = null
     private var ignoreBatteryOptimization: SwitchPreferenceCompat? = null
     private var clearCache: Preference? = null
     private var github: Preference? = null
@@ -133,13 +129,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         chooseDir = findPreference("choose_dir")
         autoBackup = findPreference("auto_backup")
         appListAutoBackup = findPreference("app_list_auto_backup")
-        updatedSystemApps = findPreference("updated_system_apps")
-        systemApps = findPreference("system_apps")
-        userApps = findPreference("user_apps")
         listPreferenceUiMode = findPreference("list_preference_ui_mode")
         useMaterialYou = findPreference("use_material_you")
         listPreferenceLocaleList = findPreference("list_preference_locale_list")
-        sortFavorites = findPreference("sort_favorites")
         ignoreBatteryOptimization = findPreference("ignore_battery_optimization")
         clearCache = findPreference("clear_cache")
         github = findPreference("github")
@@ -307,19 +299,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
-        // Change selected app in MainFragmentUiState after selection
-        val appsChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
-            return@OnPreferenceChangeListener try {
-                model.changeSelection(preference.key, newValue as Boolean)
-                true
-            } catch (e: Exception) {
-                false
-            }
-        }
-        updatedSystemApps?.onPreferenceChangeListener = appsChangeListener
-        systemApps?.onPreferenceChangeListener = appsChangeListener
-        userApps?.onPreferenceChangeListener = appsChangeListener
-
         // Request Ignoring Battery Optimization for Auto Backup Service
         ignoreBatteryOptimization?.apply {
             val pm = requireContext().getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -333,11 +312,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     false
                 } else true
             }
-        }
-
-        sortFavorites?.setOnPreferenceChangeListener { _, newValue ->
-            model.sortFavorites(newValue as Boolean)
-            return@setOnPreferenceChangeListener true
         }
     }
 

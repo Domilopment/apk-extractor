@@ -23,22 +23,6 @@
             app:summary="@string/auto_backup_app_list_summary"
             app:title="@string/auto_backup_app_list" />
     </PreferenceCategory>
-    <PreferenceCategory app:title="@string/app_type_header">
-        <SwitchPreferenceCompat
-            app:key="updated_system_apps"
-            app:summary="@string/app_type_system_updated_summary"
-            app:title="@string/app_type_system_updated" />
-        <SwitchPreferenceCompat
-            app:dependency="updated_system_apps"
-            app:key="system_apps"
-            app:summary="@string/app_type_system_summary"
-            app:title="@string/app_type_system" />
-        <SwitchPreferenceCompat
-            app:defaultValue="true"
-            app:key="user_apps"
-            app:summary="@string/app_type_user_summary"
-            app:title="@string/app_type_user" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="@string/appearance">
         <ListPreference
             android:defaultValue="-1"
@@ -75,11 +59,6 @@
             android:key="list_preference_swipe_actions_left"
             android:summary="@string/apk_swipe_action_left_summary"
             android:title="@string/apk_swipe_action_left_title" />
-        <SwitchPreferenceCompat
-            android:defaultValue="true"
-            app:key="sort_favorites"
-            app:summary="@string/sort_favorites_summary"
-            app:title="@string/sort_favorites_title" />
         <SwitchPreferenceCompat
             app:key="ignore_battery_optimization"
             app:summary="@string/ignore_battery_optimization_summary"

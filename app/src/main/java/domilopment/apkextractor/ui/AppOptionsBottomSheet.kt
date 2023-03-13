@@ -204,7 +204,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                 val settingsManager = SettingsManager(requireContext())
                 settingsManager.editFavorites(app.appPackageName, isChecked)
                 app.isFavorite = isChecked
-                model.sortFavorites(settingsManager.isSortPreferencesEnabled())
+                model.sortFavorites()
             }
         }
 
