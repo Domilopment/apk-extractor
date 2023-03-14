@@ -126,29 +126,19 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.filterFavorites.apply {
-            isChecked = sharedPreferences.getInt(
-                "filter", 0
-            ) and AppFilterOptions.FAVORITES.getByte() == AppFilterOptions.FAVORITES.getByte()
-            setOnCheckedChangeListener { _, isChecked ->
-                val filter = sharedPreferences.getInt("filter", 0)
-                val value =
-                    if (isChecked) filter or AppFilterOptions.FAVORITES.getByte() else filter and AppFilterOptions.FAVORITES.getByte()
-                        .inv()
-                sharedPreferences.edit().putInt("filter", value).apply()
-                model.filterApps()
-            }
+            setupFilterChip(this, AppFilterOptions.FAVORITES)
         }
 
         binding.filterPlayStore.apply {
-            setupFilterChip(this, "com.android.vending", AppFilterOptions.GOOGLE)
+            setupStoreFilterChip(this, "com.android.vending", AppFilterOptions.GOOGLE)
         }
 
         binding.filterGalaxyStore.apply {
-            setupFilterChip(this, "com.sec.android.app.samsungapps", AppFilterOptions.SAMSUNG)
+            setupStoreFilterChip(this, "com.sec.android.app.samsungapps", AppFilterOptions.SAMSUNG)
         }
 
         binding.filterAmazonStore.apply {
-            setupFilterChip(this, "com.amazon.venezia", AppFilterOptions.AMAZON)
+            setupStoreFilterChip(this, "com.amazon.venezia", AppFilterOptions.AMAZON)
         }
     }
 
@@ -158,29 +148,40 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
     }
 
     /**
+     * Setup filter Chip
+     * @param chip chip to setup
+     * @param filterOptions filter option integer for Chip
+     */
+    private fun setupFilterChip(chip: Chip, filterOptions: AppFilterOptions) {
+        chip.isChecked = sharedPreferences.getInt(
+            "filter", 0
+        ) and filterOptions.getByte() == filterOptions.getByte()
+        chip.setOnCheckedChangeListener { _, isChecked ->
+            val filter = sharedPreferences.getInt("filter", 0)
+            val value =
+                if (isChecked) filter or filterOptions.getByte() else filter and filterOptions.getByte()
+                    .inv()
+            sharedPreferences.edit().putInt("filter", value).apply()
+            model.filterApps()
+        }
+    }
+
+    /**
      * Setup filter Chip, for Store filter options
-     * @param chip chip tosetup
+     * @param chip chip to setup
      * @param packageName Package name of store
      * @param filterOptions filter option integer for Store
      */
-    private fun setupFilterChip(chip: Chip, packageName: String, filterOptions: AppFilterOptions) {
+    private fun setupStoreFilterChip(
+        chip: Chip, packageName: String, filterOptions: AppFilterOptions
+    ) {
         packageName.runCatching {
             Utils.getPackageInfo(requireContext().packageManager, this)
         }.onSuccess {
             chip.isVisible = true
             chip.text =
                 requireContext().packageManager.getApplicationLabel(it.applicationInfo).toString()
-            chip.isChecked = sharedPreferences.getInt(
-                "filter", 0
-            ) and filterOptions.getByte() == filterOptions.getByte()
-            chip.setOnCheckedChangeListener { _, isChecked ->
-                val filter = sharedPreferences.getInt("filter", 0)
-                val value =
-                    if (isChecked) filter or filterOptions.getByte() else filter and filterOptions.getByte()
-                        .inv()
-                sharedPreferences.edit().putInt("filter", value).apply()
-                model.filterApps()
-            }
+            setupFilterChip(chip, filterOptions)
         }
     }
 }
