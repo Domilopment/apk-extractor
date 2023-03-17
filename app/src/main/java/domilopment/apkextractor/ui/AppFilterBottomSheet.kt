@@ -63,15 +63,21 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
             peekHeight = 0
         }
 
-        binding.updatedSystemApps.isChecked =
-            sharedPreferences.getBoolean("updated_system_apps", false)
+        binding.updatedSystemApps.apply {
+            maxLines = 2
+            isChecked = sharedPreferences.getBoolean("updated_system_apps", false)
+        }
 
         binding.systemApps.apply {
+            maxLines = 2
             isEnabled = sharedPreferences.getBoolean("updated_system_apps", false)
             isChecked = sharedPreferences.getBoolean("system_apps", false)
         }
 
-        binding.userApps.isChecked = sharedPreferences.getBoolean("user_apps", true)
+        binding.userApps.apply {
+            maxLines = 2
+            isChecked = sharedPreferences.getBoolean("user_apps", true)
+        }
 
         binding.appType.addOnButtonCheckedListener { _, checkedId, isChecked ->
             // Respond to button selection
@@ -139,6 +145,10 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
 
         binding.filterAmazonStore.apply {
             setupStoreFilterChip(this, "com.amazon.venezia", AppFilterOptions.AMAZON)
+        }
+
+        binding.filterOtherStore.apply {
+            setupFilterChip(this, AppFilterOptions.OTHERS)
         }
     }
 

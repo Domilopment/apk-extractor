@@ -136,6 +136,8 @@ class SettingsManager(context: Context) {
             dataFiltered.filter { it.installationSource == "com.sec.android.app.samsungapps" }
         if (filter and AppFilterOptions.AMAZON.getByte() == AppFilterOptions.AMAZON.getByte()) dataFiltered =
             dataFiltered.filter { it.installationSource == "com.amazon.venezia" }
+        if (filter and AppFilterOptions.OTHERS.getByte() == AppFilterOptions.OTHERS.getByte()) dataFiltered =
+            dataFiltered.filter { it.installationSource !in Utils.listOfKnownStores }
         return dataFiltered
     }
 

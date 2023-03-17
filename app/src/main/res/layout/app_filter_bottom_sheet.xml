@@ -21,34 +21,42 @@
         android:id="@+id/app_type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_marginBottom="4dp"
+        android:gravity="center">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/updated_system_apps"
-            style="?attr/materialButtonOutlinedStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingHorizontal="4dp"
-            android:text="@string/app_type_system_updated" />
+            android:lines="2"
+            android:singleLine="false"
+            android:text="@string/app_type_system_updated"
+            app:icon="@drawable/baseline_system_update_24"
+            app:iconGravity="top" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/system_apps"
-            style="?attr/materialButtonOutlinedStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingHorizontal="4dp"
-            android:text="@string/app_type_system" />
+            android:lines="2"
+            android:singleLine="false"
+            android:text="@string/app_type_system"
+            app:icon="@drawable/baseline_stay_primary_portrait_24"
+            app:iconGravity="top" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/user_apps"
-            style="?attr/materialButtonOutlinedStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingHorizontal="4dp"
-            android:text="@string/app_type_user" />
+            android:lines="2"
+            android:singleLine="false"
+            android:text="@string/app_type_user"
+            app:icon="@drawable/baseline_person_24"
+            app:iconGravity="top" />
+
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <androidx.core.widget.NestedScrollView
@@ -59,6 +67,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -105,13 +114,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:gravity="center">
 
                 <ToggleButton
                     android:id="@+id/sort_order"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
                     android:background="@drawable/rounded_corner"
+                    android:minHeight="40dp"
                     android:textOff="@string/sort_order_desc"
                     android:textOn="@string/sort_order_asc" />
 
@@ -135,7 +147,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:orientation="horizontal">
 
                 <com.google.android.material.divider.MaterialDivider
@@ -173,46 +185,47 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <HorizontalScrollView
+            <com.google.android.material.chip.ChipGroup
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:singleLine="false">
 
-                <com.google.android.material.chip.ChipGroup
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/filter_favorites"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:singleLine="false">
+                    android:text="@string/favorites" />
 
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/filter_favorites"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/favorites" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/filter_play_store"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
 
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/filter_play_store"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/filter_galaxy_store"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
 
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/filter_galaxy_store"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/filter_amazon_store"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
 
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/filter_amazon_store"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/filter_other_store"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/other_sources" />
 
-                </com.google.android.material.chip.ChipGroup>
-
-            </HorizontalScrollView>
+            </com.google.android.material.chip.ChipGroup>
 
         </LinearLayout>
 

@@ -25,7 +25,7 @@
 
     <!-- Preferences Apps -->
     <string name="app_type_system">System</string>
-    <string name="app_type_system_updated">System aktualisiert</string>
+    <string name="app_type_system_updated">System (aktualisiert)</string>
     <string name="app_type_user">Benutzer</string>
 
     <!-- Preferences Info -->
@@ -61,6 +61,7 @@
     <string name="sort_favorites">Sortiere Favoriten nach oben</string>
 
     <string name="filter_title">Filter</string>
+    <string name="other_sources">Andere Installationsquellen</string>
 
     <string name="ignore_battery_optimization_title">Hintergrundaktivität</string>
     <string name="ignore_battery_optimization_summary">Falls der Auto Backup Service im Hintergrung gestoppt wird, ohne neu zu starten, ziehen sie es vielleicht in betracht, das einschränken der Hintergrundaktivität für diese app zu deaktivieren</string>

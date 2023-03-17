@@ -26,7 +26,7 @@
 
     <!-- Preferences Apps -->
     <string name="app_type_system">System</string>
-    <string name="app_type_system_updated">System updated</string>
+    <string name="app_type_system_updated">System (updated)</string>
     <string name="app_type_user">User</string>
 
     <!-- Preferences Info -->
@@ -62,6 +62,7 @@
     <string name="sort_favorites">Sort Favorites on top</string>
 
     <string name="filter_title">Filter</string>
+    <string name="other_sources">Other installation sources</string>
 
     <string name="ignore_battery_optimization_title">Disable Battery Optimization</string>
     <string name="ignore_battery_optimization_summary">If the Auto Backup Service gets killed in background without restarting, you might consider disable battery optimization for this app so it keeps running in background</string>
