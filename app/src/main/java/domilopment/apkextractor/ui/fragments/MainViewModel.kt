@@ -57,7 +57,8 @@ class MainViewModel(
                 val settingsManager = SettingsManager(context)
                 state.copy(
                     appList = settingsManager.filterApps(settingsManager.selectedAppTypes(apps)),
-                    isRefreshing = false
+                    isRefreshing = false,
+                    updateTrigger = UpdateTrigger(true)
                 )
             }
         }
