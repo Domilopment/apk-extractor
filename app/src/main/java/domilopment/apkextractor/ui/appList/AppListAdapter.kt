@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.appList
 
-import android.annotation.SuppressLint
 import android.graphics.Color
 import android.text.Spannable
 import android.text.style.ForegroundColorSpan
