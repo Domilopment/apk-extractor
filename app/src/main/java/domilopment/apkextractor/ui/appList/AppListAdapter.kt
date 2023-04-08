@@ -1,12 +1,18 @@
 package domilopment.apkextractor.ui.appList
 
+import android.annotation.SuppressLint
+import android.graphics.Color
+import android.text.Spannable
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.core.text.toSpannable
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import domilopment.apkextractor.ui.AppOptionsBottomSheet
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
@@ -23,6 +29,8 @@ class AppListAdapter(
     // Shown Data in ListView
     var myDatasetFiltered: MutableList<ApplicationModel> = myDataset.toMutableList()
         private set
+
+    var searchString = ""
 
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView) {
         val binding: AppListItemBinding = AppListItemBinding.bind(myView)
@@ -59,8 +67,14 @@ class AppListAdapter(
         // Apply data from Dataset item to holder
         holder.binding.apply {
             firstLine.text =
-                mainFragment.getString(R.string.holder_app_name, app.appName, app.apkSize)
-            secondLine.text = app.appPackageName
+                getSpannable(
+                    mainFragment.getString(
+                        R.string.holder_app_name,
+                        app.appName,
+                        app.apkSize
+                    )
+                )
+            secondLine.text = getSpannable(app.appPackageName)
             icon.setImageDrawable(app.appIcon)
             checkCircle.isVisible = app.isChecked
             favoriteStar.isVisible = app.isFavorite
@@ -113,15 +127,15 @@ class AppListAdapter(
              * Apps that match charSequence
              */
             override fun performFiltering(charSequence: CharSequence): FilterResults {
-                val charString = charSequence.toString().trim()
-                val myDatasetFiltered = if (charString.isBlank()) {
+                searchString = charSequence.toString().trim()
+                val myDatasetFiltered = if (searchString.isBlank()) {
                     myDataset
                 } else {
                     myDataset.filter {
                         it.appName.contains(
-                            charString, ignoreCase = true
+                            searchString, ignoreCase = true
                         ) || it.appPackageName.contains(
-                            charString, ignoreCase = true
+                            searchString, ignoreCase = true
                         )
                     }
                 }
@@ -154,5 +168,30 @@ class AppListAdapter(
         myDataset = apps
         myDatasetFiltered = myDataset.toMutableList()
         notifyDataSetChanged()
+    }
+
+    /**
+     * Creates a String Spannable from text, that shows the position of the search word inside the String
+     * @param text text that is displayed to the user
+     * @return String spannable with color marked search word
+     */
+    private fun getSpannable(text: String): Spannable {
+        val spannable = text.toSpannable()
+        if (searchString.isNotBlank() && text.contains(searchString, ignoreCase = true)) {
+            val startIndex = text.lowercase().indexOf(searchString.lowercase())
+            spannable.setSpan(
+                ForegroundColorSpan(
+                    MaterialColors.getColor(
+                        mainFragment.requireContext(),
+                        android.R.attr.textColorHighlight,
+                        Color.CYAN
+                    )
+                ),
+                startIndex,
+                startIndex + searchString.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        return spannable
     }
 }
