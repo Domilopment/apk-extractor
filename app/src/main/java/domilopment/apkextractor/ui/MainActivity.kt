@@ -109,6 +109,8 @@ class MainActivity : AppCompatActivity() {
             ) == null
         } catch (e: FileNotFoundException) {
             true
+        } catch (e: NullPointerException) {
+            true
         }
     }
 
