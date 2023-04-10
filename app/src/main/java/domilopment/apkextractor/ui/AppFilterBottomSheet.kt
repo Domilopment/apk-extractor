@@ -163,15 +163,13 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
      * @param filterOptions filter option integer for Chip
      */
     private fun setupFilterChip(chip: Chip, filterOptions: AppFilterOptions) {
-        chip.isChecked = sharedPreferences.getInt(
-            "filter", 0
-        ) and filterOptions.getByte() == filterOptions.getByte()
+        chip.isChecked =
+            sharedPreferences.getStringSet("filter_set", setOf())?.contains(filterOptions.name)
+                ?: false
         chip.setOnCheckedChangeListener { _, isChecked ->
-            val filter = sharedPreferences.getInt("filter", 0)
-            val value =
-                if (isChecked) filter or filterOptions.getByte() else filter and filterOptions.getByte()
-                    .inv()
-            sharedPreferences.edit().putInt("filter", value).apply()
+            val filter = sharedPreferences.getStringSet("filter_set", setOf())?.toMutableSet()
+            if (isChecked) filter?.add(filterOptions.name) else filter?.remove(filterOptions.name)
+            sharedPreferences.edit().putStringSet("filter_set", filter).apply()
             model.filterApps()
         }
     }

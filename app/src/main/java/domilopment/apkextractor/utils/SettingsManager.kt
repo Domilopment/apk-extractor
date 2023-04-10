@@ -125,19 +125,15 @@ class SettingsManager(context: Context) {
      * @return filtered list of Applications
      */
     fun filterApps(
-        data: List<ApplicationModel>, filter: Int = sharedPreferences.getInt("filter", 0)
+        data: List<ApplicationModel>,
+        filter: Set<String>? = sharedPreferences.getStringSet("filter_set", setOf())
     ): List<ApplicationModel> {
         var dataFiltered = data
-        if (filter and AppFilterOptions.FAVORITES.getByte() == AppFilterOptions.FAVORITES.getByte()) dataFiltered =
-            dataFiltered.filter { it.isFavorite }
-        if (filter and AppFilterOptions.GOOGLE.getByte() == AppFilterOptions.GOOGLE.getByte()) dataFiltered =
-            dataFiltered.filter { it.installationSource == "com.android.vending" }
-        if (filter and AppFilterOptions.SAMSUNG.getByte() == AppFilterOptions.SAMSUNG.getByte()) dataFiltered =
-            dataFiltered.filter { it.installationSource == "com.sec.android.app.samsungapps" }
-        if (filter and AppFilterOptions.AMAZON.getByte() == AppFilterOptions.AMAZON.getByte()) dataFiltered =
-            dataFiltered.filter { it.installationSource == "com.amazon.venezia" }
-        if (filter and AppFilterOptions.OTHERS.getByte() == AppFilterOptions.OTHERS.getByte()) dataFiltered =
-            dataFiltered.filter { it.installationSource !in Utils.listOfKnownStores }
+        filter?.forEach { action ->
+            AppFilterOptions.values().firstOrNull { it.name == action }?.let {
+                dataFiltered = it.getFilter(dataFiltered)
+            }
+        }
         return dataFiltered
     }
 
