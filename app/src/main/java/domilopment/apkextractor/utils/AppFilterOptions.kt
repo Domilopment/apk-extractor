@@ -1,5 +1,6 @@
 package domilopment.apkextractor.utils
 
+import android.content.pm.ApplicationInfo
 import domilopment.apkextractor.data.ApplicationModel
 
 enum class AppFilterOptions {
@@ -26,6 +27,11 @@ enum class AppFilterOptions {
     OTHERS {
         override fun getFilter(list: List<ApplicationModel>): List<ApplicationModel> {
             return list.filter { it.installationSource !in Utils.listOfKnownStores }
+        }
+    },
+    GAMES {
+        override fun getFilter(list: List<ApplicationModel>): List<ApplicationModel> {
+            return list.filter { it.appCategory == ApplicationInfo.CATEGORY_GAME }
         }
     };
 

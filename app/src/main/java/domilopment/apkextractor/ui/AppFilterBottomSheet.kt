@@ -150,6 +150,10 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
         binding.filterOtherStore.apply {
             setupFilterChip(this, AppFilterOptions.OTHERS)
         }
+
+        binding.filterGames.apply {
+            setupFilterChip(this, AppFilterOptions.GAMES)
+        }
     }
 
     override fun onDestroyView() {

@@ -192,38 +192,45 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/filter_favorites"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/favorites" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/filter_play_store"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/filter_galaxy_store"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/filter_amazon_store"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/filter_other_store"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/other_sources" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/filter_games"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Games" />
 
             </com.google.android.material.chip.ChipGroup>
 

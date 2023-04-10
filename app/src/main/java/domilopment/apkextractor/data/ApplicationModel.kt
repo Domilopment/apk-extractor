@@ -20,6 +20,7 @@ data class ApplicationModel(
     val appVersionName: String get() = packageInfo.versionName
     val appVersionCode: Long get() = Utils.versionCode(packageInfo)
     val appFlags: Int get() = packageInfo.applicationInfo.flags
+    val appCategory: Int get() = packageInfo.applicationInfo.category
     val appInstallTime: Long get() = packageInfo.firstInstallTime
     val appUpdateTime: Long get() = packageInfo.lastUpdateTime
     val apkSize: Float get() = File(packageInfo.applicationInfo.sourceDir).length() / (1000.0F * 1000.0F) // Calculate MB Size
