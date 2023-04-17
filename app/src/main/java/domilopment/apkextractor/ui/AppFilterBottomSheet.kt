@@ -15,9 +15,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import domilopment.apkextractor.R
 import domilopment.apkextractor.databinding.AppFilterBottomSheetBinding
+import domilopment.apkextractor.databinding.FilterChipBinding
 import domilopment.apkextractor.ui.fragments.MainViewModel
-import domilopment.apkextractor.utils.AppFilterOptions
-import domilopment.apkextractor.utils.Utils
+import domilopment.apkextractor.utils.*
+import domilopment.apkextractor.utils.appFilterOptions.AppFilter
+import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
+import domilopment.apkextractor.utils.appFilterOptions.AppFilterInstaller
+import domilopment.apkextractor.utils.appFilterOptions.AppFilterOthers
 
 class AppFilterBottomSheet : BottomSheetDialogFragment() {
     private var _binding: AppFilterBottomSheetBinding? = null
@@ -132,27 +136,31 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.filterFavorites.apply {
-            setupFilterChip(this, AppFilterOptions.FAVORITES)
+            setupFilterChip(this, AppFilterOthers.FAVORITES, "filter_others")
         }
 
         binding.filterPlayStore.apply {
-            setupStoreFilterChip(this, "com.android.vending", AppFilterOptions.GOOGLE)
+            setupStoreFilterChip(this, "com.android.vending", AppFilterInstaller.GOOGLE)
         }
 
         binding.filterGalaxyStore.apply {
-            setupStoreFilterChip(this, "com.sec.android.app.samsungapps", AppFilterOptions.SAMSUNG)
+            setupStoreFilterChip(this, "com.sec.android.app.samsungapps", AppFilterInstaller.SAMSUNG)
         }
 
         binding.filterAmazonStore.apply {
-            setupStoreFilterChip(this, "com.amazon.venezia", AppFilterOptions.AMAZON)
+            setupStoreFilterChip(this, "com.amazon.venezia", AppFilterInstaller.AMAZON)
         }
 
         binding.filterOtherStore.apply {
-            setupFilterChip(this, AppFilterOptions.OTHERS)
+            setupFilterChip(this, AppFilterInstaller.OTHERS, "filter_installer")
         }
 
-        binding.filterGames.apply {
-            setupFilterChip(this, AppFilterOptions.GAMES)
+        AppFilterCategories.values().forEach {
+            binding.filterAppCategory.addView(
+                FilterChipBinding.inflate(layoutInflater).root.apply {
+                    text = it.getTitleString(requireContext())
+                    setupFilterChip(this, it, "filter_category")
+                })
         }
     }
 
@@ -166,14 +174,14 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
      * @param chip chip to setup
      * @param filterOptions filter option integer for Chip
      */
-    private fun setupFilterChip(chip: Chip, filterOptions: AppFilterOptions) {
+    private fun setupFilterChip(chip: Chip, filterOptions: AppFilter, preferenceKey: String) {
         chip.isChecked =
-            sharedPreferences.getStringSet("filter_set", setOf())?.contains(filterOptions.name)
+            sharedPreferences.getStringSet(preferenceKey, setOf())?.contains(filterOptions.name)
                 ?: false
         chip.setOnCheckedChangeListener { _, isChecked ->
-            val filter = sharedPreferences.getStringSet("filter_set", setOf())?.toMutableSet()
+            val filter = sharedPreferences.getStringSet(preferenceKey, setOf())?.toMutableSet()
             if (isChecked) filter?.add(filterOptions.name) else filter?.remove(filterOptions.name)
-            sharedPreferences.edit().putStringSet("filter_set", filter).apply()
+            sharedPreferences.edit().putStringSet(preferenceKey, filter).apply()
             model.filterApps()
         }
     }
@@ -185,7 +193,7 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
      * @param filterOptions filter option integer for Store
      */
     private fun setupStoreFilterChip(
-        chip: Chip, packageName: String, filterOptions: AppFilterOptions
+        chip: Chip, packageName: String, filterOptions: AppFilterInstaller
     ) {
         packageName.runCatching {
             Utils.getPackageInfo(requireContext().packageManager, this)
@@ -193,7 +201,7 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
             chip.isVisible = true
             chip.text =
                 requireContext().packageManager.getApplicationLabel(it.applicationInfo).toString()
-            setupFilterChip(chip, filterOptions)
+            setupFilterChip(chip, filterOptions, "filter_installer")
         }
     }
 }

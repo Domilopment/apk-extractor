@@ -56,9 +56,13 @@ class MainViewModel(
             _mainFragmantState.update { state ->
                 val settingsManager = SettingsManager(context)
                 state.copy(
-                    appList = settingsManager.filterApps(settingsManager.selectedAppTypes(apps)),
-                    isRefreshing = false,
-                    updateTrigger = UpdateTrigger(true)
+                    appList = settingsManager.sortData(
+                        settingsManager.filterApps(
+                            settingsManager.selectedAppTypes(
+                                apps
+                            )
+                        )
+                    ), isRefreshing = false, updateTrigger = UpdateTrigger(true)
                 )
             }
         }
@@ -202,9 +206,11 @@ class MainViewModel(
             applications.value?.let {
                 _mainFragmantState.update { state ->
                     val sortedList = withContext(Dispatchers.IO) {
-                        settingsManager.filterApps(
-                            SettingsManager(context).selectedAppTypes(
-                                it
+                        settingsManager.sortData(
+                            settingsManager.filterApps(
+                                SettingsManager(context).selectedAppTypes(
+                                    it
+                                )
                             )
                         )
                     }
@@ -246,6 +252,8 @@ class MainViewModel(
                             it, selectUserApps = b
                         )
                         else -> null
+                    }?.let {
+                        settingsManager.sortData(it)
                     }
                 }
                 selectedAppTypes.await()?.let {

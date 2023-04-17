@@ -29,11 +29,17 @@ class AppListAdapter(
     var myDatasetFiltered: MutableList<ApplicationModel> = myDataset.toMutableList()
         private set
 
-    var searchString = ""
+    private var searchString = ""
 
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView) {
         val binding: AppListItemBinding = AppListItemBinding.bind(myView)
     }
+
+    private val textColorHighlight = MaterialColors.getColor(
+        mainFragment.requireContext(),
+        android.R.attr.textColorHighlight,
+        Color.CYAN
+    )
 
     val actionModeCallback = AppListMultiselectCallback(mainFragment, this)
 
@@ -179,13 +185,7 @@ class AppListAdapter(
         if (searchString.isNotBlank() && text.contains(searchString, ignoreCase = true)) {
             val startIndex = text.lowercase().indexOf(searchString.lowercase())
             spannable.setSpan(
-                ForegroundColorSpan(
-                    MaterialColors.getColor(
-                        mainFragment.requireContext(),
-                        android.R.attr.textColorHighlight,
-                        Color.CYAN
-                    )
-                ),
+                ForegroundColorSpan(textColorHighlight),
                 startIndex,
                 startIndex + searchString.length,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE

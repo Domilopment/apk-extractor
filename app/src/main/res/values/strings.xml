@@ -63,7 +63,18 @@
 
     <string name="filter_title">Filter</string>
     <string name="other_sources">Other installation sources</string>
+    <string name="filter_category_undefined">Undefined</string>
     <string name="filter_category_games">Games</string>
+    <string name="filter_category_audio">Audio</string>
+    <string name="filter_category_video">Video</string>
+    <string name="filter_category_image">Image</string>
+    <string name="filter_category_social">Social</string>
+    <string name="filter_category_news">News</string>
+    <string name="filter_category_maps">Maps</string>
+    <string name="filter_category_productivity">Productivity</string>
+    <string name="installation_sources">Installation Source</string>
+    <string name="app_categories">App Categories</string>
+    <string name="other_filter">Other Filter</string>
 
     <string name="ignore_battery_optimization_title">Disable Battery Optimization</string>
     <string name="ignore_battery_optimization_summary">If the Auto Backup Service gets killed in background without restarting, you might consider disable battery optimization for this app so it keeps running in background</string>

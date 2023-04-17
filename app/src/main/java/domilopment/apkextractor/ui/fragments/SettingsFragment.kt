@@ -232,11 +232,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         val appEntries = mutableListOf<String>()
                         val appValues = mutableListOf<String>()
 
-                        settingsManager.selectedAppTypes(
-                            it,
-                            selectUpdatedSystemApps = true,
-                            selectSystemApps = false,
-                            selectUserApps = true,
+                        settingsManager.sortData(
+                            data = settingsManager.selectedAppTypes(
+                                it,
+                                selectUpdatedSystemApps = true,
+                                selectSystemApps = false,
+                                selectUserApps = true,
+                            ),
                             sortMode = SettingsManager.SORT_BY_NAME,
                             sortFavorites = false
                         ).forEach {

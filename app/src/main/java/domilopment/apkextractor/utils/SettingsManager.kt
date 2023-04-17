@@ -10,6 +10,10 @@ import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
+import domilopment.apkextractor.utils.appFilterOptions.AppFilter
+import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
+import domilopment.apkextractor.utils.appFilterOptions.AppFilterInstaller
+import domilopment.apkextractor.utils.appFilterOptions.AppFilterOthers
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,9 +46,6 @@ class SettingsManager(context: Context) {
         ),
         selectSystemApps: Boolean = sharedPreferences.getBoolean("system_apps", false),
         selectUserApps: Boolean = sharedPreferences.getBoolean("user_apps", true),
-        sortApps: Boolean = true,
-        sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME),
-        sortFavorites: Boolean = sharedPreferences.getBoolean("sort_favorites", true)
     ): List<ApplicationModel> {
         val (updatedSystemApps, systemApps, userApps) = applications
         val mData: MutableList<ApplicationModel> = mutableListOf()
@@ -57,7 +58,7 @@ class SettingsManager(context: Context) {
             it.isFavorite =
                 it.appPackageName in sharedPreferences.getStringSet("favorites", setOf())!!
         }
-        return if (sortApps) sortData(mData, sortMode, sortFavorites) else mData
+        return mData
     }
 
     /**
@@ -124,17 +125,29 @@ class SettingsManager(context: Context) {
      * @param filter Filter options for list, is favorite, installed from- google play, galaxy store, amazon store
      * @return filtered list of Applications
      */
-    fun filterApps(
-        data: List<ApplicationModel>,
-        filter: Set<String>? = sharedPreferences.getStringSet("filter_set", setOf())
+    fun filterApps(data: List<ApplicationModel>): List<ApplicationModel> {
+        return filterApps(
+            data, AppFilterInstaller.values(), "filter_installer"
+        ).let {
+            filterApps(it, AppFilterCategories.values(), "filter_category")
+        }.let {
+            filterApps(it, AppFilterOthers.values(), "filter_others")
+        }
+    }
+
+    private fun <T : AppFilter> filterApps(
+        data: List<ApplicationModel>, appFilterInstaller: Array<T>, preferenceKey: String
     ): List<ApplicationModel> {
-        var dataFiltered = data
-        filter?.forEach { action ->
-            AppFilterOptions.values().firstOrNull { it.name == action }?.let {
-                dataFiltered = it.getFilter(dataFiltered)
+        val filter = sharedPreferences.getStringSet(preferenceKey, setOf())
+        if (filter.isNullOrEmpty()) return data
+
+        val dataFiltered = mutableSetOf<ApplicationModel>()
+        filter.forEach { action ->
+            appFilterInstaller.firstOrNull { it.name == action }?.let {
+                dataFiltered.addAll(it.getFilter(data))
             }
         }
-        return dataFiltered
+        return dataFiltered.toList()
     }
 
     /**

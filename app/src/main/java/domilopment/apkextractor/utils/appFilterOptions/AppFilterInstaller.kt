@@ -1,14 +1,10 @@
-package domilopment.apkextractor.utils
+package domilopment.apkextractor.utils.appFilterOptions
 
 import android.content.pm.ApplicationInfo
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.Utils
 
-enum class AppFilterOptions {
-    FAVORITES {
-        override fun getFilter(list: List<ApplicationModel>): List<ApplicationModel> {
-            return list.filter { it.isFavorite }
-        }
-    },
+enum class AppFilterInstaller : AppFilter {
     GOOGLE {
         override fun getFilter(list: List<ApplicationModel>): List<ApplicationModel> {
             return list.filter { it.installationSource == "com.android.vending" }
@@ -34,6 +30,4 @@ enum class AppFilterOptions {
             return list.filter { it.appCategory == ApplicationInfo.CATEGORY_GAME }
         }
     };
-
-    abstract fun getFilter(list: List<ApplicationModel>): List<ApplicationModel>
 }
