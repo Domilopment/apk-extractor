@@ -115,7 +115,11 @@ class MainFragment : Fragment() {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.mainFragmantState.collect { uiState ->
                     binding.refresh.isRefreshing = uiState.isRefreshing
-                    viewAdapter.updateData(uiState.appList, uiState.updateTrigger.handleTrigger())
+                    binding.listView.list.post {
+                        viewAdapter.updateData(
+                            uiState.appList, uiState.updateTrigger.handleTrigger()
+                        )
+                    }
                     if (::searchView.isInitialized) with(searchView.query) {
                         if (isNotBlank()) viewAdapter.filter.filter(this)
                     }
@@ -367,6 +371,7 @@ class MainFragment : Fragment() {
                         }
                         selectApk.launch(intent)
                     }
+
                     R.id.action_filter -> AppFilterBottomSheet.newInstance().apply {
                         show(this@MainFragment.parentFragmentManager, AppFilterBottomSheet.TAG)
                     }
@@ -381,17 +386,6 @@ class MainFragment : Fragment() {
      */
     fun showSearchView() {
         if (::searchView.isInitialized) searchView.isIconified = searchView.query.isBlank()
-    }
-
-    /**
-     * Set Preference for App List Sort Type and Apply
-     * @param item Menu item for sortType
-     * @param sortType Internal sort type number
-     */
-    private fun sortData(item: MenuItem, sortType: Int) {
-        sharedPreferences.edit().putInt("app_sort", sortType).apply()
-        item.isChecked = true
-        model.sortApps()
     }
 
     /**
@@ -432,6 +426,14 @@ class MainFragment : Fragment() {
      */
     fun selectApplication(app: ApplicationModel) {
         model.selectApplication(app)
+    }
+
+    /**
+     * Remove Application from AppList
+     * @param app ApplicationModel of app to be removed
+     */
+    fun removeApplication(app: ApplicationModel) {
+        model.removeApp(app)
     }
 
     /**

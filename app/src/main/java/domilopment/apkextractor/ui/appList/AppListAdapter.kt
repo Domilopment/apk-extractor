@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.appList
 
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.text.Spannable
 import android.text.style.ForegroundColorSpan
@@ -71,19 +72,22 @@ class AppListAdapter(
         val app = myDatasetFiltered[position]
         // Apply data from Dataset item to holder
         holder.binding.apply {
-            firstLine.text =
-                getSpannable(
-                    mainFragment.getString(
-                        R.string.holder_app_name,
-                        app.appName,
-                        app.apkSize
+            try {
+                firstLine.text =
+                    getSpannable(
+                        mainFragment.getString(
+                            R.string.holder_app_name,
+                            app.appName,
+                            app.apkSize
+                        )
                     )
-                )
-            secondLine.text = getSpannable(app.appPackageName)
-            icon.setImageDrawable(app.appIcon)
-            checkCircle.isVisible = app.isChecked
+                secondLine.text = getSpannable(app.appPackageName)
+                icon.setImageDrawable(app.appIcon)
+            } catch (_: PackageManager.NameNotFoundException) {
+                mainFragment.removeApplication(app)
+            }
+            setChecked(this, app.isChecked)
             favoriteStar.isVisible = app.isFavorite
-            root.isChecked = app.isChecked
             // ItemView on Click
             root.setOnClickListener {
                 if (!actionModeCallback.isActionModeActive()) {
@@ -96,15 +100,13 @@ class AppListAdapter(
                 } else {
                     app.isChecked = !app.isChecked
                     actionModeCallback.setModeTitle()
-                    checkCircle.isVisible = app.isChecked
-                    root.isChecked = app.isChecked
+                    setChecked(this, app.isChecked)
                 }
             }
             // ItemView on Long Click
             root.setOnLongClickListener {
                 if (!actionModeCallback.isActionModeActive()) {
-                    checkCircle.isVisible = true
-                    root.isChecked = true
+                    setChecked(this, true)
                     app.isChecked = true
                     mainFragment.startSupportActionMode(true)
                     true
@@ -192,5 +194,15 @@ class AppListAdapter(
             )
         }
         return spannable
+    }
+
+    /**
+     * Set checked state of list item ViewHolder
+     * @param binding ViewHolder layout binding
+     * @param checked state to be set for ViewHolder
+     */
+    private fun setChecked(binding: AppListItemBinding, checked: Boolean) {
+        binding.checkCircle.isVisible = checked
+        binding.root.isChecked = checked
     }
 }
