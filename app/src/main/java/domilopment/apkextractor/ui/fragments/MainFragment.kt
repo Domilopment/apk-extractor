@@ -307,22 +307,16 @@ class MainFragment : Fragment() {
                         override fun onQueryTextSubmit(query: String?): Boolean {
                             // filter recycler view when query submitted
                             queryTextChangedJob?.cancel()
-                            queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
-                                delay(300)
-                                onFilter(query)
-                            }
+                            onFilter(query)
                             return false
                         }
 
                         override fun onQueryTextChange(query: String?): Boolean {
                             // filter recycler view when text is changed
                             queryTextChangedJob?.cancel()
-                            if (query.isNullOrBlank()) onFilter(query)
-                            else {
-                                queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
-                                    delay(300)
-                                    onFilter(query)
-                                }
+                            queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
+                                delay(300)
+                                onFilter(query)
                             }
                             return false
                         }
