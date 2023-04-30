@@ -302,7 +302,10 @@ class MainFragment : Fragment() {
                         override fun onQueryTextSubmit(query: String?): Boolean {
                             // filter recycler view when query submitted
                             queryTextChangedJob?.cancel()
-                            onFilter(query)
+                            queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
+                                delay(300)
+                                onFilter(query)
+                            }
                             return false
                         }
 
