@@ -115,7 +115,12 @@ class MainFragment : Fragment() {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.mainFragmantState.collect { uiState ->
                     binding.refresh.isRefreshing = uiState.isRefreshing
-                    binding.listView.list.post {
+                    val recyclerView = binding.listView.list
+                    if (!recyclerView.isComputingLayout && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE)
+                        viewAdapter.updateData(
+                            uiState.appList, uiState.updateTrigger.handleTrigger()
+                        )
+                    else recyclerView.post {
                         viewAdapter.updateData(
                             uiState.appList, uiState.updateTrigger.handleTrigger()
                         )
