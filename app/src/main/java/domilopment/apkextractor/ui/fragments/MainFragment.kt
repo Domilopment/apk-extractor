@@ -67,7 +67,7 @@ class MainFragment : Fragment() {
             requireContext().cacheDir.deleteRecursively()
         }
 
-    var appToUninstall: ApplicationModel? = null
+    private var appToUninstall: ApplicationModel? = null
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             appToUninstall?.also {
