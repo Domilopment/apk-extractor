@@ -149,6 +149,7 @@ class AppListAdapter(
                 }
                 return FilterResults().apply {
                     values = myDatasetFiltered
+                    count = myDatasetFiltered.size
                 }
             }
 
