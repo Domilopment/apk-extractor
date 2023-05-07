@@ -96,6 +96,11 @@
                 android:singleLine="true" />
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/selected_app_category"
+                style="@style/BottomSheetItem"
+                android:singleLine="true" />
+
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/selected_app_install_time"
                 style="@style/BottomSheetItem"
                 android:singleLine="true" />

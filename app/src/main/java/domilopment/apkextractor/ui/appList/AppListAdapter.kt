@@ -84,6 +84,7 @@ class AppListAdapter(
                 secondLine.text = getSpannable(app.appPackageName)
                 icon.setImageDrawable(app.appIcon)
             } catch (_: PackageManager.NameNotFoundException) {
+                root.isVisible = false
                 mainFragment.removeApplication(app)
             }
             setChecked(this, app.isChecked)

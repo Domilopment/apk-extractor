@@ -25,6 +25,7 @@ import domilopment.apkextractor.databinding.AppOptionsBottomSheetBinding
 import domilopment.apkextractor.ui.fragments.MainViewModel
 import domilopment.apkextractor.utils.*
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
+import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -189,6 +190,11 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
                 isVisible = true
             } ?: run { isVisible = false }
         }
+
+        binding.selectedAppCategory.text = getString(
+            R.string.info_bottom_sheet_category,
+            AppFilterCategories.getByCategory(app.appCategory)?.getTitleString(requireContext())
+        )
     }
 
     /**
