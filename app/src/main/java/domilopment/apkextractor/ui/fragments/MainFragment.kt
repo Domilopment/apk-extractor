@@ -369,6 +369,7 @@ class MainFragment : Fragment() {
                         }
                         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                             type = FileHelper.MIME_TYPE
+                            addCategory(Intent.CATEGORY_OPENABLE)
                             putExtra(DocumentsContract.EXTRA_INITIAL_URI, destDir)
                         }
                         selectApk.launch(intent)
@@ -453,17 +454,7 @@ class MainFragment : Fragment() {
                 }, getString(R.string.share_intent_title))
             )
             // Install Selected Apk File
-            /*
-            1 -> startActivity(
-                Intent(Intent.ACTION_VIEW).apply {
-                    setDataAndType(
-                        data,
-                        FileHelper.MIME_TYPE
-                    )
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                })
-            */
+            //1 -> model.installApk(data, PackageInstallerSessionCallback(this, model))
             // Delete Selected Apk File
             1 -> DocumentsContract.deleteDocument(
                 requireContext().contentResolver, data

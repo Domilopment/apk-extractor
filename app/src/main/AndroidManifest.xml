@@ -47,7 +47,8 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
-            <meta-data android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
                 android:value="true" />
         </service>
 
@@ -60,6 +61,13 @@
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <!--
+        <receiver
+            android:name=".installApk.InstallBroadcastReceiver"
+            android:enabled="false"
+            android:exported="true" />
+        -->
 
         <activity
             android:name=".ui.MainActivity"
