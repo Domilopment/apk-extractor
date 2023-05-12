@@ -27,9 +27,7 @@ class FileHelper(private val context: Context) {
      * True if copy was Successfully else False
      */
     fun copy(
-        from: String,
-        to: Uri,
-        fileName: String
+        from: String, to: Uri, fileName: String
     ): Uri? {
         return try {
             val extractedApk: Uri?
@@ -37,12 +35,9 @@ class FileHelper(private val context: Context) {
             FileInputStream(from).use { input ->
                 // Create new APK file in destination folder
                 DocumentsContract.createDocument(
-                    context.contentResolver,
-                    DocumentsContract.buildDocumentUriUsingTree(
+                    context.contentResolver, DocumentsContract.buildDocumentUriUsingTree(
                         to, DocumentsContract.getTreeDocumentId(to)
-                    ),
-                    MIME_TYPE,
-                    fileName
+                    ), MIME_TYPE, fileName
                 ).let { outputFile ->
                     extractedApk = outputFile
                     // Create Output Stream for target APK file
@@ -68,8 +63,12 @@ class FileHelper(private val context: Context) {
      */
     fun chooseDir(activityResultLauncher: ActivityResultLauncher<Intent>) {
         Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            addCategory(Intent.CATEGORY_DEFAULT)
+            SettingsManager(context).saveDir()?.let {
+                val pickerInitialUri = DocumentsContract.buildDocumentUriUsingTree(
+                    it, DocumentsContract.getTreeDocumentId(it)
+                )
+                putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+            }
         }.also {
             activityResultLauncher.launch(
                 Intent.createChooser(it, "Choose directory")
@@ -88,10 +87,8 @@ class FileHelper(private val context: Context) {
             context.applicationInfo.packageName + ".provider",
             File(app.appSourceDirectory).copyTo(
                 File(
-                    context.cacheDir,
-                    SettingsManager(context).appName(app)
-                ),
-                true
+                    context.cacheDir, SettingsManager(context).appName(app)
+                ), true
             )
         )
     }
