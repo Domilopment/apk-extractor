@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         if (settingsManager.shouldStartService())
             startService(Intent(this, AutoBackupService::class.java))
     }
-
+    
     /**
      * Executes on Application Destroy, clear cache
      */
@@ -119,13 +119,13 @@ class MainActivity : AppCompatActivity() {
      * @param data return Intent from choose Save Dir
      */
     private fun takeUriPermission(data: Intent) {
-        (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
-            settingsManager.saveDir()?.also { oldPath ->
-                if (oldPath in contentResolver.persistedUriPermissions.map { it.uri })
-                    contentResolver.releasePersistableUriPermission(oldPath, this)
-            }
-            sharedPreferences.edit().putString("dir", data.data.toString()).apply()
-            contentResolver.takePersistableUriPermission(data.data!!, this)
+        val takeFlags: Int =
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        settingsManager.saveDir()?.also { oldPath ->
+            if (oldPath in contentResolver.persistedUriPermissions.map { it.uri })
+                contentResolver.releasePersistableUriPermission(oldPath, takeFlags)
         }
+        sharedPreferences.edit().putString("dir", data.data.toString()).apply()
+        contentResolver.takePersistableUriPermission(data.data!!, takeFlags)
     }
 }

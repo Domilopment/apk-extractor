@@ -364,15 +364,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
      * @param data return Intent from choose Save Dir
      */
     private fun takeUriPermission(data: Intent) {
-        (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)).run {
-            settingsManager.saveDir()?.also { oldPath ->
-                if (oldPath in requireContext().contentResolver.persistedUriPermissions.map { it.uri }) requireContext().contentResolver.releasePersistableUriPermission(
-                    oldPath, this
-                )
-            }
-            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
-                .putString("dir", data.data.toString()).apply()
-            requireContext().contentResolver.takePersistableUriPermission(data.data!!, this)
+        val contentResolver = requireContext().applicationContext.contentResolver
+
+        val takeFlags: Int =
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        settingsManager.saveDir()?.also { oldPath ->
+            if (oldPath in contentResolver.persistedUriPermissions.map { it.uri })
+                contentResolver.releasePersistableUriPermission(oldPath, takeFlags)
         }
+        PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+            .putString("dir", data.data.toString()).apply()
+        contentResolver.takePersistableUriPermission(data.data!!, takeFlags)
     }
 }
