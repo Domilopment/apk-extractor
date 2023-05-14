@@ -28,9 +28,9 @@ class MainViewModel(
     val applications: LiveData<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> =
         _applications
 
-    private val _mainFragmantState: MutableStateFlow<MainFragmentUIState> =
+    private val _mainFragmentState: MutableStateFlow<MainFragmentUIState> =
         MutableStateFlow(MainFragmentUIState())
-    val mainFragmantState: StateFlow<MainFragmentUIState> = _mainFragmantState.asStateFlow()
+    val mainFragmentState: StateFlow<MainFragmentUIState> = _mainFragmentState.asStateFlow()
 
     private val _progressDialogState: MutableStateFlow<ProgressDialogUiState> =
         MutableStateFlow(ProgressDialogUiState())
@@ -53,7 +53,7 @@ class MainViewModel(
     init {
         // Set applications in view once they are loaded
         _applications.observeForever { apps ->
-            _mainFragmantState.update { state ->
+            _mainFragmentState.update { state ->
                 val settingsManager = SettingsManager(context)
                 state.copy(
                     appList = settingsManager.sortData(
@@ -94,7 +94,7 @@ class MainViewModel(
      * @param actionMode Boolean of action mode is active
      */
     fun addActionModeCallback(actionMode: Boolean) {
-        _mainFragmantState.update { state ->
+        _mainFragmentState.update { state ->
             state.copy(actionMode = actionMode)
         }
     }
@@ -122,7 +122,7 @@ class MainViewModel(
      * Update App list
      */
     fun updateApps() {
-        _mainFragmantState.update {
+        _mainFragmentState.update {
             it.copy(isRefreshing = true)
         }
         viewModelScope.launch {
@@ -169,11 +169,11 @@ class MainViewModel(
      * Sorts data on Call after Selected Sort type
      */
     fun sortApps() {
-        _mainFragmantState.update {
+        _mainFragmentState.update {
             it.copy(isRefreshing = true)
         }
         viewModelScope.launch {
-            _mainFragmantState.update { state ->
+            _mainFragmentState.update { state ->
                 state.copy(
                     appList = withContext(Dispatchers.IO) {
                         SettingsManager(context).sortData(state.appList)
@@ -189,7 +189,7 @@ class MainViewModel(
     fun sortFavorites() {
         val settingsManager = SettingsManager(context)
         viewModelScope.launch {
-            _mainFragmantState.update { state ->
+            _mainFragmentState.update { state ->
                 val sortedList = withContext(Dispatchers.IO) {
                     settingsManager.sortData(state.appList)
                 }
@@ -204,7 +204,7 @@ class MainViewModel(
         val settingsManager = SettingsManager(context)
         viewModelScope.launch {
             applications.value?.let {
-                _mainFragmantState.update { state ->
+                _mainFragmentState.update { state ->
                     val sortedList = withContext(Dispatchers.IO) {
                         settingsManager.sortData(
                             settingsManager.filterApps(
@@ -236,7 +236,7 @@ class MainViewModel(
         val settingsManager = SettingsManager(context)
 
         _applications.value?.let {
-            _mainFragmantState.update { state ->
+            _mainFragmentState.update { state ->
                 state.copy(isRefreshing = true)
             }
             viewModelScope.launch {
@@ -260,7 +260,7 @@ class MainViewModel(
                     }
                 }
                 selectedAppTypes.await()?.let {
-                    _mainFragmantState.update { state ->
+                    _mainFragmentState.update { state ->
                         state.copy(appList = it, isRefreshing = false)
                     }
                 }

@@ -113,7 +113,7 @@ class MainFragment : Fragment() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                model.mainFragmantState.collect { uiState ->
+                model.mainFragmentState.collect { uiState ->
                     binding.refresh.isRefreshing = uiState.isRefreshing
                     val recyclerView = binding.listView.list
                     if (!recyclerView.isComputingLayout && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE)
