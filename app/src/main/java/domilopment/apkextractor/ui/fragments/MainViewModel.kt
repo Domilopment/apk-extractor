@@ -245,15 +245,18 @@ class MainViewModel(
                         "updated_system_apps" -> settingsManager.selectedAppTypes(
                             it, selectUpdatedSystemApps = b
                         )
+
                         "system_apps" -> settingsManager.selectedAppTypes(
                             it, selectSystemApps = b
                         )
+
                         "user_apps" -> settingsManager.selectedAppTypes(
                             it, selectUserApps = b
                         )
+
                         else -> null
                     }?.let {
-                        settingsManager.sortData(it)
+                        settingsManager.sortData(settingsManager.filterApps(it))
                     }
                 }
                 selectedAppTypes.await()?.let {
