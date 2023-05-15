@@ -1,13 +1,12 @@
 package domilopment.apkextractor.ui.fragments
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
-import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
@@ -83,16 +82,24 @@ class MainFragment : Fragment() {
         }
 
     private val selectApk =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) it.data?.data?.let { apkUri ->
+        registerForActivityResult(object : ActivityResultContracts.OpenDocument() {
+            override fun createIntent(context: Context, input: Array<String>): Intent {
+                val pickerInitialUri = SettingsManager(requireContext()).saveDir().let {
+                    DocumentsContract.buildDocumentUriUsingTree(
+                        it, DocumentsContract.getTreeDocumentId(it)
+                    )
+                }
+                return super.createIntent(context, input).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+                }
+            }
+        }) {
+            it?.let { apkUri ->
                 MaterialAlertDialogBuilder(requireContext()).apply {
                     setTitle(getString(R.string.alert_apk_selected_title))
                     setItems(R.array.selected_apk_options) { _, i: Int ->
-                        try {
-                            apkFileOptions(i, apkUri)
-                        } catch (e: Exception) {
-                            Log.e("Apk Extractor: Saved Apps Dialog", e.toString())
-                        }
+                        apkFileOptions(i, apkUri)
                     }
                 }.show()
             } ?: Toast.makeText(
@@ -116,10 +123,9 @@ class MainFragment : Fragment() {
                 model.mainFragmentState.collect { uiState ->
                     binding.refresh.isRefreshing = uiState.isRefreshing
                     val recyclerView = binding.listView.list
-                    if (!recyclerView.isComputingLayout && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE)
-                        viewAdapter.updateData(
-                            uiState.appList, uiState.updateTrigger.handleTrigger()
-                        )
+                    if (!recyclerView.isComputingLayout && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE) viewAdapter.updateData(
+                        uiState.appList, uiState.updateTrigger.handleTrigger()
+                    )
                     else recyclerView.post {
                         viewAdapter.updateData(
                             uiState.appList, uiState.updateTrigger.handleTrigger()
@@ -361,20 +367,7 @@ class MainFragment : Fragment() {
                 // as you specify a parent activity in AndroidManifest.xml.
                 when (menuItem.itemId) {
                     R.id.action_settings -> findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
-                    R.id.action_show_save_dir -> {
-                        val destDir = SettingsManager(requireContext()).saveDir().let {
-                            DocumentsContract.buildDocumentUriUsingTree(
-                                it, DocumentsContract.getTreeDocumentId(it)
-                            )
-                        }
-                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                            type = FileHelper.MIME_TYPE
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            putExtra(DocumentsContract.EXTRA_INITIAL_URI, destDir)
-                        }
-                        selectApk.launch(intent)
-                    }
-
+                    R.id.action_show_save_dir -> selectApk.launch(arrayOf(FileHelper.MIME_TYPE))
                     R.id.action_filter -> AppFilterBottomSheet.newInstance().apply {
                         show(this@MainFragment.parentFragmentManager, AppFilterBottomSheet.TAG)
                     }

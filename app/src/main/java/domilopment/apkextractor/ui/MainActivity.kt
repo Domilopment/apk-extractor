@@ -31,9 +31,11 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) {
             it?.also { saveDirUri ->
                 takeUriPermission(saveDirUri)
+                waitForRes = false
+            } ?: run {
+                waitForRes = false
+                showDialog()
             }
-            waitForRes = false
-            showDialog()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
