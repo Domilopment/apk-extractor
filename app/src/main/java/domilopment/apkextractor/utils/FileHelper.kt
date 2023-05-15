@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import domilopment.apkextractor.data.ApplicationModel
 import java.io.*
@@ -54,25 +55,6 @@ class FileHelper(private val context: Context) {
         } catch (e: Exception) {
             e.printStackTrace()
             null
-        }
-    }
-
-    /**
-     * Select a Destination Directory for APK files
-     * Shows Android Directory Chooser
-     */
-    fun chooseDir(activityResultLauncher: ActivityResultLauncher<Intent>) {
-        Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-            SettingsManager(context).saveDir()?.let {
-                val pickerInitialUri = DocumentsContract.buildDocumentUriUsingTree(
-                    it, DocumentsContract.getTreeDocumentId(it)
-                )
-                putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-            }
-        }.also {
-            activityResultLauncher.launch(
-                Intent.createChooser(it, "Choose directory")
-            )
         }
     }
 

@@ -1,7 +1,6 @@
 package domilopment.apkextractor.ui.fragments
 
 import android.Manifest
-import android.app.Activity
 import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -11,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
+import android.provider.DocumentsContract
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -36,7 +36,6 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreference
 import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreferenceDialogFragmentCompat
-import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.*
@@ -61,8 +60,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private val chooseSaveDir =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) it.data?.also { saveDirUri ->
+        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) {
+            it?.let { saveDirUri ->
                 takeUriPermission(
                     saveDirUri
                 )
@@ -189,7 +188,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         // Select a Dir to Save APKs
         chooseDir?.setOnPreferenceClickListener {
-            FileHelper(requireActivity()).chooseDir(chooseSaveDir)
+            val pickerInitialUri = settingsManager.saveDir()?.let {
+                DocumentsContract.buildDocumentUriUsingTree(
+                    it, DocumentsContract.getTreeDocumentId(it)
+                )
+            }
+            chooseSaveDir.launch(pickerInitialUri)
             return@setOnPreferenceClickListener true
         }
 
@@ -238,9 +242,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                                 selectUpdatedSystemApps = true,
                                 selectSystemApps = false,
                                 selectUserApps = true,
-                            ),
-                            sortMode = SettingsManager.SORT_BY_NAME,
-                            sortFavorites = false
+                            ), sortMode = SettingsManager.SORT_BY_NAME, sortFavorites = false
                         ).forEach {
                             appEntries.add(it.appName)
                             appValues.add(it.appPackageName)
@@ -361,19 +363,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     /**
      * Take Uri Permission for Save Dir
-     * @param data return Intent from choose Save Dir
+     * @param uri content uri for selected save path
      */
-    private fun takeUriPermission(data: Intent) {
-        val contentResolver = requireContext().applicationContext.contentResolver
+    private fun takeUriPermission(uri: Uri) {
+        val contentResolver = requireActivity().contentResolver
 
         val takeFlags: Int =
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         settingsManager.saveDir()?.also { oldPath ->
-            if (oldPath in contentResolver.persistedUriPermissions.map { it.uri })
-                contentResolver.releasePersistableUriPermission(oldPath, takeFlags)
+            if (oldPath in contentResolver.persistedUriPermissions.map { it.uri } && oldPath != uri) contentResolver.releasePersistableUriPermission(
+                oldPath, takeFlags
+            )
         }
         PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
-            .putString("dir", data.data.toString()).apply()
-        contentResolver.takePersistableUriPermission(data.data!!, takeFlags)
+            .putString("dir", uri.toString()).apply()
+        contentResolver.takePersistableUriPermission(uri, takeFlags)
     }
 }

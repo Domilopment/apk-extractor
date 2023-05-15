@@ -1,9 +1,9 @@
 package domilopment.apkextractor.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
 import android.provider.DocumentsContract
@@ -15,7 +15,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.databinding.ActivityMainBinding
-import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
 import java.io.FileNotFoundException
 
@@ -29,19 +28,13 @@ class MainActivity : AppCompatActivity() {
     private var waitForRes = false
 
     private val chooseSaveDir =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                it.data?.also { saveDirUri -> takeUriPermission(saveDirUri) }
-                waitForRes = false
-            } else if (mustAskForSaveDir()) {
-                chooseSaveDir()
+        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) {
+            it?.also { saveDirUri ->
+                takeUriPermission(saveDirUri)
             }
+            waitForRes = false
+            showDialog()
         }
-
-    private fun chooseSaveDir() {
-        waitForRes = true
-        FileHelper(this@MainActivity).chooseDir(chooseSaveDir)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,22 +51,16 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         // Check if Save dir is Selected, Writing permission to dir and whether dir exists
         // if not ask for select dir
-        if (!waitForRes && mustAskForSaveDir()) {
-            MaterialAlertDialogBuilder(this).apply {
-                setMessage(R.string.alert_save_path_message)
-                setTitle(R.string.alert_save_path_title)
-                setCancelable(false)
-                setPositiveButton(R.string.alert_save_path_ok) { _, _ ->
-                    chooseSaveDir()
-                }
-            }.show()
-        }
+        showDialog()
 
         // Checks if Service isn't running but should be
-        if (settingsManager.shouldStartService())
-            startService(Intent(this, AutoBackupService::class.java))
+        if (settingsManager.shouldStartService()) startForegroundService(
+            Intent(
+                this, AutoBackupService::class.java
+            )
+        )
     }
-    
+
     /**
      * Executes on Application Destroy, clear cache
      */
@@ -83,27 +70,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
+     * Show dialog that prompts the user to select a save dir, for the app to be able save APKs
+     */
+    private fun showDialog() {
+        if (!waitForRes && mustAskForSaveDir()) {
+            MaterialAlertDialogBuilder(this).apply {
+                setMessage(R.string.alert_save_path_message)
+                setTitle(R.string.alert_save_path_title)
+                setCancelable(false)
+                setPositiveButton(R.string.alert_save_path_ok) { _, _ ->
+                    waitForRes = true
+                    chooseSaveDir.launch(null)
+                }
+            }.show()
+        }
+    }
+
+    /**
      * Checks for picked Save Directory and for Access to this Dir
      * @return Have to ask user for Save Dir
      */
     private fun mustAskForSaveDir(): Boolean {
         val path = SettingsManager(this).saveDir()
-        return (!sharedPreferences.contains("dir"))
-                || checkUriPermission(
+        return (!sharedPreferences.contains("dir")) || checkUriPermission(
             path,
             Binder.getCallingPid(),
             Binder.getCallingUid(),
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        ) == PackageManager.PERMISSION_DENIED
-                || !DocumentsContract.isDocumentUri(
-            this,
-            DocumentsContract.buildDocumentUriUsingTree(
+        ) == PackageManager.PERMISSION_DENIED || !DocumentsContract.isDocumentUri(
+            this, DocumentsContract.buildDocumentUriUsingTree(
                 path, DocumentsContract.getTreeDocumentId(path)
             )
         ) || try {
             DocumentsContract.findDocumentPath(
-                contentResolver,
-                DocumentsContract.buildDocumentUriUsingTree(
+                contentResolver, DocumentsContract.buildDocumentUriUsingTree(
                     path, DocumentsContract.getTreeDocumentId(path)
                 )
             ) == null
@@ -116,16 +116,17 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Take Uri Permission for Save Dir
-     * @param data return Intent from choose Save Dir
+     * @param uri content uri for selected save path
      */
-    private fun takeUriPermission(data: Intent) {
+    private fun takeUriPermission(uri: Uri) {
         val takeFlags: Int =
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         settingsManager.saveDir()?.also { oldPath ->
-            if (oldPath in contentResolver.persistedUriPermissions.map { it.uri })
-                contentResolver.releasePersistableUriPermission(oldPath, takeFlags)
+            if (oldPath in contentResolver.persistedUriPermissions.map { it.uri }) contentResolver.releasePersistableUriPermission(
+                oldPath, takeFlags
+            )
         }
-        sharedPreferences.edit().putString("dir", data.data.toString()).apply()
-        contentResolver.takePersistableUriPermission(data.data!!, takeFlags)
+        sharedPreferences.edit().putString("dir", uri.toString()).apply()
+        contentResolver.takePersistableUriPermission(uri, takeFlags)
     }
 }
