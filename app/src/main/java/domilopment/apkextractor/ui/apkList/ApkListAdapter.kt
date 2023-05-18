@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import androidx.core.content.ContextCompat
 import androidx.core.text.toSpannable
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
@@ -18,8 +17,6 @@ import domilopment.apkextractor.databinding.ApkListItemBinding
 import domilopment.apkextractor.ui.ApkOptionsBottomSheet
 import domilopment.apkextractor.ui.fragments.ApkListFragment
 import java.util.*
-
-private const val placeholder: String = "Failed to load"
 
 class ApkListAdapter(
     private val apkListFragment: ApkListFragment
@@ -70,16 +67,12 @@ class ApkListAdapter(
         // Apply data from Dataset item to holder
         holder.binding.apply {
             apkFileName.text = getSpannable(apk.fileName)
-            apkAppName.text = getSpannable(apk.appName?.toString() ?: placeholder)
-            apkPackageName.text = getSpannable(apk.appPackageName ?: placeholder)
-            apkIcon.setImageDrawable(
-                apk.appIcon ?: ContextCompat.getDrawable(
-                    apkListFragment.requireContext(), android.R.drawable.sym_def_app_icon
-                )
-            )
+            apkAppName.text = getSpannable(apk.appName.toString())
+            apkPackageName.text = getSpannable(apk.appPackageName)
+            apkIcon.setImageDrawable(apk.appIcon)
             apkVersionName.text = getSpannable(
                 apkListFragment.getString(
-                    R.string.apk_holder_version, apk.appVersionName, apk.appVersionCode ?: -1
+                    R.string.apk_holder_version, apk.appVersionName, apk.appVersionCode
                 )
             )
             // ItemView on Click
@@ -149,7 +142,8 @@ class ApkListAdapter(
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
                 @Suppress("UNCHECKED_CAST")
-                myDatasetFiltered = (filterResults.values as List<PackageArchiveModel>).toMutableList()
+                myDatasetFiltered =
+                    (filterResults.values as List<PackageArchiveModel>).toMutableList()
                 notifyDataSetChanged()
             }
         }
