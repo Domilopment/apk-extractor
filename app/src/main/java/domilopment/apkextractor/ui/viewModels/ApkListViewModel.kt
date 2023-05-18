@@ -66,7 +66,7 @@ class ApkListViewModel(application: Application):  AndroidViewModel(application)
      * and set it in BottomSheet state
      * @param app selected application
      */
-    fun selectApplication(app: PackageArchiveModel) {
+    fun selectApplication(app: PackageArchiveModel?) {
         _apkOptionsBottomSheetState.update { state ->
             state.copy(
                 selectedApplicationModel = app

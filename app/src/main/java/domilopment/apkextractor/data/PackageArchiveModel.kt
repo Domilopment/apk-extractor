@@ -19,30 +19,35 @@ data class PackageArchiveModel(
     val fileLastModified: Long = documentFile.lastModified()
     val fileSize: Float = documentFile.length() / (1000.0F * 1000.0F)
 
-    val appName: CharSequence?
-    val appPackageName: String?
-    val appIcon: Drawable?
-    val appVersionName: String?
-    val appVersionCode: Long?
+    var appName: CharSequence? = null
+        private set
+    var appPackageName: String? = null
+        private set
+    var appIcon: Drawable? = null
+        private set
+    var appVersionName: String? = null
+        private set
+    var appVersionCode: Long? = null
+        private set
 
     init {
-        val apkFile = File(context.cacheDir, documentFile.name ?: "temp.apk").also { emptyFile ->
-            if (!emptyFile.exists()) emptyFile.createNewFile()
+        File(context.cacheDir, documentFile.name ?: "temp.apk").also { apkFile ->
+            if (!apkFile.exists()) apkFile.createNewFile()
             context.contentResolver.openInputStream(documentFile.uri).use {
-                it?.copyTo(emptyFile.outputStream())
+                if (it?.copyTo(apkFile.outputStream())!! == documentFile.length()) {
+                    val archiveInfo =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) packageManager.getPackageArchiveInfo(
+                            apkFile.path, PackageManager.PackageInfoFlags.of(0L)
+                        ) else packageManager.getPackageArchiveInfo(apkFile.path, 0)
+                    appName = archiveInfo?.applicationInfo?.loadLabel(packageManager)
+                    appPackageName = archiveInfo?.applicationInfo?.packageName
+                    appIcon = archiveInfo?.applicationInfo?.loadIcon(packageManager)
+                    appVersionName = archiveInfo?.versionName
+                    appVersionCode = archiveInfo?.let { Utils.versionCode(it) }
+                }
             }
+            if (apkFile.exists()) apkFile.delete()
         }
-        (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) packageManager.getPackageArchiveInfo(
-            apkFile.path, PackageManager.PackageInfoFlags.of(0L)
-        )
-        else packageManager.getPackageArchiveInfo(apkFile.path, 0)).also {
-            appName = it?.applicationInfo?.loadLabel(packageManager)
-            appPackageName = it?.applicationInfo?.packageName
-            appIcon = it?.applicationInfo?.loadIcon(packageManager)
-            appVersionName = it?.versionName
-            appVersionCode = it?.let { Utils.versionCode(it) }
-        }
-        if (apkFile.exists()) apkFile.delete()
     }
 
     var isChecked = false

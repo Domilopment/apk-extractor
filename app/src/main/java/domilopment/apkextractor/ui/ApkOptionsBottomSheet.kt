@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.provider.DocumentsContract
@@ -184,6 +185,11 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        model.selectApplication(null)
     }
 
     /**

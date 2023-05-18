@@ -149,7 +149,7 @@ class ApkListFragment : Fragment() {
         super.onStart()
         (requireActivity() as AppCompatActivity).supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
-            title = getString(R.string.app_name)
+            title = getString(R.string.menu_show_save_dir)
         }
     }
 
@@ -238,5 +238,9 @@ class ApkListFragment : Fragment() {
      */
     fun selectApplication(app: PackageArchiveModel) {
         model.selectApplication(app)
+    }
+
+    fun isRefreshing(): Boolean {
+        return binding.refreshApkList.isRefreshing
     }
 }
