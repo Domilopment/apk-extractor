@@ -48,11 +48,13 @@ data class PackageArchiveModel(
                             apkFile.path, PackageManager.PackageInfoFlags.of(0L)
                         ) else packageManager.getPackageArchiveInfo(apkFile.path, 0)
                     archiveInfo?.also {
+                        it.applicationInfo.sourceDir = apkFile.path
+                        it.applicationInfo.publicSourceDir = apkFile.path
                         appName = it.applicationInfo?.loadLabel(packageManager) ?: placeholder
                         appPackageName = it.applicationInfo?.packageName ?: placeholder
                         appIcon = it.applicationInfo?.loadIcon(packageManager)
                         appVersionName = it.versionName
-                        appVersionCode = it.let { Utils.versionCode(it) }
+                        appVersionCode = Utils.versionCode(it)
                     }
                 }
             }
