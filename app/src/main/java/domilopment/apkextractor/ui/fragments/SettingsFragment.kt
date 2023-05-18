@@ -36,6 +36,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreference
 import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreferenceDialogFragmentCompat
+import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.*

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.circularreveal.CircularRevealRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_element"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeightLarge"
+    android:background="@color/app_list_item_background"
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingHorizontal="6dip"
+    android:paddingTop="6dip">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/apk_file_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:singleLine="true"
+        android:textSize="11sp" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/apk_icon"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/apk_list_item_divider"
+        android:layout_below="@+id/apk_file_name"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="6dip"
+        android:contentDescription="@string/list_item_Image_description"
+        android:src="@android:drawable/sym_def_app_icon" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/apk_app_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_below="@id/apk_file_name"
+        android:layout_toEndOf="@id/apk_icon"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:textSize="16sp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/apk_package_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/apk_app_name"
+        android:layout_toEndOf="@id/apk_icon"
+        android:singleLine="true"
+        android:textSize="12sp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/apk_version_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/apk_package_name"
+        android:layout_toEndOf="@id/apk_icon"
+        android:singleLine="true"
+        android:textSize="12sp" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/apk_list_item_divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="6dp" />
+
+</com.google.android.material.circularreveal.CircularRevealRelativeLayout>

@@ -1,12 +1,9 @@
 package domilopment.apkextractor.ui.fragments
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
-import android.provider.DocumentsContract
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
@@ -28,7 +25,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import domilopment.apkextractor.ui.appList.AppListAdapter
@@ -37,9 +33,9 @@ import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.FragmentMainBinding
 import domilopment.apkextractor.ui.AppFilterBottomSheet
 import domilopment.apkextractor.ui.ProgressDialogFragment
+import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.FileHelper
-import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -79,32 +75,6 @@ class MainFragment : Fragment() {
                 }
             }
             appToUninstall = null
-        }
-
-    private val selectApk =
-        registerForActivityResult(object : ActivityResultContracts.OpenDocument() {
-            override fun createIntent(context: Context, input: Array<String>): Intent {
-                val pickerInitialUri = SettingsManager(requireContext()).saveDir().let {
-                    DocumentsContract.buildDocumentUriUsingTree(
-                        it, DocumentsContract.getTreeDocumentId(it)
-                    )
-                }
-                return super.createIntent(context, input).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-                }
-            }
-        }) {
-            it?.let { apkUri ->
-                MaterialAlertDialogBuilder(requireContext()).apply {
-                    setTitle(getString(R.string.alert_apk_selected_title))
-                    setItems(R.array.selected_apk_options) { _, i: Int ->
-                        apkFileOptions(i, apkUri)
-                    }
-                }.show()
-            } ?: Toast.makeText(
-                context, getString(R.string.alert_apk_selected_failed), Toast.LENGTH_LONG
-            ).show()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -367,7 +337,7 @@ class MainFragment : Fragment() {
                 // as you specify a parent activity in AndroidManifest.xml.
                 when (menuItem.itemId) {
                     R.id.action_settings -> findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
-                    R.id.action_show_save_dir -> selectApk.launch(arrayOf(FileHelper.MIME_TYPE))
+                    R.id.action_show_save_dir -> findNavController().navigate(R.id.action_mainFragment_to_apkListFragment)
                     R.id.action_filter -> AppFilterBottomSheet.newInstance().apply {
                         show(this@MainFragment.parentFragmentManager, AppFilterBottomSheet.TAG)
                     }
@@ -430,34 +400,5 @@ class MainFragment : Fragment() {
      */
     fun removeApplication(app: ApplicationModel) {
         model.removeApp(app)
-    }
-
-    /**
-     * Executes Option for "How to Use Apk" Dialog
-     * @param i Selected Option
-     * @param data Result Intent, holding Apk files data
-     */
-    private fun apkFileOptions(i: Int, data: Uri) {
-        when (i) {
-            // Send Selected Apk File
-            0 -> startActivity(
-                Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-                    type = FileHelper.MIME_TYPE
-                    putExtra(Intent.EXTRA_STREAM, data)
-                }, getString(R.string.share_intent_title))
-            )
-            // Install Selected Apk File
-            //1 -> model.installApk(data, PackageInstallerSessionCallback(this, model))
-            // Delete Selected Apk File
-            1 -> DocumentsContract.deleteDocument(
-                requireContext().contentResolver, data
-            ).let { deleted ->
-                Toast.makeText(
-                    context,
-                    getString(if (deleted) R.string.apk_action_delete_success else R.string.apk_action_delete_failed),
-                    Toast.LENGTH_SHORT
-                )
-            }.show()
-        }
     }
 }

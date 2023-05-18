@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.fragments
+package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
 import android.net.Uri
@@ -361,74 +361,6 @@ class MainViewModel(
             shareResult.value = Event(files)
         }
     }
-
-
-    /*
-    /**
-     * Install APK file from ACTION_OPEN_DOCUMENT uri
-     * @param apkUri uri from Intent return data
-     */
-    fun installApk(apkUri: Uri, callback: PackageInstallerSessionCallback) {
-        viewModelScope.launch(Dispatchers.Main) {
-            val packageInstaller = context.applicationContext.packageManager.packageInstaller
-            val contentResolver = context.applicationContext.contentResolver
-            packageInstaller.registerSessionCallback(callback)
-
-            withContext(Dispatchers.IO) {
-                contentResolver.openInputStream(apkUri)?.use { apkStream ->
-                    val params =
-                        PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL)
-                    val sessionId = packageInstaller.createSession(params)
-                    callback.initialSessionId = sessionId
-
-                    _progressDialogState.update {
-                        it.copy(
-                            title = context.getString(R.string.progress_dialog_title_install),
-                            process = packageInstaller.getSessionInfo(sessionId)?.appPackageName
-                                ?: "",
-                            tasks = 100,
-                            shouldBeShown = true
-                        )
-                    }
-
-                    val session = packageInstaller.openSession(sessionId)
-
-                    val length = DocumentFile.fromSingleUri(context, apkUri)?.length() ?: -1
-
-                    session.openWrite("install_apk_session_$sessionId", 0, length)
-                        .use { outputStream ->
-                            apkStream.copyTo(outputStream)
-                            session.fsync(outputStream)
-                        }
-
-                    val pendingIntent = Intent(context, InstallBroadcastReceiver::class.java).let {
-                        PendingIntent.getBroadcast(
-                            context, sessionId, it, PendingIntent.FLAG_MUTABLE
-                        )
-                    }
-
-                    session.commit(pendingIntent.intentSender)
-                    session.close()
-                }
-            }
-        }
-    }
-
-    /**
-     * Update ProgressDialogState for APK installations
-     * @param progress current progress of installation
-     * @param packageName name of package being installed
-     */
-    fun updateInstallApkStatus(progress: Float, packageName: String? = "") {
-        _progressDialogState.update {
-            it.copy(
-                title = context.getString(R.string.progress_dialog_title_install),
-                process = packageName,
-                progress = (progress * 100).toInt(),
-            )
-        }
-    }
-     */
 
     /**
      * Reset Progress dialog state back to default

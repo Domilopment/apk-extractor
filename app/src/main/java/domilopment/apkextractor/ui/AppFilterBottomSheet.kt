@@ -16,7 +16,7 @@ import com.google.android.material.chip.Chip
 import domilopment.apkextractor.R
 import domilopment.apkextractor.databinding.AppFilterBottomSheetBinding
 import domilopment.apkextractor.databinding.FilterChipBinding
-import domilopment.apkextractor.ui.fragments.MainViewModel
+import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.*
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories

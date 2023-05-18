@@ -12,10 +12,18 @@
         <action
             android:id="@+id/action_mainFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_apkListFragment"
+            app:destination="@id/apkListFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="domilopment.apkextractor.ui.fragments.SettingsFragment"
         android:label="SettingsFragment"
-        tools:layout="@layout/settings_fragment"/>
+        tools:layout="@layout/settings_fragment" />
+    <fragment
+        android:id="@+id/apkListFragment"
+        android:name="domilopment.apkextractor.ui.fragments.ApkListFragment"
+        android:label="ApkListFragment"
+        tools:layout="@layout/fragment_apk_list" />
 </navigation>

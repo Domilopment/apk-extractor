@@ -31,7 +31,7 @@ class SettingsManager(context: Context) {
     }
 
     fun getApps(): Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>> {
-        val apks = ListOfAPKs(packageManager)
+        val apks = ListOfApps(packageManager)
         return apks.apps
     }
 

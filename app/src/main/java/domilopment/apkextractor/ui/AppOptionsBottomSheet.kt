@@ -22,7 +22,7 @@ import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.AppOptionsBottomSheetBinding
-import domilopment.apkextractor.ui.fragments.MainViewModel
+import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.*
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
