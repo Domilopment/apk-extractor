@@ -73,7 +73,7 @@ class MainViewModel(
      * and set it in BottomSheet state
      * @param app selected application
      */
-    fun selectApplication(app: ApplicationModel) {
+    fun selectApplication(app: ApplicationModel?) {
         _appOptionsBottomSheetState.update { state ->
             state.copy(
                 selectedApplicationModel = app
