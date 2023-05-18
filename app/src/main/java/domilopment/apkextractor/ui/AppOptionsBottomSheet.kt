@@ -1,6 +1,7 @@
 package domilopment.apkextractor.ui
 
 import android.Manifest
+import android.content.DialogInterface
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -137,6 +138,11 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             setupApplicationInfo()
             setupApplicationActions()
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        model.selectApplication(null)
     }
 
     /**
