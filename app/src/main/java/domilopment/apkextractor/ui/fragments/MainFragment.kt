@@ -54,12 +54,8 @@ class MainFragment : Fragment() {
     private lateinit var searchView: SearchView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var callback: OnBackPressedCallback
-    private val model by activityViewModels<MainViewModel> {
-        MainViewModel(requireActivity().application).defaultViewModelProviderFactory
-    }
-    private val progressDialogViewModel by activityViewModels<ProgressDialogViewModel> {
-        ProgressDialogViewModel(requireActivity().application).defaultViewModelProviderFactory
-    }
+    private val model by activityViewModels<MainViewModel>()
+    private val progressDialogViewModel by activityViewModels<ProgressDialogViewModel>()
 
     private val shareApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

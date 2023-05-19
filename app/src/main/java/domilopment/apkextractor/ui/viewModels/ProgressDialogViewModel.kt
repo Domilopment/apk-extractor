@@ -7,11 +7,8 @@ import android.content.pm.PackageInstaller
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import domilopment.apkextractor.Event
 import domilopment.apkextractor.R
@@ -33,9 +30,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ProgressDialogViewModel(
-    application: Application
-) : AndroidViewModel(application), HasDefaultViewModelProviderFactory {
+class ProgressDialogViewModel(application: Application) : AndroidViewModel(application) {
     private val _progressDialogState: MutableStateFlow<ProgressDialogUiState> =
         MutableStateFlow(ProgressDialogUiState())
     val progressDialogState: StateFlow<ProgressDialogUiState> = _progressDialogState.asStateFlow()
@@ -214,14 +209,5 @@ class ProgressDialogViewModel(
      */
     fun resetProgress() {
         _progressDialogState.value = ProgressDialogUiState()
-    }
-
-    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
-        return object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return modelClass.getConstructor(Application::class.java)
-                    .newInstance(getApplication())
-            }
-        }
     }
 }

@@ -56,9 +56,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var googlePlay: Preference? = null
     private var privacyPolicy: Preference? = null
     private var version: Preference? = null
-    private val model by activityViewModels<MainViewModel> {
-        MainViewModel(requireActivity().application).defaultViewModelProviderFactory
-    }
+    private val model by activityViewModels<MainViewModel>()
 
     private val chooseSaveDir =
         registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) {

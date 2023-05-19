@@ -52,9 +52,7 @@ class ApkListFragment : Fragment() {
     private lateinit var searchView: SearchView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var callback: OnBackPressedCallback
-    private val model by activityViewModels<ApkListViewModel> {
-        ApkListViewModel(requireActivity().application).defaultViewModelProviderFactory
-    }
+    private val model by activityViewModels<ApkListViewModel>()
 
     private val selectApk =
         registerForActivityResult(object : ActivityResultContracts.OpenDocument() {
@@ -73,10 +71,13 @@ class ApkListFragment : Fragment() {
             it?.let { apkUri ->
                 DocumentFile.fromSingleUri(this.requireContext(), apkUri)
             }?.let { documentFile ->
-                PackageArchiveModel(this.requireContext(), documentFile)
+                val context = this.requireContext()
+                PackageArchiveModel(
+                    context.packageManager, context.contentResolver, context.cacheDir, documentFile
+                )
             }?.also { apk ->
                 model.selectApplication(apk)
-                ApkOptionsBottomSheet.newInstance(apk.appPackageName)
+                ApkOptionsBottomSheet.newInstance()
                     .show(requireActivity().supportFragmentManager, ApkOptionsBottomSheet.TAG)
             } ?: Toast.makeText(
                 context, getString(R.string.alert_apk_selected_failed), Toast.LENGTH_LONG

@@ -79,9 +79,11 @@ class ApkListAdapter(
             root.setOnClickListener {
                 if (apkListFragment.isRefreshing()) return@setOnClickListener
 
-                apkListFragment.selectApplication(apk)
+                apkListFragment.selectApplication(apk.apply {
+                    loadPackageArchiveInfo()
+                })
                 apkListFragment.requireActivity().supportFragmentManager.let {
-                    ApkOptionsBottomSheet.newInstance(apk.appPackageName).apply {
+                    ApkOptionsBottomSheet.newInstance().apply {
                         show(it, ApkOptionsBottomSheet.TAG)
                     }
                 }

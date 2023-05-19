@@ -26,9 +26,7 @@ class ProgressDialogFragment : DialogFragment() {
     private lateinit var textPercentages: MaterialTextView
     private lateinit var textValue: MaterialTextView
     private lateinit var currentProcess: MaterialTextView
-    private val model by activityViewModels<ProgressDialogViewModel> {
-        ProgressDialogViewModel(requireActivity().application).defaultViewModelProviderFactory
-    }
+    private val model by activityViewModels<ProgressDialogViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

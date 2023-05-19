@@ -2,11 +2,8 @@ package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import domilopment.apkextractor.UpdateTrigger
 import domilopment.apkextractor.data.ApkListFragmentUIState
@@ -22,9 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ApkListViewModel(application: Application) : AndroidViewModel(application),
-    HasDefaultViewModelProviderFactory {
-
+class ApkListViewModel(application: Application) : AndroidViewModel(application) {
     private val _applications: MutableLiveData<List<PackageArchiveModel>> by lazy {
         MutableLiveData<List<PackageArchiveModel>>().also {
             viewModelScope.launch {
@@ -110,15 +105,12 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
      */
     private suspend fun loadApks(): List<PackageArchiveModel> = withContext(Dispatchers.IO) {
         // Do an asynchronous operation to fetch users.
-        return@withContext ListOfAPKs(context).apkFiles()
-    }
-
-    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
-        return object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return modelClass.getConstructor(Application::class.java)
-                    .newInstance(getApplication())
+        val apkList = ListOfAPKs(context).apkFiles()
+        async {
+            apkList.forEach {
+                it.loadPackageArchiveInfo()
             }
         }
+        return@withContext apkList
     }
 }

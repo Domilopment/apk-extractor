@@ -19,7 +19,6 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.databinding.ApkOptionsBottomSheetBinding
-import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.utils.*
 import kotlinx.coroutines.launch
@@ -44,27 +43,16 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
             }
         }
 
-    private val model by activityViewModels<ApkListViewModel> {
-        ApkListViewModel(requireActivity().application).defaultViewModelProviderFactory
-    }
+    private val model by activityViewModels<ApkListViewModel>()
 
-    private val progressDialogViewModel by activityViewModels<ProgressDialogViewModel> {
-        ProgressDialogViewModel(requireActivity().application).defaultViewModelProviderFactory
-    }
+    private val progressDialogViewModel by activityViewModels<ProgressDialogViewModel>()
 
     companion object {
         const val TAG = "app_options_bottom_sheet"
 
         @JvmStatic
-        fun newInstance(
-            packageName: String?
-        ): ApkOptionsBottomSheet {
-            val appOptionsBottomSheet = ApkOptionsBottomSheet()
-            val args: Bundle = Bundle(1).apply {
-                putString("package_name", packageName)
-            }
-            appOptionsBottomSheet.arguments = args
-            return appOptionsBottomSheet
+        fun newInstance(): ApkOptionsBottomSheet {
+            return ApkOptionsBottomSheet()
         }
     }
 

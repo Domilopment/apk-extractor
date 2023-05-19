@@ -11,9 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class MainViewModel(
-    application: Application
-) : AndroidViewModel(application), HasDefaultViewModelProviderFactory {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _applications: MutableLiveData<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> by lazy {
         MutableLiveData<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>>().also {
             viewModelScope.launch {
@@ -245,13 +243,4 @@ class MainViewModel(
             // Do an asynchronous operation to fetch users.
             return@withContext SettingsManager(context).getApps()
         }
-
-    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
-        return object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return modelClass.getConstructor(Application::class.java)
-                    .newInstance(getApplication())
-            }
-        }
-    }
 }

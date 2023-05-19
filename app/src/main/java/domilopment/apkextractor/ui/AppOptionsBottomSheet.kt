@@ -71,9 +71,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             ).setTextColor(Color.RED).setAnchorView(this.view).show()
         }
 
-    private val model by activityViewModels<MainViewModel> {
-        MainViewModel(requireActivity().application).defaultViewModelProviderFactory
-    }
+    private val model by activityViewModels<MainViewModel>()
 
     companion object {
         const val TAG = "app_options_bottom_sheet"

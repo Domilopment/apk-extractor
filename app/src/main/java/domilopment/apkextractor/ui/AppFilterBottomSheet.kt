@@ -32,9 +32,7 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var sharedPreferences: SharedPreferences
 
-    private val model by activityViewModels<MainViewModel> {
-        MainViewModel(requireActivity().application).defaultViewModelProviderFactory
-    }
+    private val model by activityViewModels<MainViewModel>()
 
     companion object {
         const val TAG = "app_filter_bottom_sheet"

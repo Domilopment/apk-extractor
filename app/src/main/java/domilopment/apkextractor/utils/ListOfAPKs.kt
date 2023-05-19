@@ -1,6 +1,7 @@
 package domilopment.apkextractor.utils
 
 import android.content.Context
+import androidx.core.content.ContextCompat
 import androidx.documentfile.provider.DocumentFile
 import domilopment.apkextractor.data.PackageArchiveModel
 import kotlinx.coroutines.Deferred
@@ -10,6 +11,10 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
 class ListOfAPKs(private val context: Context) {
+    val icon = ContextCompat.getDrawable(
+        context, android.R.drawable.sym_def_app_icon
+    )
+
     /**
      * Update Installed APK lists
      */
@@ -24,7 +29,11 @@ class ListOfAPKs(private val context: Context) {
         }?.forEach { documentFile: DocumentFile ->
             jobList.add(async(Dispatchers.IO) {
                 PackageArchiveModel(
-                    context, documentFile
+                    context.packageManager,
+                    context.contentResolver,
+                    context.cacheDir,
+                    documentFile,
+                    appIcon = icon
                 )
             })
 
