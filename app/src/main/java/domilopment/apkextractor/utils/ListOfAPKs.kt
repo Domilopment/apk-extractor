@@ -3,6 +3,7 @@ package domilopment.apkextractor.utils
 import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.documentfile.provider.DocumentFile
+import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +12,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
 class ListOfAPKs(private val context: Context) {
-    val icon = ContextCompat.getDrawable(
+    private val placeholder = context.getString(R.string.apk_holder_placeholder)
+    private val icon = ContextCompat.getDrawable(
         context, android.R.drawable.sym_def_app_icon
     )
 
@@ -33,7 +35,9 @@ class ListOfAPKs(private val context: Context) {
                     context.contentResolver,
                     context.cacheDir,
                     documentFile,
-                    appIcon = icon
+                    appName = placeholder,
+                    appPackageName = placeholder,
+                    appIcon = icon,
                 )
             })
 

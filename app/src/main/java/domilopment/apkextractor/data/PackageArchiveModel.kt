@@ -10,16 +10,13 @@ import domilopment.apkextractor.utils.Utils
 import java.io.File
 import java.io.IOException
 
-private const val placeholder: String = "Loading..."
-private const val loadFailed: String = "Loading failed"
-
 data class PackageArchiveModel(
     private val packageManager: PackageManager,
     private val contentResolver: ContentResolver,
     private val cacheDir: File,
     private val documentFile: DocumentFile,
-    var appName: CharSequence = placeholder,
-    var appPackageName: String = placeholder,
+    var appName: CharSequence,
+    var appPackageName: String,
     var appIcon: Drawable? = null,
     var appVersionName: String? = null,
     var appVersionCode: Long = -1
@@ -30,19 +27,19 @@ data class PackageArchiveModel(
     val fileSize: Float = documentFile.length() / (1000.0F * 1000.0F)
 
     private var isPackageArchiveInfoLoaded = false
+    private var isPackageArchiveInfoLoading = false
 
     var isChecked = false
 
     fun exist() = documentFile.exists()
 
     fun loadPackageArchiveInfo() {
-        if (isPackageArchiveInfoLoaded) return
+        if (isPackageArchiveInfoLoaded || isPackageArchiveInfoLoading) return
+        isPackageArchiveInfoLoading = true
 
         var apkFile: File? = null
         try {
-            apkFile = File.createTempFile(
-                documentFile.name?.removeSuffix(".apk") ?: "temp", ".apk", cacheDir
-            )
+            apkFile = File.createTempFile("temp", ".apk", cacheDir)
             contentResolver.openInputStream(documentFile.uri).use { input ->
                 if (input?.copyTo(apkFile.outputStream()) == documentFile.length()) {
                     val archiveInfo =
@@ -52,8 +49,8 @@ data class PackageArchiveModel(
                     archiveInfo?.also {
                         it.applicationInfo.sourceDir = apkFile.path
                         it.applicationInfo.publicSourceDir = apkFile.path
-                        appName = it.applicationInfo?.loadLabel(packageManager) ?: loadFailed
-                        appPackageName = it.applicationInfo?.packageName ?: loadFailed
+                        appName = it.applicationInfo?.loadLabel(packageManager) ?: appName
+                        appPackageName = it.applicationInfo?.packageName ?: appPackageName
                         appIcon = it.applicationInfo?.loadIcon(packageManager)
                         appVersionName = it.versionName
                         appVersionCode = Utils.versionCode(it)
@@ -64,6 +61,7 @@ data class PackageArchiveModel(
         } catch (_: IOException) {
             // No Space left on Device, ...
         } finally {
+            isPackageArchiveInfoLoading = false
             if (apkFile != null && apkFile.exists()) apkFile.delete()
         }
     }

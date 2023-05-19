@@ -52,6 +52,16 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
                     appList = apps, isRefreshing = false, updateTrigger = UpdateTrigger(true)
                 )
             }
+            viewModelScope.async(Dispatchers.IO) {
+                apps.map {
+                    _apkListFragmentState.update { state ->
+                        it.loadPackageArchiveInfo()
+                        state.copy(
+                            updateTrigger = UpdateTrigger(true)
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -63,7 +73,9 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
     fun selectApplication(app: PackageArchiveModel?) {
         _apkOptionsBottomSheetState.update { state ->
             state.copy(
-                selectedApplicationModel = app
+                selectedApplicationModel = app?.apply {
+                    this.loadPackageArchiveInfo()
+                }
             )
         }
     }
@@ -105,12 +117,6 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
      */
     private suspend fun loadApks(): List<PackageArchiveModel> = withContext(Dispatchers.IO) {
         // Do an asynchronous operation to fetch users.
-        val apkList = ListOfAPKs(context).apkFiles()
-        async {
-            apkList.forEach {
-                it.loadPackageArchiveInfo()
-            }
-        }
-        return@withContext apkList
+        return@withContext ListOfAPKs(context).apkFiles()
     }
 }
