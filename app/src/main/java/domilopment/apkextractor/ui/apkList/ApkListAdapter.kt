@@ -116,15 +116,15 @@ class ApkListAdapter(
                     myDataset.filter {
                         it.fileName?.contains(
                             searchString, ignoreCase = true
-                        ) ?: false || it.appName?.contains(
+                        ) ?: false || it.appName.contains(
                             searchString, ignoreCase = true
-                        ) ?: false || it.appPackageName?.contains(
+                        ) || it.appPackageName.contains(
                             searchString, ignoreCase = true
-                        ) ?: false || it.appVersionName?.contains(
+                        ) || it.appVersionName?.contains(
                             searchString, ignoreCase = true
-                        ) ?: false || it.appVersionCode?.toString()?.contains(
+                        ) ?: false || it.appVersionCode.toString().contains(
                             searchString, ignoreCase = true
-                        ) ?: false
+                        )
                     }
                 }
                 return FilterResults().apply {

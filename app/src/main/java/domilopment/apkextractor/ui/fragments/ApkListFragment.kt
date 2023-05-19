@@ -119,6 +119,9 @@ class ApkListFragment : Fragment() {
                             uiState.appList, uiState.updateTrigger.handleTrigger()
                         )
                     }
+                    if (::searchView.isInitialized) with(searchView.query) {
+                        if (isNotBlank()) viewAdapter.filter.filter(this)
+                    }
                 }
             }
         }
@@ -154,7 +157,6 @@ class ApkListFragment : Fragment() {
         binding.refreshApkList.setOnRefreshListener {
             model.updateApps()
         }
-
     }
 
     override fun onStart() {
