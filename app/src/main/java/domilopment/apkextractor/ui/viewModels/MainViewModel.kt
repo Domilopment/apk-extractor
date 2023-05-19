@@ -1,13 +1,9 @@
 package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
-import android.net.Uri
 import androidx.lifecycle.*
-import domilopment.apkextractor.Event
-import domilopment.apkextractor.R
 import domilopment.apkextractor.UpdateTrigger
 import domilopment.apkextractor.data.*
-import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.SettingsManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,10 +28,6 @@ class MainViewModel(
         MutableStateFlow(MainFragmentUIState())
     val mainFragmentState: StateFlow<MainFragmentUIState> = _mainFragmentState.asStateFlow()
 
-    private val _progressDialogState: MutableStateFlow<ProgressDialogUiState> =
-        MutableStateFlow(ProgressDialogUiState())
-    val progressDialogState: StateFlow<ProgressDialogUiState> = _progressDialogState.asStateFlow()
-
     private val _appOptionsBottomSheetState: MutableStateFlow<AppOptionsBottomSheetUIState> =
         MutableStateFlow(AppOptionsBottomSheetUIState())
     val appOptionsBottomSheetUIState: StateFlow<AppOptionsBottomSheetUIState> =
@@ -43,10 +35,6 @@ class MainViewModel(
 
     private val _searchQuery: MutableLiveData<String?> = MutableLiveData(null)
     val searchQuery: LiveData<String?> = _searchQuery
-
-    private val extractionResult: MutableLiveData<Event<Triple<Boolean?, ApplicationModel?, Int>>> =
-        MutableLiveData(null)
-    private val shareResult: MutableLiveData<Event<ArrayList<Uri>?>> = MutableLiveData(null)
 
     private val context get() = getApplication<Application>().applicationContext
 
@@ -97,25 +85,6 @@ class MainViewModel(
         _mainFragmentState.update { state ->
             state.copy(actionMode = actionMode)
         }
-    }
-
-    /**
-     * Get result of last multiple apps extraction performance
-     * @return Triple of:
-     * Boolean, was extraction successful
-     * ApplicationModel, of last extracted app
-     * Int, count of extracted apps
-     */
-    fun getExtractionResult(): LiveData<Event<Triple<Boolean?, ApplicationModel?, Int>>> {
-        return extractionResult
-    }
-
-    /**
-     * Get result of last multiple apps share performance
-     * @return List of Uris for all apps user want to share
-     */
-    fun getShareResult(): LiveData<Event<ArrayList<Uri>?>> {
-        return shareResult
     }
 
     /**
@@ -266,107 +235,6 @@ class MainViewModel(
                 }
             }
         }
-    }
-
-    /**
-     * save multiple apps to filesystem
-     * @param list of apps user wants to save
-     */
-    fun saveApps(list: List<ApplicationModel>) {
-        viewModelScope.launch {
-            val settingsManager = SettingsManager(context)
-            val fileHelper = FileHelper(context)
-            var application: ApplicationModel? = null
-            var failure = false
-
-            _progressDialogState.update {
-                it.copy(
-                    title = context.getString(R.string.progress_dialog_title_save),
-                    tasks = list.size,
-                    shouldBeShown = true
-                )
-            }
-
-            val job = launch extract@{
-                list.forEach { app ->
-                    application = app
-                    withContext(Dispatchers.Main) {
-                        _progressDialogState.update { state ->
-                            state.copy(
-                                process = app.appPackageName, progress = state.progress
-                            )
-                        }
-                    }
-                    withContext(Dispatchers.IO) {
-                        failure = fileHelper.copy(
-                            app.appSourceDirectory,
-                            settingsManager.saveDir()!!,
-                            settingsManager.appName(app)
-                        ) == null
-                    }
-                    withContext(Dispatchers.Main) {
-                        _progressDialogState.update { state ->
-                            state.copy(
-                                process = app.appPackageName, progress = state.progress + 1
-                            )
-                        }
-                    }
-                    if (failure) {
-                        this@extract.cancel()
-                    }
-                }
-            }
-            job.join()
-            extractionResult.value = Event(Triple(failure, application, list.size))
-        }
-    }
-
-    /**
-     * create temp files for apps user want to save and get share Uris for them
-     * @param list list of all apps
-     */
-    fun createShareUrisForApps(list: List<ApplicationModel>) {
-        viewModelScope.launch {
-            val files = ArrayList<Uri>()
-            val fileHelper = FileHelper(context)
-            val jobList = ArrayList<Deferred<Any?>>()
-
-            _progressDialogState.update {
-                it.copy(
-                    title = context.getString(R.string.progress_dialog_title_share),
-                    tasks = list.size,
-                    shouldBeShown = true
-                )
-            }
-
-            list.filter {
-                it.isChecked
-            }.forEach { app ->
-                jobList.add(async {
-                    withContext(Dispatchers.IO) {
-                        fileHelper.shareURI(app).also {
-                            files.add(it)
-                        }
-                    }
-                    withContext(Dispatchers.Main) {
-                        _progressDialogState.update { state ->
-                            state.copy(
-                                progress = state.progress + 1
-                            )
-                        }
-                    }
-                })
-            }
-            jobList.awaitAll()
-            shareResult.value = Event(files)
-        }
-    }
-
-    /**
-     * Reset Progress dialog state back to default
-     */
-    fun resetProgress() {
-        _progressDialogState.value = ProgressDialogUiState()
     }
 
     /**

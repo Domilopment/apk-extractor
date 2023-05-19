@@ -16,8 +16,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import domilopment.apkextractor.R
+import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.databinding.ApkOptionsBottomSheetBinding
+import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.utils.*
 import kotlinx.coroutines.launch
@@ -44,6 +46,10 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private val model by activityViewModels<ApkListViewModel> {
         ApkListViewModel(requireActivity().application).defaultViewModelProviderFactory
+    }
+
+    private val progressDialogViewModel by activityViewModels<ProgressDialogViewModel> {
+        ProgressDialogViewModel(requireActivity().application).defaultViewModelProviderFactory
     }
 
     companion object {
@@ -160,7 +166,12 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
         binding.actionInstallApk.apply {
             visibility = View.GONE
             setOnClickListener {
-                //model.installApk(data, PackageInstallerSessionCallback(this, model))
+                /*
+                progressDialogViewModel.installApk(
+                    apk.fileUri,
+                    PackageInstallerSessionCallback(this, model, progressDialogViewModel)
+                )
+                */
             }
         }
 

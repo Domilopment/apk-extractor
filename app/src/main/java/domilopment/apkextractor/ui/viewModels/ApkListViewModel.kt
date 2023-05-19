@@ -22,22 +22,22 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ApkListViewModel(application: Application):  AndroidViewModel(application),
+class ApkListViewModel(application: Application) : AndroidViewModel(application),
     HasDefaultViewModelProviderFactory {
 
     private val _applications: MutableLiveData<List<PackageArchiveModel>> by lazy {
-        MutableLiveData< List<PackageArchiveModel>>().also {
+        MutableLiveData<List<PackageArchiveModel>>().also {
             viewModelScope.launch {
                 it.value = loadApks()
             }
         }
     }
-    val applications: LiveData<List<PackageArchiveModel>> =
-        _applications
+    val applications: LiveData<List<PackageArchiveModel>> = _applications
 
     private val _apkListFragmentState: MutableStateFlow<ApkListFragmentUIState> =
         MutableStateFlow(ApkListFragmentUIState())
-    val apkListFragmentState: StateFlow<ApkListFragmentUIState> = _apkListFragmentState.asStateFlow()
+    val apkListFragmentState: StateFlow<ApkListFragmentUIState> =
+        _apkListFragmentState.asStateFlow()
 
     private val _apkOptionsBottomSheetState: MutableStateFlow<ApkOptionsBottomSheetUIState> =
         MutableStateFlow(ApkOptionsBottomSheetUIState())
@@ -54,8 +54,7 @@ class ApkListViewModel(application: Application):  AndroidViewModel(application)
         _applications.observeForever { apps ->
             _apkListFragmentState.update { state ->
                 state.copy(
-                    appList = apps
-                    , isRefreshing = false, updateTrigger = UpdateTrigger(true)
+                    appList = apps, isRefreshing = false, updateTrigger = UpdateTrigger(true)
                 )
             }
         }
@@ -106,81 +105,13 @@ class ApkListViewModel(application: Application):  AndroidViewModel(application)
         }
     }
 
-    /*
-    /**
-     * Install APK file from ACTION_OPEN_DOCUMENT uri
-     * @param apkUri uri from Intent return data
-     */
-    fun installApk(apkUri: Uri, callback: PackageInstallerSessionCallback) {
-        viewModelScope.launch(Dispatchers.Main) {
-            val packageInstaller = context.applicationContext.packageManager.packageInstaller
-            val contentResolver = context.applicationContext.contentResolver
-            packageInstaller.registerSessionCallback(callback)
-
-            withContext(Dispatchers.IO) {
-                contentResolver.openInputStream(apkUri)?.use { apkStream ->
-                    val params =
-                        PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL)
-                    val sessionId = packageInstaller.createSession(params)
-                    callback.initialSessionId = sessionId
-
-                    _progressDialogState.update {
-                        it.copy(
-                            title = context.getString(R.string.progress_dialog_title_install),
-                            process = packageInstaller.getSessionInfo(sessionId)?.appPackageName
-                                ?: "",
-                            tasks = 100,
-                            shouldBeShown = true
-                        )
-                    }
-
-                    val session = packageInstaller.openSession(sessionId)
-
-                    val length = DocumentFile.fromSingleUri(context, apkUri)?.length() ?: -1
-
-                    session.openWrite("install_apk_session_$sessionId", 0, length)
-                        .use { outputStream ->
-                            apkStream.copyTo(outputStream)
-                            session.fsync(outputStream)
-                        }
-
-                    val pendingIntent = Intent(context, InstallBroadcastReceiver::class.java).let {
-                        PendingIntent.getBroadcast(
-                            context, sessionId, it, PendingIntent.FLAG_MUTABLE
-                        )
-                    }
-
-                    session.commit(pendingIntent.intentSender)
-                    session.close()
-                }
-            }
-        }
-    }
-
-    /**
-     * Update ProgressDialogState for APK installations
-     * @param progress current progress of installation
-     * @param packageName name of package being installed
-     */
-    fun updateInstallApkStatus(progress: Float, packageName: String? = "") {
-        _progressDialogState.update {
-            it.copy(
-                title = context.getString(R.string.progress_dialog_title_install),
-                process = packageName,
-                progress = (progress * 100).toInt(),
-            )
-        }
-    }
-     */
-
     /**
      * Load apps from device
      */
-    private suspend fun loadApks(): List<PackageArchiveModel> =
-        withContext(Dispatchers.IO) {
-            // Do an asynchronous operation to fetch users.
-            return@withContext ListOfAPKs(context).apkFiles()
-        }
+    private suspend fun loadApks(): List<PackageArchiveModel> = withContext(Dispatchers.IO) {
+        // Do an asynchronous operation to fetch users.
+        return@withContext ListOfAPKs(context).apkFiles()
+    }
 
     override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
         return object : ViewModelProvider.Factory {

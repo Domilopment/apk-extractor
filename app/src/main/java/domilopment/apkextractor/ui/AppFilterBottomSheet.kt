@@ -90,6 +90,7 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
                     binding.systemApps.isEnabled = isChecked
                     "updated_system_apps"
                 }
+
                 R.id.system_apps -> "system_apps"
                 R.id.user_apps -> "user_apps"
                 else -> return@addOnButtonCheckedListener
@@ -144,7 +145,9 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.filterGalaxyStore.apply {
-            setupStoreFilterChip(this, "com.sec.android.app.samsungapps", AppFilterInstaller.SAMSUNG)
+            setupStoreFilterChip(
+                this, "com.sec.android.app.samsungapps", AppFilterInstaller.SAMSUNG
+            )
         }
 
         binding.filterAmazonStore.apply {
@@ -156,11 +159,10 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
         }
 
         AppFilterCategories.values().forEach {
-            binding.filterAppCategory.addView(
-                FilterChipBinding.inflate(layoutInflater).root.apply {
-                    text = it.getTitleString(requireContext())
-                    setupFilterChip(this, it, "filter_category")
-                })
+            binding.filterAppCategory.addView(FilterChipBinding.inflate(layoutInflater).root.apply {
+                text = it.getTitleString(requireContext())
+                setupFilterChip(this, it, "filter_category")
+            })
         }
     }
 

@@ -34,6 +34,7 @@ import domilopment.apkextractor.databinding.FragmentMainBinding
 import domilopment.apkextractor.ui.AppFilterBottomSheet
 import domilopment.apkextractor.ui.ProgressDialogFragment
 import domilopment.apkextractor.ui.viewModels.MainViewModel
+import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.FileHelper
 import domilopment.apkextractor.utils.Utils
@@ -55,6 +56,9 @@ class MainFragment : Fragment() {
     private lateinit var callback: OnBackPressedCallback
     private val model by activityViewModels<MainViewModel> {
         MainViewModel(requireActivity().application).defaultViewModelProviderFactory
+    }
+    private val progressDialogViewModel by activityViewModels<ProgressDialogViewModel> {
+        ProgressDialogViewModel(requireActivity().application).defaultViewModelProviderFactory
     }
 
     private val shareApp =
@@ -153,7 +157,7 @@ class MainFragment : Fragment() {
             adapter = viewAdapter
         }
 
-        model.getExtractionResult().observe(viewLifecycleOwner) { result ->
+        progressDialogViewModel.extractionResult.observe(viewLifecycleOwner) { result ->
             result?.getContentIfNotHandled()?.let { (failed, app, size) ->
                 if (failed == true) Snackbar.make(
                     view, getString(
@@ -170,14 +174,14 @@ class MainFragment : Fragment() {
                     ), Snackbar.LENGTH_LONG
                 ).setAnchorView(binding.appMultiselectBottomSheet.root).show()
 
-                model.resetProgress()
+                progressDialogViewModel.resetProgress()
             }
         }
 
         /**
          * Creates Intent for Apps to Share
          */
-        model.getShareResult().observe(viewLifecycleOwner) { result ->
+        progressDialogViewModel.shareResult.observe(viewLifecycleOwner) { result ->
             result?.getContentIfNotHandled()?.let { files ->
                 Intent(Intent.ACTION_SEND_MULTIPLE).apply {
                     type = FileHelper.MIME_TYPE
@@ -188,7 +192,7 @@ class MainFragment : Fragment() {
                     shareApp.launch(it)
                 }
 
-                model.resetProgress()
+                progressDialogViewModel.resetProgress()
             }
         }
 
@@ -237,7 +241,7 @@ class MainFragment : Fragment() {
                 val progressDialog =
                     ProgressDialogFragment.newInstance(R.string.progress_dialog_title_save)
                 progressDialog.show(parentFragmentManager, "ProgressDialogFragment")
-                model.saveApps(list)
+                progressDialogViewModel.saveApps(list)
             }
         }
     }
@@ -257,7 +261,7 @@ class MainFragment : Fragment() {
                 val progressDialog =
                     ProgressDialogFragment.newInstance(R.string.progress_dialog_title_share)
                 progressDialog.show(parentFragmentManager, "ProgressDialogFragment")
-                model.createShareUrisForApps(it)
+                progressDialogViewModel.createShareUrisForApps(it)
             }
         }
     }

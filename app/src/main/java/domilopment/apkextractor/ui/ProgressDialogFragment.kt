@@ -13,9 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
+import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.R
 import domilopment.apkextractor.databinding.ProgressDialogBinding
-import domilopment.apkextractor.ui.viewModels.MainViewModel
 import kotlinx.coroutines.launch
 
 class ProgressDialogFragment : DialogFragment() {
@@ -26,14 +26,12 @@ class ProgressDialogFragment : DialogFragment() {
     private lateinit var textPercentages: MaterialTextView
     private lateinit var textValue: MaterialTextView
     private lateinit var currentProcess: MaterialTextView
-    private val model by activityViewModels<MainViewModel> {
-        MainViewModel(requireActivity().application).defaultViewModelProviderFactory
+    private val model by activityViewModels<ProgressDialogViewModel> {
+        ProgressDialogViewModel(requireActivity().application).defaultViewModelProviderFactory
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         isCancelable = false
         return super.onCreateView(inflater, container, savedInstanceState)
@@ -66,8 +64,7 @@ class ProgressDialogFragment : DialogFragment() {
 
         return activity?.let {
             MaterialAlertDialogBuilder(it).setTitle(title).setView(binding.root)
-                .setCancelable(false)
-                .create()
+                .setCancelable(false).create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
@@ -77,9 +74,7 @@ class ProgressDialogFragment : DialogFragment() {
     )
 
     private fun getValueString() = requireContext().getString(
-        R.string.progress_dialog_value,
-        progressBar.progress,
-        progressBar.max
+        R.string.progress_dialog_value, progressBar.progress, progressBar.max
     )
 
     companion object {

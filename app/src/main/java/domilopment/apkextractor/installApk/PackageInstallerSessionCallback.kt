@@ -3,13 +3,15 @@ package domilopment.apkextractor.installApk
 import android.content.pm.PackageInstaller
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import domilopment.apkextractor.R
+import domilopment.apkextractor.ui.ApkOptionsBottomSheet
 import domilopment.apkextractor.ui.ProgressDialogFragment
-import domilopment.apkextractor.ui.fragments.ApkListFragment
-import domilopment.apkextractor.ui.viewModels.MainViewModel
+import domilopment.apkextractor.ui.viewModels.ApkListViewModel
+import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 
 class PackageInstallerSessionCallback(
-    private val apkListFragment: ApkListFragment,
-    private val model: MainViewModel
+    private val apkListFragment: ApkOptionsBottomSheet,
+    private val model: ApkListViewModel,
+    private val progressDialogViewModel: ProgressDialogViewModel
 ) : PackageInstaller.SessionCallback() {
     private val packageInstaller =
         apkListFragment.requireContext().applicationContext.packageManager.packageInstaller
@@ -36,21 +38,29 @@ class PackageInstallerSessionCallback(
         if (sessionId != initialSessionId) return
 
         packageName = packageInstaller.getSessionInfo(sessionId)?.appPackageName
-        //model.updateInstallApkStatus(progress, packageName)
+        progressDialogViewModel.updateInstallApkStatus(progress, packageName)
     }
 
     override fun onFinished(sessionId: Int, success: Boolean) {
         if (sessionId != initialSessionId) return
 
         packageInstaller.unregisterSessionCallback(this)
-        model.resetProgress()
+        progressDialogViewModel.resetProgress()
         MaterialAlertDialogBuilder(apkListFragment.requireContext()).apply {
             if (success) {
-                setMessage(apkListFragment.getString(R.string.installation_result_dialog_success_message, packageName))
+                setMessage(
+                    apkListFragment.getString(
+                        R.string.installation_result_dialog_success_message, packageName
+                    )
+                )
                 setTitle(R.string.installation_result_dialog_success_title)
                 model.updateApps()
             } else {
-                setMessage(apkListFragment.getString(R.string.installation_result_dialog_failed_message, packageName))
+                setMessage(
+                    apkListFragment.getString(
+                        R.string.installation_result_dialog_failed_message, packageName
+                    )
+                )
                 setTitle(R.string.installation_result_dialog_failed_title)
             }
             setPositiveButton(R.string.installation_result_dialog_ok) { alert, _ ->
