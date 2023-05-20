@@ -54,8 +54,9 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
     fun actionShare(shareApp: ActivityResultLauncher<Intent>) {
         val file = FileHelper(context).shareURI(app)
         Intent(Intent.ACTION_SEND).apply {
-            type = FileHelper.MIME_TYPE
+            setDataAndType(file, FileHelper.MIME_TYPE)
             putExtra(Intent.EXTRA_STREAM, file)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }.let {
             Intent.createChooser(it, context.getString(R.string.share_intent_title))
         }.also {

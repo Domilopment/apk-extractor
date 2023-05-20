@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
+import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.ApplicationModel
 import java.io.*
 
@@ -62,9 +63,7 @@ class FileHelper(private val context: Context) {
      */
     fun shareURI(app: ApplicationModel): Uri {
         return FileProvider.getUriForFile(
-            context,
-            context.applicationInfo.packageName + ".provider",
-            File(app.appSourceDirectory).copyTo(
+            context, BuildConfig.APPLICATION_ID + ".provider", File(app.appSourceDirectory).copyTo(
                 File(
                     context.cacheDir, SettingsManager(context).appName(app)
                 ), true

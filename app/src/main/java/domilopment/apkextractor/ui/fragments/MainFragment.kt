@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.fragments
 
+import android.content.ClipData
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
@@ -181,7 +182,11 @@ class MainFragment : Fragment() {
             result?.getContentIfNotHandled()?.let { files ->
                 Intent(Intent.ACTION_SEND_MULTIPLE).apply {
                     type = FileHelper.MIME_TYPE
+                    clipData = ClipData.newRawUri(null, null).apply {
+                        files.forEach { addItem(ClipData.Item(it)) }
+                    }
                     putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }.let {
                     Intent.createChooser(it, getString(R.string.share_intent_title))
                 }?.also {
