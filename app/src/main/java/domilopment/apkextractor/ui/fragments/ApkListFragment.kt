@@ -87,7 +87,7 @@ class ApkListFragment : Fragment() {
                     appIcon = icon
                 )
             }?.also { apk ->
-                model.selectApplication(apk)
+                model.selectPackageArchive(apk)
                 ApkOptionsBottomSheet.newInstance()
                     .show(requireActivity().supportFragmentManager, ApkOptionsBottomSheet.TAG)
             } ?: Toast.makeText(
@@ -155,7 +155,7 @@ class ApkListFragment : Fragment() {
 
         // add Refresh Layout action on Swipe
         binding.refreshApkList.setOnRefreshListener {
-            model.updateApps()
+            model.updatePackageArchives()
         }
     }
 
@@ -250,8 +250,8 @@ class ApkListFragment : Fragment() {
      * Set ApplicationModel for AppOptionsBottomSheet flow
      * @param app Selected Application from App list
      */
-    fun selectApplication(app: PackageArchiveModel) {
-        model.selectApplication(app)
+    fun selectPackageArchive(app: PackageArchiveModel) {
+        model.selectPackageArchive(app)
     }
 
     fun isRefreshing(): Boolean {

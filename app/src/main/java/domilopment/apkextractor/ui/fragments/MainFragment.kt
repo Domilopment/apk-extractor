@@ -182,8 +182,8 @@ class MainFragment : Fragment() {
             result?.getContentIfNotHandled()?.let { files ->
                 Intent(Intent.ACTION_SEND_MULTIPLE).apply {
                     type = FileHelper.MIME_TYPE
-                    clipData = ClipData.newRawUri(null, null).apply {
-                        files.forEach { addItem(ClipData.Item(it)) }
+                    clipData = ClipData.newRawUri(null, files[0]).apply {
+                        files.drop(1).forEach { addItem(ClipData.Item(it)) }
                     }
                     putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

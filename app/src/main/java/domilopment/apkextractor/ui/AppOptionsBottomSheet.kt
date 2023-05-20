@@ -28,8 +28,6 @@ import domilopment.apkextractor.utils.*
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 
 class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     private var _binding: AppOptionsBottomSheetBinding? = null
@@ -174,12 +172,12 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
 
         // Selected App installation time
         binding.selectedAppInstallTime.text = getString(
-            R.string.info_bottom_sheet_install_time, getAsFormattedDate(app.appInstallTime)
+            R.string.info_bottom_sheet_install_time, Utils.getAsFormattedDate(app.appInstallTime)
         )
 
         // Selected App last update time
         binding.selectedAppUpdateTime.text =
-            getString(R.string.info_bottom_sheet_update_time, getAsFormattedDate(app.appUpdateTime))
+            getString(R.string.info_bottom_sheet_update_time, Utils.getAsFormattedDate(app.appUpdateTime))
 
         // Selected app installation source
         binding.selectedAppInstaller.apply {
@@ -287,14 +285,5 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    /**
-     * Formats a Date-Time string into default Locale format
-     * @param mills milliseconds since January 1, 1970, 00:00:00 GMT
-     * @return formatted date-time string
-     */
-    private fun getAsFormattedDate(mills: Long): String {
-        return SimpleDateFormat.getDateTimeInstance().format(Date(mills))
     }
 }

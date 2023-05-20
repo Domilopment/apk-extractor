@@ -49,7 +49,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
 
     /**
      * Creates an share Intent for apk source file of selected app
-     * @return Intent with mime type and stream info of apk file
+     * @param shareApp ActivityResultLauncher to launch Intent
      */
     fun actionShare(shareApp: ActivityResultLauncher<Intent>) {
         val file = FileHelper(context).shareURI(app)
@@ -65,8 +65,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
     }
 
     /**
-     * Creates an Intent to open settings page of app
-     * @return Intent for ACTION_APPLICATION_DETAILS_SETTINGS for selected app
+     * Creates an Intent to open settings page of app and starts it
      */
     fun actionShowSettings() {
         context.startActivity(
@@ -78,8 +77,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
     }
 
     /**
-     * Returns launch Intent for app
-     * @return launchIntent for app ;P
+     * Launch App via Intent
      */
     fun actionOpenApp() {
         context.startActivity(app.launchIntent)
@@ -87,7 +85,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
 
     /**
      * Creates an Intent to delete selected app
-     * @return ACTION_DELETE Intent with package uri information
+     * @param uninstallApp ActivityResultLauncher to start Intent from
      */
     fun actionUninstall(uninstallApp: ActivityResultLauncher<Intent>) {
         uninstallApp.launch(
@@ -134,9 +132,12 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
     }
 
     /**
-     * Creates ACTION_VIEW intent for app, opening its store page
+     * Creates ACTION_VIEW intent for app, opening its store page and launches it
+     * if it could not be launched, creates Snackbar with error message
      * Supports Google Play Store, Samsung Galaxy Store and Amazon Appstore for now
      * other installation Sources just call market uri
+     * @param view reference for Snackbar view
+     * @param anchorView Anchor View for Snackbar
      */
     fun actionOpenShop(view: View, anchorView: View = view) {
         app.installationSource?.also {

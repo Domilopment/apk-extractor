@@ -54,7 +54,7 @@ class PackageInstallerSessionCallback(
                     )
                 )
                 setTitle(R.string.installation_result_dialog_success_title)
-                model.updateApps()
+                model.updatePackageArchives()
             } else {
                 setMessage(
                     apkListFragment.getString(

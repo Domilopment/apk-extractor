@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import domilopment.apkextractor.data.ApplicationModel
+import java.text.SimpleDateFormat
 import java.util.*
 
 object Utils {
@@ -51,5 +52,14 @@ object Utils {
      */
     fun isSystemApp(app: ApplicationModel): Boolean {
         return app.appFlags and ApplicationInfo.FLAG_SYSTEM == ApplicationInfo.FLAG_SYSTEM
+    }
+
+    /**
+     * Formats a Date-Time string into default Locale format
+     * @param mills milliseconds since January 1, 1970, 00:00:00 GMT
+     * @return formatted date-time string
+     */
+    fun getAsFormattedDate(mills: Long): String {
+        return SimpleDateFormat.getDateTimeInstance().format(Date(mills))
     }
 }

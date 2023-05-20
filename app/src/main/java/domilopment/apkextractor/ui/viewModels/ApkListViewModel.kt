@@ -20,14 +20,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ApkListViewModel(application: Application) : AndroidViewModel(application) {
-    private val _applications: MutableLiveData<List<PackageArchiveModel>> by lazy {
+    private val _packageArchives: MutableLiveData<List<PackageArchiveModel>> by lazy {
         MutableLiveData<List<PackageArchiveModel>>().also {
             viewModelScope.launch {
                 it.value = loadApks()
             }
         }
     }
-    val applications: LiveData<List<PackageArchiveModel>> = _applications
+    val packageArchives: LiveData<List<PackageArchiveModel>> = _packageArchives
 
     private val _apkListFragmentState: MutableStateFlow<ApkListFragmentUIState> =
         MutableStateFlow(ApkListFragmentUIState())
@@ -46,7 +46,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         // Set applications in view once they are loaded
-        _applications.observeForever { apps ->
+        _packageArchives.observeForever { apps ->
             _apkListFragmentState.update { state ->
                 state.copy(
                     appList = apps, isRefreshing = false, updateTrigger = UpdateTrigger(true)
@@ -54,8 +54,8 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
             }
             viewModelScope.async(Dispatchers.IO) {
                 apps.map {
+                    it.loadPackageArchiveInfo()
                     _apkListFragmentState.update { state ->
-                        it.loadPackageArchiveInfo()
                         state.copy(
                             updateTrigger = UpdateTrigger(true)
                         )
@@ -70,7 +70,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
      * and set it in BottomSheet state
      * @param app selected application
      */
-    fun selectApplication(app: PackageArchiveModel?) {
+    fun selectPackageArchive(app: PackageArchiveModel?) {
         _apkOptionsBottomSheetState.update { state ->
             state.copy(
                 selectedApplicationModel = app?.apply {
@@ -91,7 +91,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
     /**
      * Update App list
      */
-    fun updateApps() {
+    fun updatePackageArchives() {
         _apkListFragmentState.update {
             it.copy(isRefreshing = true)
         }
@@ -100,12 +100,12 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
                 return@async loadApks()
             }
             val apps = load.await()
-            _applications.postValue(apps)
+            _packageArchives.postValue(apps)
         }
     }
 
     fun remove(apk: PackageArchiveModel) {
-        _applications.value = _applications.value?.let { apps ->
+        _packageArchives.value = _packageArchives.value?.let { apps ->
             apps.toMutableList().apply {
                 remove(apk)
             }

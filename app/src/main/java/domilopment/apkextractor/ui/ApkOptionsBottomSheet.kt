@@ -22,8 +22,6 @@ import domilopment.apkextractor.databinding.ApkOptionsBottomSheetBinding
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.utils.*
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 
 class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
     private var _binding: ApkOptionsBottomSheetBinding? = null
@@ -64,8 +62,8 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
                     uiState.selectedApplicationModel?.also {
                         apk = it
                         view?.also {
-                            setupApplicationInfo()
-                            setupApplicationActions()
+                            setupPackageArchiveInfo()
+                            setupPackageArchiveActions()
                         }
                     } ?: dismiss()
                 }
@@ -94,8 +92,8 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
         super.onStart()
         // Set or Update Application Info
         if (apk.exist()) {
-            setupApplicationInfo()
-            setupApplicationActions()
+            setupPackageArchiveInfo()
+            setupPackageArchiveActions()
         } else {
             model.remove(apk)
             dismiss()
@@ -105,14 +103,14 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
     /**
      * set up information from selected APK in bottom sheet layout
      */
-    private fun setupApplicationInfo() {
-        // Selected App Icon
+    private fun setupPackageArchiveInfo() {
+        // Selected Apk Icon
         binding.selectedApkIcon.setImageDrawable(apk.appIcon)
 
-        // Selected App Name on top of Bottom Sheet
+        // Selected Apk Name on top of Bottom Sheet
         binding.selectedApkName.text = apk.appName
 
-        // Selected App Package Name
+        // Selected Apk Package Name
         binding.selectedApkPackageName.text = apk.appPackageName
 
         binding.selectedApkFileUri.text =
@@ -125,14 +123,14 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
             getString(R.string.info_bottom_sheet_apk_size, apk.fileSize)
 
         binding.selectedApkFileLastModified.text = getString(
-            R.string.apk_bottom_sheet_last_modified, getAsFormattedDate(apk.fileLastModified)
+            R.string.apk_bottom_sheet_last_modified, Utils.getAsFormattedDate(apk.fileLastModified)
         )
 
-        // Selected App version name
+        // Selected Apk version name
         binding.selectedApkVersionName.text =
             getString(R.string.info_bottom_sheet_version_name, apk.appVersionName)
 
-        // Selected App version code
+        // Selected Apk version code
         binding.selectedApkVersionNumber.text =
             getString(R.string.info_bottom_sheet_version_number, apk.appVersionCode)
     }
@@ -140,7 +138,7 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
     /**
      * set up actions for selected APK
      */
-    private fun setupApplicationActions() {
+    private fun setupPackageArchiveActions() {
         // Share APK
         binding.actionShareApk.setOnClickListener {
             startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
@@ -150,7 +148,7 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
         }
 
 
-        // Uninstall App
+        // Install apk
         binding.actionInstallApk.apply {
             visibility = View.GONE
             setOnClickListener {
@@ -163,7 +161,7 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
             }
         }
 
-        // Open installer store
+        // Delete apk file
         binding.actionDeleteApk.setOnClickListener {
             DocumentsContract.deleteDocument(
                 requireContext().contentResolver, apk.fileUri
@@ -188,15 +186,6 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        model.selectApplication(null)
-    }
-
-    /**
-     * Formats a Date-Time string into default Locale format
-     * @param mills milliseconds since January 1, 1970, 00:00:00 GMT
-     * @return formatted date-time string
-     */
-    private fun getAsFormattedDate(mills: Long): String {
-        return SimpleDateFormat.getDateTimeInstance().format(Date(mills))
+        model.selectPackageArchive(null)
     }
 }
