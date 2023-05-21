@@ -56,9 +56,9 @@ data class PackageArchiveModel(
                     archiveInfo?.also {
                         it.applicationInfo.sourceDir = apkFile.path
                         it.applicationInfo.publicSourceDir = apkFile.path
-                        appName = it.applicationInfo?.loadLabel(packageManager) ?: appName
-                        appPackageName = it.applicationInfo?.packageName ?: appPackageName
-                        appIcon = it.applicationInfo?.loadIcon(packageManager)
+                        appName = it.applicationInfo.loadLabel(packageManager)
+                        appPackageName = it.applicationInfo.packageName
+                        appIcon = it.applicationInfo.loadIcon(packageManager)
                         appVersionName = it.versionName
                         appVersionCode = Utils.versionCode(it)
                     }
