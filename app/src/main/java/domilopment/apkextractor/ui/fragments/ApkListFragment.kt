@@ -220,9 +220,12 @@ class ApkListFragment : Fragment() {
                     model.searchQuery.observe(viewLifecycleOwner) {
                         it?.also {
                             viewAdapter.filter.filter(it)
-                            if (it.isNotBlank() && searchView.query.isBlank()) searchView.setQuery(
-                                it, false
-                            )
+                            if (it.isNotBlank()) {
+                                if (searchView.query.isBlank()) searchView.setQuery(
+                                    it, false
+                                )
+                                searchView.isIconified = false
+                            }
                         }
                     }
                 }
