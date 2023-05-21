@@ -66,6 +66,11 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
                             setupPackageArchiveActions()
                         }
                     } ?: dismiss()
+                    if (uiState.updateTrigger.handleTrigger())
+                        view?.also {
+                            setupPackageArchiveInfo()
+                            setupPackageArchiveActions()
+                        }
                 }
             }
         }

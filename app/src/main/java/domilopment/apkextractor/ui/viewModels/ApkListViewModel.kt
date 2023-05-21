@@ -60,6 +60,11 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
                             updateTrigger = UpdateTrigger(true)
                         )
                     }
+                    _apkOptionsBottomSheetState.update { state ->
+                        state.copy(
+                            updateTrigger = UpdateTrigger(true)
+                        )
+                    }
                 }
             }
         }
