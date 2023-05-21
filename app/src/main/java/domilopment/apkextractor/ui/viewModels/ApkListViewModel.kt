@@ -53,7 +53,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
                 )
             }
             viewModelScope.async(Dispatchers.IO) {
-                apps.map {
+                apps.forEach {
                     it.loadPackageArchiveInfo()
                     _apkListFragmentState.update { state ->
                         state.copy(
@@ -76,11 +76,15 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
      * @param app selected application
      */
     fun selectPackageArchive(app: PackageArchiveModel?) {
+        if (app?.isPackageArchiveInfoLoaded == false) {
+            app.loadPackageArchiveInfo()
+            _apkListFragmentState.update { state ->
+                state.copy(updateTrigger = UpdateTrigger(true))
+            }
+        }
         _apkOptionsBottomSheetState.update { state ->
             state.copy(
-                selectedApplicationModel = app?.apply {
-                    this.loadPackageArchiveInfo()
-                }
+                selectedApplicationModel = app
             )
         }
     }
