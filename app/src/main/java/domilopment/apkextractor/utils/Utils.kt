@@ -4,6 +4,9 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
+import android.text.Spannable
+import android.text.style.ForegroundColorSpan
+import androidx.core.text.toSpannable
 import domilopment.apkextractor.data.ApplicationModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -61,5 +64,24 @@ object Utils {
      */
     fun getAsFormattedDate(mills: Long): String {
         return SimpleDateFormat.getDateTimeInstance().format(Date(mills))
+    }
+
+    /**
+     * Creates a String Spannable from text, that shows the position of the search word inside the String
+     * @param text text that is displayed to the user
+     * @return String spannable with color marked search word
+     */
+    fun getSpannable(text: CharSequence?, searchString: String, colorInt: Int): Spannable? {
+        val spannable = text?.toSpannable()
+        if (searchString.isNotBlank() && text?.contains(searchString, ignoreCase = true) == true) {
+            val startIndex = text.toString().lowercase().indexOf(searchString.lowercase())
+            spannable?.setSpan(
+                ForegroundColorSpan(colorInt),
+                startIndex,
+                startIndex + searchString.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        return spannable
     }
 }

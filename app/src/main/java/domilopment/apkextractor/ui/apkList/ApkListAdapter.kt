@@ -1,14 +1,12 @@
 package domilopment.apkextractor.ui.apkList
 
 import android.graphics.Color
-import android.text.Spannable
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import androidx.core.text.toSpannable
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import domilopment.apkextractor.R
@@ -31,12 +29,16 @@ class ApkListAdapter(
     private var searchString = ""
 
     class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView) {
-        val binding: ApkListItemBinding = ApkListItemBinding.bind(myView)
+        val binding: ApkListItemBinding = DataBindingUtil.bind(myView)!!
     }
 
     private val textColorHighlight = MaterialColors.getColor(
         apkListFragment.requireContext(), android.R.attr.textColorHighlight, Color.CYAN
     )
+
+    init {
+        setHasStableIds(true)
+    }
 
     /**
      * Creates ViewHolder with Layout
@@ -65,16 +67,10 @@ class ApkListAdapter(
         // - get element from your dataset at this position
         val apk = myDatasetFiltered[position]
         // Apply data from Dataset item to holder
+        holder.binding.textColorHighlight = textColorHighlight
+        holder.binding.searchString = searchString
+        holder.binding.apk = apk
         holder.binding.apply {
-            apkFileName.text = getSpannable(apk.fileName)
-            apkAppName.text = getSpannable(apk.appName.toString())
-            apkPackageName.text = getSpannable(apk.appPackageName)
-            apkIcon.setImageDrawable(apk.appIcon)
-            apkVersionName.text = getSpannable(
-                apkListFragment.getString(
-                    R.string.apk_holder_version, apk.appVersionName, apk.appVersionCode
-                )
-            )
             // ItemView on Click
             root.setOnClickListener {
                 if (apkListFragment.isRefreshing()) return@setOnClickListener
@@ -94,6 +90,14 @@ class ApkListAdapter(
      * Return the size of your dataset (invoked by the layout manager)
      */
     override fun getItemCount() = myDatasetFiltered.size
+
+    /**
+     * Create unique item ids from file Uri hashcode
+     * @param position position in recycler view
+     */
+    override fun getItemId(position: Int): Long {
+        return myDatasetFiltered[position].fileUri.hashCode().toLong()
+    }
 
     /**
      * Filter Apps with CharSequence (invoked by the SearchView)
@@ -116,15 +120,15 @@ class ApkListAdapter(
                     myDataset.filter {
                         it.fileName?.contains(
                             searchString, ignoreCase = true
-                        ) ?: false || it.appName.contains(
+                        ) ?: false || it.appName?.contains(
                             searchString, ignoreCase = true
-                        ) || it.appPackageName.contains(
+                        ) ?: false || it.appPackageName?.contains(
                             searchString, ignoreCase = true
-                        ) || it.appVersionName?.contains(
+                        ) ?: false || it.appVersionName?.contains(
                             searchString, ignoreCase = true
-                        ) ?: false || it.appVersionCode.toString().contains(
+                        ) ?: false || it.appVersionCode?.toString()?.contains(
                             searchString, ignoreCase = true
-                        )
+                        ) ?: false
                     }
                 }
                 return FilterResults().apply {
@@ -158,26 +162,5 @@ class ApkListAdapter(
         myDataset = apps
         myDatasetFiltered = myDataset.toMutableList()
         notifyDataSetChanged()
-    }
-
-    /**
-     * Creates a String Spannable from text, that shows the position of the search word inside the String
-     * @param text text that is displayed to the user
-     * @return String spannable with color marked search word
-     */
-    private fun getSpannable(text: String?): Spannable {
-        if (text == null) return "".toSpannable()
-
-        val spannable = text.toSpannable()
-        if (searchString.isNotBlank() && text.contains(searchString, ignoreCase = true)) {
-            val startIndex = text.lowercase().indexOf(searchString.lowercase())
-            spannable.setSpan(
-                ForegroundColorSpan(textColorHighlight),
-                startIndex,
-                startIndex + searchString.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-        return spannable
     }
 }

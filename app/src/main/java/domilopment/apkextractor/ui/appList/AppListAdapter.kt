@@ -18,6 +18,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.AppListItemBinding
 import domilopment.apkextractor.ui.fragments.MainFragment
+import domilopment.apkextractor.utils.Utils
 import java.util.*
 
 class AppListAdapter(
@@ -37,12 +38,14 @@ class AppListAdapter(
     }
 
     private val textColorHighlight = MaterialColors.getColor(
-        mainFragment.requireContext(),
-        android.R.attr.textColorHighlight,
-        Color.CYAN
+        mainFragment.requireContext(), android.R.attr.textColorHighlight, Color.CYAN
     )
 
     val actionModeCallback = AppListMultiselectCallback(mainFragment, this)
+
+    init {
+        setHasStableIds(true)
+    }
 
     /**
      * Creates ViewHolder with Layout
@@ -73,15 +76,13 @@ class AppListAdapter(
         // Apply data from Dataset item to holder
         holder.binding.apply {
             try {
-                firstLine.text =
-                    getSpannable(
-                        mainFragment.getString(
-                            R.string.holder_app_name,
-                            app.appName,
-                            app.apkSize
-                        )
-                    )
-                secondLine.text = getSpannable(app.appPackageName)
+                firstLine.text = Utils.getSpannable(
+                    mainFragment.getString(
+                        R.string.holder_app_name, app.appName, app.apkSize
+                    ), searchString, textColorHighlight
+                )
+                secondLine.text =
+                    Utils.getSpannable(app.appPackageName, searchString, textColorHighlight)
                 icon.setImageDrawable(app.appIcon)
             } catch (_: PackageManager.NameNotFoundException) {
                 root.isVisible = false
@@ -120,6 +121,14 @@ class AppListAdapter(
      * Return the size of your dataset (invoked by the layout manager)
      */
     override fun getItemCount() = myDatasetFiltered.size
+
+    /**
+     * Create unique item ids from file Uri hashcode
+     * @param position position in recycler view
+     */
+    override fun getItemId(position: Int): Long {
+        return myDatasetFiltered[position].appSourceDirectory.hashCode().toLong()
+    }
 
     /**
      * Filter Apps with CharSequence (invoked by the SearchView)
@@ -162,7 +171,8 @@ class AppListAdapter(
              */
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
                 @Suppress("UNCHECKED_CAST")
-                myDatasetFiltered = (filterResults.values as List<ApplicationModel>).toMutableList()
+                myDatasetFiltered =
+                    (filterResults.values as List<ApplicationModel>).toMutableList()
                 notifyDataSetChanged()
             }
         }
@@ -177,25 +187,6 @@ class AppListAdapter(
         myDataset = apps
         myDatasetFiltered = myDataset.toMutableList()
         notifyDataSetChanged()
-    }
-
-    /**
-     * Creates a String Spannable from text, that shows the position of the search word inside the String
-     * @param text text that is displayed to the user
-     * @return String spannable with color marked search word
-     */
-    private fun getSpannable(text: String): Spannable {
-        val spannable = text.toSpannable()
-        if (searchString.isNotBlank() && text.contains(searchString, ignoreCase = true)) {
-            val startIndex = text.lowercase().indexOf(searchString.lowercase())
-            spannable.setSpan(
-                ForegroundColorSpan(textColorHighlight),
-                startIndex,
-                startIndex + searchString.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-        return spannable
     }
 
     /**

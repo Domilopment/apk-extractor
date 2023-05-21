@@ -15,19 +15,26 @@ data class PackageArchiveModel(
     private val contentResolver: ContentResolver,
     private val cacheDir: File,
     private val documentFile: DocumentFile,
-    var appName: CharSequence,
-    var appPackageName: String,
-    var appIcon: Drawable? = null,
-    var appVersionName: String? = null,
-    var appVersionCode: Long = -1
 ) {
     val fileUri: Uri = documentFile.uri
     val fileName: String? = documentFile.name
     val fileLastModified: Long = documentFile.lastModified()
     val fileSize: Float = documentFile.length() / (1000.0F * 1000.0F)
 
-    private var isPackageArchiveInfoLoaded = false
     private var isPackageArchiveInfoLoading = false
+    var isPackageArchiveInfoLoaded = false
+        private set
+
+    var appName: CharSequence? = null
+        private set
+    var appPackageName: String? = null
+        private set
+    var appIcon: Drawable? = null
+        private set
+    var appVersionName: String? = null
+        private set
+    var appVersionCode: Long? = null
+        private set
 
     var isChecked = false
 

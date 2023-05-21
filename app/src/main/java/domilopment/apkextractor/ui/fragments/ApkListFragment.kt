@@ -18,7 +18,6 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.documentfile.provider.DocumentFile
@@ -73,18 +72,8 @@ class ApkListFragment : Fragment() {
                 DocumentFile.fromSingleUri(this.requireContext(), apkUri)
             }?.let { documentFile ->
                 val context = this.requireContext()
-                val placeholder = context.getString(R.string.apk_holder_placeholder)
-                val icon = ContextCompat.getDrawable(
-                    context, android.R.drawable.sym_def_app_icon
-                )
                 PackageArchiveModel(
-                    context.packageManager,
-                    context.contentResolver,
-                    context.cacheDir,
-                    documentFile,
-                    appName = placeholder,
-                    appPackageName = placeholder,
-                    appIcon = icon
+                    context.packageManager, context.contentResolver, context.cacheDir, documentFile
                 )
             }?.also { apk ->
                 model.selectPackageArchive(apk)
@@ -141,7 +130,6 @@ class ApkListFragment : Fragment() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         viewAdapter = ApkListAdapter(this)
-
 
         binding.apkListView.list.apply {
             // use this setting to improve performance if you know that changes

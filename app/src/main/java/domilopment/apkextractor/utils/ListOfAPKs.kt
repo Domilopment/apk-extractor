@@ -12,11 +12,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
 class ListOfAPKs(private val context: Context) {
-    private val placeholder = context.getString(R.string.apk_holder_placeholder)
-    private val icon = ContextCompat.getDrawable(
-        context, android.R.drawable.sym_def_app_icon
-    )
-
     /**
      * Update Installed APK lists
      */
@@ -31,13 +26,7 @@ class ListOfAPKs(private val context: Context) {
         }?.forEach { documentFile: DocumentFile ->
             jobList.add(async(Dispatchers.IO) {
                 PackageArchiveModel(
-                    context.packageManager,
-                    context.contentResolver,
-                    context.cacheDir,
-                    documentFile,
-                    appName = placeholder,
-                    appPackageName = placeholder,
-                    appIcon = icon,
+                    context.packageManager, context.contentResolver, context.cacheDir, documentFile
                 )
             })
 

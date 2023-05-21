@@ -1,72 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.circularreveal.CircularRevealRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list_element"
-    android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeightLarge"
-    android:background="@color/app_list_item_background"
-    android:foreground="?attr/selectableItemBackground"
-    android:paddingHorizontal="6dip"
-    android:paddingTop="6dip">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/apk_file_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:singleLine="true"
-        android:textSize="11sp" />
+    <data>
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/apk_icon"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/apk_list_item_divider"
-        android:layout_below="@+id/apk_file_name"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="6dip"
-        android:contentDescription="@string/list_item_Image_description"
-        android:src="@android:drawable/sym_def_app_icon" />
+        <import type="android.view.View" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/apk_app_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignWithParentIfMissing="true"
-        android:layout_below="@id/apk_file_name"
-        android:layout_toEndOf="@id/apk_icon"
-        android:gravity="center_vertical"
-        android:singleLine="true"
-        android:textSize="16sp" />
+        <import type="domilopment.apkextractor.utils.Utils" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/apk_package_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/apk_app_name"
-        android:layout_toEndOf="@id/apk_icon"
-        android:singleLine="true"
-        android:textSize="12sp" />
+        <variable
+            name="textColorHighlight"
+            type="Integer" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/apk_version_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/apk_package_name"
-        android:layout_toEndOf="@id/apk_icon"
-        android:singleLine="true"
-        android:textSize="12sp" />
+        <variable
+            name="searchString"
+            type="String" />
 
-    <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/apk_list_item_divider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="6dp" />
+        <variable
+            name="apk"
+            type="domilopment.apkextractor.data.PackageArchiveModel" />
+    </data>
 
-</com.google.android.material.circularreveal.CircularRevealRelativeLayout>
+    <com.google.android.material.circularreveal.CircularRevealLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/list_element"
+        android:layout_width="fill_parent"
+        android:layout_height="?android:attr/listPreferredItemHeightLarge"
+        android:background="@color/app_list_item_background"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="vertical"
+        android:paddingHorizontal="6dip"
+        android:paddingTop="6dip">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/apk_file_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:singleLine="true"
+            android:text="@{Utils.INSTANCE.getSpannable(apk.fileName, searchString, textColorHighlight)}"
+            android:textSize="11sp" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{apk.isPackageArchiveInfoLoaded ? View.GONE : View.VISIBLE}">
+
+            <com.google.android.material.circularreveal.CircularRevealRelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/apk_icon_shimmer"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginEnd="6dip"
+                    android:contentDescription="@string/list_item_Image_description"
+                    android:src="@android:drawable/sym_def_app_icon"
+                    android:tint="@android:color/darker_gray" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/apk_app_name_shimmer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginVertical="2dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toEndOf="@id/apk_icon_shimmer"
+                    android:background="@drawable/shimmer_textview_rounded_corner"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="11sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/apk_package_name_shimmer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/apk_app_name_shimmer"
+                    android:layout_marginVertical="2dp"
+                    android:layout_marginEnd="110dp"
+                    android:layout_toEndOf="@id/apk_icon_shimmer"
+                    android:background="@drawable/shimmer_textview_rounded_corner"
+                    android:singleLine="true"
+                    android:textSize="11sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/apk_version_name_shimmer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/apk_package_name_shimmer"
+                    android:layout_marginVertical="2dp"
+                    android:layout_marginEnd="210dp"
+                    android:layout_toEndOf="@id/apk_icon_shimmer"
+                    android:background="@drawable/shimmer_textview_rounded_corner"
+                    android:singleLine="true"
+                    android:textSize="11sp" />
+            </com.google.android.material.circularreveal.CircularRevealRelativeLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <domilopment.apkextractor.ui.components.CheckableRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{apk.isPackageArchiveInfoLoaded ? View.VISIBLE : View.GONE}">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/apk_icon"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/apk_list_item_divider"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="6dip"
+                android:contentDescription="@string/list_item_Image_description"
+                android:src="@{apk.appIcon}" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/apk_app_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@id/apk_icon"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="@{Utils.INSTANCE.getSpannable(apk.appName, searchString, textColorHighlight)}"
+                android:textSize="16sp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/apk_package_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/apk_app_name"
+                android:layout_toEndOf="@id/apk_icon"
+                android:singleLine="true"
+                android:text="@{Utils.INSTANCE.getSpannable(apk.appPackageName, searchString, textColorHighlight)}"
+                android:textSize="12sp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/apk_version_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/apk_package_name"
+                android:layout_toEndOf="@id/apk_icon"
+                android:singleLine="true"
+                android:text="@{Utils.INSTANCE.getSpannable(@string/apk_holder_version(apk.appVersionName, apk.appVersionCode), searchString, textColorHighlight)}"
+                android:textSize="12sp" />
+
+        </domilopment.apkextractor.ui.components.CheckableRelativeLayout>
+
+    </com.google.android.material.circularreveal.CircularRevealLinearLayout>
+</layout>
