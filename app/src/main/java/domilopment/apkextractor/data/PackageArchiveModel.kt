@@ -21,7 +21,8 @@ data class PackageArchiveModel(
     val fileLastModified: Long = documentFile.lastModified()
     val fileSize: Float = documentFile.length() / (1000.0F * 1000.0F)
 
-    private var isPackageArchiveInfoLoaded = false
+    var isPackageArchiveInfoLoaded = false
+        private set
     var isPackageArchiveInfoLoading = false
         private set
 
