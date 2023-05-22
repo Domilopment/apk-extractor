@@ -9,6 +9,6 @@
     android:layout_marginRight="8dp"
     android:clipToPadding="false"
     android:paddingBottom="?android:attr/listPreferredItemHeight"
-    app:layoutManager="LinearLayoutManager"
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:listitem="@layout/app_list_item" />

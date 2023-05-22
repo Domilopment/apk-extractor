@@ -2,7 +2,6 @@ package domilopment.apkextractor.ui.apkList
 
 import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
@@ -28,8 +27,23 @@ class ApkListAdapter(
 
     private var searchString = ""
 
-    class MyViewHolder(myView: View) : RecyclerView.ViewHolder(myView) {
-        val binding: ApkListItemBinding = DataBindingUtil.bind(myView)!!
+    class MyViewHolder(
+        val binding: ApkListItemBinding, private val apkListFragment: ApkListFragment
+    ) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.holder = this
+        }
+
+        fun showApkInfo(apk: PackageArchiveModel) {
+            if (apkListFragment.isRefreshing()) return
+
+            apkListFragment.selectPackageArchive(apk)
+            apkListFragment.requireActivity().supportFragmentManager.let {
+                ApkOptionsBottomSheet.newInstance().apply {
+                    show(it, ApkOptionsBottomSheet.TAG)
+                }
+            }
+        }
     }
 
     private val textColorHighlight = MaterialColors.getColor(
@@ -48,11 +62,12 @@ class ApkListAdapter(
      * A ViewHolder with Layout app_list_item
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return LayoutInflater.from(parent.context).inflate(R.layout.apk_list_item, parent, false)
-            .let {
-                // set the view's size, margins, padding and layout parameters
-                MyViewHolder(it)
-            }
+        return DataBindingUtil.inflate<ApkListItemBinding>(
+            LayoutInflater.from(parent.context), R.layout.apk_list_item, parent, false
+        ).let {
+            // set the view's size, margins, padding and layout parameters
+            MyViewHolder(it, apkListFragment)
+        }
     }
 
     /**
@@ -70,20 +85,6 @@ class ApkListAdapter(
         holder.binding.textColorHighlight = textColorHighlight
         holder.binding.searchString = searchString
         holder.binding.apk = apk
-        holder.binding.apply {
-            // ItemView on Click
-            root.setOnClickListener {
-                if (apkListFragment.isRefreshing()) return@setOnClickListener
-
-                apkListFragment.selectPackageArchive(apk)
-                apkListFragment.requireActivity().supportFragmentManager.let {
-                    ApkOptionsBottomSheet.newInstance().apply {
-                        show(it, ApkOptionsBottomSheet.TAG)
-                    }
-                }
-
-            }
-        }
     }
 
     /**

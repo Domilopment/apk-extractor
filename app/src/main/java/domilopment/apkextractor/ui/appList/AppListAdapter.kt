@@ -127,7 +127,7 @@ class AppListAdapter(
      * @param position position in recycler view
      */
     override fun getItemId(position: Int): Long {
-        return myDatasetFiltered[position].appSourceDirectory.hashCode().toLong()
+        return myDatasetFiltered[position].appPackageName.hashCode().toLong()
     }
 
     /**
