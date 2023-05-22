@@ -8,6 +8,7 @@ import android.widget.Filterable
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
+import domilopment.apkextractor.BR
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.databinding.ApkListItemBinding
@@ -82,9 +83,10 @@ class ApkListAdapter(
         // - get element from your dataset at this position
         val apk = myDatasetFiltered[position]
         // Apply data from Dataset item to holder
-        holder.binding.textColorHighlight = textColorHighlight
-        holder.binding.searchString = searchString
-        holder.binding.apk = apk
+        holder.binding.setVariable(BR.textColorHighlight, textColorHighlight)
+        holder.binding.setVariable(BR.searchString, searchString)
+        holder.binding.setVariable(BR.apk, apk)
+        holder.binding.executePendingBindings()
     }
 
     /**

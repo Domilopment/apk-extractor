@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -34,12 +35,16 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (uninstallAppPackageName.isNullOrBlank()) return@registerForActivityResult
+
             val isAppUninstalled =
-                !Utils.isPackageInstalled(requireContext().packageManager, apk.appPackageName!!)
+                !Utils.isPackageInstalled(requireContext().packageManager, uninstallAppPackageName)
             if (isAppUninstalled) {
                 // TODO: implement uninstall before restore old apk
             }
         }
+
+    private val uninstallAppPackageName: String? = null
 
     private val model by activityViewModels<ApkListViewModel>()
 
@@ -59,18 +64,9 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 model.akpOptionsBottomSheetUIState.collect { uiState ->
-                    uiState.selectedApplicationModel?.also {
+                    uiState.packageArchiveModel?.also {
                         apk = it
-                        view?.also {
-                            setupPackageArchiveInfo()
-                            setupPackageArchiveActions()
-                        }
                     } ?: dismiss()
-                    if (uiState.updateTrigger.handleTrigger())
-                        view?.also {
-                            setupPackageArchiveInfo()
-                            setupPackageArchiveActions()
-                        }
                 }
             }
         }
@@ -79,7 +75,12 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = ApkOptionsBottomSheetBinding.inflate(inflater, container, false)
+        _binding = DataBindingUtil.inflate(
+            layoutInflater, R.layout.apk_options_bottom_sheet, container, false
+        )
+        binding.lifecycleOwner = this
+        binding.bottomSheet = this
+        binding.apk = apk
         return binding.root
     }
 
@@ -96,91 +97,9 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
     override fun onStart() {
         super.onStart()
         // Set or Update Application Info
-        if (apk.exist()) {
-            setupPackageArchiveInfo()
-            setupPackageArchiveActions()
-        } else {
+        if (!apk.exist()) {
             model.remove(apk)
             dismiss()
-        }
-    }
-
-    /**
-     * set up information from selected APK in bottom sheet layout
-     */
-    private fun setupPackageArchiveInfo() {
-        // Selected Apk Icon
-        binding.selectedApkIcon.setImageDrawable(apk.appIcon)
-
-        // Selected Apk Name on top of Bottom Sheet
-        binding.selectedApkName.text = apk.appName
-
-        // Selected Apk Package Name
-        binding.selectedApkPackageName.text = apk.appPackageName
-
-        binding.selectedApkFileUri.text =
-            getString(R.string.apk_bottom_sheet_source_uri, apk.fileUri)
-
-        binding.selectedApkFileName.text =
-            getString(R.string.apk_bottom_sheet_file_name, apk.fileName)
-
-        binding.selectedApkFileSize.text =
-            getString(R.string.info_bottom_sheet_apk_size, apk.fileSize)
-
-        binding.selectedApkFileLastModified.text = getString(
-            R.string.apk_bottom_sheet_last_modified, Utils.getAsFormattedDate(apk.fileLastModified)
-        )
-
-        // Selected Apk version name
-        binding.selectedApkVersionName.text =
-            getString(R.string.info_bottom_sheet_version_name, apk.appVersionName)
-
-        // Selected Apk version code
-        binding.selectedApkVersionNumber.text =
-            getString(R.string.info_bottom_sheet_version_number, apk.appVersionCode)
-    }
-
-    /**
-     * set up actions for selected APK
-     */
-    private fun setupPackageArchiveActions() {
-        // Share APK
-        binding.actionShareApk.setOnClickListener {
-            startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-                type = FileHelper.MIME_TYPE
-                putExtra(Intent.EXTRA_STREAM, apk.fileUri)
-            }, getString(R.string.share_intent_title)))
-        }
-
-
-        // Install apk
-        binding.actionInstallApk.apply {
-            visibility = View.GONE
-            setOnClickListener {
-                /*
-                progressDialogViewModel.installApk(
-                    apk.fileUri,
-                    PackageInstallerSessionCallback(this, model, progressDialogViewModel)
-                )
-                */
-            }
-        }
-
-        // Delete apk file
-        binding.actionDeleteApk.setOnClickListener {
-            DocumentsContract.deleteDocument(
-                requireContext().contentResolver, apk.fileUri
-            ).let { deleted ->
-                Toast.makeText(
-                    context, getString(
-                        if (deleted) {
-                            model.remove(apk)
-                            dismiss()
-                            R.string.apk_action_delete_success
-                        } else R.string.apk_action_delete_failed
-                    ), Toast.LENGTH_SHORT
-                )
-            }.show()
         }
     }
 
@@ -192,5 +111,40 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         model.selectPackageArchive(null)
+    }
+
+    fun forceRefresh(apk: PackageArchiveModel) {
+        model.forceRefresh(apk)
+    }
+
+    fun shareApk(apk: PackageArchiveModel) {
+        startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+            type = FileHelper.MIME_TYPE
+            putExtra(Intent.EXTRA_STREAM, apk.fileUri)
+        }, getString(R.string.share_intent_title)))
+    }
+
+    fun installApk(apk: PackageArchiveModel) {/*
+        progressDialogViewModel.installApk(
+            apk.fileUri,
+            PackageInstallerSessionCallback(this, model, progressDialogViewModel)
+        )
+         */
+    }
+
+    fun deleteApk(apk: PackageArchiveModel) {
+        DocumentsContract.deleteDocument(
+            requireContext().contentResolver, apk.fileUri
+        ).let { deleted ->
+            Toast.makeText(
+                context, getString(
+                    if (deleted) {
+                        model.remove(apk)
+                        dismiss()
+                        R.string.apk_action_delete_success
+                    } else R.string.apk_action_delete_failed
+                ), Toast.LENGTH_SHORT
+            )
+        }.show()
     }
 }

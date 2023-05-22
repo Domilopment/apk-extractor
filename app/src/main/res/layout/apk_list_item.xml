@@ -49,7 +49,7 @@
             android:id="@+id/shimmer_view_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{apk.isPackageArchiveInfoLoading() ? View.VISIBLE : View.GONE}">
+            android:visibility="@{apk.packageArchiveInfoLoading ? View.VISIBLE : View.GONE}">
 
             <com.google.android.material.circularreveal.CircularRevealRelativeLayout
                 android:layout_width="match_parent"
@@ -109,7 +109,7 @@
         <domilopment.apkextractor.ui.components.CheckableRelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{apk.isPackageArchiveInfoLoading ? View.GONE : View.VISIBLE}">
+            android:visibility="@{apk.packageArchiveInfoLoading ? View.GONE : View.VISIBLE}">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/apk_icon"
@@ -128,8 +128,8 @@
                 android:layout_alignWithParentIfMissing="true"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true"
-                android:gravity="center_vertical"
                 android:layout_toEndOf="@id/apk_icon"
+                android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <com.google.android.material.textview.MaterialTextView

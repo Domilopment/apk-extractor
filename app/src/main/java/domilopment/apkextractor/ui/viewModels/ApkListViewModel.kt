@@ -55,16 +55,6 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
             viewModelScope.async(Dispatchers.IO) {
                 apps.forEach {
                     it.loadPackageArchiveInfo()
-                    _apkListFragmentState.update { state ->
-                        state.copy(
-                            updateTrigger = UpdateTrigger(true)
-                        )
-                    }
-                    _apkOptionsBottomSheetState.update { state ->
-                        state.copy(
-                            updateTrigger = UpdateTrigger(true)
-                        )
-                    }
                 }
             }
         }
@@ -76,15 +66,10 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
      * @param app selected application
      */
     fun selectPackageArchive(app: PackageArchiveModel?) {
-        if (app?.isPackageArchiveInfoLoaded == false) {
-            app.loadPackageArchiveInfo()
-            _apkListFragmentState.update { state ->
-                state.copy(updateTrigger = UpdateTrigger(true))
-            }
-        }
+        if (app?.isPackageArchiveInfoLoaded == false) app.loadPackageArchiveInfo()
         _apkOptionsBottomSheetState.update { state ->
             state.copy(
-                selectedApplicationModel = app
+                packageArchiveModel = app
             )
         }
     }
@@ -119,6 +104,10 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
                 remove(apk)
             }
         }
+    }
+
+    fun forceRefresh(apk: PackageArchiveModel) {
+        viewModelScope.async(Dispatchers.IO) { apk.forceRefresh() }
     }
 
     /**
