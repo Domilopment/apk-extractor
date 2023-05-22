@@ -140,7 +140,7 @@ class MainFragment : Fragment() {
                     .setViews(view, binding.appMultiselectBottomSheet.root).setShareResult(shareApp)
                     .setDeleteResult(uninstallApp).build()
             )
-            viewAdapter.notifyDataSetChanged()
+            viewAdapter.notifyItemChanged(viewHolder.bindingAdapterPosition)
         })
         swipeHelper.attachToRecyclerView(binding.listView.list)
 
