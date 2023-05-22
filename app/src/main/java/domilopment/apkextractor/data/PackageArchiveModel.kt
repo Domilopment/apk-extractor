@@ -26,38 +26,58 @@ data class PackageArchiveModel(
 
     @get:Bindable
     var isPackageArchiveInfoLoaded = false
-        private set
+        private set(value) {
+            field = value
+            notifyPropertyChanged(BR.packageArchiveInfoLoaded)
+        }
 
     @get:Bindable
     var isPackageArchiveInfoLoading = false
-        private set
+        private set(value) {
+            field = value
+            notifyPropertyChanged(BR.packageArchiveInfoLoading)
+        }
 
     @get:Bindable
     var appName: CharSequence? = null
-        private set
+        private set(value) {
+            field = value
+            notifyPropertyChanged(BR.appName)
+        }
 
     @get:Bindable
     var appPackageName: String? = null
-        private set
+        private set(value) {
+            field = value
+            notifyPropertyChanged(BR.appPackageName)
+        }
 
     @get:Bindable
     var appIcon: Drawable? = null
-        private set
+        private set(value) {
+            field = value
+            notifyPropertyChanged(BR.appIcon)
+        }
 
     @get:Bindable
     var appVersionName: String? = null
-        private set
+        private set(value) {
+            field = value
+            notifyPropertyChanged(BR.appVersionName)
+        }
 
     @get:Bindable
     var appVersionCode: Long? = null
-        private set
+        private set(value) {
+            field = value
+            notifyPropertyChanged(BR.appVersionCode)
+        }
 
     fun exist() = documentFile.exists()
 
     fun loadPackageArchiveInfo() {
         if (isPackageArchiveInfoLoaded || isPackageArchiveInfoLoading) return
         isPackageArchiveInfoLoading = true
-        notifyPropertyChanged(BR.packageArchiveInfoLoading)
 
         var apkFile: File? = null
         try {
@@ -72,32 +92,24 @@ data class PackageArchiveModel(
                         it.applicationInfo.sourceDir = apkFile.path
                         it.applicationInfo.publicSourceDir = apkFile.path
                         appName = it.applicationInfo.loadLabel(packageManager)
-                        notifyPropertyChanged(BR.appName)
                         appPackageName = it.applicationInfo.packageName
-                        notifyPropertyChanged(BR.appPackageName)
                         appIcon = it.applicationInfo.loadIcon(packageManager)
-                        notifyPropertyChanged(BR.appIcon)
                         appVersionName = it.versionName
-                        notifyPropertyChanged(BR.appVersionName)
                         appVersionCode = Utils.versionCode(it)
-                        notifyPropertyChanged(BR.appVersionCode)
                     }
                 }
             }
             isPackageArchiveInfoLoaded = true
-            notifyPropertyChanged(BR.packageArchiveInfoLoaded)
         } catch (_: IOException) {
             // No Space left on Device, ...
         } finally {
             isPackageArchiveInfoLoading = false
-            notifyPropertyChanged(BR.packageArchiveInfoLoading)
             if (apkFile != null && apkFile.exists()) apkFile.delete()
         }
     }
 
     fun forceRefresh() {
         isPackageArchiveInfoLoaded = false
-        notifyPropertyChanged(BR.packageArchiveInfoLoaded)
         loadPackageArchiveInfo()
     }
 }
