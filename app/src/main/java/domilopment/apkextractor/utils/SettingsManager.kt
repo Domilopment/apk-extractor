@@ -197,7 +197,7 @@ class SettingsManager(context: Context) {
                     append(" ${names[v]}")
                 }
             }
-            append(FileHelper.PREFIX)
+            append(FileUtil.PREFIX)
         }.removePrefix(" ").toString()
     }
 

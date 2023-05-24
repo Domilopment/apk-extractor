@@ -16,7 +16,7 @@ import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.installApk.InstallBroadcastReceiver
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
-import domilopment.apkextractor.utils.FileHelper
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.SettingsManager
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +52,7 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
     fun saveApps(list: List<ApplicationModel>) {
         viewModelScope.launch {
             val settingsManager = SettingsManager(context)
-            val fileHelper = FileHelper(context)
+            val fileUtil = FileUtil(context)
             var application: ApplicationModel? = null
             var failure = false
 
@@ -75,7 +75,7 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
                         }
                     }
                     withContext(Dispatchers.IO) {
-                        failure = fileHelper.copy(
+                        failure = fileUtil.copy(
                             app.appSourceDirectory,
                             settingsManager.saveDir()!!,
                             settingsManager.appName(app)
@@ -105,7 +105,7 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
     fun createShareUrisForApps(list: List<ApplicationModel>) {
         viewModelScope.launch {
             val files = ArrayList<Uri>()
-            val fileHelper = FileHelper(context)
+            val fileUtil = FileUtil(context)
             val jobList = ArrayList<Deferred<Any?>>()
 
             _progressDialogState.update {
@@ -121,7 +121,7 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
             }.forEach { app ->
                 jobList.add(async {
                     withContext(Dispatchers.IO) {
-                        fileHelper.shareURI(app).also {
+                        fileUtil.shareURI(app).also {
                             files.add(it)
                         }
                     }

@@ -34,7 +34,7 @@ import domilopment.apkextractor.databinding.FragmentApkListBinding
 import domilopment.apkextractor.ui.ApkOptionsBottomSheet
 import domilopment.apkextractor.ui.apkList.ApkListAdapter
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
-import domilopment.apkextractor.utils.FileHelper
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.SettingsManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -226,7 +226,7 @@ class ApkListFragment : Fragment() {
                 // automatically handle clicks on the Home/Up button, so long
                 // as you specify a parent activity in AndroidManifest.xml.
                 when (menuItem.itemId) {
-                    R.id.action_show_save_dir -> selectApk.launch(arrayOf(FileHelper.MIME_TYPE))
+                    R.id.action_show_save_dir -> selectApk.launch(arrayOf(FileUtil.MIME_TYPE))
                     android.R.id.home -> requireActivity().onBackPressedDispatcher.onBackPressed()
                 }
                 return true

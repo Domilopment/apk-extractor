@@ -1,9 +1,7 @@
 package domilopment.apkextractor.utils
 
 import android.content.Context
-import androidx.core.content.ContextCompat
 import androidx.documentfile.provider.DocumentFile
-import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +20,7 @@ class ListOfAPKs(private val context: Context) {
             val dir = DocumentFile.fromTreeUri(context, it)
             if (dir != null && dir.exists() && dir.isDirectory) dir else null
         }?.listFiles()?.filter {
-            it.type == FileHelper.MIME_TYPE
+            it.type == FileUtil.MIME_TYPE
         }?.forEach { documentFile: DocumentFile ->
             jobList.add(async(Dispatchers.IO) {
                 PackageArchiveModel(

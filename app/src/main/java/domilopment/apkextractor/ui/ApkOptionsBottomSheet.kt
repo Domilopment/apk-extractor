@@ -119,7 +119,7 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
 
     fun shareApk(apk: PackageArchiveModel) {
         startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-            type = FileHelper.MIME_TYPE
+            type = FileUtil.MIME_TYPE
             putExtra(Intent.EXTRA_STREAM, apk.fileUri)
         }, getString(R.string.share_intent_title)))
     }

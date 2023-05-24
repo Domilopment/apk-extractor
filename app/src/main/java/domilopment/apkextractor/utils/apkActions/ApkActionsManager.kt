@@ -17,7 +17,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
-import domilopment.apkextractor.utils.FileHelper
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.SettingsManager
 import domilopment.apkextractor.utils.Utils
 import java.io.File
@@ -30,7 +30,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      */
     fun actionSave(view: View, anchorView: View = view) {
         val settingsManager = SettingsManager(context)
-        FileHelper(context).copy(
+        FileUtil(context).copy(
             app.appSourceDirectory, settingsManager.saveDir()!!, settingsManager.appName(app)
         )?.let {
             Snackbar.make(
@@ -52,9 +52,9 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param shareApp ActivityResultLauncher to launch Intent
      */
     fun actionShare(shareApp: ActivityResultLauncher<Intent>) {
-        val file = FileHelper(context).shareURI(app)
+        val file = FileUtil(context).shareURI(app)
         Intent(Intent.ACTION_SEND).apply {
-            setDataAndType(file, FileHelper.MIME_TYPE)
+            setDataAndType(file, FileUtil.MIME_TYPE)
             putExtra(Intent.EXTRA_STREAM, file)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }.let {

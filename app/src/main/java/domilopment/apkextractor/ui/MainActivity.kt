@@ -6,16 +6,15 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
-import android.provider.DocumentsContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.documentfile.provider.DocumentFile
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.databinding.ActivityMainBinding
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.SettingsManager
 
 class MainActivity : AppCompatActivity() {
@@ -93,17 +92,15 @@ class MainActivity : AppCompatActivity() {
      * @return Have to ask user for Save Dir
      */
     private fun mustAskForSaveDir(): Boolean {
+        if (!sharedPreferences.contains("dir")) return true
+
         val path = SettingsManager(this).saveDir()
-        return (!sharedPreferences.contains("dir")) || checkUriPermission(
+        return path == null || checkUriPermission(
             path,
             Binder.getCallingPid(),
             Binder.getCallingUid(),
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        ) == PackageManager.PERMISSION_DENIED || !DocumentsContract.isDocumentUri(
-            this, DocumentsContract.buildDocumentUriUsingTree(
-                path, DocumentsContract.getTreeDocumentId(path)
-            )
-        ) || path?.let { DocumentFile.fromTreeUri(this, it)?.exists() } != true
+        ) == PackageManager.PERMISSION_DENIED || !FileUtil(this).doesDocumentExist(path)
     }
 
     /**

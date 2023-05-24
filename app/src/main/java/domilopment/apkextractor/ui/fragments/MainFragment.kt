@@ -36,7 +36,7 @@ import domilopment.apkextractor.ui.ProgressDialogFragment
 import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
-import domilopment.apkextractor.utils.FileHelper
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -178,7 +178,7 @@ class MainFragment : Fragment() {
         progressDialogViewModel.shareResult.observe(viewLifecycleOwner) { result ->
             result?.getContentIfNotHandled()?.let { files ->
                 Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                    type = FileHelper.MIME_TYPE
+                    type = FileUtil.MIME_TYPE
                     clipData = ClipData.newRawUri(null, files[0]).apply {
                         files.drop(1).forEach { addItem(ClipData.Item(it)) }
                     }

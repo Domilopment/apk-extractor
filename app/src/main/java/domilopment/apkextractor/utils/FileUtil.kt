@@ -8,7 +8,7 @@ import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.ApplicationModel
 import java.io.*
 
-class FileHelper(private val context: Context) {
+class FileUtil(private val context: Context) {
     companion object {
         const val MIME_TYPE = "application/vnd.android.package-archive"
         const val PREFIX = ".apk"
@@ -69,5 +69,26 @@ class FileHelper(private val context: Context) {
                 ), true
             )
         )
+    }
+
+    /**
+     * Takes uri from Document file, and checks if Document exists
+     * @param uri Document uri
+     * @return true if document exist else false
+     */
+    fun doesDocumentExist(uri: Uri): Boolean {
+        val documentId =
+            if (DocumentsContract.isDocumentUri(context, uri)) DocumentsContract.getDocumentId(
+                uri
+            ) else DocumentsContract.getTreeDocumentId(uri)
+        return try {
+            context.contentResolver.query(
+                DocumentsContract.buildDocumentUriUsingTree(
+                    uri, documentId
+                ), arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID), null, null, null
+            )?.use { cursor -> cursor.count > 0 } ?: false
+        } catch (e: Exception) {
+            false
+        }
     }
 }

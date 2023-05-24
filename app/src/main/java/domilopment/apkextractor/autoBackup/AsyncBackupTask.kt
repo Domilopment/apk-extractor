@@ -17,7 +17,7 @@ import androidx.core.app.NotificationManagerCompat
 import domilopment.apkextractor.ui.MainActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
-import domilopment.apkextractor.utils.FileHelper
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.SettingsManager
 import kotlinx.coroutines.*
 import java.io.FileNotFoundException
@@ -61,7 +61,7 @@ class AsyncBackupTask(
 
         // Try to Backup App
         return try {
-            FileHelper(context).copy(
+            FileUtil(context).copy(
                 app.appSourceDirectory, path!!, SettingsManager(context).appName(app)
             )
         } catch (e: FileNotFoundException) {
@@ -133,7 +133,7 @@ class AsyncBackupTask(
         // Share APK on Button Click
         val sharePendingIntent: PendingIntent = Intent.createChooser(
             Intent(Intent.ACTION_SEND).apply {
-                type = FileHelper.MIME_TYPE
+                type = FileUtil.MIME_TYPE
                 putExtra(Intent.EXTRA_STREAM, fileUri)
             }, context.getString(R.string.share_intent_title)
         ).let {
