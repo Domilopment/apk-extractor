@@ -13,9 +13,11 @@ class ListOfAPKs(private val context: Context) {
         val packageArchiveModels = mutableListOf<PackageArchiveModel>()
 
         SettingsManager(context).saveDir()?.let { uri ->
-            DocumentsContract.buildChildDocumentsUriUsingTree(
-                uri, DocumentsContract.getTreeDocumentId(uri)
-            )
+            DocumentsContract.getTreeDocumentId(uri)?.let { documentId ->
+                DocumentsContract.buildChildDocumentsUriUsingTree(
+                    uri, documentId
+                )
+            }
         }?.also { childrenUri ->
             context.contentResolver.query(
                 childrenUri, arrayOf(
@@ -37,16 +39,18 @@ class ListOfAPKs(private val context: Context) {
                     cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
 
                 while (cursor.moveToNext()) {
+                    val mimeType = cursor.getString(mimeTypeIndex)
+                    if (mimeType != FileUtil.MIME_TYPE) continue
+
                     val documentId = cursor.getString(documentIdIndex)
                     val displayName = cursor.getString(displayNameIndex)
                     val lastModified = cursor.getLong(lastModifiedIndex)
                     val size = cursor.getLong(sizeIndex)
-                    val mimeType = cursor.getString(mimeTypeIndex)
 
                     val documentUri =
                         DocumentsContract.buildDocumentUriUsingTree(childrenUri, documentId)
 
-                    if (mimeType == FileUtil.MIME_TYPE) packageArchiveModels.add(
+                    packageArchiveModels.add(
                         PackageArchiveModel(
                             documentUri, displayName, lastModified, size
                         )
