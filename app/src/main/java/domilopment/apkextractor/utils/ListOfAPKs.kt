@@ -13,12 +13,8 @@ class ListOfAPKs(private val context: Context) {
         val packageArchiveModels = mutableListOf<PackageArchiveModel>()
 
         SettingsManager(context).saveDir()?.let { uri ->
-            val documentUri = DocumentsContract.getTreeDocumentId(uri)?.let { documentId ->
-                DocumentsContract.buildDocumentUriUsingTree(uri, documentId)
-            }
-            return@let if (!DocumentsContract.isTreeUri(documentUri)) null
-            else DocumentsContract.buildChildDocumentsUriUsingTree(
-                documentUri, DocumentsContract.getDocumentId(documentUri)
+            DocumentsContract.buildChildDocumentsUriUsingTree(
+                uri, DocumentsContract.getTreeDocumentId(uri)
             )
         }?.also { childrenUri ->
             context.contentResolver.query(
