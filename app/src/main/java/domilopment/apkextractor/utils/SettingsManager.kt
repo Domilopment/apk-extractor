@@ -7,8 +7,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
+import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
@@ -20,6 +22,15 @@ import java.util.*
 class SettingsManager(context: Context) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val packageManager = context.packageManager
+
+    private val apkSortMap = mapOf(
+        R.id.action_sort_apk_file_name_asc to compareBy(PackageArchiveModel::fileName),
+        R.id.action_sort_apk_file_name_desc to compareByDescending(PackageArchiveModel::fileName),
+        R.id.action_sort_apk_file_size_asc to compareBy(PackageArchiveModel::fileSize),
+        R.id.action_sort_apk_file_size_desc to compareByDescending(PackageArchiveModel::fileSize),
+        R.id.action_sort_apk_file_mod_date_asc to compareBy(PackageArchiveModel::fileLastModified),
+        R.id.action_sort_apk_file_mod_date_desc to compareByDescending(PackageArchiveModel::fileLastModified)
+    )
 
     companion object {
         // Sort types for App List
@@ -69,11 +80,10 @@ class SettingsManager(context: Context) {
 
     /**
      * Sorts Data by user selected Order
-     * @param data Unsorted List of APKs
-     * @return Sorted List of APKs
-     * @throws Exception if given sort type doesn't exist
+     * @param data Unsorted List of Apps
+     * @return Sorted List of Apps
      */
-    fun sortData(
+    fun sortAppData(
         data: List<ApplicationModel>,
         sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME),
         sortFavorites: Boolean = sharedPreferences.getBoolean("sort_favorites", true)
@@ -107,6 +117,18 @@ class SettingsManager(context: Context) {
         }
         val sortedList = data.sortedWith(comparator)
         return if (sortFavorites) sortFavorites(sortedList) else sortedList
+    }
+
+    /**
+     * Sorts Data by user selected Order
+     * @param data Unsorted List of APKs
+     * @return Sorted List of APKs
+     */
+    fun sortApkData(
+        data: List<PackageArchiveModel>,
+        sortMode: Int = sharedPreferences.getInt("apk_sort", R.id.action_sort_apk_file_mod_date_desc)
+    ): List<PackageArchiveModel> {
+        return data.sortedWith(apkSortMap[sortMode]!!)
     }
 
     /**

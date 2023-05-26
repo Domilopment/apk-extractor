@@ -106,12 +106,12 @@
 
     <!-- Menu -->
     <string name="menu_search">Search</string>
-    <string name="menu_sort">Sort</string>
-    <string name="menu_sort_name">App Name</string>
-    <string name="menu_sort_package">Package Name</string>
-    <string name="menu_sort_install">Recently installed</string>
-    <string name="menu_sort_update">Recently updated</string>
-    <string name="menu_sort_apk">APK size</string>
+    <string name="menu_sort_app">Sort</string>
+    <string name="menu_sort_app_name">App Name</string>
+    <string name="menu_sort_app_package">Package Name</string>
+    <string name="menu_sort_app_install">Recently installed</string>
+    <string name="menu_sort_app_update">Recently updated</string>
+    <string name="menu_sort_app_apk_size">APK size</string>
     <string name="menu_show_save_dir">Saved APKs</string>
     <string name="action_settings">Settings</string>
 
@@ -122,6 +122,13 @@
     <string name="multiselect_select_all">Select all</string>
 
     <!-- Menu ApkListFragment -->
+    <string name="menu_sort_apk">Sort by…</string>
+    <string name="menu_sort_apk_file_name_asc">File name (A to Z)</string>
+    <string name="menu_sort_apk_file_name_desc">File name (Z to A)</string>
+    <string name="menu_sort_apk_file_size_asc">Size (smallest first)</string>
+    <string name="menu_sort_apk_file_size_desc">Size (largest first)</string>
+    <string name="menu_sort_apk_file_mod_date_asc">Modified (oldest first)</string>
+    <string name="menu_sort_apk_file_mod_date_desc">Modified (newest first)</string>
     <string name="menu_show_open_documents">Other APKs</string>
 
     <!-- APK Selected Alert -->

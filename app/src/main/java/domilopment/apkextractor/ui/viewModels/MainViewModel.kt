@@ -42,7 +42,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _mainFragmentState.update { state ->
                 val settingsManager = SettingsManager(context)
                 state.copy(
-                    appList = settingsManager.sortData(
+                    appList = settingsManager.sortAppData(
                         settingsManager.filterApps(
                             settingsManager.selectedAppTypes(
                                 apps
@@ -143,7 +143,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _mainFragmentState.update { state ->
                 state.copy(
                     appList = withContext(Dispatchers.IO) {
-                        SettingsManager(context).sortData(state.appList)
+                        SettingsManager(context).sortAppData(state.appList)
                     }, isRefreshing = false
                 )
             }
@@ -158,7 +158,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _mainFragmentState.update { state ->
                 val sortedList = withContext(Dispatchers.IO) {
-                    settingsManager.sortData(state.appList)
+                    settingsManager.sortAppData(state.appList)
                 }
                 state.copy(
                     appList = sortedList, updateTrigger = UpdateTrigger(state.appList == sortedList)
@@ -173,7 +173,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             applications.value?.let {
                 _mainFragmentState.update { state ->
                     val sortedList = withContext(Dispatchers.IO) {
-                        settingsManager.sortData(
+                        settingsManager.sortAppData(
                             settingsManager.filterApps(
                                 SettingsManager(context).selectedAppTypes(
                                     it
@@ -223,7 +223,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
                         else -> null
                     }?.let {
-                        settingsManager.sortData(settingsManager.filterApps(it))
+                        settingsManager.sortAppData(settingsManager.filterApps(it))
                     }
                 }
                 selectedAppTypes.await()?.let {

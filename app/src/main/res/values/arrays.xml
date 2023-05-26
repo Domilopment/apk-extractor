@@ -1,10 +1,10 @@
 <resources>
     <string-array name="sort_apps">
-        <item>@string/menu_sort_name</item>
-        <item>@string/menu_sort_package</item>
-        <item>@string/menu_sort_install</item>
-        <item>@string/menu_sort_update</item>
-        <item>@string/menu_sort_apk</item>
+        <item>@string/menu_sort_app_name</item>
+        <item>@string/menu_sort_app_package</item>
+        <item>@string/menu_sort_app_install</item>
+        <item>@string/menu_sort_app_update</item>
+        <item>@string/menu_sort_app_apk_size</item>
     </string-array>
 
     <string-array name="ui_mode_names">

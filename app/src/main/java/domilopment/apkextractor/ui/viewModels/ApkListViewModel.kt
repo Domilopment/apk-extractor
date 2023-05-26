@@ -10,6 +10,8 @@ import domilopment.apkextractor.data.ApkListFragmentUIState
 import domilopment.apkextractor.data.ApkOptionsBottomSheetUIState
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.utils.ListOfAPKs
+import domilopment.apkextractor.utils.SettingsManager
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.CancellationException
 
 class ApkListViewModel(application: Application) : AndroidViewModel(application) {
     private val _packageArchives: MutableLiveData<List<PackageArchiveModel>> by lazy {
@@ -44,16 +47,19 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
 
     private val context get() = getApplication<Application>().applicationContext
 
+    private var loadArchiveInfoJob: Deferred<Unit>? = null
+
     init {
         // Set applications in view once they are loaded
         _packageArchives.observeForever { apps ->
+            val sortedApps = SettingsManager(context).sortApkData(apps)
             _apkListFragmentState.update { state ->
                 state.copy(
-                    appList = apps, isRefreshing = false, updateTrigger = UpdateTrigger(true)
+                    appList = sortedApps, isRefreshing = false, updateTrigger = UpdateTrigger(true)
                 )
             }
-            viewModelScope.async(Dispatchers.IO) {
-                apps.forEach {
+            loadArchiveInfoJob = viewModelScope.async(Dispatchers.IO) {
+                sortedApps.forEach {
                     it.loadPackageArchiveInfo(context)
                 }
             }
@@ -116,5 +122,27 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
     private suspend fun loadApks(): List<PackageArchiveModel> = withContext(Dispatchers.IO) {
         // Do an asynchronous operation to fetch users.
         return@withContext ListOfAPKs(context).apkFiles()
+    }
+
+    fun sort(sortPreferenceId: Int) {
+        loadArchiveInfoJob?.cancel(CancellationException("New sort order"))
+
+        _apkListFragmentState.update { state ->
+            state.copy(isRefreshing = true)
+        }
+
+        var sortedApps: List<PackageArchiveModel>? = null
+
+        _apkListFragmentState.update { state ->
+            sortedApps = SettingsManager(context).sortApkData(state.appList, sortPreferenceId)
+            state.copy(
+                appList = sortedApps!!, isRefreshing = false
+            )
+        }
+        loadArchiveInfoJob = viewModelScope.async(Dispatchers.IO) {
+            sortedApps?.forEach {
+                it.loadPackageArchiveInfo(context)
+            }
+        }
     }
 }

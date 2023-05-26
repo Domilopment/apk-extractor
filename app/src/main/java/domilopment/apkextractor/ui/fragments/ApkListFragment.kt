@@ -243,6 +243,11 @@ class ApkListFragment : Fragment() {
                 when (menuItem.itemId) {
                     R.id.action_show_save_dir -> selectApk.launch(arrayOf(FileUtil.MIME_TYPE))
                     android.R.id.home -> requireActivity().onBackPressedDispatcher.onBackPressed()
+                    R.id.action_sort_apk_file_name_asc, R.id.action_sort_apk_file_size_asc, R.id.action_sort_apk_file_mod_date_asc, R.id.action_sort_apk_file_name_desc, R.id.action_sort_apk_file_size_desc, R.id.action_sort_apk_file_mod_date_desc -> {
+                        PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+                            .putInt("apk_sort", menuItem.itemId).commit()
+                        model.sort(menuItem.itemId)
+                    }
                 }
                 return true
             }

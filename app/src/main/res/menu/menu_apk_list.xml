@@ -8,9 +8,41 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom" />
     <item
+        android:icon="@drawable/baseline_sort_24"
+        android:orderInCategory="1"
+        android:title="@string/menu_sort_app_apk_size"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/action_sort_apk_file_name_asc"
+                android:orderInCategory="0"
+                android:title="@string/menu_sort_apk_file_name_asc" />
+            <item
+                android:id="@+id/action_sort_apk_file_name_desc"
+                android:orderInCategory="1"
+                android:title="@string/menu_sort_apk_file_name_desc" />
+            <item
+                android:id="@+id/action_sort_apk_file_size_desc"
+                android:orderInCategory="4"
+                android:title="@string/menu_sort_apk_file_size_desc" />
+            <item
+                android:id="@+id/action_sort_apk_file_size_asc"
+                android:orderInCategory="5"
+                android:title="@string/menu_sort_apk_file_size_asc" />
+            <item
+                android:id="@+id/action_sort_apk_file_mod_date_desc"
+                android:orderInCategory="2"
+                android:title="@string/menu_sort_apk_file_mod_date_desc" />
+            <item
+                android:id="@+id/action_sort_apk_file_mod_date_asc"
+                android:orderInCategory="3"
+                android:title="@string/menu_sort_apk_file_mod_date_asc" />
+        </menu>
+    </item>
+    <item
         android:id="@+id/action_show_save_dir"
         android:icon="@drawable/ic_baseline_folder_24"
-        android:orderInCategory="1"
+        android:orderInCategory="2"
         android:title="@string/menu_show_open_documents"
         app:showAsAction="ifRoom" />
 </menu>
