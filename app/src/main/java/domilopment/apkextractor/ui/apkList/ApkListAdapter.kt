@@ -12,7 +12,7 @@ import domilopment.apkextractor.BR
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.databinding.ApkListItemBinding
-import domilopment.apkextractor.ui.ApkOptionsBottomSheet
+import domilopment.apkextractor.ui.dialogs.ApkOptionsBottomSheet
 import domilopment.apkextractor.ui.fragments.ApkListFragment
 import java.util.*
 

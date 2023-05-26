@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui
+package domilopment.apkextractor.ui.dialogs
 
 import android.Manifest
 import android.content.DialogInterface

@@ -9,7 +9,7 @@
 
         <variable
             name="bottomSheet"
-            type="domilopment.apkextractor.ui.ApkOptionsBottomSheet" />
+            type="domilopment.apkextractor.ui.dialogs.ApkOptionsBottomSheet" />
 
         <variable
             name="apk"

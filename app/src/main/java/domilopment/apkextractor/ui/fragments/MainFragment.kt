@@ -31,8 +31,8 @@ import domilopment.apkextractor.ui.appList.AppListAdapter
 import domilopment.apkextractor.ui.appList.AppListTouchHelperCallback
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.FragmentMainBinding
-import domilopment.apkextractor.ui.AppFilterBottomSheet
-import domilopment.apkextractor.ui.ProgressDialogFragment
+import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
+import domilopment.apkextractor.ui.dialogs.ProgressDialogFragment
 import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions

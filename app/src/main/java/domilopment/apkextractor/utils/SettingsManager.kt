@@ -93,6 +93,7 @@ class SettingsManager(context: Context) {
             SORT_BY_PACKAGE -> compareBy(
                 String.CASE_INSENSITIVE_ORDER, ApplicationModel::appPackageName
             )
+
             SORT_BY_INSTALL_TIME -> compareBy(ApplicationModel::appInstallTime)
             SORT_BY_UPDATE_TIME -> compareBy(ApplicationModel::appUpdateTime)
             SORT_BY_APK_SIZE -> compareBy(ApplicationModel::apkSize)
@@ -104,9 +105,11 @@ class SettingsManager(context: Context) {
             SORT_BY_NAME -> compareByDescending(
                 String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName
             )
+
             SORT_BY_PACKAGE -> compareByDescending(
                 String.CASE_INSENSITIVE_ORDER, ApplicationModel::appPackageName
             )
+
             SORT_BY_INSTALL_TIME -> compareByDescending(ApplicationModel::appInstallTime)
             SORT_BY_UPDATE_TIME -> compareByDescending(ApplicationModel::appUpdateTime)
             SORT_BY_APK_SIZE -> compareByDescending(ApplicationModel::apkSize)
@@ -125,8 +128,9 @@ class SettingsManager(context: Context) {
      * @return Sorted List of APKs
      */
     fun sortApkData(
-        data: List<PackageArchiveModel>,
-        sortMode: Int = sharedPreferences.getInt("apk_sort", R.id.action_sort_apk_file_mod_date_desc)
+        data: List<PackageArchiveModel>, sortMode: Int = sharedPreferences.getInt(
+            "apk_sort", R.id.action_sort_apk_file_mod_date_desc
+        )
     ): List<PackageArchiveModel> {
         return data.sortedWith(apkSortMap[sortMode]!!)
     }
@@ -185,9 +189,11 @@ class SettingsManager(context: Context) {
             AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(
                 AppCompatDelegate.MODE_NIGHT_YES
             )
+
             AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(
                 AppCompatDelegate.MODE_NIGHT_NO
             )
+
             else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
     }

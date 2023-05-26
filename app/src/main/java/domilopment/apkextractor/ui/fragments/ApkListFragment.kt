@@ -30,7 +30,7 @@ import androidx.recyclerview.widget.RecyclerView
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.databinding.FragmentApkListBinding
-import domilopment.apkextractor.ui.ApkOptionsBottomSheet
+import domilopment.apkextractor.ui.dialogs.ApkOptionsBottomSheet
 import domilopment.apkextractor.ui.apkList.ApkListAdapter
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.utils.FileUtil
