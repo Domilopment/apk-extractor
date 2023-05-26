@@ -3,8 +3,8 @@ package domilopment.apkextractor.installApk
 import android.content.pm.PackageInstaller
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import domilopment.apkextractor.R
-import domilopment.apkextractor.ui.ApkOptionsBottomSheet
-import domilopment.apkextractor.ui.ProgressDialogFragment
+import domilopment.apkextractor.ui.dialogs.ApkOptionsBottomSheet
+import domilopment.apkextractor.ui.dialogs.ProgressDialogFragment
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 
