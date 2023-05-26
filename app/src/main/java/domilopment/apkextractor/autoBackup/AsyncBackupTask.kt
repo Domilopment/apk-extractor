@@ -18,7 +18,7 @@ import domilopment.apkextractor.ui.MainActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.*
 import java.io.FileNotFoundException
 

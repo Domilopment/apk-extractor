@@ -27,6 +27,7 @@ import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.*
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
+import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.launch
 
 class AppOptionsBottomSheet : BottomSheetDialogFragment() {

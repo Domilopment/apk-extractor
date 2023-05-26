@@ -34,7 +34,8 @@ import domilopment.apkextractor.ui.dialogs.ApkOptionsBottomSheet
 import domilopment.apkextractor.ui.apkList.ApkListAdapter
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.settings.ApkSortOptions
+import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -243,13 +244,20 @@ class ApkListFragment : Fragment() {
                 when (menuItem.itemId) {
                     R.id.action_show_save_dir -> selectApk.launch(arrayOf(FileUtil.MIME_TYPE))
                     android.R.id.home -> requireActivity().onBackPressedDispatcher.onBackPressed()
-                    R.id.action_sort_apk_file_name_asc, R.id.action_sort_apk_file_size_asc, R.id.action_sort_apk_file_mod_date_asc, R.id.action_sort_apk_file_name_desc, R.id.action_sort_apk_file_size_desc, R.id.action_sort_apk_file_mod_date_desc -> {
-                        PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
-                            .putInt("apk_sort", menuItem.itemId).commit()
-                        model.sort(menuItem.itemId)
-                    }
+                    R.id.action_sort_apk_file_name_asc -> sortItemSelected(ApkSortOptions.SORT_BY_FILE_NAME_ASC)
+                    R.id.action_sort_apk_file_size_asc -> sortItemSelected(ApkSortOptions.SORT_BY_FILE_SIZE_ASC)
+                    R.id.action_sort_apk_file_mod_date_asc -> sortItemSelected(ApkSortOptions.SORT_BY_LAST_MODIFIED_ASC)
+                    R.id.action_sort_apk_file_name_desc -> sortItemSelected(ApkSortOptions.SORT_BY_FILE_NAME_DESC)
+                    R.id.action_sort_apk_file_size_desc -> sortItemSelected(ApkSortOptions.SORT_BY_FILE_SIZE_DESC)
+                    R.id.action_sort_apk_file_mod_date_desc -> sortItemSelected(ApkSortOptions.SORT_BY_LAST_MODIFIED_DESC)
                 }
                 return true
+            }
+
+            private fun sortItemSelected(sortMode: ApkSortOptions) {
+                PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+                    .putString("apk_sort", sortMode.name).commit()
+                model.sort(sortMode)
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }

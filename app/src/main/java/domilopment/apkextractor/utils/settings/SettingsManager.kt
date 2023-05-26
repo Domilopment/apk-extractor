@@ -1,4 +1,4 @@
-package domilopment.apkextractor.utils
+package domilopment.apkextractor.utils.settings
 
 import android.app.Application
 import android.content.Context
@@ -7,10 +7,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
-import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.utils.FileUtil
+import domilopment.apkextractor.utils.ListOfApps
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
@@ -22,24 +23,6 @@ import java.util.*
 class SettingsManager(context: Context) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val packageManager = context.packageManager
-
-    private val apkSortMap = mapOf(
-        R.id.action_sort_apk_file_name_asc to compareBy(PackageArchiveModel::fileName),
-        R.id.action_sort_apk_file_name_desc to compareByDescending(PackageArchiveModel::fileName),
-        R.id.action_sort_apk_file_size_asc to compareBy(PackageArchiveModel::fileSize),
-        R.id.action_sort_apk_file_size_desc to compareByDescending(PackageArchiveModel::fileSize),
-        R.id.action_sort_apk_file_mod_date_asc to compareBy(PackageArchiveModel::fileLastModified),
-        R.id.action_sort_apk_file_mod_date_desc to compareByDescending(PackageArchiveModel::fileLastModified)
-    )
-
-    companion object {
-        // Sort types for App List
-        const val SORT_BY_NAME = 0
-        const val SORT_BY_PACKAGE = 1
-        const val SORT_BY_INSTALL_TIME = 2
-        const val SORT_BY_UPDATE_TIME = 3
-        const val SORT_BY_APK_SIZE = 4
-    }
 
     fun getApps(): Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>> {
         val apks = ListOfApps(packageManager)
@@ -85,39 +68,10 @@ class SettingsManager(context: Context) {
      */
     fun sortAppData(
         data: List<ApplicationModel>,
-        sortMode: Int = sharedPreferences.getInt("app_sort", SORT_BY_NAME),
+        sortMode: Int = sharedPreferences.getInt("app_sort", AppSortOptions.SORT_BY_NAME.ordinal),
         sortFavorites: Boolean = sharedPreferences.getBoolean("sort_favorites", true)
     ): List<ApplicationModel> {
-        val comparator = if (sharedPreferences.getBoolean("app_sort_asc", true)) when (sortMode) {
-            SORT_BY_NAME -> compareBy(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
-            SORT_BY_PACKAGE -> compareBy(
-                String.CASE_INSENSITIVE_ORDER, ApplicationModel::appPackageName
-            )
-
-            SORT_BY_INSTALL_TIME -> compareBy(ApplicationModel::appInstallTime)
-            SORT_BY_UPDATE_TIME -> compareBy(ApplicationModel::appUpdateTime)
-            SORT_BY_APK_SIZE -> compareBy(ApplicationModel::apkSize)
-            else -> {
-                sharedPreferences.edit().remove("app_sort").apply()
-                compareBy(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
-            }
-        } else when (sortMode) {
-            SORT_BY_NAME -> compareByDescending(
-                String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName
-            )
-
-            SORT_BY_PACKAGE -> compareByDescending(
-                String.CASE_INSENSITIVE_ORDER, ApplicationModel::appPackageName
-            )
-
-            SORT_BY_INSTALL_TIME -> compareByDescending(ApplicationModel::appInstallTime)
-            SORT_BY_UPDATE_TIME -> compareByDescending(ApplicationModel::appUpdateTime)
-            SORT_BY_APK_SIZE -> compareByDescending(ApplicationModel::apkSize)
-            else -> {
-                sharedPreferences.edit().remove("app_sort").apply()
-                compareByDescending(String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName)
-            }
-        }
+        val comparator =  AppSortOptions[sortMode].comparator(sharedPreferences.getBoolean("app_sort_asc", true))
         val sortedList = data.sortedWith(comparator)
         return if (sortFavorites) sortFavorites(sortedList) else sortedList
     }
@@ -128,11 +82,11 @@ class SettingsManager(context: Context) {
      * @return Sorted List of APKs
      */
     fun sortApkData(
-        data: List<PackageArchiveModel>, sortMode: Int = sharedPreferences.getInt(
-            "apk_sort", R.id.action_sort_apk_file_mod_date_desc
-        )
+        data: List<PackageArchiveModel>,
+        sortMode: ApkSortOptions = ApkSortOptions.SORT_BY_FILE_SIZE_DESC
     ): List<PackageArchiveModel> {
-        return data.sortedWith(apkSortMap[sortMode]!!)
+        val pref = sharedPreferences.getString("apk_sort", sortMode.name)
+        return data.sortedWith(ApkSortOptions[pref].comparator)
     }
 
     /**
@@ -148,7 +102,6 @@ class SettingsManager(context: Context) {
     /**
      * Filter Apps out of List
      * @param data List of Apps
-     * @param filter Filter options for list, is favorite, installed from- google play, galaxy store, amazon store
      * @return filtered list of Applications
      */
     fun filterApps(data: List<ApplicationModel>): List<ApplicationModel> {

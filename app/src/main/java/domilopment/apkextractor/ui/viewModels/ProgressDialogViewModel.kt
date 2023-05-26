@@ -17,7 +17,7 @@ import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.installApk.InstallBroadcastReceiver
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

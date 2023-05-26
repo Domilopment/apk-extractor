@@ -3,6 +3,7 @@ package domilopment.apkextractor.utils
 import android.content.Context
 import android.provider.DocumentsContract
 import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.utils.settings.SettingsManager
 
 class ListOfAPKs(private val context: Context) {
     /**

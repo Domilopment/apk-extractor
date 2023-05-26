@@ -6,6 +6,7 @@ import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.settings.SettingsManager
 import java.io.*
 
 class FileUtil(private val context: Context) {

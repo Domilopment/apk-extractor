@@ -2,7 +2,7 @@ package domilopment.apkextractor
 
 import android.app.Application
 import android.content.res.Configuration
-import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.settings.SettingsManager
 
 class ApkExtractorApplication: Application() {
     private lateinit var settingsManager: SettingsManager

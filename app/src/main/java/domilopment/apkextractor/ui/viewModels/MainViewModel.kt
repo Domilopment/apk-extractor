@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import domilopment.apkextractor.UpdateTrigger
 import domilopment.apkextractor.data.*
-import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

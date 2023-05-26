@@ -10,7 +10,7 @@
     <item
         android:icon="@drawable/baseline_sort_24"
         android:orderInCategory="1"
-        android:title="@string/menu_sort_app_apk_size"
+        android:title="@string/menu_sort_apk"
         app:showAsAction="ifRoom">
         <menu>
             <item

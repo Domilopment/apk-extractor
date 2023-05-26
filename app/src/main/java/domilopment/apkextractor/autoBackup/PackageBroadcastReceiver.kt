@@ -7,7 +7,7 @@ import android.provider.DocumentsContract
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.autoBackup.AsyncBackupTask.Companion.ACTION_DELETE_APK
-import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.settings.SettingsManager
 
 class PackageBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

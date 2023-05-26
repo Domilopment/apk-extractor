@@ -10,7 +10,8 @@ import domilopment.apkextractor.data.ApkListFragmentUIState
 import domilopment.apkextractor.data.ApkOptionsBottomSheetUIState
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.utils.ListOfAPKs
-import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.settings.ApkSortOptions
+import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -116,15 +117,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.async(Dispatchers.IO) { apk.forceRefresh(context) }
     }
 
-    /**
-     * Load apps from device
-     */
-    private suspend fun loadApks(): List<PackageArchiveModel> = withContext(Dispatchers.IO) {
-        // Do an asynchronous operation to fetch users.
-        return@withContext ListOfAPKs(context).apkFiles()
-    }
-
-    fun sort(sortPreferenceId: Int) {
+    fun sort(sortPreferenceId: ApkSortOptions) {
         loadArchiveInfoJob?.cancel(CancellationException("New sort order"))
 
         _apkListFragmentState.update { state ->
@@ -144,5 +137,13 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
                 it.loadPackageArchiveInfo(context)
             }
         }
+    }
+
+    /**
+     * Load apps from device
+     */
+    private suspend fun loadApks(): List<PackageArchiveModel> = withContext(Dispatchers.IO) {
+        // Do an asynchronous operation to fetch users.
+        return@withContext ListOfAPKs(context).apkFiles()
     }
 }

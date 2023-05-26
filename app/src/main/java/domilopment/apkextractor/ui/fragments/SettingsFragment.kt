@@ -37,8 +37,9 @@ import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreference
 import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreferenceDialogFragmentCompat
 import domilopment.apkextractor.ui.viewModels.MainViewModel
-import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.settings.SettingsManager
 import domilopment.apkextractor.utils.Utils
+import domilopment.apkextractor.utils.settings.AppSortOptions
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -241,7 +242,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                                 selectUpdatedSystemApps = true,
                                 selectSystemApps = false,
                                 selectUserApps = true,
-                            ), sortMode = SettingsManager.SORT_BY_NAME, sortFavorites = false
+                            ), sortMode = AppSortOptions.SORT_BY_NAME.ordinal, sortFavorites = false
                         ).forEach {
                             appEntries.add(it.appName)
                             appValues.add(it.appPackageName)

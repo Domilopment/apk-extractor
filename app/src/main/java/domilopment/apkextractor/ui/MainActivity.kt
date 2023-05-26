@@ -15,7 +15,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.databinding.ActivityMainBinding
 import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.settings.SettingsManager
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

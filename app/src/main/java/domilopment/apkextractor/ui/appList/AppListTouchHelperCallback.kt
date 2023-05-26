@@ -15,7 +15,7 @@ import com.google.android.material.textview.MaterialTextView
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.fragments.MainFragment
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
-import domilopment.apkextractor.utils.SettingsManager
+import domilopment.apkextractor.utils.settings.SettingsManager
 import domilopment.apkextractor.utils.Utils
 
 class AppListTouchHelperCallback(
