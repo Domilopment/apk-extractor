@@ -77,15 +77,24 @@ class FileUtil(private val context: Context) {
      * @return true if document exist else false
      */
     fun doesDocumentExist(uri: Uri): Boolean {
-        val documentId =
-            if (DocumentsContract.isDocumentUri(context, uri)) DocumentsContract.getDocumentId(
+        val documentUri = if (DocumentsContract.isTreeUri(uri)) {
+            val documentId = if (DocumentsContract.isDocumentUri(
+                    context, uri
+                )
+            ) DocumentsContract.getDocumentId(
                 uri
             ) else DocumentsContract.getTreeDocumentId(uri)
+            DocumentsContract.buildDocumentUriUsingTree(
+                uri, documentId
+            )
+        } else uri
         return try {
             context.contentResolver.query(
-                DocumentsContract.buildDocumentUriUsingTree(
-                    uri, documentId
-                ), arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID), null, null, null
+                documentUri,
+                arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID),
+                null,
+                null,
+                null
             )?.use { cursor -> cursor.count > 0 } ?: false
         } catch (e: Exception) {
             false

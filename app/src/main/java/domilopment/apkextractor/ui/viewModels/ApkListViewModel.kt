@@ -54,7 +54,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
             }
             viewModelScope.async(Dispatchers.IO) {
                 apps.forEach {
-                    it.loadPackageArchiveInfo()
+                    it.loadPackageArchiveInfo(context)
                 }
             }
         }
@@ -66,7 +66,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
      * @param app selected application
      */
     fun selectPackageArchive(app: PackageArchiveModel?) {
-        if (app?.isPackageArchiveInfoLoaded == false) app.loadPackageArchiveInfo()
+        if (app?.isPackageArchiveInfoLoaded == false) app.loadPackageArchiveInfo(context)
         _apkOptionsBottomSheetState.update { state ->
             state.copy(
                 packageArchiveModel = app
@@ -107,7 +107,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun forceRefresh(apk: PackageArchiveModel) {
-        viewModelScope.async(Dispatchers.IO) { apk.forceRefresh() }
+        viewModelScope.async(Dispatchers.IO) { apk.forceRefresh(context) }
     }
 
     /**

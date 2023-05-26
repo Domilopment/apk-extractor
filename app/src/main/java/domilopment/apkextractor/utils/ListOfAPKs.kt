@@ -1,34 +1,62 @@
 package domilopment.apkextractor.utils
 
 import android.content.Context
-import androidx.documentfile.provider.DocumentFile
+import android.provider.DocumentsContract
 import domilopment.apkextractor.data.PackageArchiveModel
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 
 class ListOfAPKs(private val context: Context) {
     /**
      * Update Installed APK lists
      */
-    suspend fun apkFiles(): List<PackageArchiveModel> = coroutineScope {
-        val jobList = ArrayList<Deferred<PackageArchiveModel>>()
+    fun apkFiles(): List<PackageArchiveModel> {
+        val packageArchiveModels = mutableListOf<PackageArchiveModel>()
 
-        SettingsManager(context).saveDir()?.let {
-            val dir = DocumentFile.fromTreeUri(context, it)
-            if (dir != null && dir.exists() && dir.isDirectory) dir else null
-        }?.listFiles()?.filter {
-            it.type == FileUtil.MIME_TYPE
-        }?.forEach { documentFile: DocumentFile ->
-            jobList.add(async(Dispatchers.IO) {
-                PackageArchiveModel(
-                    context.packageManager, context.contentResolver, context.cacheDir, documentFile
-                )
-            })
+        SettingsManager(context).saveDir()?.let { uri ->
+            val documentUri = DocumentsContract.getTreeDocumentId(uri)?.let { documentId ->
+                DocumentsContract.buildDocumentUriUsingTree(uri, documentId)
+            }
+            return@let if (!DocumentsContract.isTreeUri(documentUri)) null
+            else DocumentsContract.buildChildDocumentsUriUsingTree(
+                documentUri, DocumentsContract.getDocumentId(documentUri)
+            )
+        }?.also { childrenUri ->
+            context.contentResolver.query(
+                childrenUri, arrayOf(
+                    DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+                    DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                    DocumentsContract.Document.COLUMN_LAST_MODIFIED,
+                    DocumentsContract.Document.COLUMN_SIZE,
+                    DocumentsContract.Document.COLUMN_MIME_TYPE
+                ), null, null, null
+            )?.use { cursor ->
+                val documentIdIndex =
+                    cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DOCUMENT_ID)
+                val displayNameIndex =
+                    cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
+                val lastModifiedIndex =
+                    cursor.getColumnIndex(DocumentsContract.Document.COLUMN_LAST_MODIFIED)
+                val sizeIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_SIZE)
+                val mimeTypeIndex =
+                    cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
 
+                while (cursor.moveToNext()) {
+                    val documentId = cursor.getString(documentIdIndex)
+                    val displayName = cursor.getString(displayNameIndex)
+                    val lastModified = cursor.getLong(lastModifiedIndex)
+                    val size = cursor.getLong(sizeIndex)
+                    val mimeType = cursor.getString(mimeTypeIndex)
+
+                    val documentUri =
+                        DocumentsContract.buildDocumentUriUsingTree(childrenUri, documentId)
+
+                    if (mimeType == FileUtil.MIME_TYPE) packageArchiveModels.add(
+                        PackageArchiveModel(
+                            documentUri, displayName, lastModified, size
+                        )
+                    )
+                }
+            }
         }
-        return@coroutineScope jobList.awaitAll()
+        return packageArchiveModels
     }
 }

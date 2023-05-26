@@ -1,6 +1,6 @@
 package domilopment.apkextractor.data
 
-import android.content.ContentResolver
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -8,21 +8,17 @@ import android.os.Build
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import androidx.databinding.library.baseAdapters.BR
-import androidx.documentfile.provider.DocumentFile
 import domilopment.apkextractor.utils.Utils
 import java.io.File
 import java.io.IOException
 
 data class PackageArchiveModel(
-    private val packageManager: PackageManager,
-    private val contentResolver: ContentResolver,
-    private val cacheDir: File,
-    private val documentFile: DocumentFile,
+    val fileUri: Uri,
+    val fileName: String?,
+    val fileLastModified: Long,
+    private val fileSizeLong: Long,
 ) : BaseObservable() {
-    val fileUri: Uri = documentFile.uri
-    val fileName: String? = documentFile.name
-    val fileLastModified: Long = documentFile.lastModified()
-    val fileSize: Float = documentFile.length() / (1000.0F * 1000.0F)
+    val fileSize = fileSizeLong / (1000.0F * 1000.0F)
 
     @get:Bindable
     var isPackageArchiveInfoLoaded = false
@@ -73,17 +69,17 @@ data class PackageArchiveModel(
             notifyPropertyChanged(BR.appVersionCode)
         }
 
-    fun exist() = documentFile.exists()
-
-    fun loadPackageArchiveInfo() {
+    fun loadPackageArchiveInfo(context: Context) {
         if (isPackageArchiveInfoLoaded || isPackageArchiveInfoLoading) return
         isPackageArchiveInfoLoading = true
 
+        val packageManager: PackageManager = context.packageManager
+
         var apkFile: File? = null
         try {
-            apkFile = File.createTempFile("temp", ".apk", cacheDir)
-            contentResolver.openInputStream(documentFile.uri).use { input ->
-                if (input?.copyTo(apkFile.outputStream()) == documentFile.length()) {
+            apkFile = File.createTempFile("temp", ".apk", context.cacheDir)
+            context.contentResolver.openInputStream(fileUri).use { input ->
+                if (input?.copyTo(apkFile.outputStream()) == fileSizeLong) {
                     val archiveInfo =
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) packageManager.getPackageArchiveInfo(
                             apkFile.path, PackageManager.PackageInfoFlags.of(0L)
@@ -108,8 +104,8 @@ data class PackageArchiveModel(
         }
     }
 
-    fun forceRefresh() {
+    fun forceRefresh(context: Context) {
         isPackageArchiveInfoLoaded = false
-        loadPackageArchiveInfo()
+        loadPackageArchiveInfo(context)
     }
 }

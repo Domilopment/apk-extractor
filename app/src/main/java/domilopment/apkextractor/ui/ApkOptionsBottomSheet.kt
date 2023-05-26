@@ -97,7 +97,7 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
     override fun onStart() {
         super.onStart()
         // Set or Update Application Info
-        if (!apk.exist()) {
+        if (!FileUtil(requireContext()).doesDocumentExist(apk.fileUri)) {
             model.remove(apk)
             dismiss()
         }
