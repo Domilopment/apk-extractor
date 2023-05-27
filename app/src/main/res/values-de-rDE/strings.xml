@@ -121,7 +121,7 @@
     <!-- Menu ApkListFragment -->
     <string name="menu_sort_apk">Sortieren nach…</string>
     <string name="menu_sort_apk_file_name_asc">Dateiname (A bis Z)</string>
-    <string name="menu_sort_apk_file_name_desc">Datein (Z bis A)</string>
+    <string name="menu_sort_apk_file_name_desc">Dateiname (Z bis A)</string>
     <string name="menu_sort_apk_file_size_asc">Größe (kleinste zuerst)</string>
     <string name="menu_sort_apk_file_size_desc">Größe (größte zuerst)</string>
     <string name="menu_sort_apk_file_mod_date_asc">Änderungszeitpunkt (älteste zuerst)</string>
