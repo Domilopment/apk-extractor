@@ -6,6 +6,7 @@
     <string name="apk_action_delete">Delete</string>
     <string name="apk_action_delete_success">APK deleted</string>
     <string name="apk_action_delete_failed">APK deletion failed</string>
+    <string name="apk_action_uninstall_app">Uninstall app</string>
 
     <string name="title_activity_settings">Settings</string>
 

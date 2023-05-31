@@ -2,6 +2,7 @@ package domilopment.apkextractor.ui.dialogs
 
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -17,10 +19,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import domilopment.apkextractor.R
+import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.databinding.ApkOptionsBottomSheetBinding
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
+import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.*
 import kotlinx.coroutines.launch
 
@@ -35,19 +39,18 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (uninstallAppPackageName.isNullOrBlank()) return@registerForActivityResult
+            if (apk.appPackageName.isNullOrBlank()) return@registerForActivityResult
 
             val isAppUninstalled =
-                !Utils.isPackageInstalled(requireContext().packageManager, uninstallAppPackageName)
+                !Utils.isPackageInstalled(requireContext().packageManager, apk.appPackageName!!)
             if (isAppUninstalled) {
-                // TODO: implement uninstall before restore old apk
+                appListModel.removeApp(apk.appPackageName!!)
+                binding.actionUninstallApp.isVisible = false
             }
         }
 
-    private val uninstallAppPackageName: String? = null
-
     private val model by activityViewModels<ApkListViewModel>()
-
+    private val appListModel by activityViewModels<MainViewModel>()
     private val progressDialogViewModel by activityViewModels<ProgressDialogViewModel>()
 
     companion object {
@@ -146,5 +149,13 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
                 ), Toast.LENGTH_SHORT
             )
         }.show()
+    }
+
+    fun uninstallApp(apk: PackageArchiveModel) {
+        uninstallApp.launch(
+            Intent(
+                Intent.ACTION_DELETE, Uri.fromParts("package", apk.appPackageName, null)
+            )
+        )
     }
 }

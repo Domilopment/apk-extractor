@@ -116,6 +116,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
+     * Remove app from app list, for example on uninstall
+     * @param appPackageName
+     * uninstalled apps package name
+     */
+    fun removeApp(appPackageName: String) {
+        _applications.value = _applications.value?.let { apps ->
+            val userApps = apps.third.filter { it.appPackageName != appPackageName }
+            return@let Triple(apps.first, apps.second, userApps)
+        }
+    }
+
+    /**
      * Moves app from updated system apps list, and moves it to system apps, for example on uninstall
      * @param app
      * uninstalled app

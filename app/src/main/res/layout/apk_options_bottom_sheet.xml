@@ -219,6 +219,15 @@
                 android:onClick="@{() -> bottomSheet.deleteApk(apk)}"
                 android:text="@string/alert_apk_selected_delete"
                 app:chipIcon="@drawable/ic_baseline_delete_24" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/action_uninstall_app"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> bottomSheet.uninstallApp(apk)}"
+                android:text="@string/apk_action_uninstall_app"
+                android:visibility="@{apk.appPackageName != null ? Utils.INSTANCE.isPackageInstalled(context.packageManager, apk.appPackageName) ? View.VISIBLE : View.GONE : View.GONE}"
+                app:chipIcon="@drawable/baseline_clear_24" />
         </com.google.android.material.chip.ChipGroup>
 
     </LinearLayout>
