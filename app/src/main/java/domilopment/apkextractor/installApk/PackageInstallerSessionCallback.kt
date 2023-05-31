@@ -1,7 +1,6 @@
 package domilopment.apkextractor.installApk
 
 import android.content.pm.PackageInstaller
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.dialogs.ApkOptionsBottomSheet
 import domilopment.apkextractor.ui.dialogs.ProgressDialogFragment
@@ -46,26 +45,6 @@ class PackageInstallerSessionCallback(
 
         packageInstaller.unregisterSessionCallback(this)
         progressDialogViewModel.resetProgress()
-        MaterialAlertDialogBuilder(apkListFragment.requireContext()).apply {
-            if (success) {
-                setMessage(
-                    apkListFragment.getString(
-                        R.string.installation_result_dialog_success_message, packageName
-                    )
-                )
-                setTitle(R.string.installation_result_dialog_success_title)
-                model.updatePackageArchives()
-            } else {
-                setMessage(
-                    apkListFragment.getString(
-                        R.string.installation_result_dialog_failed_message, packageName
-                    )
-                )
-                setTitle(R.string.installation_result_dialog_failed_title)
-            }
-            setPositiveButton(R.string.installation_result_dialog_ok) { alert, _ ->
-                alert.dismiss()
-            }
-        }.show()
+        if (success) model.updatePackageArchives()
     }
 }

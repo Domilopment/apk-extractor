@@ -62,13 +62,6 @@
             </intent-filter>
         </receiver>
 
-        <!--
-        <receiver
-            android:name=".installApk.InstallBroadcastReceiver"
-            android:enabled="true"
-            android:exported="false" />
-        -->
-
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

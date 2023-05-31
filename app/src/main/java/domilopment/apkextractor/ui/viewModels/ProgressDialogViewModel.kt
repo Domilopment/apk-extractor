@@ -14,8 +14,8 @@ import domilopment.apkextractor.Event
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.data.ProgressDialogUiState
-import domilopment.apkextractor.installApk.InstallBroadcastReceiver
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
+import domilopment.apkextractor.ui.MainActivity
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.Deferred
@@ -176,8 +176,10 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
                             session.fsync(outputStream)
                         }
 
-                    val pendingIntent = Intent(context, InstallBroadcastReceiver::class.java).let {
-                        PendingIntent.getBroadcast(
+                    val pendingIntent = Intent(context, MainActivity::class.java).apply {
+                        action = MainActivity.PACKAGE_INSTALLATION_ACTION
+                    }.let {
+                        PendingIntent.getActivity(
                             context, sessionId, it, PendingIntent.FLAG_MUTABLE
                         )
                     }

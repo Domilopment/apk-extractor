@@ -214,10 +214,10 @@
     <string name="progress_dialog_title_install">Installiere APK</string>
 
     <!-- Installation Result Dialog -->
-    <string name="installation_result_dialog_success_title">Installation Erfolgreich</string>
+    <string name="installation_result_dialog_success_title">Installation Erfolgreich!</string>
     <string name="installation_result_dialog_success_message">Installation von %s war erfolgreich</string>
-    <string name="installation_result_dialog_failed_title">Installation Fehlgeschlagen</string>
-    <string name="installation_result_dialog_failed_message">Installation von %s ist Fehlgeschlagen, versuche die aktuell installierte version zu deinstallieren und versuche es erneut.</string>
+    <string name="installation_result_dialog_failed_title">Installation Fehlgeschlagen!</string>
+    <string name="installation_result_dialog_failed_message">Installation von %s ist Fehlgeschlagen, mit nachricht:\n%s\n\nVersuche die aktuell installierte version zu deinstallieren und versuche es erneut.</string>
     <string name="installation_result_dialog_ok">OK</string>
 
     <!-- Action Mode -->

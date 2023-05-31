@@ -220,10 +220,10 @@
     <string name="progress_dialog_title_placeholder" translatable="false">Progress Dialog</string>
 
     <!-- Installation Result Dialog -->
-    <string name="installation_result_dialog_success_title">Installation Succeeded</string>
+    <string name="installation_result_dialog_success_title">Installation Succeeded!</string>
     <string name="installation_result_dialog_success_message">Installation of %s succeeded</string>
-    <string name="installation_result_dialog_failed_title">Installation Failed</string>
-    <string name="installation_result_dialog_failed_message">Installation of %s failed, try to uninstall current installed version and try it again.</string>
+    <string name="installation_result_dialog_failed_title">Installation Failed!</string>
+    <string name="installation_result_dialog_failed_message">Installation of %s failed, with message:\n%s\n\nTry to uninstall current installed version and run it again.</string>
     <string name="installation_result_dialog_ok">OK</string>
 
     <!-- Action Mode -->

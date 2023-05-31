@@ -64,7 +64,7 @@ class FileUtil(private val context: Context) {
      */
     fun shareURI(app: ApplicationModel): Uri {
         return FileProvider.getUriForFile(
-            context, BuildConfig.APPLICATION_ID + ".provider", File(app.appSourceDirectory).copyTo(
+            context, "${BuildConfig.APPLICATION_ID}.provider", File(app.appSourceDirectory).copyTo(
                 File(
                     context.cacheDir, SettingsManager(context).appName(app)
                 ), true
