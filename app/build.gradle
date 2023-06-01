@@ -10,8 +10,8 @@ android {
         applicationId "domilopment.apkextractor"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 60
-        versionName "1.15.2"
+        versionCode 61
+        versionName "1.15.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
