@@ -19,10 +19,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.databinding.ApkOptionsBottomSheetBinding
+import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.*
@@ -127,12 +127,11 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
         }, getString(R.string.share_intent_title)))
     }
 
-    fun installApk(apk: PackageArchiveModel) {/*
+    fun installApk(apk: PackageArchiveModel) {
         progressDialogViewModel.installApk(
             apk.fileUri,
             PackageInstallerSessionCallback(this, model, progressDialogViewModel)
         )
-         */
     }
 
     fun deleteApk(apk: PackageArchiveModel) {
