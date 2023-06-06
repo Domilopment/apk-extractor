@@ -10,6 +10,7 @@ import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.ListOfApps
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
@@ -36,10 +37,14 @@ class SettingsManager(context: Context) {
     fun selectedAppTypes(
         applications: Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>,
         selectUpdatedSystemApps: Boolean = sharedPreferences.getBoolean(
-            "updated_system_apps", false
+            Constants.PREFERENCE_KEY_UPDATED_SYSTEM_APPS, false
         ),
-        selectSystemApps: Boolean = sharedPreferences.getBoolean("system_apps", false),
-        selectUserApps: Boolean = sharedPreferences.getBoolean("user_apps", true),
+        selectSystemApps: Boolean = sharedPreferences.getBoolean(
+            Constants.PREFERENCE_KEY_SYSTEM_APPS, false
+        ),
+        selectUserApps: Boolean = sharedPreferences.getBoolean(
+            Constants.PREFERENCE_KEY_USER_APPS, true
+        ),
     ): List<ApplicationModel> {
         val (updatedSystemApps, systemApps, userApps) = applications
         val mData: MutableList<ApplicationModel> = mutableListOf()
@@ -49,8 +54,9 @@ class SettingsManager(context: Context) {
         }
         if (selectUserApps) mData.addAll(userApps)
         mData.forEach {
-            it.isFavorite =
-                it.appPackageName in sharedPreferences.getStringSet("favorites", setOf())!!
+            it.isFavorite = it.appPackageName in sharedPreferences.getStringSet(
+                Constants.PREFERENCE_KEY_FAVORITES, setOf()
+            )!!
         }
         return mData
     }
@@ -59,7 +65,8 @@ class SettingsManager(context: Context) {
      * Gives back in SharedPreferences Saved Directory Path
      * @return Saved Directory Path
      */
-    fun saveDir(): Uri? = sharedPreferences.getString("dir", null)?.let { Uri.parse(it) }
+    fun saveDir(): Uri? =
+        sharedPreferences.getString(Constants.PREFERENCE_KEY_SAVE_DIR, null)?.let { Uri.parse(it) }
 
     /**
      * Sorts Data by user selected Order
@@ -67,11 +74,17 @@ class SettingsManager(context: Context) {
      * @return Sorted List of Apps
      */
     fun sortAppData(
-        data: List<ApplicationModel>,
-        sortMode: Int = sharedPreferences.getInt("app_sort", AppSortOptions.SORT_BY_NAME.ordinal),
-        sortFavorites: Boolean = sharedPreferences.getBoolean("sort_favorites", true)
+        data: List<ApplicationModel>, sortMode: Int = sharedPreferences.getInt(
+            Constants.PREFERENCE_KEY_APP_SORT, AppSortOptions.SORT_BY_NAME.ordinal
+        ), sortFavorites: Boolean = sharedPreferences.getBoolean(
+            Constants.PREFERENCE_KEY_SORT_FAVORITES, true
+        )
     ): List<ApplicationModel> {
-        val comparator =  AppSortOptions[sortMode].comparator(sharedPreferences.getBoolean("app_sort_asc", true))
+        val comparator = AppSortOptions[sortMode].comparator(
+            sharedPreferences.getBoolean(
+                Constants.PREFERENCE_KEY_APP_SORT_ASC, true
+            )
+        )
         val sortedList = data.sortedWith(comparator)
         return if (sortFavorites) sortFavorites(sortedList) else sortedList
     }
@@ -95,7 +108,9 @@ class SettingsManager(context: Context) {
      */
     private fun sortFavorites(data: List<ApplicationModel>): List<ApplicationModel> {
         return data.sortedBy { app ->
-            app.appPackageName !in sharedPreferences.getStringSet("favorites", setOf())!!
+            app.appPackageName !in sharedPreferences.getStringSet(
+                Constants.PREFERENCE_KEY_FAVORITES, setOf()
+            )!!
         }
     }
 
@@ -105,28 +120,22 @@ class SettingsManager(context: Context) {
      * @return filtered list of Applications
      */
     fun filterApps(data: List<ApplicationModel>): List<ApplicationModel> {
-        return filterApps(
-            data, AppFilterInstaller.values(), "filter_installer"
-        ).let {
-            filterApps(it, AppFilterCategories.values(), "filter_category")
-        }.let {
-            filterApps(it, AppFilterOthers.values(), "filter_others")
-        }
-    }
+        val filter = mutableSetOf<AppFilter>()
+        sharedPreferences.getString(Constants.PREFERENCE_KEY_FILTER_INSTALLER, null)
+            ?.let { filter.add(AppFilterInstaller.valueOf(it)) }
+        sharedPreferences.getString(Constants.PREFERENCE_KEY_FILTER_CATEGORY, null)
+            ?.let { filter.add(AppFilterCategories.valueOf(it)) }
+        sharedPreferences.getStringSet(Constants.PREFERENCE_KEY_FILTER_OTHERS, null)
+            ?.map { AppFilterOthers.valueOf(it) }?.let { filter.addAll(it) }
 
-    private fun <T : AppFilter> filterApps(
-        data: List<ApplicationModel>, appFilterInstaller: Array<T>, preferenceKey: String
-    ): List<ApplicationModel> {
-        val filter = sharedPreferences.getStringSet(preferenceKey, setOf())
-        if (filter.isNullOrEmpty()) return data
+        if (filter.isEmpty()) return data
 
-        val dataFiltered = mutableSetOf<ApplicationModel>()
-        filter.forEach { action ->
-            appFilterInstaller.firstOrNull { it.name == action }?.let {
-                dataFiltered.addAll(it.getFilter(data))
-            }
+        var dataFiltered = data
+        filter.forEach {
+            dataFiltered = it.getFilter(dataFiltered)
         }
-        return dataFiltered.toList()
+
+        return dataFiltered
     }
 
     /**
@@ -260,9 +269,11 @@ class SettingsManager(context: Context) {
      */
     fun editFavorites(packageName: String, isFavorite: Boolean) {
         val favorites: MutableSet<String> =
-            sharedPreferences.getStringSet("favorites", setOf())!!.toMutableSet()
+            sharedPreferences.getStringSet(Constants.PREFERENCE_KEY_FAVORITES, setOf())!!
+                .toMutableSet()
         if (isFavorite) favorites.add(packageName)
         else favorites.remove(packageName)
-        sharedPreferences.edit().putStringSet("favorites", favorites).commit()
+        sharedPreferences.edit().putStringSet(Constants.PREFERENCE_KEY_FAVORITES, favorites)
+            .commit()
     }
 }

@@ -37,6 +37,7 @@ import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreference
 import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreferenceDialogFragmentCompat
 import domilopment.apkextractor.ui.viewModels.MainViewModel
+import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.settings.SettingsManager
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.AppSortOptions
@@ -376,7 +377,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             )
         }
         PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
-            .putString("dir", uri.toString()).apply()
+            .putString(Constants.PREFERENCE_KEY_SAVE_DIR, uri.toString()).apply()
         contentResolver.takePersistableUriPermission(uri, takeFlags)
     }
 }

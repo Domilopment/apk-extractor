@@ -63,7 +63,9 @@
     <string name="sort_favorites">Sort Favorites on top</string>
 
     <string name="filter_title">Filter</string>
-    <string name="other_sources">Other installation sources</string>
+    <string name="all_sources">Any source</string>
+    <string name="other_sources">Other sources</string>
+    <string name="filter_category_all">All categories</string>
     <string name="filter_category_undefined">Undefined</string>
     <string name="filter_category_games">Games</string>
     <string name="filter_category_audio">Audio</string>
@@ -74,7 +76,7 @@
     <string name="filter_category_maps">Maps</string>
     <string name="filter_category_productivity">Productivity</string>
     <string name="installation_sources">Installation Source</string>
-    <string name="app_categories">App Categories</string>
+    <string name="app_categories">Category</string>
     <string name="other_filter">Other Filter</string>
 
     <string name="ignore_battery_optimization_title">Disable Battery Optimization</string>

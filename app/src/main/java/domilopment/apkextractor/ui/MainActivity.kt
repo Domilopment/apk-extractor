@@ -17,6 +17,7 @@ import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.databinding.ActivityMainBinding
+import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.SettingsManager
 
@@ -140,7 +141,7 @@ class MainActivity : AppCompatActivity() {
      * @return Have to ask user for Save Dir
      */
     private fun mustAskForSaveDir(): Boolean {
-        if (!sharedPreferences.contains("dir")) return true
+        if (!sharedPreferences.contains(Constants.PREFERENCE_KEY_SAVE_DIR)) return true
 
         val path = SettingsManager(this).saveDir()
         return path == null || checkUriPermission(
@@ -163,7 +164,7 @@ class MainActivity : AppCompatActivity() {
                 oldPath, takeFlags
             )
         }
-        sharedPreferences.edit().putString("dir", uri.toString()).apply()
+        sharedPreferences.edit().putString(Constants.PREFERENCE_KEY_SAVE_DIR, uri.toString()).apply()
         contentResolver.takePersistableUriPermission(uri, takeFlags)
     }
 

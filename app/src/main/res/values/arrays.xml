@@ -1,12 +1,4 @@
 <resources>
-    <string-array name="sort_apps">
-        <item>@string/menu_sort_app_name</item>
-        <item>@string/menu_sort_app_package</item>
-        <item>@string/menu_sort_app_install</item>
-        <item>@string/menu_sort_app_update</item>
-        <item>@string/menu_sort_app_apk_size</item>
-    </string-array>
-
     <string-array name="ui_mode_names">
         <item>@string/ui_follow_os</item>
         <item>@string/ui_white</item>
@@ -45,14 +37,6 @@
         <item>default</item>
         <item>en</item>
         <item>de-DE</item>
-    </string-array>
-
-    <string-array name="selected_apk_options">
-        <item>@string/alert_apk_selected_share</item>
-        <!--
-        <item>@string/alert_apk_selected_install</item>
-        -->
-        <item>@string/alert_apk_selected_delete</item>
     </string-array>
 
     <string-array name="apk_swipe_options_entries">

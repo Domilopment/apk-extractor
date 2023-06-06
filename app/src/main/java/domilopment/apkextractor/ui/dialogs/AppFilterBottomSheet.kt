@@ -3,25 +3,26 @@ package domilopment.apkextractor.ui.dialogs
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import androidx.core.view.isVisible
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.preference.PreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import domilopment.apkextractor.R
 import domilopment.apkextractor.databinding.AppFilterBottomSheetBinding
-import domilopment.apkextractor.databinding.FilterChipBinding
 import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.*
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterInstaller
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterOthers
+import domilopment.apkextractor.utils.settings.AppSortOptions
 
 class AppFilterBottomSheet : BottomSheetDialogFragment() {
     private var _binding: AppFilterBottomSheetBinding? = null
@@ -67,18 +68,20 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
 
         binding.updatedSystemApps.apply {
             maxLines = 2
-            isChecked = sharedPreferences.getBoolean("updated_system_apps", false)
+            isChecked =
+                sharedPreferences.getBoolean(Constants.PREFERENCE_KEY_UPDATED_SYSTEM_APPS, false)
         }
 
         binding.systemApps.apply {
             maxLines = 2
-            isEnabled = sharedPreferences.getBoolean("updated_system_apps", false)
-            isChecked = sharedPreferences.getBoolean("system_apps", false)
+            isEnabled =
+                sharedPreferences.getBoolean(Constants.PREFERENCE_KEY_UPDATED_SYSTEM_APPS, false)
+            isChecked = sharedPreferences.getBoolean(Constants.PREFERENCE_KEY_SYSTEM_APPS, false)
         }
 
         binding.userApps.apply {
             maxLines = 2
-            isChecked = sharedPreferences.getBoolean("user_apps", true)
+            isChecked = sharedPreferences.getBoolean(Constants.PREFERENCE_KEY_USER_APPS, true)
         }
 
         binding.appType.addOnButtonCheckedListener { _, checkedId, isChecked ->
@@ -86,11 +89,11 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
             val preferenceKey: String = when (checkedId) {
                 R.id.updated_system_apps -> {
                     binding.systemApps.isEnabled = isChecked
-                    "updated_system_apps"
+                    Constants.PREFERENCE_KEY_UPDATED_SYSTEM_APPS
                 }
 
-                R.id.system_apps -> "system_apps"
-                R.id.user_apps -> "user_apps"
+                R.id.system_apps -> Constants.PREFERENCE_KEY_SYSTEM_APPS
+                R.id.user_apps -> Constants.PREFERENCE_KEY_USER_APPS
                 else -> return@addOnButtonCheckedListener
             }
             sharedPreferences.edit().putBoolean(preferenceKey, isChecked).apply()
@@ -98,70 +101,79 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.sortOrder.apply {
-            isChecked = sharedPreferences.getBoolean("app_sort_asc", true)
+            isChecked = sharedPreferences.getBoolean(Constants.PREFERENCE_KEY_APP_SORT_ASC, true)
             setOnCheckedChangeListener { _, isChecked ->
-                sharedPreferences.edit().putBoolean("app_sort_asc", isChecked).apply()
+                sharedPreferences.edit()
+                    .putBoolean(Constants.PREFERENCE_KEY_APP_SORT_ASC, isChecked).apply()
                 model.sortApps()
             }
         }
 
-        ArrayAdapter.createFromResource(
-            requireContext(), R.array.sort_apps, android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.sort.adapter = adapter
-        }
-        binding.sort.setSelection(sharedPreferences.getInt("app_sort", 0))
-        binding.sort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) {
-                sharedPreferences.edit().putInt("app_sort", position).apply()
-                model.sortApps()
-            }
+        (binding.sort.getChildAt(
+            sharedPreferences.getInt(
+                Constants.PREFERENCE_KEY_APP_SORT, 0
+            )
+        ) as MaterialButton).isChecked = true
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                parent?.setSelection(sharedPreferences.getInt("app_sort", 0))
-            }
+        binding.sort.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
 
+            when (checkedId) {
+                R.id.sort_app_name -> sharedPreferences.edit()
+                    .putInt(Constants.PREFERENCE_KEY_APP_SORT, AppSortOptions.SORT_BY_NAME.ordinal)
+                    .apply()
+
+                R.id.sort_app_package -> sharedPreferences.edit().putInt(
+                        Constants.PREFERENCE_KEY_APP_SORT, AppSortOptions.SORT_BY_PACKAGE.ordinal
+                    ).apply()
+
+                R.id.sort_app_install -> sharedPreferences.edit().putInt(
+                        Constants.PREFERENCE_KEY_APP_SORT,
+                        AppSortOptions.SORT_BY_INSTALL_TIME.ordinal
+                    ).apply()
+
+                R.id.sort_app_update -> sharedPreferences.edit().putInt(
+                        Constants.PREFERENCE_KEY_APP_SORT,
+                        AppSortOptions.SORT_BY_UPDATE_TIME.ordinal
+                    ).apply()
+
+                R.id.sort_app_apk_size -> sharedPreferences.edit().putInt(
+                        Constants.PREFERENCE_KEY_APP_SORT, AppSortOptions.SORT_BY_APK_SIZE.ordinal
+                    ).apply()
+            }
+            model.sortApps()
         }
 
         binding.sortFavorites.apply {
-            isChecked = sharedPreferences.getBoolean("sort_favorites", true)
+            isChecked = sharedPreferences.getBoolean(Constants.PREFERENCE_KEY_SORT_FAVORITES, true)
             setOnCheckedChangeListener { _, isChecked ->
-                sharedPreferences.edit().putBoolean("sort_favorites", isChecked).apply()
+                sharedPreferences.edit()
+                    .putBoolean(Constants.PREFERENCE_KEY_SORT_FAVORITES, isChecked).apply()
                 model.sortFavorites()
             }
         }
 
-        binding.filterFavorites.apply {
-            setupFilterChip(this, AppFilterOthers.FAVORITES, "filter_others")
-        }
+        setupFilterMenuChip(
+            binding.filterAppCategories,
+            AppFilterCategories.values(),
+            Constants.PREFERENCE_KEY_FILTER_CATEGORY,
+            R.string.app_categories,
+            R.string.filter_category_all
+        )
 
-        binding.filterPlayStore.apply {
-            setupStoreFilterChip(this, "com.android.vending", AppFilterInstaller.GOOGLE)
-        }
+        setupFilterMenuChip(
+            binding.filterAppInstallationSources,
+            AppFilterInstaller.values(),
+            Constants.PREFERENCE_KEY_FILTER_INSTALLER,
+            R.string.installation_sources,
+            R.string.all_sources
+        )
 
-        binding.filterGalaxyStore.apply {
-            setupStoreFilterChip(
-                this, "com.sec.android.app.samsungapps", AppFilterInstaller.SAMSUNG
-            )
-        }
-
-        binding.filterAmazonStore.apply {
-            setupStoreFilterChip(this, "com.amazon.venezia", AppFilterInstaller.AMAZON)
-        }
-
-        binding.filterOtherStore.apply {
-            setupFilterChip(this, AppFilterInstaller.OTHERS, "filter_installer")
-        }
-
-        AppFilterCategories.values().forEach {
-            binding.filterAppCategory.addView(FilterChipBinding.inflate(layoutInflater).root.apply {
-                text = it.getTitleString(requireContext())
-                setupFilterChip(this, it, "filter_category")
-            })
-        }
+        setupFilterChip(
+            binding.filterFavorites,
+            AppFilterOthers.FAVORITES,
+            Constants.PREFERENCE_KEY_FILTER_OTHERS
+        )
     }
 
     override fun onDestroyView() {
@@ -172,9 +184,11 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
     /**
      * Setup filter Chip
      * @param chip chip to setup
-     * @param filterOptions filter option integer for Chip
+     * @param filterOptions filter option Enum for Chip
+     * @param preferenceKey key of preference, selection is saved in
      */
     private fun setupFilterChip(chip: Chip, filterOptions: AppFilter, preferenceKey: String) {
+        chip.text = filterOptions.getTitleString(requireContext())
         chip.isChecked =
             sharedPreferences.getStringSet(preferenceKey, setOf())?.contains(filterOptions.name)
                 ?: false
@@ -187,21 +201,58 @@ class AppFilterBottomSheet : BottomSheetDialogFragment() {
     }
 
     /**
-     * Setup filter Chip, for Store filter options
+     * Setup Menu filter Chip
      * @param chip chip to setup
-     * @param packageName Package name of store
-     * @param filterOptions filter option integer for Store
+     * @param filterOptions filter option enums for Chip
+     * @param preferenceKey key of preference, selection is saved in
+     * @param menuTitleRes title of menu if no (neutral) Item is selected
+     * @param neutralMenuOptionTitleRes title of option, when no filter should be applied
      */
-    private fun setupStoreFilterChip(
-        chip: Chip, packageName: String, filterOptions: AppFilterInstaller
+    private fun <T : AppFilter> setupFilterMenuChip(
+        chip: Chip,
+        filterOptions: Array<T>,
+        preferenceKey: String,
+        menuTitleRes: Int,
+        neutralMenuOptionTitleRes: Int
     ) {
-        packageName.runCatching {
-            Utils.getPackageInfo(requireContext().packageManager, this)
-        }.onSuccess {
-            chip.isVisible = true
-            chip.text =
-                requireContext().packageManager.getApplicationLabel(it.applicationInfo).toString()
-            setupFilterChip(chip, filterOptions, "filter_installer")
+        val menu = PopupMenu(requireContext(), chip)
+        menu.menu.add(Menu.NONE, -1, Menu.NONE, neutralMenuOptionTitleRes)
+        filterOptions.forEach {
+            val title = it.getTitleString(requireContext())
+            if (title != null) {
+                menu.menu.add(Menu.NONE, it.ordinal, Menu.NONE, title)
+                if (sharedPreferences.getString(preferenceKey, null) == it.name) {
+                    chip.isChecked = true
+                    chip.text = title
+                }
+            }
+        }
+        menu.setOnMenuItemClickListener {
+            if (it.itemId == -1) {
+                chip.isChecked = false
+                chip.text = getString(menuTitleRes)
+                sharedPreferences.edit().remove(preferenceKey).apply()
+            } else {
+                val filter = filterOptions[it.itemId]
+                chip.isChecked = true
+                chip.text = filter.getTitleString(requireContext())
+                sharedPreferences.edit().putString(preferenceKey, filter.name).apply()
+            }
+            model.filterApps()
+            return@setOnMenuItemClickListener true
+        }
+        menu.setOnDismissListener {
+            chip.closeIcon = ContextCompat.getDrawable(
+                requireContext(), R.drawable.baseline_arrow_drop_down_24
+            )
+        }
+
+        chip.setOnClickListener {
+            chip.isChecked = !chip.isChecked
+            chip.closeIcon = ContextCompat.getDrawable(
+                requireContext(), R.drawable.baseline_arrow_drop_up_24
+            )
+            menu.show()
         }
     }
 }

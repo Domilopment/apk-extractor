@@ -18,7 +18,7 @@ enum class AppFilterCategories(
     MAPS(ApplicationInfo.CATEGORY_MAPS, R.string.filter_category_maps),
     PRODUCTIVITY(ApplicationInfo.CATEGORY_PRODUCTIVITY, R.string.filter_category_productivity);
 
-    fun getTitleString(context: Context): String {
+    override fun getTitleString(context: Context): String {
         return context.getString(nameStrResId)
     }
 
