@@ -16,7 +16,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -25,6 +24,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import domilopment.apkextractor.R
@@ -160,14 +160,6 @@ class ApkListFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            title = getString(R.string.menu_show_save_dir)
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -250,6 +242,8 @@ class ApkListFragment : Fragment() {
                     R.id.action_sort_apk_file_name_desc -> sortItemSelected(ApkSortOptions.SORT_BY_FILE_NAME_DESC)
                     R.id.action_sort_apk_file_size_desc -> sortItemSelected(ApkSortOptions.SORT_BY_FILE_SIZE_DESC)
                     R.id.action_sort_apk_file_mod_date_desc -> sortItemSelected(ApkSortOptions.SORT_BY_LAST_MODIFIED_DESC)
+                    R.id.action_settings -> requireActivity().findNavController(R.id.fragment)
+                        .navigate(R.id.action_mainFragment_to_settingsFragment)
                 }
                 return true
             }

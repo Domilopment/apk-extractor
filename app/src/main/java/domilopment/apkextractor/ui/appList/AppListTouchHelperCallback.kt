@@ -13,13 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textview.MaterialTextView
 import domilopment.apkextractor.R
-import domilopment.apkextractor.ui.fragments.MainFragment
+import domilopment.apkextractor.ui.fragments.AppListFragment
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.settings.SettingsManager
 import domilopment.apkextractor.utils.Utils
 
 class AppListTouchHelperCallback(
-    private val mainFragment: MainFragment,
+    private val appListFragment: AppListFragment,
     private val swipeCallback: (viewHolder: RecyclerView.ViewHolder, apkAction: ApkActionsOptions) -> Unit,
 ) : ItemTouchHelper.SimpleCallback(
     0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -29,7 +29,7 @@ class AppListTouchHelperCallback(
     private var apkActionsOptions: ApkActionsOptions? = null
 
     init {
-        val layoutInflater = LayoutInflater.from(mainFragment.requireContext())
+        val layoutInflater = LayoutInflater.from(appListFragment.requireContext())
 
         swipeRightLayout = layoutInflater.inflate(R.layout.app_list_item_swipe_right, null, false)
         swipeLeftLayout = layoutInflater.inflate(R.layout.app_list_item_swipe_left, null, false)
@@ -48,7 +48,7 @@ class AppListTouchHelperCallback(
     override fun getSwipeDirs(
         recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder
     ): Int {
-        val settingsManager = SettingsManager(mainFragment.requireContext())
+        val settingsManager = SettingsManager(appListFragment.requireContext())
         val leftSwipeAction = settingsManager.getLeftSwipeAction()
         val rightSwipeAction = settingsManager.getRightSwipeAction()
         val app =
@@ -87,7 +87,7 @@ class AppListTouchHelperCallback(
     ) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && isCurrentlyActive) {
             val itemView = viewHolder.itemView
-            val settingsManager = SettingsManager(mainFragment.requireContext())
+            val settingsManager = SettingsManager(appListFragment.requireContext())
 
             val swipeLayout: View
             val icon: Drawable?
@@ -96,16 +96,16 @@ class AppListTouchHelperCallback(
                 swipeLayout = swipeRightLayout
                 apkActionsOptions = settingsManager.getRightSwipeAction() ?: ApkActionsOptions.SAVE
                 icon = AppCompatResources.getDrawable(
-                    mainFragment.requireContext(), apkActionsOptions!!.icon
+                    appListFragment.requireContext(), apkActionsOptions!!.icon
                 )
-                text = mainFragment.resources.getText(apkActionsOptions!!.title).toString()
+                text = appListFragment.resources.getText(apkActionsOptions!!.title).toString()
             } else {
                 swipeLayout = swipeLeftLayout
                 apkActionsOptions = settingsManager.getLeftSwipeAction() ?: ApkActionsOptions.SHARE
                 icon = AppCompatResources.getDrawable(
-                    mainFragment.requireContext(), apkActionsOptions!!.icon
+                    appListFragment.requireContext(), apkActionsOptions!!.icon
                 )
-                text = mainFragment.resources.getText(apkActionsOptions!!.title).toString()
+                text = appListFragment.resources.getText(apkActionsOptions!!.title).toString()
             }
 
             val imageView = swipeLayout.findViewById<ShapeableImageView>(R.id.swipeImageView)

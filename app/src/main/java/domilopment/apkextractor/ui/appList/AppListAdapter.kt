@@ -14,12 +14,12 @@ import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.AppListItemBinding
-import domilopment.apkextractor.ui.fragments.MainFragment
+import domilopment.apkextractor.ui.fragments.AppListFragment
 import domilopment.apkextractor.utils.Utils
 import java.util.*
 
 class AppListAdapter(
-    private val mainFragment: MainFragment
+    private val appListFragment: AppListFragment
 ) : RecyclerView.Adapter<AppListAdapter.MyViewHolder>(), Filterable {
     // Static Dataset for Smoother transition
     private var myDataset = listOf<ApplicationModel>()
@@ -35,10 +35,10 @@ class AppListAdapter(
     }
 
     private val textColorHighlight = MaterialColors.getColor(
-        mainFragment.requireContext(), android.R.attr.textColorHighlight, Color.CYAN
+        appListFragment.requireContext(), android.R.attr.textColorHighlight, Color.CYAN
     )
 
-    val actionModeCallback = AppListMultiselectCallback(mainFragment, this)
+    val actionModeCallback = AppListMultiselectCallback(appListFragment, this)
 
     init {
         setHasStableIds(true)
@@ -74,7 +74,7 @@ class AppListAdapter(
         holder.binding.apply {
             try {
                 firstLine.text = Utils.getSpannable(
-                    mainFragment.getString(
+                    appListFragment.getString(
                         R.string.holder_app_name, app.appName, app.apkSize
                     ), searchString, textColorHighlight
                 )
@@ -83,15 +83,15 @@ class AppListAdapter(
                 icon.setImageDrawable(app.appIcon)
             } catch (_: PackageManager.NameNotFoundException) {
                 root.isVisible = false
-                mainFragment.removeApplication(app)
+                appListFragment.removeApplication(app)
             }
             setChecked(this, app.isChecked)
             favoriteStar.isVisible = app.isFavorite
             // ItemView on Click
             root.setOnClickListener {
                 if (!actionModeCallback.isActionModeActive()) {
-                    mainFragment.selectApplication(app)
-                    mainFragment.requireActivity().supportFragmentManager.let {
+                    appListFragment.selectApplication(app)
+                    appListFragment.requireActivity().supportFragmentManager.let {
                         AppOptionsBottomSheet.newInstance(app.appPackageName).apply {
                             show(it, AppOptionsBottomSheet.TAG)
                         }
@@ -107,7 +107,7 @@ class AppListAdapter(
                 if (!actionModeCallback.isActionModeActive()) {
                     setChecked(this, true)
                     app.isChecked = true
-                    mainFragment.startSupportActionMode(true)
+                    appListFragment.startSupportActionMode(true)
                     true
                 } else false
             }

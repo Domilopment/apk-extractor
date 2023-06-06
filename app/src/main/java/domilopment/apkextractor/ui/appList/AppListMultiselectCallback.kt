@@ -7,11 +7,10 @@ import android.widget.CheckBox
 import androidx.appcompat.view.ActionMode
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import domilopment.apkextractor.R
-import domilopment.apkextractor.ui.fragments.MainFragment
+import domilopment.apkextractor.ui.fragments.AppListFragment
 
 class AppListMultiselectCallback(
-    private val mainFragment: MainFragment,
-    private val appListAdapter: AppListAdapter
+    private val appListFragment: AppListFragment, private val appListAdapter: AppListAdapter
 ) : ActionMode.Callback {
     private var mode: ActionMode? = null
 
@@ -28,9 +27,10 @@ class AppListMultiselectCallback(
                 buttonView.isChecked = false
             }
         }
-        mainFragment.enableRefresh(false)
-        mainFragment.attachSwipeHelper(false)
-        mainFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_EXPANDED)
+        appListFragment.enableNavigation(false)
+        appListFragment.enableRefresh(false)
+        appListFragment.attachSwipeHelper(false)
+        appListFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_EXPANDED)
         return true
     }
 
@@ -55,13 +55,14 @@ class AppListMultiselectCallback(
         appListAdapter.myDatasetFiltered.forEach {
             it.isChecked = false
         }
-        mainFragment.enableRefresh(true)
-        mainFragment.attachSwipeHelper(true)
-        mainFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_COLLAPSED)
-        mainFragment.showSearchView()
+        appListFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_COLLAPSED)
+        appListFragment.attachSwipeHelper(true)
+        appListFragment.enableRefresh(true)
+        appListFragment.enableNavigation(true)
+        appListFragment.showSearchView()
         this.mode = null
         appListAdapter.notifyDataSetChanged()
-        mainFragment.startSupportActionMode(false)
+        appListFragment.startSupportActionMode(false)
     }
 
     /**
@@ -73,6 +74,6 @@ class AppListMultiselectCallback(
         itemCount: Int = appListAdapter.myDatasetFiltered.filter { it.isChecked }.size,
         mode: ActionMode? = this.mode
     ) {
-        mode?.title = mainFragment.getString(R.string.action_mode_title, itemCount)
+        mode?.title = appListFragment.getString(R.string.action_mode_title, itemCount)
     }
 }

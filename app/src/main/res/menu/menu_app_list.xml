@@ -15,15 +15,9 @@
         android:title="@string/filter_title"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_show_save_dir"
-        android:icon="@drawable/ic_baseline_folder_24"
-        android:orderInCategory="2"
-        android:title="@string/menu_show_save_dir"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_baseline_settings_24"
-        android:orderInCategory="3"
+        android:orderInCategory="2"
         android:title="@string/action_settings"
         app:showAsAction="ifRoom" />
 </menu>

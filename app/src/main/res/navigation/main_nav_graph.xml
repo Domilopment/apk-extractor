@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/appListFragment">
+
+    <fragment
+        android:id="@+id/appListFragment"
+        android:name="domilopment.apkextractor.ui.fragments.AppListFragment"
+        android:label="MainFragment"
+        tools:layout="@layout/fragment_app_list" />
+
+    <fragment
+        android:id="@+id/apkListFragment"
+        android:name="domilopment.apkextractor.ui.fragments.ApkListFragment"
+        android:label="ApkListFragment"
+        tools:layout="@layout/fragment_apk_list" />
+</navigation>

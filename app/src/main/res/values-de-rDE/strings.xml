@@ -114,6 +114,7 @@
     <string name="menu_sort_app_apk_size">APK größe</string>
     <string name="menu_show_save_dir">Gespeicherte APKs</string>
     <string name="action_settings">Einstellungen</string>
+    <string name="menu_show_app_list">Installierte Apps</string>
 
     <string name="sort_order_asc">ASC</string>
     <string name="sort_order_desc">DESC</string>

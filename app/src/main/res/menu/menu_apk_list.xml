@@ -45,4 +45,10 @@
         android:orderInCategory="2"
         android:title="@string/menu_show_open_documents"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:orderInCategory="3"
+        android:title="@string/action_settings"
+        app:showAsAction="ifRoom" />
 </menu>
