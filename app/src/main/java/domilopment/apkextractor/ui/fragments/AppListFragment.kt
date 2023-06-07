@@ -392,12 +392,4 @@ class AppListFragment : Fragment() {
     fun selectApplication(app: ApplicationModel) {
         model.selectApplication(app)
     }
-
-    /**
-     * Remove Application from AppList
-     * @param app ApplicationModel of app to be removed
-     */
-    fun removeApplication(app: ApplicationModel) {
-        model.removeApp(app)
-    }
 }

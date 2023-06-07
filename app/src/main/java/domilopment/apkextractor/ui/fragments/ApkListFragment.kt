@@ -68,28 +68,7 @@ class ApkListFragment : Fragment() {
             }
         }) {
             it?.let { apkUri ->
-                requireContext().contentResolver.query(
-                    apkUri, arrayOf(
-                        DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                        DocumentsContract.Document.COLUMN_LAST_MODIFIED,
-                        DocumentsContract.Document.COLUMN_SIZE
-                    ), null, null, null
-                )?.use { cursor ->
-                    val nameIndex =
-                        cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
-                    val lastModifiedIndex =
-                        cursor.getColumnIndex(DocumentsContract.Document.COLUMN_LAST_MODIFIED)
-                    val sizeIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_SIZE)
-
-                    if (cursor.moveToFirst()) {
-                        val name = cursor.getString(nameIndex)
-                        val lastModified = cursor.getLong(lastModifiedIndex)
-                        val size = cursor.getLong(sizeIndex)
-
-                        return@let PackageArchiveModel(apkUri, name, lastModified, size)
-                    }
-                }
-                return@let null
+                FileUtil(requireContext()).getDocumentInfo(apkUri)
             }?.also { apk ->
                 model.selectPackageArchive(apk)
                 ApkOptionsBottomSheet.newInstance()

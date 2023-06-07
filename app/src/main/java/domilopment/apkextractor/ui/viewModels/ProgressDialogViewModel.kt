@@ -10,12 +10,15 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import domilopment.apkextractor.Event
+import domilopment.apkextractor.SingleTimeEvent
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.ui.MainActivity
+import domilopment.apkextractor.utils.eventHandler.Event
+import domilopment.apkextractor.utils.eventHandler.EventDispatcher
+import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.Deferred
@@ -35,13 +38,14 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
         MutableStateFlow(ProgressDialogUiState())
     val progressDialogState: StateFlow<ProgressDialogUiState> = _progressDialogState.asStateFlow()
 
-    private val _extractionResult: MutableLiveData<Event<Triple<Boolean?, ApplicationModel?, Int>>> =
+    private val _extractionResult: MutableLiveData<SingleTimeEvent<Triple<Boolean?, ApplicationModel?, Int>>> =
         MutableLiveData(null)
-    val extractionResult: LiveData<Event<Triple<Boolean?, ApplicationModel?, Int>>> =
+    val extractionResult: LiveData<SingleTimeEvent<Triple<Boolean?, ApplicationModel?, Int>>> =
         _extractionResult
 
-    private val _shareResult: MutableLiveData<Event<ArrayList<Uri>?>> = MutableLiveData(null)
-    val shareResult: LiveData<Event<ArrayList<Uri>?>> = _shareResult
+    private val _shareResult: MutableLiveData<SingleTimeEvent<ArrayList<Uri>?>> =
+        MutableLiveData(null)
+    val shareResult: LiveData<SingleTimeEvent<ArrayList<Uri>?>> = _shareResult
 
     private val context get() = getApplication<Application>().applicationContext
 
@@ -75,11 +79,13 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
                         }
                     }
                     withContext(Dispatchers.IO) {
-                        failure = fileUtil.copy(
+                        val newFile = fileUtil.copy(
                             app.appSourceDirectory,
                             settingsManager.saveDir()!!,
                             settingsManager.appName(app)
-                        ) == null
+                        )
+                        if (newFile == null) failure = true
+                        else EventDispatcher.emitEvent(Event(EventType.SAVED, newFile))
                     }
                     withContext(Dispatchers.Main) {
                         _progressDialogState.update { state ->
@@ -94,7 +100,7 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
                 }
             }
             job.join()
-            _extractionResult.value = Event(Triple(failure, application, list.size))
+            _extractionResult.value = SingleTimeEvent(Triple(failure, application, list.size))
         }
     }
 
@@ -135,7 +141,7 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
                 })
             }
             jobList.awaitAll()
-            _shareResult.value = Event(files)
+            _shareResult.value = SingleTimeEvent(files)
         }
     }
 

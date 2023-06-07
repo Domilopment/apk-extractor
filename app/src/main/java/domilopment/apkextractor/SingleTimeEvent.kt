@@ -3,7 +3,7 @@ package domilopment.apkextractor
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event
  */
-open class Event<out T>(private val content: T) {
+open class SingleTimeEvent<out T>(private val content: T) {
     var hasBeenHandaled = false
         private set
 

@@ -24,8 +24,10 @@ import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.databinding.ApkOptionsBottomSheetBinding
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
-import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.*
+import domilopment.apkextractor.utils.eventHandler.Event
+import domilopment.apkextractor.utils.eventHandler.EventDispatcher
+import domilopment.apkextractor.utils.eventHandler.EventType
 import kotlinx.coroutines.launch
 
 class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
@@ -44,13 +46,12 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
             val isAppUninstalled =
                 !Utils.isPackageInstalled(requireContext().packageManager, apk.appPackageName!!)
             if (isAppUninstalled) {
-                appListModel.removeApp(apk.appPackageName!!)
+                EventDispatcher.emitEvent(Event(EventType.UNINSTALLED, apk.appPackageName))
                 binding.actionUninstallApp.isVisible = false
             }
         }
 
     private val model by activityViewModels<ApkListViewModel>()
-    private val appListModel by activityViewModels<MainViewModel>()
     private val progressDialogViewModel by activityViewModels<ProgressDialogViewModel>()
 
     companion object {
@@ -129,8 +130,7 @@ class ApkOptionsBottomSheet : BottomSheetDialogFragment() {
 
     fun installApk(apk: PackageArchiveModel) {
         progressDialogViewModel.installApk(
-            apk.fileUri,
-            PackageInstallerSessionCallback(this, model, progressDialogViewModel)
+            apk.fileUri, PackageInstallerSessionCallback(this, progressDialogViewModel)
         )
     }
 

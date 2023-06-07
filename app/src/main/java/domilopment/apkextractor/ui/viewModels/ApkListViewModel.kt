@@ -1,14 +1,20 @@
 package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import domilopment.apkextractor.UpdateTrigger
 import domilopment.apkextractor.data.ApkListFragmentUIState
 import domilopment.apkextractor.data.ApkOptionsBottomSheetUIState
 import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.utils.eventHandler.Event
+import domilopment.apkextractor.utils.eventHandler.EventDispatcher
+import domilopment.apkextractor.utils.eventHandler.EventType
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.ListOfAPKs
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import domilopment.apkextractor.utils.settings.SettingsManager
@@ -22,8 +28,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.CancellationException
+import domilopment.apkextractor.utils.eventHandler.Observer
 
-class ApkListViewModel(application: Application) : AndroidViewModel(application) {
+class ApkListViewModel(application: Application) : AndroidViewModel(application), Observer {
+    override val key: String = "ApkListViewModel"
+
     private val _packageArchives: MutableLiveData<List<PackageArchiveModel>> by lazy {
         MutableLiveData<List<PackageArchiveModel>>().also {
             viewModelScope.launch {
@@ -50,20 +59,37 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
 
     private var loadArchiveInfoJob: Deferred<Unit>? = null
 
+    private val observer = Observer<List<PackageArchiveModel>> { apps ->
+        val sortedApps = SettingsManager(context).sortApkData(apps)
+        _apkListFragmentState.update { state ->
+            state.copy(
+                appList = sortedApps, isRefreshing = false, updateTrigger = UpdateTrigger(true)
+            )
+        }
+        loadArchiveInfoJob = viewModelScope.async(Dispatchers.IO) {
+            sortedApps.forEach {
+                it.loadPackageArchiveInfo(context)
+            }
+        }
+    }
+
     init {
         // Set applications in view once they are loaded
-        _packageArchives.observeForever { apps ->
-            val sortedApps = SettingsManager(context).sortApkData(apps)
-            _apkListFragmentState.update { state ->
-                state.copy(
-                    appList = sortedApps, isRefreshing = false, updateTrigger = UpdateTrigger(true)
-                )
-            }
-            loadArchiveInfoJob = viewModelScope.async(Dispatchers.IO) {
-                sortedApps.forEach {
-                    it.loadPackageArchiveInfo(context)
-                }
-            }
+        _packageArchives.observeForever(observer)
+        EventDispatcher.registerObserver(this, EventType.SAVED, EventType.DELETED)
+    }
+
+    override fun onCleared() {
+        EventDispatcher.unregisterObserver(this, EventType.ANY)
+        _packageArchives.removeObserver(observer)
+        super.onCleared()
+    }
+
+    override fun onEventReceived(event: Event<*>) {
+        when (event.eventType) {
+            EventType.SAVED -> addPackageArchiveModel(event.data as Uri)
+            EventType.DELETED -> remove(event.data as PackageArchiveModel)
+            else -> return
         }
     }
 
@@ -103,6 +129,12 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
             val apps = load.await()
             _packageArchives.postValue(apps)
         }
+    }
+
+    private fun addPackageArchiveModel(uri: Uri) {
+        val packages = _packageArchives.value?.toMutableList() ?: return
+        FileUtil(context).getDocumentInfo(uri)?.let { packages.add(it) }
+        _packageArchives.value = packages
     }
 
     fun remove(apk: PackageArchiveModel) {

@@ -4,12 +4,13 @@ import android.content.pm.PackageInstaller
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.dialogs.ApkOptionsBottomSheet
 import domilopment.apkextractor.ui.dialogs.ProgressDialogFragment
-import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
+import domilopment.apkextractor.utils.eventHandler.Event
+import domilopment.apkextractor.utils.eventHandler.EventDispatcher
+import domilopment.apkextractor.utils.eventHandler.EventType
 
 class PackageInstallerSessionCallback(
     private val apkListFragment: ApkOptionsBottomSheet,
-    private val model: ApkListViewModel,
     private val progressDialogViewModel: ProgressDialogViewModel
 ) : PackageInstaller.SessionCallback() {
     private val packageInstaller =
@@ -19,6 +20,7 @@ class PackageInstallerSessionCallback(
 
     override fun onCreated(sessionId: Int) {
         if (sessionId != initialSessionId) return
+        packageName = packageInstaller.getSessionInfo(sessionId)?.appPackageName
 
         val progressDialog =
             ProgressDialogFragment.newInstance(R.string.progress_dialog_title_install)
@@ -45,6 +47,6 @@ class PackageInstallerSessionCallback(
 
         packageInstaller.unregisterSessionCallback(this)
         progressDialogViewModel.resetProgress()
-        if (success) model.updatePackageArchives()
+        if (success) EventDispatcher.emitEvent(Event(EventType.INSTALLED, packageName))
     }
 }

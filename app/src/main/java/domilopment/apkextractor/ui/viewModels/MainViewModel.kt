@@ -4,6 +4,11 @@ import android.app.Application
 import androidx.lifecycle.*
 import domilopment.apkextractor.UpdateTrigger
 import domilopment.apkextractor.data.*
+import domilopment.apkextractor.utils.eventHandler.Event
+import domilopment.apkextractor.utils.eventHandler.EventDispatcher
+import domilopment.apkextractor.utils.eventHandler.EventType
+import domilopment.apkextractor.utils.eventHandler.Observer
+import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +16,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(application: Application) : AndroidViewModel(application), Observer {
+    override val key: String = "AppListViewModel"
+
     private val _applications: MutableLiveData<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> by lazy {
         MutableLiveData<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>>().also {
             viewModelScope.launch {
@@ -36,9 +43,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val context get() = getApplication<Application>().applicationContext
 
-    init {
-        // Set applications in view once they are loaded
-        _applications.observeForever { apps ->
+    private val observer =
+        Observer<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> { apps ->
             _mainFragmentState.update { state ->
                 val settingsManager = SettingsManager(context)
                 state.copy(
@@ -51,6 +57,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     ), isRefreshing = false, updateTrigger = UpdateTrigger(true)
                 )
             }
+        }
+
+    init {
+        // Set applications in view once they are loaded
+        _applications.observeForever(observer)
+        EventDispatcher.registerObserver(this, EventType.INSTALLED, EventType.UNINSTALLED)
+    }
+
+    override fun onCleared() {
+        EventDispatcher.unregisterObserver(this, EventType.ANY)
+        _applications.removeObserver(observer)
+        super.onCleared()
+    }
+
+    override fun onEventReceived(event: Event<*>) {
+        when (event.eventType) {
+            EventType.INSTALLED -> addApplication(event.data as String)
+            EventType.UNINSTALLED -> if (Utils.isPackageInstalled(
+                    context.packageManager, event.data as String
+                )
+            ) moveFromUpdatedToSystemApps(event.data) else removeApp(event.data)
+
+            else -> return
         }
     }
 
@@ -101,6 +130,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private fun addApplication(packageName: String) {
+        val apps = _applications.value ?: return
+
+        if ((apps.first + apps.third).any { it.appPackageName == packageName }) return
+
+        val updatedSystemApps = apps.first.toMutableList()
+        val systemApps = apps.second.toMutableList()
+        val userApps = apps.third.toMutableList()
+
+        systemApps.find { it.appPackageName == packageName }?.let {
+            updatedSystemApps.add(it)
+            systemApps.remove(it)
+        } ?: userApps.add(ApplicationModel(context.packageManager, packageName))
+
+        _applications.value = Triple(systemApps, updatedSystemApps, userApps)
+    }
+
     /**
      * Remove app from app list, for example on uninstall
      * @param app
@@ -120,7 +166,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param appPackageName
      * uninstalled apps package name
      */
-    fun removeApp(appPackageName: String) {
+    private fun removeApp(appPackageName: String) {
         _applications.value = _applications.value?.let { apps ->
             val userApps = apps.third.filter { it.appPackageName != appPackageName }
             return@let Triple(apps.first, apps.second, userApps)
@@ -138,6 +184,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val systemApps = if (updatedSystemApps.remove(app)) {
                 apps.second.toMutableList().apply {
                     add(app)
+                }
+            } else apps.second
+            return@let Triple(updatedSystemApps, systemApps, apps.third)
+        }
+    }
+
+    private fun moveFromUpdatedToSystemApps(packageName: String) {
+        _applications.value = _applications.value?.let { apps ->
+            val updatedSystemApps = apps.first.toMutableList()
+            val systemApps = if (updatedSystemApps.removeIf { it.appPackageName == packageName }) {
+                apps.second.toMutableList().apply {
+                    add(ApplicationModel(context.packageManager, packageName))
                 }
             } else apps.second
             return@let Triple(updatedSystemApps, systemApps, apps.third)

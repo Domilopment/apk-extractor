@@ -15,6 +15,9 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.AppListItemBinding
 import domilopment.apkextractor.ui.fragments.AppListFragment
+import domilopment.apkextractor.utils.eventHandler.Event
+import domilopment.apkextractor.utils.eventHandler.EventDispatcher
+import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.Utils
 import java.util.*
 
@@ -83,7 +86,7 @@ class AppListAdapter(
                 icon.setImageDrawable(app.appIcon)
             } catch (_: PackageManager.NameNotFoundException) {
                 root.isVisible = false
-                appListFragment.removeApplication(app)
+                EventDispatcher.emitEvent(Event(EventType.UNINSTALLED, app.appPackageName))
             }
             setChecked(this, app.isChecked)
             favoriteStar.isVisible = app.isFavorite

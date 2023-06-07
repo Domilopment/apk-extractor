@@ -17,6 +17,9 @@ import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.eventHandler.Event
+import domilopment.apkextractor.utils.eventHandler.EventType
+import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.SettingsManager
 import domilopment.apkextractor.utils.Utils
@@ -33,6 +36,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
         FileUtil(context).copy(
             app.appSourceDirectory, settingsManager.saveDir()!!, settingsManager.appName(app)
         )?.let {
+            EventDispatcher.emitEvent(Event(EventType.SAVED, it))
             Snackbar.make(
                 view,
                 context.getString(R.string.snackbar_successful_extracted, app.appName),

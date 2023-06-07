@@ -6,6 +6,7 @@ import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.utils.settings.SettingsManager
 import java.io.*
 
@@ -100,5 +101,34 @@ class FileUtil(private val context: Context) {
         } catch (e: Exception) {
             false
         }
+    }
+
+    /**
+     * Takes uri from Document file and queries file info
+     * @param uri Document file uri
+     * @return PackageArchiveModel with file info
+     */
+    fun getDocumentInfo(uri: Uri): PackageArchiveModel? {
+        context.contentResolver.query(
+            uri, arrayOf(
+                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                DocumentsContract.Document.COLUMN_LAST_MODIFIED,
+                DocumentsContract.Document.COLUMN_SIZE
+            ), null, null, null
+        )?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
+            val lastModifiedIndex =
+                cursor.getColumnIndex(DocumentsContract.Document.COLUMN_LAST_MODIFIED)
+            val sizeIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_SIZE)
+
+            if (cursor.moveToFirst()) {
+                val name = cursor.getString(nameIndex)
+                val lastModified = cursor.getLong(lastModifiedIndex)
+                val size = cursor.getLong(sizeIndex)
+
+                return PackageArchiveModel(uri, name, lastModified, size)
+            }
+        }
+        return null
     }
 }
