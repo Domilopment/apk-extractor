@@ -364,16 +364,27 @@ class AppListFragment : Fragment() {
 
     /**
      * Set State of Multiselect Bottom Sheet
-     * @param state
+     * @param show
      * State to apply
      */
-    fun stateBottomSheetBehaviour(state: Int) {
+    fun showBottomSheet(show: Boolean) {
         lifecycleScope.launch {
             if (::searchView.isInitialized && searchView.hasFocus()) {
                 searchView.clearFocus()
                 delay(100)
             }
-            BottomSheetBehavior.from(binding.appMultiselectBottomSheet.root).state = state
+            BottomSheetBehavior.from(binding.appMultiselectBottomSheet.root).state = if (show) {
+                val paddingBottom =
+                    requireContext().obtainStyledAttributes(intArrayOf(android.R.attr.listPreferredItemHeight))
+                binding.listView.list.setPadding(
+                    0, 0, 0, paddingBottom.getDimensionPixelOffset(0, 0)
+                )
+                paddingBottom.recycle()
+                BottomSheetBehavior.STATE_EXPANDED
+            } else {
+                binding.listView.list.setPadding(0, 0, 0, 0)
+                BottomSheetBehavior.STATE_COLLAPSED
+            }
         }
     }
 

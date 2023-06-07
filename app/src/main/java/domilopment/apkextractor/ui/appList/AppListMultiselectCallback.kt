@@ -30,7 +30,7 @@ class AppListMultiselectCallback(
         appListFragment.enableNavigation(false)
         appListFragment.enableRefresh(false)
         appListFragment.attachSwipeHelper(false)
-        appListFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_EXPANDED)
+        appListFragment.showBottomSheet(true)
         return true
     }
 
@@ -55,7 +55,7 @@ class AppListMultiselectCallback(
         appListAdapter.myDatasetFiltered.forEach {
             it.isChecked = false
         }
-        appListFragment.stateBottomSheetBehaviour(BottomSheetBehavior.STATE_COLLAPSED)
+        appListFragment.showBottomSheet(false)
         appListFragment.attachSwipeHelper(true)
         appListFragment.enableRefresh(true)
         appListFragment.enableNavigation(true)
