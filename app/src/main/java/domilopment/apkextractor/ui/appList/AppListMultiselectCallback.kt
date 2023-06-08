@@ -5,7 +5,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.CheckBox
 import androidx.appcompat.view.ActionMode
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.fragments.AppListFragment
 
