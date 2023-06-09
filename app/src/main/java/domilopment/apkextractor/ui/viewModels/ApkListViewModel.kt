@@ -60,6 +60,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
     private var loadArchiveInfoJob: Deferred<Unit>? = null
 
     private val observer = Observer<List<PackageArchiveModel>> { apps ->
+        loadArchiveInfoJob?.cancel(CancellationException("New Data arrived"))
         val sortedApps = SettingsManager(context).sortApkData(apps)
         _apkListFragmentState.update { state ->
             state.copy(
