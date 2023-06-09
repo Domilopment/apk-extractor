@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 PackageInstaller.STATUS_SUCCESS -> MaterialAlertDialogBuilder(this).apply {
+                    val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
                     setMessage(
                         getString(
                             R.string.installation_result_dialog_success_message, packageName
@@ -102,6 +103,7 @@ class MainActivity : AppCompatActivity() {
                 PackageInstaller.STATUS_FAILURE, PackageInstaller.STATUS_FAILURE_ABORTED, PackageInstaller.STATUS_FAILURE_BLOCKED, PackageInstaller.STATUS_FAILURE_CONFLICT, PackageInstaller.STATUS_FAILURE_INCOMPATIBLE, PackageInstaller.STATUS_FAILURE_INVALID, PackageInstaller.STATUS_FAILURE_STORAGE -> MaterialAlertDialogBuilder(
                     this
                 ).apply {
+                    val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
                     setMessage(
                         getString(
                             R.string.installation_result_dialog_failed_message,
