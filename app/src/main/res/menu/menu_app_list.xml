@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="domilopment.apkextractor.ui.MainActivity">
     <item
-        android:id="@+id/action_search"
+        android:id="@+id/action_search_app_list"
         android:orderInCategory="0"
         android:title="@string/menu_search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"

@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_search"
+        android:id="@+id/action_search_apk_list"
         android:orderInCategory="0"
         android:title="@string/menu_search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"

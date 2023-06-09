@@ -31,6 +31,7 @@ import domilopment.apkextractor.ui.appList.AppListAdapter
 import domilopment.apkextractor.ui.appList.AppListTouchHelperCallback
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.FragmentAppListBinding
+import domilopment.apkextractor.ui.appList.AppListMultiselectCallback
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
 import domilopment.apkextractor.ui.dialogs.ProgressDialogFragment
 import domilopment.apkextractor.ui.viewModels.MainViewModel
@@ -266,7 +267,7 @@ class AppListFragment : Fragment() {
         (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
                 // Associate searchable configuration with the SearchView
-                searchView = (menu.findItem(R.id.action_search).actionView as SearchView).apply {
+                searchView = (menu.findItem(R.id.action_search_app_list).actionView as SearchView).apply {
                     maxWidth = Int.MAX_VALUE
                     imeOptions = EditorInfo.IME_ACTION_SEARCH
 
@@ -313,7 +314,7 @@ class AppListFragment : Fragment() {
                             if (it.isNotBlank() && searchView.query.isBlank()) searchView.setQuery(
                                 it, false
                             )
-                            if (!viewAdapter.actionModeCallback.isActionModeActive() && it.isNotBlank()) searchView.isIconified =
+                            if (!AppListMultiselectCallback.isActionModeActive() && it.isNotBlank()) searchView.isIconified =
                                 false
                         }
                     }

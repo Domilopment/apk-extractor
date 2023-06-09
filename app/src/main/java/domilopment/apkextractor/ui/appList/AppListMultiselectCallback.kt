@@ -11,13 +11,11 @@ import domilopment.apkextractor.ui.fragments.AppListFragment
 class AppListMultiselectCallback(
     private val appListFragment: AppListFragment, private val appListAdapter: AppListAdapter
 ) : ActionMode.Callback {
-    private var mode: ActionMode? = null
-
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
         // Inflate the menu resource providing context menu items
         val inflater: MenuInflater = mode.menuInflater
         inflater.inflate(R.menu.menu_multiselect, menu)
-        this.mode = mode
+        AppListMultiselectCallback.mode = mode
         setModeTitle(mode = mode)
         menu.findItem(R.id.action_select_all)?.also {
             (it.actionView as CheckBox).setOnCheckedChangeListener { buttonView, isChecked ->
@@ -59,20 +57,26 @@ class AppListMultiselectCallback(
         appListFragment.enableRefresh(true)
         appListFragment.enableNavigation(true)
         appListFragment.showSearchView()
-        this.mode = null
+        AppListMultiselectCallback.mode = null
         appListAdapter.notifyDataSetChanged()
         appListFragment.startSupportActionMode(false)
     }
 
-    /**
-     * Boolean for checking if action mode is active or not
-     */
-    fun isActionModeActive(): Boolean = mode != null
-
     fun setModeTitle(
         itemCount: Int = appListAdapter.myDatasetFiltered.filter { it.isChecked }.size,
-        mode: ActionMode? = this.mode
+        mode: ActionMode? = AppListMultiselectCallback.mode
     ) {
         mode?.title = appListFragment.getString(R.string.action_mode_title, itemCount)
+    }
+
+    companion object {
+        private var mode: ActionMode? = null
+
+        /**
+         * Boolean for checking if action mode is active or not
+         */
+        fun isActionModeActive(): Boolean = mode != null
+
+        fun finish() = mode?.finish()
     }
 }

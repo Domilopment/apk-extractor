@@ -92,7 +92,7 @@ class AppListAdapter(
             favoriteStar.isVisible = app.isFavorite
             // ItemView on Click
             root.setOnClickListener {
-                if (!actionModeCallback.isActionModeActive()) {
+                if (!AppListMultiselectCallback.isActionModeActive()) {
                     appListFragment.selectApplication(app)
                     appListFragment.requireActivity().supportFragmentManager.let {
                         AppOptionsBottomSheet.newInstance(app.appPackageName).apply {
@@ -107,7 +107,7 @@ class AppListAdapter(
             }
             // ItemView on Long Click
             root.setOnLongClickListener {
-                if (!actionModeCallback.isActionModeActive()) {
+                if (!AppListMultiselectCallback.isActionModeActive()) {
                     setChecked(this, true)
                     app.isChecked = true
                     appListFragment.startSupportActionMode(true)

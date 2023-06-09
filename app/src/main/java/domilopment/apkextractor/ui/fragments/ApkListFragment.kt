@@ -148,7 +148,7 @@ class ApkListFragment : Fragment() {
         (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
                 // Associate searchable configuration with the SearchView
-                searchView = (menu.findItem(R.id.action_search).actionView as SearchView).apply {
+                searchView = (menu.findItem(R.id.action_search_apk_list).actionView as SearchView).apply {
                     maxWidth = Int.MAX_VALUE
                     imeOptions = EditorInfo.IME_ACTION_SEARCH
 
