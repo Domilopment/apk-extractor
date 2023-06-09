@@ -68,7 +68,19 @@ class ApkListFragment : Fragment() {
             }
         }) {
             it?.let { apkUri ->
-                FileUtil(requireContext()).getDocumentInfo(apkUri)
+                FileUtil(requireContext()).getDocumentInfo(
+                    apkUri,
+                    DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                    DocumentsContract.Document.COLUMN_LAST_MODIFIED,
+                    DocumentsContract.Document.COLUMN_SIZE
+                )
+            }?.let { documentFile ->
+                PackageArchiveModel(
+                    documentFile.uri,
+                    documentFile.displayName!!,
+                    documentFile.lastModified!!,
+                    documentFile.size!!
+                )
             }?.also { apk ->
                 model.selectPackageArchive(apk)
                 ApkOptionsBottomSheet.newInstance()
@@ -148,59 +160,60 @@ class ApkListFragment : Fragment() {
         (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
                 // Associate searchable configuration with the SearchView
-                searchView = (menu.findItem(R.id.action_search_apk_list).actionView as SearchView).apply {
-                    maxWidth = Int.MAX_VALUE
-                    imeOptions = EditorInfo.IME_ACTION_SEARCH
+                searchView =
+                    (menu.findItem(R.id.action_search_apk_list).actionView as SearchView).apply {
+                        maxWidth = Int.MAX_VALUE
+                        imeOptions = EditorInfo.IME_ACTION_SEARCH
 
-                    // listening to search query text change
-                    setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                        var queryTextChangedJob: Job? = null
+                        // listening to search query text change
+                        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                            var queryTextChangedJob: Job? = null
 
-                        override fun onQueryTextSubmit(query: String?): Boolean {
-                            // filter recycler view when query submitted
-                            queryTextChangedJob?.cancel()
-                            onFilter(query)
-                            return false
-                        }
-
-                        override fun onQueryTextChange(query: String?): Boolean {
-                            // filter recycler view when text is changed
-                            queryTextChangedJob?.cancel()
-                            queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
-                                delay(300)
+                            override fun onQueryTextSubmit(query: String?): Boolean {
+                                // filter recycler view when query submitted
+                                queryTextChangedJob?.cancel()
                                 onFilter(query)
+                                return false
                             }
-                            return false
+
+                            override fun onQueryTextChange(query: String?): Boolean {
+                                // filter recycler view when text is changed
+                                queryTextChangedJob?.cancel()
+                                queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
+                                    delay(300)
+                                    onFilter(query)
+                                }
+                                return false
+                            }
+
+                            fun onFilter(query: String?) {
+                                model.searchQuery(query)
+                            }
+                        })
+
+                        // Enable on return Callback if user Opens SearchView
+                        setOnSearchClickListener {
+                            callback.isEnabled = true
                         }
 
-                        fun onFilter(query: String?) {
-                            model.searchQuery(query)
+                        // Disable on return Callback if user closes SearchView
+                        setOnCloseListener {
+                            callback.isEnabled = false
+                            return@setOnCloseListener false
                         }
-                    })
-
-                    // Enable on return Callback if user Opens SearchView
-                    setOnSearchClickListener {
-                        callback.isEnabled = true
-                    }
-
-                    // Disable on return Callback if user closes SearchView
-                    setOnCloseListener {
-                        callback.isEnabled = false
-                        return@setOnCloseListener false
-                    }
-                }.also { searchView ->
-                    model.searchQuery.observe(viewLifecycleOwner) {
-                        it?.also {
-                            viewAdapter.filter.filter(it)
-                            if (it.isNotBlank()) {
-                                if (searchView.query.isBlank()) searchView.setQuery(
-                                    it, false
-                                )
-                                searchView.isIconified = false
+                    }.also { searchView ->
+                        model.searchQuery.observe(viewLifecycleOwner) {
+                            it?.also {
+                                viewAdapter.filter.filter(it)
+                                if (it.isNotBlank()) {
+                                    if (searchView.query.isBlank()) searchView.setQuery(
+                                        it, false
+                                    )
+                                    searchView.isIconified = false
+                                }
                             }
                         }
                     }
-                }
             }
 
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

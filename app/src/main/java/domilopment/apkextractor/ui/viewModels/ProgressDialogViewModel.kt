@@ -5,7 +5,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.net.Uri
-import androidx.documentfile.provider.DocumentFile
+import android.provider.DocumentsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -174,7 +174,9 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
 
                     val session = packageInstaller.openSession(sessionId)
 
-                    val length = DocumentFile.fromSingleUri(context, apkUri)?.length() ?: -1
+                    val length = FileUtil(context).getDocumentInfo(
+                        apkUri, DocumentsContract.Document.COLUMN_SIZE
+                    )?.size ?: -1
 
                     session.openWrite("install_apk_session_$sessionId", 0, length)
                         .use { outputStream ->

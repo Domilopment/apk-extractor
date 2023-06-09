@@ -6,11 +6,20 @@ import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.ApplicationModel
-import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.utils.settings.SettingsManager
 import java.io.*
 
 class FileUtil(private val context: Context) {
+
+    data class DocumentFile(
+        val uri: Uri,
+        val documentId: String?,
+        val displayName: String?,
+        val lastModified: Long?,
+        val size: Long?,
+        val mimeType: String?
+    )
+
     companion object {
         const val MIME_TYPE = "application/vnd.android.package-archive"
         const val PREFIX = ".apk"
@@ -106,27 +115,37 @@ class FileUtil(private val context: Context) {
     /**
      * Takes uri from Document file and queries file info
      * @param uri Document file uri
-     * @return PackageArchiveModel with file info
+     * @param projection DocumentContract.Document.COLUMN_... of information to retrieve from file
+     * @return DocumentFile with requested information or null if failed
      */
-    fun getDocumentInfo(uri: Uri): PackageArchiveModel? {
-        context.contentResolver.query(
-            uri, arrayOf(
-                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                DocumentsContract.Document.COLUMN_LAST_MODIFIED,
-                DocumentsContract.Document.COLUMN_SIZE
-            ), null, null, null
-        )?.use { cursor ->
+    fun getDocumentInfo(
+        uri: Uri, vararg projection: String = arrayOf(
+            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_LAST_MODIFIED,
+            DocumentsContract.Document.COLUMN_SIZE,
+            DocumentsContract.Document.COLUMN_MIME_TYPE
+        )
+    ): DocumentFile? {
+        context.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
+            val documentIdIndex =
+                cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DOCUMENT_ID)
             val nameIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
             val lastModifiedIndex =
                 cursor.getColumnIndex(DocumentsContract.Document.COLUMN_LAST_MODIFIED)
             val sizeIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_SIZE)
+            val mimeTypeIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
 
             if (cursor.moveToFirst()) {
-                val name = cursor.getString(nameIndex)
-                val lastModified = cursor.getLong(lastModifiedIndex)
-                val size = cursor.getLong(sizeIndex)
+                val documentId =
+                    if (documentIdIndex != -1) cursor.getString(documentIdIndex) else null
+                val name = if (documentIdIndex != -1) cursor.getString(nameIndex) else null
+                val lastModified =
+                    if (documentIdIndex != -1) cursor.getLong(lastModifiedIndex) else null
+                val size = if (documentIdIndex != -1) cursor.getLong(sizeIndex) else null
+                val mimeType = if (documentIdIndex != -1) cursor.getString(mimeTypeIndex) else null
 
-                return PackageArchiveModel(uri, name, lastModified, size)
+                return DocumentFile(uri, documentId, name, lastModified, size, mimeType)
             }
         }
         return null

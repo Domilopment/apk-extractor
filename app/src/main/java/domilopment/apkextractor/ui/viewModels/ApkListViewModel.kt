@@ -2,6 +2,7 @@ package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
 import android.net.Uri
+import android.provider.DocumentsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -134,7 +135,14 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
 
     private fun addPackageArchiveModel(uri: Uri) {
         val packages = _packageArchives.value?.toMutableList() ?: return
-        FileUtil(context).getDocumentInfo(uri)?.let { packages.add(it) }
+        FileUtil(context).getDocumentInfo(
+            uri,
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_LAST_MODIFIED,
+            DocumentsContract.Document.COLUMN_SIZE
+        )?.let {
+            PackageArchiveModel(it.uri, it.displayName!!, it.lastModified!!, it.size!!)
+        }?.let { packages.add(it) }
         _packageArchives.value = packages
     }
 
