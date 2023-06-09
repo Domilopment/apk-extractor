@@ -40,7 +40,7 @@ class MainFragment : Fragment() {
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(requireActivity().findViewById<View>(android.R.id.content).rootView) { _, insets ->
-            if (!AppListMultiselectCallback.isActionModeActive()) _binding?.bottomNavigation?.isVisible =
+            if (!AppListMultiselectCallback.isActionModeActive()) binding.bottomNavigation.isVisible =
                 !insets.isVisible(WindowInsetsCompat.Type.ime())
             insets
         }
@@ -48,6 +48,7 @@ class MainFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        ViewCompat.setOnApplyWindowInsetsListener(requireActivity().findViewById<View>(android.R.id.content).rootView) { _, insets -> insets }
         _binding = null
     }
 
