@@ -125,7 +125,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
 
         resolver.insert(imageCollection, contentValues)?.let {
             resolver.openOutputStream(it)
-        }.use {
+        }?.use {
             val result = app.appIcon.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, it)
             if (result) Snackbar.make(
                 view,
