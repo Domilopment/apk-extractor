@@ -39,16 +39,16 @@ class MainFragment : Fragment() {
             }
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(requireActivity().findViewById<View>(android.R.id.content).rootView) { _, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(requireActivity().window.decorView) { v, insets ->
             if (!AppListMultiselectCallback.isActionModeActive()) binding.bottomNavigation.isVisible =
                 !insets.isVisible(WindowInsetsCompat.Type.ime())
-            insets
+            ViewCompat.onApplyWindowInsets(v, insets)
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        ViewCompat.setOnApplyWindowInsetsListener(requireActivity().findViewById<View>(android.R.id.content).rootView) { _, insets -> insets }
+        ViewCompat.setOnApplyWindowInsetsListener(requireActivity().window.decorView, ViewCompat::onApplyWindowInsets)
         _binding = null
     }
 
