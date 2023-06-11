@@ -48,7 +48,9 @@ class MainFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        ViewCompat.setOnApplyWindowInsetsListener(requireActivity().window.decorView, ViewCompat::onApplyWindowInsets)
+        ViewCompat.setOnApplyWindowInsetsListener(
+            requireActivity().window.decorView, ViewCompat::onApplyWindowInsets
+        )
         _binding = null
     }
 
