@@ -130,7 +130,8 @@ class FileUtil(private val context: Context) {
         context.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
             val documentIdIndex =
                 cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DOCUMENT_ID)
-            val nameIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
+            val displayNameIndex =
+                cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
             val lastModifiedIndex =
                 cursor.getColumnIndex(DocumentsContract.Document.COLUMN_LAST_MODIFIED)
             val sizeIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_SIZE)
@@ -139,11 +140,11 @@ class FileUtil(private val context: Context) {
             if (cursor.moveToFirst()) {
                 val documentId =
                     if (documentIdIndex != -1) cursor.getString(documentIdIndex) else null
-                val name = if (documentIdIndex != -1) cursor.getString(nameIndex) else null
+                val name = if (displayNameIndex != -1) cursor.getString(displayNameIndex) else null
                 val lastModified =
-                    if (documentIdIndex != -1) cursor.getLong(lastModifiedIndex) else null
-                val size = if (documentIdIndex != -1) cursor.getLong(sizeIndex) else null
-                val mimeType = if (documentIdIndex != -1) cursor.getString(mimeTypeIndex) else null
+                    if (lastModifiedIndex != -1) cursor.getLong(lastModifiedIndex) else null
+                val size = if (sizeIndex != -1) cursor.getLong(sizeIndex) else null
+                val mimeType = if (mimeTypeIndex != -1) cursor.getString(mimeTypeIndex) else null
 
                 return DocumentFile(uri, documentId, name, lastModified, size, mimeType)
             }
