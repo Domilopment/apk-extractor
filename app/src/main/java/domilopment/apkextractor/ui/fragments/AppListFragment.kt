@@ -350,10 +350,6 @@ class AppListFragment : Fragment() {
         if (::searchView.isInitialized) searchView.isIconified = searchView.query.isBlank()
     }
 
-    fun enableNavigation(visible: Boolean) {
-        (requireParentFragment().requireParentFragment() as MainFragment).enableNavigation(visible)
-    }
-
     /**
      * Set Enabled State of refresh
      * @param enabled

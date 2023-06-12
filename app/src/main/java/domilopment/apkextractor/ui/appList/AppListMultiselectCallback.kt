@@ -24,7 +24,6 @@ class AppListMultiselectCallback(
                 buttonView.isChecked = false
             }
         }
-        appListFragment.enableNavigation(false)
         appListFragment.enableRefresh(false)
         appListFragment.attachSwipeHelper(false)
         appListFragment.showBottomSheet(true)
@@ -55,7 +54,6 @@ class AppListMultiselectCallback(
         appListFragment.showBottomSheet(false)
         appListFragment.attachSwipeHelper(true)
         appListFragment.enableRefresh(true)
-        appListFragment.enableNavigation(true)
         appListFragment.showSearchView()
         AppListMultiselectCallback.mode = null
         appListAdapter.notifyDataSetChanged()

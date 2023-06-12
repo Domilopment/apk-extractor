@@ -40,8 +40,8 @@ class MainFragment : Fragment() {
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(requireActivity().window.decorView) { v, insets ->
-            if (!AppListMultiselectCallback.isActionModeActive()) binding.bottomNavigation.isVisible =
-                !insets.isVisible(WindowInsetsCompat.Type.ime())
+            binding.bottomNavigation.isVisible =
+                !insets.isVisible(WindowInsetsCompat.Type.ime()) && !AppListMultiselectCallback.isActionModeActive()
             ViewCompat.onApplyWindowInsets(v, insets)
         }
     }
@@ -60,13 +60,5 @@ class MainFragment : Fragment() {
             setDisplayHomeAsUpEnabled(false)
             title = getString(R.string.app_name)
         }
-    }
-
-    /**
-     * Show or hide bottom navigation menu
-     * @param visible boolean for menu should be shown
-     */
-    fun enableNavigation(visible: Boolean) {
-        binding.bottomNavigation.isVisible = visible
     }
 }
