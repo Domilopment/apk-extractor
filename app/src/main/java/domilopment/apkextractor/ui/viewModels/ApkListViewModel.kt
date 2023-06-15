@@ -143,7 +143,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
         )?.let {
             PackageArchiveModel(it.uri, it.displayName!!, it.lastModified!!, it.size!!)
         }?.let { packages.add(it) }
-        _packageArchives.value = packages
+        _packageArchives.postValue(packages)
     }
 
     fun remove(apk: PackageArchiveModel) {
