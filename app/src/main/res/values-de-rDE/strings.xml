@@ -81,6 +81,9 @@
     <string name="ignore_battery_optimization_title">Hintergrundaktivität</string>
     <string name="ignore_battery_optimization_summary">Falls der Auto Backup Service im Hintergrung gestoppt wird, ohne neu zu starten, ziehen sie es vielleicht in betracht, das einschränken der Hintergrundaktivität für diese app zu deaktivieren</string>
 
+    <string name="check_update_on_start_title">Überprüfe beim Start auf Updates</string>
+    <string name="check_update_on_start_summary">Überprüfe, wenn die App startet, ob Updates verfügbar sind, und zeige eine aufforderung sie zu installieren.</string>
+
     <string name="clear_cache">Cache leeren</string>
     <string name="clear_cache_summary">Leere App cache</string>
     <string name="clear_cache_success">Cache gesäubert!</string>
@@ -225,5 +228,20 @@
 
     <!-- Action Mode -->
     <string name="action_mode_title">%d Ausgewählt</string>
+
+    <!-- Check for App update -->
+    <string name="popup_snackbar_for_complete_update_text">Ein update wurde heruntergeladen.</string>
+    <string name="popup_snackbar_for_complete_update_action">NEUSTART</string>
+
+    <string name="popup_dialog_for_notify_about_update_title">Bitte erwäge zu aktualisieren</string>
+    <string name="popup_dialog_for_notify_about_update_text">Falls du updates auslässt, könntest du neue funktionen, Verbesserung in UI und Performance, aber am wichtigsten Bug and Crash fixes verpassen.</string>
+    <string name="popup_dialog_for_notify_about_update_button_positive">Update</string>
+    <string name="popup_dialog_for_notify_about_update_button_negative">Schließen</string>
+    <string name="popup_dialog_for_notify_about_update_button_neutral">Frage nicht erneut</string>
+
+    <string name="popup_dialog_update_failed_title">Update über die App fehlgesvhlagen</string>
+    <string name="popup_dialog_update_failed_text">Das update konnte nicht heruntergeladen oder Installiert werden. Versuche es erneut, lade es direkt aus dem Play Store herunter oder versuche es bein nächsten start der App erneut.\n\nMessage: %s</string>
+    <string name="popup_dialog_update_failed_button_positive">Versuche erneut</string>
+    <string name="popup_dialog_update_failed_button_negative">Schließen</string>
 
 </resources>

@@ -13,6 +13,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.InstallStateUpdatedListener
+import com.google.android.play.core.install.model.ActivityResult
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
@@ -25,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var settingsManager: SettingsManager
+    private lateinit var appUpdateManager: AppUpdateManager
 
     // while waiting for chooseSaveDir to deliver and apply Result,
     // onStart will be called and Ask for Save Dir even save dir is chosen but not applied.
@@ -41,6 +51,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    private val activityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            when (result.resultCode) {
+                RESULT_CANCELED -> popupDialogForNotifyAboutUpdate()
+                ActivityResult.RESULT_IN_APP_UPDATE_FAILED -> popupDialogUpdateFailed()
+            }
+        }
+
+    private val installStateUpdatedListener = InstallStateUpdatedListener { state ->
+        if (state.installStatus() == InstallStatus.DOWNLOADED) {
+            // After the update is downloaded, show a notification
+            // and request user confirmation to restart the app.
+            popupSnackbarForCompleteUpdate()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -50,6 +76,15 @@ class MainActivity : AppCompatActivity() {
         settingsManager = SettingsManager(this)
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        appUpdateManager = AppUpdateManagerFactory.create(applicationContext)
+
+        appUpdateManager.registerListener(installStateUpdatedListener)
+
+        if (sharedPreferences.getBoolean(
+                Constants.PREFERENCE_CHECK_UPDATE_ON_START, true
+            )
+        ) checkForAppUpdates()
     }
 
     override fun onStart() {
@@ -66,10 +101,23 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+                // If the update is downloaded but not installed,
+                // notify the user to complete the update.
+                if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                    popupSnackbarForCompleteUpdate()
+                }
+            }
+    }
+
     /**
      * Executes on Application Destroy, clear cache
      */
     override fun onDestroy() {
+        appUpdateManager.unregisterListener(installStateUpdatedListener)
         cacheDir.deleteRecursively()
         super.onDestroy()
     }
@@ -154,6 +202,70 @@ class MainActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_DENIED || !FileUtil(this).doesDocumentExist(path)
     }
 
+    private fun checkForAppUpdates() {
+        // Returns an intent object that you use to check for an update.
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+
+        // Checks that the platform will allow the specified type of update.
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                // This example applies an immediate update. To apply a flexible update
+                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    // Pass the intent that is returned by 'getAppUpdateInfo()'.
+                    appUpdateInfo,
+                    // an activity result launcher registered via registerForActivityResult
+                    activityResultLauncher,
+                    AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
+                )
+            }
+        }
+    }
+
+    // Displays the snackbar notification and call to action.
+    private fun popupSnackbarForCompleteUpdate() {
+        Snackbar.make(
+            binding.container,
+            R.string.popup_snackbar_for_complete_update_text,
+            Snackbar.LENGTH_INDEFINITE
+        ).apply {
+            setAction(R.string.popup_snackbar_for_complete_update_action) { appUpdateManager.completeUpdate() }
+            show()
+        }
+    }
+
+    private fun popupDialogForNotifyAboutUpdate() {
+        MaterialAlertDialogBuilder(this).apply {
+            setMessage(R.string.popup_dialog_for_notify_about_update_text)
+            setTitle(R.string.popup_dialog_for_notify_about_update_title)
+            setPositiveButton(R.string.popup_dialog_for_notify_about_update_button_positive) { _, _ ->
+                checkForAppUpdates()
+            }
+            setNegativeButton(R.string.popup_dialog_for_notify_about_update_button_negative) { dialog, _ ->
+                dialog.dismiss()
+            }
+            setNeutralButton(R.string.popup_dialog_for_notify_about_update_button_neutral) { dialog, _ ->
+                sharedPreferences.edit()
+                    .putBoolean(Constants.PREFERENCE_CHECK_UPDATE_ON_START, false).apply()
+                dialog.dismiss()
+            }
+        }.show()
+    }
+
+    private fun popupDialogUpdateFailed(message: String? = "No Error message provided") {
+        MaterialAlertDialogBuilder(this).apply {
+            setMessage(getString(R.string.popup_dialog_update_failed_text, message))
+            setTitle(R.string.popup_dialog_update_failed_title)
+            setPositiveButton(R.string.popup_dialog_update_failed_button_positive) { _, _ ->
+                checkForAppUpdates()
+            }
+            setNegativeButton(R.string.popup_dialog_update_failed_button_negative) { dialog, _ ->
+                dialog.dismiss()
+            }
+        }.show()
+    }
+
     /**
      * Take Uri Permission for Save Dir
      * @param uri content uri for selected save path
@@ -166,7 +278,8 @@ class MainActivity : AppCompatActivity() {
                 oldPath, takeFlags
             )
         }
-        sharedPreferences.edit().putString(Constants.PREFERENCE_KEY_SAVE_DIR, uri.toString()).apply()
+        sharedPreferences.edit().putString(Constants.PREFERENCE_KEY_SAVE_DIR, uri.toString())
+            .apply()
         contentResolver.takePersistableUriPermission(uri, takeFlags)
     }
 

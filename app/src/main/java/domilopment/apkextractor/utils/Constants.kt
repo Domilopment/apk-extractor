@@ -22,4 +22,6 @@ object Constants {
     const val PREFERENCE_KEY_FILTER_INSTALLER = "filter_installer_v2"
 
     const val PREFERENCE_KEY_FILTER_OTHERS = "filter_others"
+
+    const val PREFERENCE_CHECK_UPDATE_ON_START = "check_update_on_start"
 }

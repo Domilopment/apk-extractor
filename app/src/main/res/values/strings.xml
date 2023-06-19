@@ -82,6 +82,9 @@
     <string name="ignore_battery_optimization_title">Disable Battery Optimization</string>
     <string name="ignore_battery_optimization_summary">If the Auto Backup Service gets killed in background without restarting, you might consider disable battery optimization for this app so it keeps running in background</string>
 
+    <string name="check_update_on_start_title">Check for update on start</string>
+    <string name="check_update_on_start_summary">Check on start of the app if new updates are available, and show a prompt to install it.</string>
+
     <string name="clear_cache">Clear cache</string>
     <string name="clear_cache_summary">Clear App cache</string>
     <string name="clear_cache_success">Cache cleared</string>
@@ -231,5 +234,20 @@
 
     <!-- Action Mode -->
     <string name="action_mode_title">%d Selected</string>
+
+    <!-- Check for App update -->
+    <string name="popup_snackbar_for_complete_update_text">An update has just been downloaded.</string>
+    <string name="popup_snackbar_for_complete_update_action">RESTART</string>
+
+    <string name="popup_dialog_for_notify_about_update_title">Please consider updating</string>
+    <string name="popup_dialog_for_notify_about_update_text">If you skip updates, you miss out on new Features, Improvements of UI and Performance, but most Importantly Bug and Crash fixes.</string>
+    <string name="popup_dialog_for_notify_about_update_button_positive">Update</string>
+    <string name="popup_dialog_for_notify_about_update_button_negative">Close</string>
+    <string name="popup_dialog_for_notify_about_update_button_neutral">Don\'t ask again</string>
+
+    <string name="popup_dialog_update_failed_title">In app update failed</string>
+    <string name="popup_dialog_update_failed_text">The app could not be updated, try again, load it directly from the Play Store or try next time you open the App.\n\nMessage: %s</string>
+    <string name="popup_dialog_update_failed_button_positive">Try again</string>
+    <string name="popup_dialog_update_failed_button_negative">Close</string>
 
 </resources>
