@@ -64,6 +64,7 @@
             app:summary="@string/ignore_battery_optimization_summary"
             app:title="@string/ignore_battery_optimization_title" />
         <SwitchPreferenceCompat
+            app:defaultValue="true"
             app:key="check_update_on_start"
             app:summary="@string/check_update_on_start_summary"
             app:title="@string/check_update_on_start_title" />
