@@ -1,5 +1,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Preference
+        app:isPreferenceVisible="false"
+        app:key="update_available"
+        app:summary="@string/update_available_summary"
+        app:title="@string/update_available_title" />
     <PreferenceCategory app:title="@string/save_header">
         <Preference
             app:key="choose_dir"

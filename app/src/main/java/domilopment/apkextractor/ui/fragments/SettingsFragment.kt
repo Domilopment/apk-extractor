@@ -30,7 +30,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.model.ActivityResult
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import domilopment.apkextractor.*
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
@@ -46,6 +53,8 @@ import java.util.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var settingsManager: SettingsManager
+    private lateinit var appUpdateManager: AppUpdateManager
+    private var updateAvailable: Preference? = null
     private var chooseDir: Preference? = null
     private var autoBackup: SwitchPreferenceCompat? = null
     private var appListAutoBackup: MultiSelectListPreference? = null
@@ -96,11 +105,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
             ignoreBatteryOptimization?.isChecked = isIgnoringBatteryOptimization
         }
 
+    private val activityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            when (result.resultCode) {
+                ActivityResult.RESULT_IN_APP_UPDATE_FAILED -> popupDialogUpdateFailed()
+            }
+        }
+
     private val ioDispatcher get() = Dispatchers.IO
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         settingsManager = SettingsManager(requireContext())
+        appUpdateManager = AppUpdateManagerFactory.create(requireContext().applicationContext)
     }
 
     override fun onDisplayPreferenceDialog(preference: Preference) {
@@ -126,6 +143,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
 
+        updateAvailable = findPreference("update_available")
         chooseDir = findPreference("choose_dir")
         autoBackup = findPreference("auto_backup")
         appListAutoBackup = findPreference("app_list_auto_backup")
@@ -138,6 +156,26 @@ class SettingsFragment : PreferenceFragmentCompat() {
         googlePlay = findPreference("googleplay")
         privacyPolicy = findPreference("privacy_policy")
         version = findPreference("version")
+
+        updateAvailable?.apply {
+            val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+
+            appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+                isVisible =
+                    appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && appUpdateInfo.isUpdateTypeAllowed(
+                        AppUpdateType.FLEXIBLE
+                    )
+
+                setOnPreferenceClickListener {
+                    appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        activityResultLauncher,
+                        AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
+                    )
+                    return@setOnPreferenceClickListener true
+                }
+            }
+        }
 
         // Shows Version Number in Settings
         version?.title = getString(R.string.version, BuildConfig.VERSION_NAME)
@@ -360,6 +398,36 @@ class SettingsFragment : PreferenceFragmentCompat() {
         else if (!newValue and AutoBackupService.isRunning) requireContext().stopService(
             Intent(requireContext(), AutoBackupService::class.java)
         )
+    }
+
+    private fun checkForAppUpdates() {
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && appUpdateInfo.isUpdateTypeAllowed(
+                    AppUpdateType.FLEXIBLE
+                )
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    activityResultLauncher,
+                    AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
+                )
+            }
+        }
+    }
+
+    private fun popupDialogUpdateFailed(message: String? = "No Error message provided") {
+        MaterialAlertDialogBuilder(requireContext()).apply {
+            setMessage(getString(R.string.popup_dialog_update_failed_text, message))
+            setTitle(R.string.popup_dialog_update_failed_title)
+            setPositiveButton(R.string.popup_dialog_update_failed_button_positive) { _, _ ->
+                checkForAppUpdates()
+            }
+            setNegativeButton(R.string.popup_dialog_update_failed_button_negative) { dialog, _ ->
+                dialog.dismiss()
+            }
+        }.show()
     }
 
     /**

@@ -14,6 +14,10 @@
     <string name="app_type_header">Apps</string>
     <string name="info_header">Info</string>
 
+    <!-- Preference update avalible -->
+    <string name="update_available_title">Update Verfügbar</string>
+    <string name="update_available_summary">Klicke hier um das update herunter zu laden und zu installieren.</string>
+
     <!-- Preferences Save Option -->
     <string name="choose_save_dir">Wähle Speicherpfad</string>
     <string name="choose_save_dir_summary">Wähle oder ändere den Ort um APKs zu Speichern</string>
