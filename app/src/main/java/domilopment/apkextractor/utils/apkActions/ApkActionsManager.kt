@@ -50,7 +50,11 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
             }
 
             is ExtractionResult.Failure -> MaterialAlertDialogBuilder(context).apply {
-                setMessage(context.getString(R.string.snackbar_extraction_failed_message, result.errorMessage))
+                setMessage(
+                    context.getString(
+                        R.string.snackbar_extraction_failed_message, result.errorMessage
+                    )
+                )
                 setTitle(
                     context.getString(
                         R.string.snackbar_extraction_failed, app.appName
@@ -60,8 +64,10 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
                     dialog.dismiss()
                 }
                 setNeutralButton(R.string.snackbar_extraction_failed_message_copy_to_clipboard) { _, _ ->
-                    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clip = ClipData.newPlainText("APK Extractor: Error Message", result.errorMessage)
+                    val clipboardManager =
+                        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip =
+                        ClipData.newPlainText("APK Extractor: Error Message", result.errorMessage)
                     clipboardManager.setPrimaryClip(clip)
                 }
             }.show()

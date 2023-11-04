@@ -34,7 +34,7 @@ class FileUtil(private val context: Context) {
      * @param fileName
      * Name for Saved APK File
      * @return
-     * True if copy was Successfully else False
+     * ExtractionResult with Uri if copy was Successfully else Error Message
      */
     fun copy(
         from: String, to: Uri, fileName: String
