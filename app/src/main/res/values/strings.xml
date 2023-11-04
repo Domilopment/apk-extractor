@@ -167,6 +167,9 @@
         <item quantity="other">%s and %d additional successful extracted</item>
     </plurals>
     <string name="snackbar_extraction_failed">Extraction of %s FAILED</string>
+    <string name="snackbar_extraction_failed_message">Error Message:\n%s\n\nWhen you can\'t resolve the issue, contact the Developer.</string>
+    <string name="snackbar_extraction_failed_message_copy_to_clipboard">Copy to Clipboard</string>
+    <string name="snackbar_extraction_failed_message_dismiss">Dismiss</string>
     <string name="share_intent_title">Sharing App</string>
     <string name="toast_share_app">Select Apps to Share</string>
 

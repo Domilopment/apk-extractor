@@ -17,6 +17,7 @@ import androidx.core.app.NotificationManagerCompat
 import domilopment.apkextractor.ui.MainActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.ExtractionResult
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.*
@@ -61,9 +62,14 @@ class AsyncBackupTask(
 
         // Try to Backup App
         return try {
-            FileUtil(context).copy(
-                app.appSourceDirectory, path!!, SettingsManager(context).appName(app)
-            )
+            when (val result = FileUtil(context).copy(
+                app.appSourceDirectory,
+                path!!,
+                SettingsManager(context).appName(app)
+            )) {
+                is ExtractionResult.Success -> result.uri
+                is ExtractionResult.Failure -> null
+            }
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
             null

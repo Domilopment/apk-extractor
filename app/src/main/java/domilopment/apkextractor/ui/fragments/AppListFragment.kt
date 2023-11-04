@@ -1,6 +1,8 @@
 package domilopment.apkextractor.ui.fragments
 
 import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
@@ -25,6 +27,7 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
 import domilopment.apkextractor.ui.appList.AppListAdapter
@@ -153,13 +156,23 @@ class AppListFragment : Fragment() {
         }
 
         progressDialogViewModel.extractionResult.observe(viewLifecycleOwner) { result ->
-            result?.getContentIfNotHandled()?.let { (failed, app, size) ->
-                if (failed == true) Snackbar.make(
-                    view, getString(
-                        R.string.snackbar_extraction_failed, app?.appPackageName
-                    ), Snackbar.LENGTH_LONG
-                ).setAnchorView(binding.appMultiselectBottomSheet.root).setTextColor(Color.RED)
-                    .show()
+            result?.getContentIfNotHandled()?.let { (errorMessage, app, size) ->
+                if (errorMessage != null) MaterialAlertDialogBuilder(requireContext()).apply {
+                    setMessage(getString(R.string.snackbar_extraction_failed_message, errorMessage))
+                    setTitle(
+                        getString(
+                            R.string.snackbar_extraction_failed, app?.appPackageName
+                        )
+                    )
+                    setPositiveButton(R.string.snackbar_extraction_failed_message_dismiss) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    setNeutralButton(R.string.snackbar_extraction_failed_message_copy_to_clipboard) { _, _ ->
+                        val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clip = ClipData.newPlainText("APK Extractor: Error Message", errorMessage)
+                        clipboardManager.setPrimaryClip(clip)
+                    }
+                }.show()
                 else Snackbar.make(
                     view, resources.getQuantityString(
                         R.plurals.snackbar_successful_extracted_multiple,
@@ -267,58 +280,59 @@ class AppListFragment : Fragment() {
         (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
                 // Associate searchable configuration with the SearchView
-                searchView = (menu.findItem(R.id.action_search_app_list).actionView as SearchView).apply {
-                    maxWidth = Int.MAX_VALUE
-                    imeOptions = EditorInfo.IME_ACTION_SEARCH
+                searchView =
+                    (menu.findItem(R.id.action_search_app_list).actionView as SearchView).apply {
+                        maxWidth = Int.MAX_VALUE
+                        imeOptions = EditorInfo.IME_ACTION_SEARCH
 
-                    // listening to search query text change
-                    setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                        var queryTextChangedJob: Job? = null
+                        // listening to search query text change
+                        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                            var queryTextChangedJob: Job? = null
 
-                        override fun onQueryTextSubmit(query: String?): Boolean {
-                            // filter recycler view when query submitted
-                            queryTextChangedJob?.cancel()
-                            onFilter(query)
-                            return false
-                        }
-
-                        override fun onQueryTextChange(query: String?): Boolean {
-                            // filter recycler view when text is changed
-                            queryTextChangedJob?.cancel()
-                            queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
-                                delay(300)
+                            override fun onQueryTextSubmit(query: String?): Boolean {
+                                // filter recycler view when query submitted
+                                queryTextChangedJob?.cancel()
                                 onFilter(query)
+                                return false
                             }
-                            return false
+
+                            override fun onQueryTextChange(query: String?): Boolean {
+                                // filter recycler view when text is changed
+                                queryTextChangedJob?.cancel()
+                                queryTextChangedJob = lifecycleScope.launch(Dispatchers.Main) {
+                                    delay(300)
+                                    onFilter(query)
+                                }
+                                return false
+                            }
+
+                            fun onFilter(query: String?) {
+                                model.searchQuery(query)
+                            }
+                        })
+
+                        // Enable on return Callback if user Opens SearchView
+                        setOnSearchClickListener {
+                            callback.isEnabled = true
                         }
 
-                        fun onFilter(query: String?) {
-                            model.searchQuery(query)
+                        // Disable on return Callback if user closes SearchView
+                        setOnCloseListener {
+                            callback.isEnabled = false
+                            return@setOnCloseListener false
                         }
-                    })
-
-                    // Enable on return Callback if user Opens SearchView
-                    setOnSearchClickListener {
-                        callback.isEnabled = true
-                    }
-
-                    // Disable on return Callback if user closes SearchView
-                    setOnCloseListener {
-                        callback.isEnabled = false
-                        return@setOnCloseListener false
-                    }
-                }.also { searchView ->
-                    model.searchQuery.observe(viewLifecycleOwner) {
-                        it?.also {
-                            viewAdapter.filter.filter(it)
-                            if (it.isNotBlank() && searchView.query.isBlank()) searchView.setQuery(
-                                it, false
-                            )
-                            if (!AppListMultiselectCallback.isActionModeActive() && it.isNotBlank()) searchView.isIconified =
-                                false
+                    }.also { searchView ->
+                        model.searchQuery.observe(viewLifecycleOwner) {
+                            it?.also {
+                                viewAdapter.filter.filter(it)
+                                if (it.isNotBlank() && searchView.query.isBlank()) searchView.setQuery(
+                                    it, false
+                                )
+                                if (!AppListMultiselectCallback.isActionModeActive() && it.isNotBlank()) searchView.isIconified =
+                                    false
+                            }
                         }
                     }
-                }
             }
 
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

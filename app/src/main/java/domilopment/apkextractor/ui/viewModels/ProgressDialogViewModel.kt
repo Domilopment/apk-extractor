@@ -16,6 +16,7 @@ import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.ui.MainActivity
+import domilopment.apkextractor.utils.ExtractionResult
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
@@ -38,9 +39,9 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
         MutableStateFlow(ProgressDialogUiState())
     val progressDialogState: StateFlow<ProgressDialogUiState> = _progressDialogState.asStateFlow()
 
-    private val _extractionResult: MutableLiveData<SingleTimeEvent<Triple<Boolean?, ApplicationModel?, Int>>> =
+    private val _extractionResult: MutableLiveData<SingleTimeEvent<Triple<String?, ApplicationModel?, Int>>> =
         MutableLiveData(null)
-    val extractionResult: LiveData<SingleTimeEvent<Triple<Boolean?, ApplicationModel?, Int>>> =
+    val extractionResult: LiveData<SingleTimeEvent<Triple<String?, ApplicationModel?, Int>>> =
         _extractionResult
 
     private val _shareResult: MutableLiveData<SingleTimeEvent<ArrayList<Uri>?>> =
@@ -58,7 +59,7 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
             val settingsManager = SettingsManager(context)
             val fileUtil = FileUtil(context)
             var application: ApplicationModel? = null
-            var failure = false
+            var errorMessage: String? = null
 
             _progressDialogState.update {
                 it.copy(
@@ -84,7 +85,7 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
                             settingsManager.saveDir()!!,
                             settingsManager.appName(app)
                         )
-                        if (newFile == null) failure = true
+                        if (newFile is ExtractionResult.Failure) errorMessage = newFile.errorMessage
                         else EventDispatcher.emitEvent(Event(EventType.SAVED, newFile))
                     }
                     withContext(Dispatchers.Main) {
@@ -94,13 +95,13 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
                             )
                         }
                     }
-                    if (failure) {
+                    if (errorMessage != null) {
                         this@extract.cancel()
                     }
                 }
             }
             job.join()
-            _extractionResult.value = SingleTimeEvent(Triple(failure, application, list.size))
+            _extractionResult.value = SingleTimeEvent(Triple(errorMessage, application, list.size))
         }
     }
 

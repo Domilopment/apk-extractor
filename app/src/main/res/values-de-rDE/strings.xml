@@ -164,6 +164,9 @@
         <item quantity="other">%s und %d weitere erfolgreich extraiert</item>
     </plurals>
     <string name="snackbar_extraction_failed">Extraieren von %s FEHLGESCHLAGEN</string>
+    <string name="snackbar_extraction_failed_message">Error Nachricht:\n%s\n\nWenn du den fehler nicht beheben kannst, kontaktiere den Entwickler.</string>
+    <string name="snackbar_extraction_failed_message_copy_to_clipboard">Kopiere zur Zwischenablage</string>
+    <string name="snackbar_extraction_failed_message_dismiss">Verwerfen</string>
     <string name="share_intent_title">@string/apk_action_share</string>
     <string name="toast_share_app">Wähle Apps die geteilt werden sollen</string>
 

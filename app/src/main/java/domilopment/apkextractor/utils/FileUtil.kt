@@ -38,9 +38,9 @@ class FileUtil(private val context: Context) {
      */
     fun copy(
         from: String, to: Uri, fileName: String
-    ): Uri? {
+    ): ExtractionResult {
         return try {
-            val extractedApk: Uri?
+            val extractedApk: Uri
             // Create Input Stream from APK source file
             FileInputStream(from).use { input ->
                 // Create new APK file in destination folder
@@ -49,21 +49,21 @@ class FileUtil(private val context: Context) {
                         to, DocumentsContract.getTreeDocumentId(to)
                     ), MIME_TYPE, fileName
                 ).let { outputFile ->
-                    extractedApk = outputFile
+                    extractedApk = outputFile!!
                     // Create Output Stream for target APK file
-                    context.contentResolver.openOutputStream(outputFile!!)
+                    context.contentResolver.openOutputStream(outputFile)
                 }.use { output ->
                     // Copy from Input to Output Stream
                     input.copyTo(output!!)
                 }
             }
-            extractedApk
+            ExtractionResult.Success(extractedApk)
         } catch (fnf_e: FileNotFoundException) {
             fnf_e.printStackTrace()
-            null
+            ExtractionResult.Failure(fnf_e.message)
         } catch (e: Exception) {
             e.printStackTrace()
-            null
+            ExtractionResult.Failure(e.message)
         }
     }
 

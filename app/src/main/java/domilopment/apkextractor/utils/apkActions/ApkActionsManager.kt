@@ -1,6 +1,8 @@
 package domilopment.apkextractor.utils.apkActions
 
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -14,9 +16,11 @@ import android.provider.Settings
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.graphics.drawable.toBitmap
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.ExtractionResult
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
@@ -33,21 +37,34 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      */
     fun actionSave(view: View, anchorView: View = view) {
         val settingsManager = SettingsManager(context)
-        FileUtil(context).copy(
+        when (val result = FileUtil(context).copy(
             app.appSourceDirectory, settingsManager.saveDir()!!, settingsManager.appName(app)
-        )?.let {
-            EventDispatcher.emitEvent(Event(EventType.SAVED, it))
-            Snackbar.make(
-                view,
-                context.getString(R.string.snackbar_successful_extracted, app.appName),
-                Snackbar.LENGTH_LONG
-            ).setAnchorView(anchorView).show()
-        } ?: run {
-            Snackbar.make(
-                view,
-                context.getString(R.string.snackbar_extraction_failed, app.appName),
-                Snackbar.LENGTH_LONG
-            ).setAnchorView(anchorView).setTextColor(Color.RED).show()
+        )) {
+            is ExtractionResult.Success -> {
+                EventDispatcher.emitEvent(Event(EventType.SAVED, result.uri))
+                Snackbar.make(
+                    view,
+                    context.getString(R.string.snackbar_successful_extracted, app.appName),
+                    Snackbar.LENGTH_LONG
+                ).setAnchorView(anchorView).show()
+            }
+
+            is ExtractionResult.Failure -> MaterialAlertDialogBuilder(context).apply {
+                setMessage(context.getString(R.string.snackbar_extraction_failed_message, result.errorMessage))
+                setTitle(
+                    context.getString(
+                        R.string.snackbar_extraction_failed, app.appName
+                    )
+                )
+                setPositiveButton(R.string.snackbar_extraction_failed_message_dismiss) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                setNeutralButton(R.string.snackbar_extraction_failed_message_copy_to_clipboard) { _, _ ->
+                    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = ClipData.newPlainText("APK Extractor: Error Message", result.errorMessage)
+                    clipboardManager.setPrimaryClip(clip)
+                }
+            }.show()
         }
     }
 
