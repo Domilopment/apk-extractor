@@ -63,9 +63,7 @@ class AsyncBackupTask(
         // Try to Backup App
         return try {
             when (val result = FileUtil(context).copy(
-                app.appSourceDirectory,
-                path!!,
-                SettingsManager(context).appName(app)
+                app.appSourceDirectory, path!!, SettingsManager(context).appName(app)
             )) {
                 is ExtractionResult.Success -> result.uri
                 is ExtractionResult.Failure -> null
