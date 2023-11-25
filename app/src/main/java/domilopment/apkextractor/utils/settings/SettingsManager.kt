@@ -23,12 +23,6 @@ import java.util.*
 
 class SettingsManager(context: Context) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private val packageManager = context.packageManager
-
-    fun getApps(): Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>> {
-        val apks = ListOfApps(packageManager)
-        return apks.apps
-    }
 
     /**
      * Creates a List containing of all Types the User Selected in Settings
