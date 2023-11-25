@@ -6,9 +6,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 
 @Composable
@@ -23,19 +21,12 @@ fun attrColorResource(attrId: Int): Color {
 fun SpannableText(
     text: String, searchString: String, fontSize: TextUnit, maxLines: Int, overflow: TextOverflow
 ) {
-    val color = attrColorResource(attrId = android.R.attr.textColorHighlight)
-
     val annotatedString = if (searchString.isNotBlank() && text.contains(searchString, ignoreCase = true)) {
+        val color = attrColorResource(attrId = android.R.attr.textColorHighlight)
         val startIndex = text.lowercase().indexOf(searchString.lowercase())
         val endIndex = startIndex + searchString.length
 
-        buildAnnotatedString {
-            append(text.substring(0, startIndex))
-            withStyle(style = SpanStyle(color)) {
-                append(text.substring(startIndex, endIndex))
-            }
-            append(text.substring(endIndex))
-        }
+        AnnotatedString(text, listOf(AnnotatedString.Range(SpanStyle(color), startIndex, endIndex)))
     } else AnnotatedString(text)
 
     Text(text = annotatedString, fontSize = fontSize, maxLines = maxLines, overflow = overflow)
