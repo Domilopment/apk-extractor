@@ -38,12 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.Utils.getAnnotatedString
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppList(
     appList: List<ApplicationModel>,
+    searchString: String?,
     isSwipeToDismiss: Boolean,
     updateApp: (ApplicationModel) -> Unit,
     triggerActionMode: (ApplicationModel) -> Unit,
@@ -51,6 +53,8 @@ fun AppList(
     leftSwipeAction: ApkActionsOptions,
     swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit
 ) {
+    val highlightColor = attrColorResource(attrId = android.R.attr.textColorHighlight)
+
     LazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
         items(items = appList, key = { it.appPackageName }) { app ->
             val state = rememberDismissState(confirmValueChange = {
@@ -81,7 +85,16 @@ fun AppList(
                     null -> this
                 }
             }, dismissContent = {
-                AppListItem(app = app,
+                AppListItem(appName = getAnnotatedString(
+                    app.appName, searchString, highlightColor
+                ),
+                    appPackageName = getAnnotatedString(
+                        app.appPackageName, searchString, highlightColor
+                    ),
+                    appIcon = app.appIcon,
+                    apkSize = app.apkSize,
+                    isChecked = app.isChecked,
+                    isFavorite = app.isFavorite,
                     onClick = { updateApp(app) },
                     onLongClick = { triggerActionMode(app) })
             }, directions = getSwipeDirections(
@@ -118,7 +131,9 @@ private fun getSwipeDirections(
 }
 
 @Composable
-private fun AppListItemSwipeLeft(leftSwipeAction: ApkActionsOptions, modifier: Modifier = Modifier) {
+private fun AppListItemSwipeLeft(
+    leftSwipeAction: ApkActionsOptions, modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier.fillMaxSize(),
         horizontalArrangement = Arrangement.End,
@@ -144,7 +159,9 @@ private fun AppListItemSwipeLeft(leftSwipeAction: ApkActionsOptions, modifier: M
 }
 
 @Composable
-private fun AppListItemSwipeRight(rightSwipeAction: ApkActionsOptions, modifier: Modifier = Modifier) {
+private fun AppListItemSwipeRight(
+    rightSwipeAction: ApkActionsOptions, modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier.fillMaxSize(),
         horizontalArrangement = Arrangement.Start,
@@ -189,8 +206,10 @@ private fun AppListPreview() {
             Button(onClick = { actionMode = false }) {
                 Text(text = "Stop ActionMode")
             }
-            AppList(appList = apps,
+            AppList(
+                appList = apps,
                 isSwipeToDismiss = !actionMode,
+                searchString = "",
                 updateApp = { app ->
                     if (actionMode) apps.replaceAll {
                         if (it.appPackageName == app.appPackageName) app.copy(
@@ -200,8 +219,8 @@ private fun AppListPreview() {
                 },
                 triggerActionMode = { if (!actionMode) actionMode = true },
                 rightSwipeAction = ApkActionsOptions.SAVE,
-                leftSwipeAction = ApkActionsOptions.SHARE,
-                swipeActionCallback = { app, action -> Log.e(action.name, app.appPackageName) })
+                leftSwipeAction = ApkActionsOptions.SHARE
+            ) { app, action -> Log.e(action.name, app.appPackageName) }
         }
     }
 }

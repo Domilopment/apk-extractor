@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppListContent(
     appList: List<ApplicationModel>,
+    searchString: String?,
     isSwipeToDismiss: Boolean,
     updateApp: (ApplicationModel) -> Unit,
     triggerActionMode: (ApplicationModel) -> Unit,
@@ -45,6 +46,7 @@ fun AppListContent(
     Box(Modifier.then(if (isPullToRefresh) Modifier.pullRefresh(state) else Modifier)) {
         AppList(
             appList = appList,
+            searchString = searchString,
             isSwipeToDismiss = isSwipeToDismiss,
             updateApp = updateApp,
             triggerActionMode = triggerActionMode,
@@ -87,7 +89,9 @@ private fun AppListScreenPreview() {
             Button(onClick = { actionMode = false }) {
                 Text(text = "Stop ActionMode")
             }
-            AppListContent(appList = apps,
+            AppListContent(
+                appList = apps,
+                searchString = "",
                 isSwipeToDismiss = !actionMode,
                 updateApp = { app ->
                     if (actionMode) apps.replaceAll {
@@ -108,8 +112,8 @@ private fun AppListScreenPreview() {
                     }
                 },
                 rightSwipeAction = ApkActionsOptions.SAVE,
-                leftSwipeAction = ApkActionsOptions.SHARE,
-                swipeActionCallback = { app, action -> null })
+                leftSwipeAction = ApkActionsOptions.SHARE
+            ) { app, action -> null }
         }
     }
 }

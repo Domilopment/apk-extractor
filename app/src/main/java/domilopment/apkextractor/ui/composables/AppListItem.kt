@@ -1,10 +1,10 @@
 package domilopment.apkextractor.ui.composables
 
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,39 +34,39 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.Utils
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppListItem(
-    app: ApplicationModel,
+    appName: AnnotatedString,
+    apkSize: Float,
+    appPackageName: AnnotatedString,
+    appIcon: Drawable,
+    isChecked: Boolean,
+    isFavorite: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
     ListItem(
         headlineContent = {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Bottom
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom
             ) {
                 Text(
-                    text = app.appName,
-                    fontSize = 16.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    text = appName, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = stringResource(id = R.string.app_list_item_size, app.apkSize),
+                    text = stringResource(id = R.string.app_list_item_size, apkSize),
                     modifier = Modifier.padding(8.dp, 2.dp),
                     fontSize = 8.sp,
                     maxLines = 1,
@@ -80,15 +80,15 @@ fun AppListItem(
             .combinedClickable(onClick = onClick, onLongClick = onLongClick),
         supportingContent = {
             Text(
-                text = app.appPackageName,
+                text = appPackageName,
                 fontSize = 12.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
-        leadingContent = { AppListItemAvatar(app = app) },
+        leadingContent = { AppListItemAvatar(appIcon = appIcon, isChecked = isChecked) },
         trailingContent = {
-            if (app.isFavorite) {
+            if (isFavorite) {
                 Icon(
                     imageVector = Icons.Filled.Star,
                     contentDescription = null,
@@ -96,15 +96,15 @@ fun AppListItem(
                 )
             }
         },
-        colors = ListItemDefaults.colors(containerColor = if (app.isChecked) MaterialTheme.colorScheme.surfaceVariant else ListItemDefaults.containerColor)
+        colors = ListItemDefaults.colors(containerColor = if (isChecked) MaterialTheme.colorScheme.surfaceVariant else ListItemDefaults.containerColor)
     )
 
 }
 
 @Composable
-private fun AppListItemAvatar(app: ApplicationModel) {
+private fun AppListItemAvatar(appIcon: Drawable, isChecked: Boolean) {
     val icon = remember {
-        app.appIcon.let {
+        appIcon.let {
             it.toBitmap(it.intrinsicWidth, it.intrinsicHeight, null).asImageBitmap()
         }
     }
@@ -114,8 +114,7 @@ private fun AppListItemAvatar(app: ApplicationModel) {
             contentDescription = stringResource(id = R.string.list_item_Image_description)
         )
         AppListItemCheckmark(
-            isChecked = app.isChecked,
-            modifier = Modifier
+            isChecked = isChecked, modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .offset(6.dp, 2.dp)
         )
@@ -146,6 +145,7 @@ private fun AppListItemPreview() {
     var actionMode by remember {
         mutableStateOf(false)
     }
+    val color = attrColorResource(attrId = android.R.attr.textColorHighlight)
     MaterialTheme {
         Column {
             Text(text = "ActionMode is ${if (actionMode) "ON" else "OFF"}")
@@ -153,7 +153,12 @@ private fun AppListItemPreview() {
                 Text(text = "Stop ActionMode")
             }
             AppListItem(
-                app = app,
+                appName = Utils.getAnnotatedString(app.appName, "", color),
+                appPackageName = Utils.getAnnotatedString(app.appPackageName, "", color),
+                appIcon = app.appIcon,
+                apkSize = app.apkSize,
+                isChecked = app.isChecked,
+                isFavorite = app.isFavorite,
                 onClick = { if (actionMode) app = app.copy(isChecked = !app.isChecked) },
                 onLongClick = { if (!actionMode) actionMode = true },
             )

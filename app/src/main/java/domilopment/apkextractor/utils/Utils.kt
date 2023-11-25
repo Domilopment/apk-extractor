@@ -6,6 +6,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.text.Spannable
 import android.text.style.ForegroundColorSpan
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.core.text.toSpannable
 import domilopment.apkextractor.data.ApplicationModel
 import java.text.SimpleDateFormat
@@ -71,6 +74,12 @@ object Utils {
      * @param text text that is displayed to the user
      * @return String spannable with color marked search word
      */
+    @Deprecated(
+        "will be no longer needed when UI switched to Compose", ReplaceWith(
+            "getAnnotatedString(text, searchString, color)",
+            "domilopment.apkextractor.utils.Utils.getAnnotatedString"
+        )
+    )
     fun getSpannable(text: CharSequence?, searchString: String, colorInt: Int): Spannable? {
         val spannable = text?.toSpannable()
         if (searchString.isNotBlank() && text?.contains(searchString, ignoreCase = true) == true) {
@@ -83,5 +92,26 @@ object Utils {
             )
         }
         return spannable
+    }
+    
+    /**
+     * Creates an Annotated from text, that shows the position of the search word inside the String
+     * @param text text that is displayed to the user
+     * @param searchString the text to be contained in parameter text
+     * @param color color to highlight text in parameter text
+     * @return Annotated String with color marked search word
+     */
+    fun getAnnotatedString(text: String, searchString: String?, color: Color): AnnotatedString {
+        return if (!searchString.isNullOrBlank() && text.contains(
+                searchString, ignoreCase = true
+            )
+        ) {
+            val startIndex = text.lowercase().indexOf(searchString.lowercase())
+            val endIndex = startIndex + searchString.length
+
+            AnnotatedString(
+                text, listOf(AnnotatedString.Range(SpanStyle(color), startIndex, endIndex))
+            )
+        } else AnnotatedString(text)
     }
 }

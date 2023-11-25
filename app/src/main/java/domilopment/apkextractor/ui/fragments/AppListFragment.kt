@@ -113,6 +113,7 @@ class AppListFragment : Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val mainUIState by model.mainFragmentState.collectAsState()
+                val searchString by model.searchQuery.collectAsState()
 
                 // In Compose world
                 APKExtractorTheme(
@@ -120,7 +121,9 @@ class AppListFragment : Fragment() {
                         Constants.PREFERENCE_USE_MATERIAL_YOU, false
                     )
                 ) {
-                    AppListContent(appList = mainUIState.appList,
+                    AppListContent(
+                        appList = mainUIState.appList,
+                        searchString = searchString,
                         isSwipeToDismiss = !mainUIState.actionMode,
                         updateApp = { app ->
                             if (!mainUIState.actionMode) {
@@ -144,18 +147,20 @@ class AppListFragment : Fragment() {
                         refreshing = mainUIState.isRefreshing,
                         isPullToRefresh = !mainUIState.actionMode,
                         onRefresh = { model.updateApps() },
-                        rightSwipeAction = settingsManager.getRightSwipeAction() ?: ApkActionsOptions.SAVE,
-                        leftSwipeAction = settingsManager.getLeftSwipeAction() ?: ApkActionsOptions.SHARE,
-                        swipeActionCallback = { app, apkAction ->
-                            appToUninstall = app
-                            apkAction.getAction(
-                                requireContext(),
-                                app,
-                                ApkActionsOptions.ApkActionOptionParams.Builder()
-                                    .setViews(requireView(), binding.appMultiselectBottomSheet.root)
-                                    .setShareResult(shareApp).setDeleteResult(uninstallApp).build()
-                            )
-                        })
+                        rightSwipeAction = settingsManager.getRightSwipeAction()
+                            ?: ApkActionsOptions.SAVE,
+                        leftSwipeAction = settingsManager.getLeftSwipeAction()
+                            ?: ApkActionsOptions.SHARE
+                    ) { app, apkAction ->
+                        appToUninstall = app
+                        apkAction.getAction(
+                            requireContext(),
+                            app,
+                            ApkActionsOptions.ApkActionOptionParams.Builder()
+                                .setViews(requireView(), binding.appMultiselectBottomSheet.root)
+                                .setShareResult(shareApp).setDeleteResult(uninstallApp).build()
+                        )
+                    }
                 }
             }
         }
