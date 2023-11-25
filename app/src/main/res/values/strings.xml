@@ -212,8 +212,7 @@
     <string name="action_multiselect_bottom_sheet_save_description">Save APKs</string>
     <string name="action_multiselect_bottom_sheet_share_description">@string/apk_action_share</string>
 
-    <!-- App List Adapter -->
-    <string name="holder_app_name">%s (%.2f MB)</string>
+    <!-- App List Item -->
     <string name="app_list_item_size">%.2f MB</string>
 
     <!-- Apk List Adapter -->

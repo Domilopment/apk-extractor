@@ -93,7 +93,7 @@ object Utils {
         }
         return spannable
     }
-    
+
     /**
      * Creates an Annotated from text, that shows the position of the search word inside the String
      * @param text text that is displayed to the user
