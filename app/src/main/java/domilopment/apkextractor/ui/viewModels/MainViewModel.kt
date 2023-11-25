@@ -1,9 +1,12 @@
 package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import domilopment.apkextractor.UpdateTrigger
 import domilopment.apkextractor.data.*
+import domilopment.apkextractor.utils.ApplicationRepository
+import domilopment.apkextractor.utils.ListOfApps
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
@@ -12,22 +15,22 @@ import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class MainViewModel(application: Application) : AndroidViewModel(application), Observer {
     override val key: String = "AppListViewModel"
 
-    private val _applications: MutableLiveData<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> by lazy {
-        MutableLiveData<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>>().also {
-            viewModelScope.launch {
-                it.value = loadApps()
-            }
-        }
-    }
-    val applications: LiveData<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> =
-        _applications
+    private val appsRepository = ApplicationRepository(ListOfApps.getApplications(application))
 
     private val _mainFragmentState: MutableStateFlow<MainFragmentUIState> =
         MutableStateFlow(MainFragmentUIState())
@@ -38,46 +41,53 @@ class MainViewModel(application: Application) : AndroidViewModel(application), O
     val appOptionsBottomSheetUIState: StateFlow<AppOptionsBottomSheetUIState> =
         _appOptionsBottomSheetState.asStateFlow()
 
-    private val _searchQuery: MutableLiveData<String?> = MutableLiveData(null)
-    val searchQuery: LiveData<String?> = _searchQuery
+    private val _searchQuery: MutableStateFlow<String?> = MutableStateFlow(null)
+    val searchQuery: StateFlow<String?> = _searchQuery.asStateFlow()
 
     private val context get() = getApplication<Application>().applicationContext
 
-    private val observer =
-        Observer<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> { apps ->
-            _mainFragmentState.update { state ->
-                val settingsManager = SettingsManager(context)
-                state.copy(
-                    appList = settingsManager.sortAppData(
-                        settingsManager.filterApps(
-                            settingsManager.selectedAppTypes(
-                                apps
-                            )
-                        )
-                    ), isRefreshing = false, updateTrigger = UpdateTrigger(true)
-                )
-            }
-        }
-
     init {
         // Set applications in view once they are loaded
-        _applications.observeForever(observer)
+        viewModelScope.launch {
+            searchQuery.debounce(500L)
+                .combine(appsRepository.apps.mapLatest { userConfigFilteredApps(it) }) { searchQuery, appList ->
+                    val searchString = searchQuery?.trim()
+
+                    return@combine if (searchString.isNullOrBlank()) {
+                        appList
+                    } else {
+                        appList.filter {
+                            it.appName.contains(
+                                searchString, ignoreCase = true
+                            ) || it.appPackageName.contains(
+                                searchString, ignoreCase = true
+                            )
+                        }
+                    }
+                }.collect {
+                    _mainFragmentState.update { state ->
+                        state.copy(
+                            appList = it, isRefreshing = false
+                        )
+                    }
+                }
+        }
+
         EventDispatcher.registerObserver(this, EventType.INSTALLED, EventType.UNINSTALLED)
     }
 
     override fun onCleared() {
         EventDispatcher.unregisterObserver(this, EventType.ANY)
-        _applications.removeObserver(observer)
         super.onCleared()
     }
 
     override fun onEventReceived(event: Event<*>) {
         when (event.eventType) {
-            EventType.INSTALLED -> addApplication(event.data as String)
+            EventType.INSTALLED -> updateApps()
             EventType.UNINSTALLED -> if (Utils.isPackageInstalled(
                     context.packageManager, event.data as String
                 )
-            ) moveFromUpdatedToSystemApps(event.data) else removeApp(event.data)
+            ) updateApps()
 
             else -> return
         }
@@ -90,9 +100,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), O
      */
     fun selectApplication(app: ApplicationModel?) {
         _appOptionsBottomSheetState.update { state ->
-            state.copy(
-                selectedApplicationModel = app
-            )
+            state.copy(selectedApplicationModel = app)
         }
     }
 
@@ -122,83 +130,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application), O
             it.copy(isRefreshing = true)
         }
         viewModelScope.launch {
-            val load = async(Dispatchers.IO) {
-                return@async loadApps()
-            }
-            val apps = load.await()
-            _applications.postValue(apps)
+            delay(5000)
+            async { appsRepository.updateApps() }
         }
     }
 
-    private fun addApplication(packageName: String) {
-        val apps = _applications.value ?: return
-
-        if ((apps.first + apps.third).any { it.appPackageName == packageName }) return
-
-        val updatedSystemApps = apps.first.toMutableList()
-        val systemApps = apps.second.toMutableList()
-        val userApps = apps.third.toMutableList()
-
-        systemApps.find { it.appPackageName == packageName }?.let {
-            updatedSystemApps.add(it)
-            systemApps.remove(it)
-        } ?: userApps.add(ApplicationModel(context.packageManager, packageName))
-
-        _applications.value = Triple(systemApps, updatedSystemApps, userApps)
-    }
-
-    /**
-     * Remove app from app list, for example on uninstall
-     * @param app
-     * uninstalled app
-     */
-    fun removeApp(app: ApplicationModel) {
-        _applications.value = _applications.value?.let { apps ->
-            val userApps = apps.third.toMutableList().apply {
-                remove(app)
-            }
-            return@let Triple(apps.first, apps.second, userApps)
+    fun uninstallApps(packageName: String) {
+        if (Utils.isPackageInstalled(context.packageManager, packageName)) return
+        _mainFragmentState.update {
+            it.copy(isRefreshing = true)
         }
-    }
-
-    /**
-     * Remove app from app list, for example on uninstall
-     * @param appPackageName
-     * uninstalled apps package name
-     */
-    private fun removeApp(appPackageName: String) {
-        _applications.value = _applications.value?.let { apps ->
-            val userApps = apps.third.filter { it.appPackageName != appPackageName }
-            return@let Triple(apps.first, apps.second, userApps)
-        }
-    }
-
-    /**
-     * Moves app from updated system apps list, and moves it to system apps, for example on uninstall
-     * @param app
-     * uninstalled app
-     */
-    fun moveFromUpdatedToSystemApps(app: ApplicationModel) {
-        _applications.value = _applications.value?.let { apps ->
-            val updatedSystemApps = apps.first.toMutableList()
-            val systemApps = if (updatedSystemApps.remove(app)) {
-                apps.second.toMutableList().apply {
-                    add(app)
-                }
-            } else apps.second
-            return@let Triple(updatedSystemApps, systemApps, apps.third)
-        }
-    }
-
-    private fun moveFromUpdatedToSystemApps(packageName: String) {
-        _applications.value = _applications.value?.let { apps ->
-            val updatedSystemApps = apps.first.toMutableList()
-            val systemApps = if (updatedSystemApps.removeIf { it.appPackageName == packageName }) {
-                apps.second.toMutableList().apply {
-                    add(ApplicationModel(context.packageManager, packageName))
-                }
-            } else apps.second
-            return@let Triple(updatedSystemApps, systemApps, apps.third)
+        viewModelScope.launch {
+            async { appsRepository.updateApps() }
         }
     }
 
@@ -230,26 +173,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application), O
                 val sortedList = withContext(Dispatchers.IO) {
                     settingsManager.sortAppData(state.appList)
                 }
-                state.copy(
-                    appList = sortedList, updateTrigger = UpdateTrigger(state.appList == sortedList)
-                )
+                state.copy(appList = sortedList)
             }
         }
     }
 
     fun filterApps() {
-        val settingsManager = SettingsManager(context)
         viewModelScope.launch {
-            applications.value?.let {
+            appsRepository.apps.collect {
                 _mainFragmentState.update { state ->
                     val sortedList = withContext(Dispatchers.IO) {
-                        settingsManager.sortAppData(
-                            settingsManager.filterApps(
-                                SettingsManager(context).selectedAppTypes(
-                                    it
-                                )
-                            )
-                        )
+                        userConfigFilteredApps(it)
                     }
                     state.copy(appList = sortedList)
                 }
@@ -272,11 +206,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application), O
 
         val settingsManager = SettingsManager(context)
 
-        _applications.value?.let {
-            _mainFragmentState.update { state ->
-                state.copy(isRefreshing = true)
-            }
-            viewModelScope.launch {
+        _mainFragmentState.update { state ->
+            state.copy(isRefreshing = true)
+        }
+
+        viewModelScope.launch {
+            appsRepository.apps.collect {
                 val selectedAppTypes = async(Dispatchers.IO) {
                     return@async when (key) {
                         "updated_system_apps" -> settingsManager.selectedAppTypes(
@@ -305,12 +240,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application), O
         }
     }
 
-    /**
-     * Load apps from device
-     */
-    private suspend fun loadApps(): Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>> =
-        withContext(Dispatchers.IO) {
-            // Do an asynchronous operation to fetch users.
-            return@withContext SettingsManager(context).getApps()
+    private fun userConfigFilteredApps(apps: Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>): List<ApplicationModel> {
+        val settingsManager = SettingsManager(context)
+
+        return settingsManager.sortAppData(
+            settingsManager.filterApps(
+                settingsManager.selectedAppTypes(apps)
+            )
+        )
+    }
+
+    fun updateApp(app: ApplicationModel) {
+        _mainFragmentState.update { state ->
+            state.copy(appList = state.appList.toMutableList()
+                .map { if (it.appPackageName == app.appPackageName) app else it })
         }
+
+    }
+
+    fun selectAllApps(select: Boolean) {
+        _mainFragmentState.update { state ->
+            state.copy(appList = state.appList.toMutableList().map { it.copy(isChecked = select) })
+        }
+    }
 }

@@ -9,7 +9,10 @@ import domilopment.apkextractor.utils.Utils
 import java.io.File
 
 data class ApplicationModel(
-    private val packageManager: PackageManager, val appPackageName: String
+    private val packageManager: PackageManager,
+    val appPackageName: String,
+    var isChecked: Boolean = false,
+    var isFavorite: Boolean = false
 ) {
     private val packageInfo: PackageInfo
         get() = Utils.getPackageInfo(packageManager, appPackageName)
@@ -17,7 +20,7 @@ data class ApplicationModel(
         get() = packageManager.getApplicationLabel(packageInfo.applicationInfo).toString()
     val appSourceDirectory: String get() = packageInfo.applicationInfo.sourceDir
     val appIcon: Drawable get() = packageManager.getApplicationIcon(packageInfo.applicationInfo)
-    val appVersionName: String get() = packageInfo.versionName
+    val appVersionName: String? get() = packageInfo.versionName
     val appVersionCode: Long get() = Utils.versionCode(packageInfo)
     val appFlags: Int get() = packageInfo.applicationInfo.flags
     val appCategory: Int get() = packageInfo.applicationInfo.category
@@ -30,6 +33,4 @@ data class ApplicationModel(
             appPackageName
         ).installingPackageName
         else packageManager.getInstallerPackageName(appPackageName)
-    var isChecked: Boolean = false
-    var isFavorite: Boolean = false
 }
