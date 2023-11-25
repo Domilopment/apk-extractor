@@ -6,6 +6,7 @@ import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.Utils
 
 enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val icon: Int) {
     SAVE("save_apk", R.string.action_bottom_sheet_save, R.drawable.ic_baseline_save_24) {
@@ -66,6 +67,14 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
     abstract fun getAction(
         context: Context, app: ApplicationModel, params: ApkActionOptionParams
     )
+
+    companion object {
+        fun isOptionSupported(app: ApplicationModel, action: ApkActionsOptions): Boolean {
+            return (action != OPEN || app.launchIntent != null) && (action != UNINSTALL || (!Utils.isSystemApp(
+                app
+            ) || (app.appUpdateTime > app.appInstallTime)))
+        }
+    }
 
     class ApkActionOptionParams private constructor(
         val views: Pair<View, View>?,

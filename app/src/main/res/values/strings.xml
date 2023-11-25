@@ -214,6 +214,7 @@
 
     <!-- App List Adapter -->
     <string name="holder_app_name">%s (%.2f MB)</string>
+    <string name="app_list_item_size">%.2f MB</string>
 
     <!-- Apk List Adapter -->
     <string name="apk_holder_version">Version: %s (%d)</string>

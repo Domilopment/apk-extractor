@@ -5,16 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.AppListFragment">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/refresh"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/compose_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <include
-            android:id="@+id/list_view"
-            layout="@layout/app_list" />
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        android:layout_height="match_parent" />
 
     <include
         android:id="@+id/app_multiselect_bottom_sheet"

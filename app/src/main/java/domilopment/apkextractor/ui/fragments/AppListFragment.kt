@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.EditorInfo
@@ -15,6 +14,9 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -24,24 +26,24 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.*
-import domilopment.apkextractor.ui.appList.AppListAdapter
-import domilopment.apkextractor.ui.appList.AppListTouchHelperCallback
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.FragmentAppListBinding
 import domilopment.apkextractor.ui.appList.AppListMultiselectCallback
+import domilopment.apkextractor.ui.composables.AppListContent
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
+import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
 import domilopment.apkextractor.ui.dialogs.ProgressDialogFragment
+import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
+import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.Utils
+import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -53,13 +55,14 @@ class AppListFragment : Fragment() {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var viewAdapter: AppListAdapter
-    private lateinit var swipeHelper: ItemTouchHelper
     private lateinit var searchView: SearchView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var callback: OnBackPressedCallback
+    private lateinit var settingsManager: SettingsManager
     private val model by activityViewModels<MainViewModel>()
     private val progressDialogViewModel by activityViewModels<ProgressDialogViewModel>()
+
+    private val actionModeCallback = AppListMultiselectCallback(this@AppListFragment)
 
     private val shareApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -70,19 +73,16 @@ class AppListFragment : Fragment() {
     private val uninstallApp =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             appToUninstall?.also {
-                val isAppUninstalled =
-                    !Utils.isPackageInstalled(requireContext().packageManager, it.appPackageName)
-                if (isAppUninstalled) {
-                    model.removeApp(it)
-                } else if (Utils.isSystemApp(it) && it.appInstallTime == it.appUpdateTime) {
-                    model.moveFromUpdatedToSystemApps(it)
-                }
+                model.uninstallApps(it.appPackageName)
             }
             appToUninstall = null
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        settingsManager = SettingsManager(requireContext())
 
         callback = requireActivity().onBackPressedDispatcher.addCallback {
             // close search view on back button pressed
@@ -94,22 +94,9 @@ class AppListFragment : Fragment() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                model.mainFragmentState.collect { uiState ->
-                    binding.refresh.isRefreshing = uiState.isRefreshing
-                    val recyclerView = binding.listView.list
-                    if (!recyclerView.isComputingLayout && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE) viewAdapter.updateData(
-                        uiState.appList, uiState.updateTrigger.handleTrigger()
-                    )
-                    else recyclerView.post {
-                        viewAdapter.updateData(
-                            uiState.appList, uiState.updateTrigger.handleTrigger()
-                        )
-                    }
-                    if (::searchView.isInitialized) with(searchView.query) {
-                        if (isNotBlank()) viewAdapter.filter.filter(this)
-                    }
-                    if (uiState.actionMode) (requireActivity() as AppCompatActivity).startSupportActionMode(
-                        viewAdapter.actionModeCallback
+                model.mainFragmentState.collect { state ->
+                    if (state.actionMode != AppListMultiselectCallback.isActionModeActive()) (requireActivity() as AppCompatActivity).startSupportActionMode(
+                        actionModeCallback
                     )
                 }
             }
@@ -120,40 +107,65 @@ class AppListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAppListBinding.inflate(inflater, container, false)
+        binding.composeView.apply {
+            // Dispose of the Composition when the view's LifecycleOwner
+            // is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val mainUIState by model.mainFragmentState.collectAsState()
+
+                // In Compose world
+                APKExtractorTheme(
+                    dynamicColor = sharedPreferences.getBoolean(
+                        Constants.PREFERENCE_USE_MATERIAL_YOU, false
+                    )
+                ) {
+                    AppListContent(appList = mainUIState.appList,
+                        isSwipeToDismiss = !mainUIState.actionMode,
+                        updateApp = { app ->
+                            if (!mainUIState.actionMode) {
+                                model.selectApplication(app)
+                                this@AppListFragment.requireActivity().supportFragmentManager.let {
+                                    AppOptionsBottomSheet.newInstance(app.appPackageName).apply {
+                                        show(it, AppOptionsBottomSheet.TAG)
+                                    }
+                                }
+                            } else {
+                                model.updateApp(app.copy(isChecked = !app.isChecked))
+                                actionModeCallback.setModeTitle(getSelectedAppsCount())
+                            }
+                        },
+                        triggerActionMode = { app ->
+                            if (!mainUIState.actionMode) {
+                                model.updateApp(app.copy(isChecked = true))
+                                model.addActionModeCallback(true)
+                            }
+                        },
+                        refreshing = mainUIState.isRefreshing,
+                        isPullToRefresh = !mainUIState.actionMode,
+                        onRefresh = { model.updateApps() },
+                        rightSwipeAction = settingsManager.getRightSwipeAction() ?: ApkActionsOptions.SAVE,
+                        leftSwipeAction = settingsManager.getLeftSwipeAction() ?: ApkActionsOptions.SHARE,
+                        swipeActionCallback = { app, apkAction ->
+                            appToUninstall = app
+                            apkAction.getAction(
+                                requireContext(),
+                                app,
+                                ApkActionsOptions.ApkActionOptionParams.Builder()
+                                    .setViews(requireView(), binding.appMultiselectBottomSheet.root)
+                                    .setShareResult(shareApp).setDeleteResult(uninstallApp).build()
+                            )
+                        })
+                }
+            }
+        }
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
-
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-
-        viewAdapter = AppListAdapter(this)
-
-        swipeHelper = ItemTouchHelper(AppListTouchHelperCallback(
-            this
-        ) { viewHolder: RecyclerView.ViewHolder, apkAction: ApkActionsOptions ->
-            val app = viewAdapter.myDatasetFiltered[viewHolder.bindingAdapterPosition]
-            appToUninstall = app
-            apkAction.getAction(
-                requireContext(),
-                app,
-                ApkActionsOptions.ApkActionOptionParams.Builder()
-                    .setViews(view, binding.appMultiselectBottomSheet.root).setShareResult(shareApp)
-                    .setDeleteResult(uninstallApp).build()
-            )
-            viewAdapter.notifyItemChanged(viewHolder.bindingAdapterPosition)
-        })
-        swipeHelper.attachToRecyclerView(binding.listView.list)
-
-        binding.listView.list.apply {
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
-            setHasFixedSize(true)
-            // specify an viewAdapter (see also next example)
-            adapter = viewAdapter
-        }
 
         progressDialogViewModel.extractionResult.observe(viewLifecycleOwner) { result ->
             result?.getContentIfNotHandled()?.let { (errorMessage, app, size) ->
@@ -168,8 +180,10 @@ class AppListFragment : Fragment() {
                         dialog.dismiss()
                     }
                     setNeutralButton(R.string.snackbar_extraction_failed_message_copy_to_clipboard) { _, _ ->
-                        val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val clip = ClipData.newPlainText("APK Extractor: Error Message", errorMessage)
+                        val clipboardManager =
+                            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clip =
+                            ClipData.newPlainText("APK Extractor: Error Message", errorMessage)
                         clipboardManager.setPrimaryClip(clip)
                     }
                 }.show()
@@ -208,11 +222,6 @@ class AppListFragment : Fragment() {
             }
         }
 
-        // add Refresh Layout action on Swipe
-        binding.refresh.setOnRefreshListener {
-            model.updateApps()
-        }
-
         binding.appMultiselectBottomSheet.apply {
             actionSaveApk.setOnClickListener {
                 saveApps()
@@ -229,13 +238,18 @@ class AppListFragment : Fragment() {
         _binding = null
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        actionModeCallback.pause()
+    }
+
     /**
      * Function Called on BottomSheet Click
      * If backup was successful, print name of last app backup and number of additional
      * else break on first unsuccessful backup and print its name
      */
     private fun saveApps() {
-        viewAdapter.myDatasetFiltered.filter {
+        model.mainFragmentState.value.appList.filter {
             it.isChecked
         }.also { list ->
             if (list.isEmpty()) Toast.makeText(
@@ -255,7 +269,7 @@ class AppListFragment : Fragment() {
      * If share Uri generation was successful, show Intent share Dialog
      */
     private fun shareApps() {
-        viewAdapter.myDatasetFiltered.filter {
+        model.mainFragmentState.value.appList.filter {
             it.isChecked
         }.also {
             if (it.isEmpty()) Toast.makeText(
@@ -269,12 +283,6 @@ class AppListFragment : Fragment() {
             }
         }
     }
-
-    /**
-     * Remove or attach RecyclerView to SwipeHelper
-     */
-    fun attachSwipeHelper(attach: Boolean) =
-        swipeHelper.attachToRecyclerView(if (attach) binding.listView.list else null)
 
     private fun setupMenu() {
         (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
@@ -322,14 +330,17 @@ class AppListFragment : Fragment() {
                             return@setOnCloseListener false
                         }
                     }.also { searchView ->
-                        model.searchQuery.observe(viewLifecycleOwner) {
-                            it?.also {
-                                viewAdapter.filter.filter(it)
-                                if (it.isNotBlank() && searchView.query.isBlank()) searchView.setQuery(
-                                    it, false
-                                )
-                                if (!AppListMultiselectCallback.isActionModeActive() && it.isNotBlank()) searchView.isIconified =
-                                    false
+                        lifecycleScope.launch {
+                            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                model.searchQuery.collect {
+                                    it?.also {
+                                        if (it.isNotBlank() && searchView.query.isBlank()) searchView.setQuery(
+                                            it, false
+                                        )
+                                        if (!AppListMultiselectCallback.isActionModeActive() && it.isNotBlank()) searchView.isIconified =
+                                            false
+                                    }
+                                }
                             }
                         }
                     }
@@ -365,15 +376,6 @@ class AppListFragment : Fragment() {
     }
 
     /**
-     * Set Enabled State of refresh
-     * @param enabled
-     * boolean for enabled state
-     */
-    fun enableRefresh(enabled: Boolean) {
-        binding.refresh.isEnabled = enabled
-    }
-
-    /**
      * Set State of Multiselect Bottom Sheet
      * @param show
      * State to apply
@@ -387,13 +389,13 @@ class AppListFragment : Fragment() {
             BottomSheetBehavior.from(binding.appMultiselectBottomSheet.root).state = if (show) {
                 val paddingBottom =
                     requireContext().obtainStyledAttributes(intArrayOf(android.R.attr.listPreferredItemHeight))
-                binding.listView.list.setPadding(
+                binding.composeView.setPadding(
                     0, 0, 0, paddingBottom.getDimensionPixelOffset(0, 0)
                 )
                 paddingBottom.recycle()
                 BottomSheetBehavior.STATE_EXPANDED
             } else {
-                binding.listView.list.setPadding(0, 0, 0, 0)
+                binding.composeView.setPadding(0, 0, 0, 0)
                 BottomSheetBehavior.STATE_COLLAPSED
             }
         }
@@ -407,11 +409,11 @@ class AppListFragment : Fragment() {
         model.addActionModeCallback(actionMode)
     }
 
-    /**
-     * Set ApplicationModel for AppOptionsBottomSheet flow
-     * @param app Selected Application from App list
-     */
-    fun selectApplication(app: ApplicationModel) {
-        model.selectApplication(app)
+    fun selectAllApps(select: Boolean) {
+        model.selectAllApps(select)
+    }
+
+    fun getSelectedAppsCount(): Int {
+        return model.mainFragmentState.value.appList.count { it.isChecked }
     }
 }

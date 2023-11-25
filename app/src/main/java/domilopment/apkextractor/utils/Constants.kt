@@ -24,4 +24,6 @@ object Constants {
     const val PREFERENCE_KEY_FILTER_OTHERS = "filter_others"
 
     const val PREFERENCE_CHECK_UPDATE_ON_START = "check_update_on_start"
+
+    const val PREFERENCE_USE_MATERIAL_YOU = "use_material_you"
 }

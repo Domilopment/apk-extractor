@@ -49,12 +49,9 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
             val isAppUninstalled =
                 !Utils.isPackageInstalled(requireContext().packageManager, app.appPackageName)
             if (isAppUninstalled) {
-                model.removeApp(app)
+                model.updateApps()
                 dismiss()
             } else {
-                if (Utils.isSystemApp(app) && app.appInstallTime == app.appUpdateTime) model.moveFromUpdatedToSystemApps(
-                    app
-                )
                 setupApplicationInfo()
                 setupApplicationActions()
             }
@@ -129,7 +126,7 @@ class AppOptionsBottomSheet : BottomSheetDialogFragment() {
         val isAppUninstalled =
             !Utils.isPackageInstalled(requireContext().packageManager, app.appPackageName)
         if (isAppUninstalled) {
-            model.removeApp(app)
+            model.updateApps()
             dismiss()
         } else {
             setupApplicationInfo()

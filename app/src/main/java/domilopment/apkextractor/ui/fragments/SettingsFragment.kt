@@ -28,6 +28,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.*
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -44,6 +45,7 @@ import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreference
 import domilopment.apkextractor.ui.apkNamePreferenceDialog.ApkNamePreferenceDialogFragmentCompat
 import domilopment.apkextractor.ui.viewModels.MainViewModel
+import domilopment.apkextractor.ui.viewModels.SettingsFragmentViewModel
 import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.settings.SettingsManager
 import domilopment.apkextractor.utils.Utils
@@ -67,7 +69,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var googlePlay: Preference? = null
     private var privacyPolicy: Preference? = null
     private var version: Preference? = null
-    private val model by activityViewModels<MainViewModel>()
+    private val model by activityViewModels<SettingsFragmentViewModel>()
 
     private val chooseSaveDir =
         registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) {
@@ -268,31 +270,35 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         // Fill List of Apps for Auto Backup with Installed or Updated Apps
-        model.applications.observe(viewLifecycleOwner) {
-            appListAutoBackup?.apply {
-                lifecycleScope.launch {
-                    val load = async(ioDispatcher) {
-                        val appEntries = mutableListOf<String>()
-                        val appValues = mutableListOf<String>()
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.applications.collect {
+                    appListAutoBackup?.apply {
+                        lifecycleScope.launch {
+                            val load = async(ioDispatcher) {
+                                val appEntries = mutableListOf<String>()
+                                val appValues = mutableListOf<String>()
 
-                        settingsManager.sortAppData(
-                            data = settingsManager.selectedAppTypes(
-                                it,
-                                selectUpdatedSystemApps = true,
-                                selectSystemApps = false,
-                                selectUserApps = true,
-                            ), sortMode = AppSortOptions.SORT_BY_NAME.ordinal, sortFavorites = false
-                        ).forEach {
-                            appEntries.add(it.appName)
-                            appValues.add(it.appPackageName)
+                                settingsManager.sortAppData(
+                                    data = settingsManager.selectedAppTypes(
+                                        it,
+                                        selectUpdatedSystemApps = true,
+                                        selectSystemApps = false,
+                                        selectUserApps = true,
+                                    ), sortMode = AppSortOptions.SORT_BY_NAME.ordinal, sortFavorites = false
+                                ).forEach {
+                                    appEntries.add(it.appName)
+                                    appValues.add(it.appPackageName)
+                                }
+
+                                entries = appEntries.toTypedArray()
+                                entryValues = appValues.toTypedArray()
+
+                                return@async true
+                            }
+                            isEnabled = load.await()
                         }
-
-                        entries = appEntries.toTypedArray()
-                        entryValues = appValues.toTypedArray()
-
-                        return@async true
                     }
-                    isEnabled = load.await()
                 }
             }
         }
