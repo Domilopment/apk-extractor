@@ -34,7 +34,7 @@ fun SpannableText(
             withStyle(style = SpanStyle(color)) {
                 append(text.substring(startIndex, endIndex))
             }
-            append(text.substring(startIndex + endIndex))
+            append(text.substring(endIndex))
         }
     } else AnnotatedString(text)
 
