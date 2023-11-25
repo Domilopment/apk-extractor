@@ -6,10 +6,11 @@ import android.view.MenuItem
 import android.widget.CheckBox
 import androidx.appcompat.view.ActionMode
 import domilopment.apkextractor.R
+import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.ui.fragments.AppListFragment
 
 class AppListMultiselectCallback(
-    private val appListFragment: AppListFragment, private val appListAdapter: AppListAdapter
+    private val appListFragment: AppListFragment
 ) : ActionMode.Callback {
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
         // Inflate the menu resource providing context menu items
@@ -24,8 +25,7 @@ class AppListMultiselectCallback(
                 buttonView.isChecked = false
             }
         }
-        appListFragment.enableRefresh(false)
-        appListFragment.attachSwipeHelper(false)
+        appListFragment.startSupportActionMode(true)
         appListFragment.showBottomSheet(true)
         return true
     }
@@ -37,34 +37,30 @@ class AppListMultiselectCallback(
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_select_all -> if (item.isChecked) {
-                appListAdapter.myDatasetFiltered.forEach {
-                    it.isChecked = true
-                }
+                appListFragment.selectAllApps(true)
                 setModeTitle(mode = mode)
-                appListAdapter.notifyDataSetChanged()
             }
         }
         return true
     }
 
     override fun onDestroyActionMode(mode: ActionMode?) {
-        appListAdapter.myDatasetFiltered.forEach {
-            it.isChecked = false
-        }
+        appListFragment.selectAllApps(false)
         appListFragment.showBottomSheet(false)
-        appListFragment.attachSwipeHelper(true)
-        appListFragment.enableRefresh(true)
         appListFragment.showSearchView()
         AppListMultiselectCallback.mode = null
-        appListAdapter.notifyDataSetChanged()
         appListFragment.startSupportActionMode(false)
     }
 
     fun setModeTitle(
-        itemCount: Int = appListAdapter.myDatasetFiltered.filter { it.isChecked }.size,
+        itemCount: Int = appListFragment.getSelectedAppsCount(),
         mode: ActionMode? = AppListMultiselectCallback.mode
     ) {
         mode?.title = appListFragment.getString(R.string.action_mode_title, itemCount)
+    }
+
+    fun pause() {
+        mode = null
     }
 
     companion object {
