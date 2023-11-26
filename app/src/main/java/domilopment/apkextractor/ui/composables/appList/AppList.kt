@@ -1,5 +1,6 @@
-package domilopment.apkextractor.ui.composables
+package domilopment.apkextractor.ui.composables.appList
 
+import android.R
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.ui.composables.attrColorResource
 import domilopment.apkextractor.utils.Utils.getAnnotatedString
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 
@@ -53,7 +55,7 @@ fun AppList(
     leftSwipeAction: ApkActionsOptions,
     swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit
 ) {
-    val highlightColor = attrColorResource(attrId = android.R.attr.textColorHighlight)
+    val highlightColor = attrColorResource(attrId = R.attr.textColorHighlight)
 
     LazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
         items(items = appList, key = { it.appPackageName }) { app ->
@@ -87,10 +89,10 @@ fun AppList(
             }, dismissContent = {
                 AppListItem(appName = getAnnotatedString(
                     app.appName, searchString, highlightColor
-                ),
+                )!!,
                     appPackageName = getAnnotatedString(
                         app.appPackageName, searchString, highlightColor
-                    ),
+                    )!!,
                     appIcon = app.appIcon,
                     apkSize = app.apkSize,
                     isChecked = app.isChecked,

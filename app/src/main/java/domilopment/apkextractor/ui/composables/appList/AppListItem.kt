@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables
+package domilopment.apkextractor.ui.composables.appList
 
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -43,6 +43,7 @@ import androidx.core.graphics.drawable.toBitmap
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.ui.composables.attrColorResource
 import domilopment.apkextractor.utils.Utils
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -153,8 +154,8 @@ private fun AppListItemPreview() {
                 Text(text = "Stop ActionMode")
             }
             AppListItem(
-                appName = Utils.getAnnotatedString(app.appName, "", color),
-                appPackageName = Utils.getAnnotatedString(app.appPackageName, "", color),
+                appName = Utils.getAnnotatedString(app.appName, "", color)!!,
+                appPackageName = Utils.getAnnotatedString(app.appPackageName, "", color)!!,
                 appIcon = app.appIcon,
                 apkSize = app.apkSize,
                 isChecked = app.isChecked,

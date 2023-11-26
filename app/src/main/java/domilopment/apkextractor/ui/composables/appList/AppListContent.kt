@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables
+package domilopment.apkextractor.ui.composables.appList
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
