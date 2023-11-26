@@ -17,6 +17,9 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -26,13 +29,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.RecyclerView
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.databinding.FragmentApkListBinding
 import domilopment.apkextractor.ui.dialogs.ApkOptionsBottomSheet
-import domilopment.apkextractor.ui.apkList.ApkListAdapter
+import domilopment.apkextractor.ui.composables.apkList.ApkListContent
+import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
+import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import domilopment.apkextractor.utils.settings.SettingsManager
@@ -47,7 +51,6 @@ class ApkListFragment : Fragment() {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var viewAdapter: ApkListAdapter
     private lateinit var searchView: SearchView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var callback: OnBackPressedCallback
@@ -100,32 +103,39 @@ class ApkListFragment : Fragment() {
         }.also {
             it.isEnabled = false
         }
-
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                model.apkListFragmentState.collect { uiState ->
-                    binding.refreshApkList.isRefreshing = uiState.isRefreshing
-                    val recyclerView = binding.apkListView.list
-                    if (!recyclerView.isComputingLayout && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE) viewAdapter.updateData(
-                        uiState.appList, uiState.updateTrigger.handleTrigger()
-                    )
-                    else recyclerView.post {
-                        viewAdapter.updateData(
-                            uiState.appList, uiState.updateTrigger.handleTrigger()
-                        )
-                    }
-                    if (::searchView.isInitialized) with(searchView.query) {
-                        if (isNotBlank()) viewAdapter.filter.filter(this)
-                    }
-                }
-            }
-        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentApkListBinding.inflate(inflater, container, false)
+        binding.composeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val apkListUiState by model.apkListFragmentState.collectAsState()
+                val searchString by model.searchQuery.collectAsState()
+
+                APKExtractorTheme(
+                    dynamicColor = sharedPreferences.getBoolean(
+                        Constants.PREFERENCE_USE_MATERIAL_YOU, false
+                    )
+                ) {
+                    ApkListContent(apkList = apkListUiState.appList,
+                        searchString = searchString,
+                        refreshing = apkListUiState.isRefreshing,
+                        isPullToRefresh = true,
+                        onRefresh = { model.updatePackageArchives() },
+                        onClick = { app ->
+                            model.selectPackageArchive(app)
+                            requireActivity().supportFragmentManager.let {
+                                ApkOptionsBottomSheet.newInstance().apply {
+                                    show(it, ApkOptionsBottomSheet.TAG)
+                                }
+                            }
+                        })
+                }
+            }
+        }
         return binding.root
     }
 
@@ -134,21 +144,6 @@ class ApkListFragment : Fragment() {
         setupMenu()
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-
-        viewAdapter = ApkListAdapter(this)
-
-        binding.apkListView.list.apply {
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
-            setHasFixedSize(true)
-            // specify an viewAdapter (see also next example)
-            adapter = viewAdapter
-        }
-
-        // add Refresh Layout action on Swipe
-        binding.refreshApkList.setOnRefreshListener {
-            model.updatePackageArchives()
-        }
     }
 
     override fun onDestroyView() {
@@ -202,14 +197,17 @@ class ApkListFragment : Fragment() {
                             return@setOnCloseListener false
                         }
                     }.also { searchView ->
-                        model.searchQuery.observe(viewLifecycleOwner) {
-                            it?.also {
-                                viewAdapter.filter.filter(it)
-                                if (it.isNotBlank()) {
-                                    if (searchView.query.isBlank()) searchView.setQuery(
-                                        it, false
-                                    )
-                                    searchView.isIconified = false
+                        lifecycleScope.launch {
+                            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                model.searchQuery.collect {
+                                    it?.also {
+                                        if (it.isNotBlank()) {
+                                            if (searchView.query.isBlank()) searchView.setQuery(
+                                                it, false
+                                            )
+                                            searchView.isIconified = false
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -246,17 +244,5 @@ class ApkListFragment : Fragment() {
                 model.sort(sortMode)
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
-    /**
-     * Set ApplicationModel for AppOptionsBottomSheet flow
-     * @param app Selected Application from App list
-     */
-    fun selectPackageArchive(app: PackageArchiveModel) {
-        model.selectPackageArchive(app)
-    }
-
-    fun isRefreshing(): Boolean {
-        return binding.refreshApkList.isRefreshing
     }
 }

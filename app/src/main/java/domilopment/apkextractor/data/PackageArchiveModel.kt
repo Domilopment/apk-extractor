@@ -5,72 +5,29 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
-import androidx.databinding.BaseObservable
-import androidx.databinding.Bindable
-import androidx.databinding.library.baseAdapters.BR
 import domilopment.apkextractor.utils.Utils
 import java.io.File
 import java.io.IOException
 
 data class PackageArchiveModel(
     val fileUri: Uri,
-    val fileName: String?,
+    val fileName: String,
     val fileLastModified: Long,
     private val fileSizeLong: Long,
-) : BaseObservable() {
-    val fileSize = fileSizeLong / (1000.0F * 1000.0F)
+    var appName: CharSequence? = null,
+    var appPackageName: String? = null,
+    var appIcon: Drawable? = null,
+    var appVersionName: String? = null,
+    var appVersionCode: Long? = null,
+) {
+    val fileSize: Float = fileSizeLong / (1000.0F * 1000.0F)
+    var isPackageArchiveInfoLoading: Boolean = false
+        private set
+    var isPackageArchiveInfoLoaded: Boolean = false
+        private set
 
-    @get:Bindable
-    var isPackageArchiveInfoLoaded = false
-        private set(value) {
-            field = value
-            notifyPropertyChanged(BR.packageArchiveInfoLoaded)
-        }
-
-    @get:Bindable
-    var isPackageArchiveInfoLoading = false
-        private set(value) {
-            field = value
-            notifyPropertyChanged(BR.packageArchiveInfoLoading)
-        }
-
-    @get:Bindable
-    var appName: CharSequence? = null
-        private set(value) {
-            field = value
-            notifyPropertyChanged(BR.appName)
-        }
-
-    @get:Bindable
-    var appPackageName: String? = null
-        private set(value) {
-            field = value
-            notifyPropertyChanged(BR.appPackageName)
-        }
-
-    @get:Bindable
-    var appIcon: Drawable? = null
-        private set(value) {
-            field = value
-            notifyPropertyChanged(BR.appIcon)
-        }
-
-    @get:Bindable
-    var appVersionName: String? = null
-        private set(value) {
-            field = value
-            notifyPropertyChanged(BR.appVersionName)
-        }
-
-    @get:Bindable
-    var appVersionCode: Long? = null
-        private set(value) {
-            field = value
-            notifyPropertyChanged(BR.appVersionCode)
-        }
-
-    fun loadPackageArchiveInfo(context: Context) {
-        if (isPackageArchiveInfoLoaded || isPackageArchiveInfoLoading) return
+    fun packageArchiveInfo(context: Context) {
+        if (isPackageArchiveInfoLoading || isPackageArchiveInfoLoaded) return
         isPackageArchiveInfoLoading = true
 
         val packageManager: PackageManager = context.packageManager
@@ -106,6 +63,44 @@ data class PackageArchiveModel(
 
     fun forceRefresh(context: Context) {
         isPackageArchiveInfoLoaded = false
-        loadPackageArchiveInfo(context)
+        packageArchiveInfo(context)
+    }
+
+    override fun hashCode(): Int {
+        var result = fileUri.hashCode()
+        result = 31 * result + fileName.hashCode()
+        result = 31 * result + fileLastModified.hashCode()
+        result = 31 * result + fileSizeLong.hashCode()
+        result = 31 * result + (appName?.hashCode() ?: 0)
+        result = 31 * result + (appPackageName?.hashCode() ?: 0)
+        result = 31 * result + (appIcon?.hashCode() ?: 0)
+        result = 31 * result + (appVersionName?.hashCode() ?: 0)
+        result = 31 * result + (appVersionCode?.hashCode() ?: 0)
+        result = 31 * result + fileSize.hashCode()
+        result = 31 * result + isPackageArchiveInfoLoading.hashCode()
+        result = 31 * result + isPackageArchiveInfoLoaded.hashCode()
+        return result
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as PackageArchiveModel
+
+        if (fileUri != other.fileUri) return false
+        if (fileName != other.fileName) return false
+        if (fileLastModified != other.fileLastModified) return false
+        if (fileSizeLong != other.fileSizeLong) return false
+        if (appName != other.appName) return false
+        if (appPackageName != other.appPackageName) return false
+        if (appIcon != other.appIcon) return false
+        if (appVersionName != other.appVersionName) return false
+        if (appVersionCode != other.appVersionCode) return false
+        if (fileSize != other.fileSize) return false
+        if (isPackageArchiveInfoLoading != other.isPackageArchiveInfoLoading) return false
+        if (isPackageArchiveInfoLoaded != other.isPackageArchiveInfoLoaded) return false
+
+        return true
     }
 }

@@ -101,17 +101,21 @@ object Utils {
      * @param color color to highlight text in parameter text
      * @return Annotated String with color marked search word
      */
-    fun getAnnotatedString(text: String, searchString: String?, color: Color): AnnotatedString {
+    fun getAnnotatedString(
+        text: CharSequence?, searchString: String?, color: Color
+    ): AnnotatedString? {
+        if (text == null) return null
         return if (!searchString.isNullOrBlank() && text.contains(
                 searchString, ignoreCase = true
             )
         ) {
-            val startIndex = text.lowercase().indexOf(searchString.lowercase())
+            val startIndex = text.toString().lowercase().indexOf(searchString.lowercase())
             val endIndex = startIndex + searchString.length
 
             AnnotatedString(
-                text, listOf(AnnotatedString.Range(SpanStyle(color), startIndex, endIndex))
+                text.toString(),
+                listOf(AnnotatedString.Range(SpanStyle(color), startIndex, endIndex))
             )
-        } else AnnotatedString(text)
+        } else AnnotatedString(text.toString())
     }
 }

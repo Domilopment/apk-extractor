@@ -33,7 +33,7 @@ import domilopment.apkextractor.*
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.databinding.FragmentAppListBinding
 import domilopment.apkextractor.ui.appList.AppListMultiselectCallback
-import domilopment.apkextractor.ui.composables.AppListContent
+import domilopment.apkextractor.ui.composables.appList.AppListContent
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
 import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
 import domilopment.apkextractor.ui.dialogs.ProgressDialogFragment

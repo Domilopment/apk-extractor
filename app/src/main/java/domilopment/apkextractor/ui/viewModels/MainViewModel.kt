@@ -1,9 +1,7 @@
 package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
-import domilopment.apkextractor.UpdateTrigger
 import domilopment.apkextractor.data.*
 import domilopment.apkextractor.utils.ApplicationRepository
 import domilopment.apkextractor.utils.ListOfApps
@@ -15,15 +13,11 @@ import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -130,7 +124,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application), O
             it.copy(isRefreshing = true)
         }
         viewModelScope.launch {
-            delay(5000)
             async { appsRepository.updateApps() }
         }
     }
