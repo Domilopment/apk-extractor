@@ -110,7 +110,7 @@ private fun ApkListScreenPreview() {
                         refreshing = false
                     }
                 },
-            ) { app -> null }
+            ) { _ -> null }
         }
     }
 }

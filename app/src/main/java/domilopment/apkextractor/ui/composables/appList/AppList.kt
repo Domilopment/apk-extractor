@@ -2,6 +2,7 @@ package domilopment.apkextractor.ui.composables.appList
 
 import android.R
 import android.util.Log
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
@@ -68,11 +70,13 @@ fun AppList(
                 false
             }, positionalThreshold = { it })
 
-            SwipeToDismiss(state = state, background = {
-                val color = when (state.dismissDirection) {
-                    DismissDirection.StartToEnd, DismissDirection.EndToStart -> MaterialTheme.colorScheme.primaryContainer
-                    null -> Color.Transparent
-                }
+            SwipeToDismissBox(state = state, backgroundContent = {
+                val color by animateColorAsState(
+                    when (state.dismissDirection) {
+                        null -> Color.Transparent
+                        DismissDirection.StartToEnd, DismissDirection.EndToStart -> MaterialTheme.colorScheme.primaryContainer
+                    }, label = ""
+                )
 
                 when (state.dismissDirection) {
                     DismissDirection.StartToEnd -> AppListItemSwipeRight(
@@ -86,7 +90,7 @@ fun AppList(
 
                     null -> this
                 }
-            }, dismissContent = {
+            }, content = {
                 AppListItem(appName = getAnnotatedString(
                     app.appName, searchString, highlightColor
                 )!!,
@@ -103,7 +107,6 @@ fun AppList(
                 app, isSwipeToDismiss, rightSwipeAction, leftSwipeAction
             )
             )
-
         }
     }
 }

@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import domilopment.apkextractor.data.PackageArchiveModel
 
 @Composable
@@ -52,9 +54,9 @@ fun ApkListItem(
             )
         },
             modifier = Modifier
-                .height(84.dp)
+                .height(96.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .clickable(onClick = onClick),
+                .clickable(onClick = onClick).padding(0.dp, 8.dp),
             overlineContent = {
                 Text(
                     text = appName ?: apkFileName,
@@ -92,26 +94,19 @@ fun ApkListItem(
 @Composable
 private fun ApkListItemAvatar(appIcon: Drawable?) {
     val context = LocalContext.current
-    val placeholder = remember {
-        ResourcesCompat.getDrawable(
-            context.resources, android.R.drawable.sym_def_app_icon, context.theme
-        )!!.let { it.toBitmap(it.intrinsicWidth, it.intrinsicHeight, null).asImageBitmap() }
-    }
-    val icon = appIcon?.let {
-        it.toBitmap(it.intrinsicWidth, it.intrinsicHeight, null).asImageBitmap()
-    }
-
     Image(
-        bitmap = icon ?: placeholder,
-        contentDescription = null,
-        modifier = Modifier.padding(0.dp, 6.dp)
+        painter = rememberDrawablePainter(
+            drawable = appIcon ?: ResourcesCompat.getDrawable(
+                context.resources, android.R.drawable.sym_def_app_icon, context.theme
+            )
+        ), contentDescription = null, modifier = Modifier.padding(0.dp, 6.dp)
     )
 }
 
 @Preview
 @Composable
 private fun ApkListItemPreview() {
-    var apk by remember {
+    val apk by remember {
         mutableStateOf(
             PackageArchiveModel(
                 fileUri = Uri.parse(""),
@@ -128,7 +123,7 @@ private fun ApkListItemPreview() {
     MaterialTheme {
         Column {
             ApkListItem(
-                AnnotatedString(apk.fileName!!),
+                AnnotatedString(apk.fileName),
                 appName = AnnotatedString(apk.appName.toString()),
                 appPackageName = AnnotatedString(apk.appPackageName.toString()),
                 appIcon = apk.appIcon,
