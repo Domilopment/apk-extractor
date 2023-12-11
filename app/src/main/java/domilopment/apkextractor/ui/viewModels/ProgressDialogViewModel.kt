@@ -39,14 +39,14 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
         MutableStateFlow(ProgressDialogUiState())
     val progressDialogState: StateFlow<ProgressDialogUiState> = _progressDialogState.asStateFlow()
 
-    private val _extractionResult: MutableLiveData<SingleTimeEvent<Triple<String?, ApplicationModel?, Int>>> =
-        MutableLiveData(null)
-    val extractionResult: LiveData<SingleTimeEvent<Triple<String?, ApplicationModel?, Int>>> =
-        _extractionResult
+    private val _extractionResult: MutableStateFlow<SingleTimeEvent<Triple<String?, ApplicationModel?, Int>>?> =
+        MutableStateFlow(null)
+    val extractionResult: StateFlow<SingleTimeEvent<Triple<String?, ApplicationModel?, Int>>?> =
+        _extractionResult.asStateFlow()
 
-    private val _shareResult: MutableLiveData<SingleTimeEvent<ArrayList<Uri>?>> =
-        MutableLiveData(null)
-    val shareResult: LiveData<SingleTimeEvent<ArrayList<Uri>?>> = _shareResult
+    private val _shareResult: MutableStateFlow<SingleTimeEvent<ArrayList<Uri>?>?> =
+        MutableStateFlow(null)
+    val shareResult: StateFlow<SingleTimeEvent<ArrayList<Uri>?>?> = _shareResult.asStateFlow()
 
     private val context get() = getApplication<Application>().applicationContext
 
@@ -85,8 +85,14 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
                             settingsManager.saveDir()!!,
                             settingsManager.appName(app)
                         )
-                        if (newFile is ExtractionResult.Failure) errorMessage = newFile.errorMessage
-                        else EventDispatcher.emitEvent(Event(EventType.SAVED, newFile))
+                        when (newFile) {
+                            is ExtractionResult.Failure -> errorMessage = newFile.errorMessage
+                            is ExtractionResult.Success -> EventDispatcher.emitEvent(
+                                Event(
+                                    EventType.SAVED, newFile.uri
+                                )
+                            )
+                        }
                     }
                     withContext(Dispatchers.Main) {
                         _progressDialogState.update { state ->
@@ -210,7 +216,7 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
             it.copy(
                 title = context.getString(R.string.progress_dialog_title_install),
                 process = packageName,
-                progress = (progress * 100).toInt(),
+                progress = progress * 100,
             )
         }
     }

@@ -1,20 +1,18 @@
 package domilopment.apkextractor.installApk
 
+import android.content.Context
 import android.content.pm.PackageInstaller
-import domilopment.apkextractor.R
-import domilopment.apkextractor.ui.dialogs.ApkOptionsBottomSheet
-import domilopment.apkextractor.ui.dialogs.ProgressDialogFragment
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 
 class PackageInstallerSessionCallback(
-    private val apkListFragment: ApkOptionsBottomSheet,
-    private val progressDialogViewModel: ProgressDialogViewModel
+    context: Context,
+    private val progressDialogViewModel: ProgressDialogViewModel,
 ) : PackageInstaller.SessionCallback() {
     private val packageInstaller =
-        apkListFragment.requireContext().applicationContext.packageManager.packageInstaller
+        context.applicationContext.packageManager.packageInstaller
     private var packageName: String? = null
     var initialSessionId: Int = -1
 
@@ -22,9 +20,7 @@ class PackageInstallerSessionCallback(
         if (sessionId != initialSessionId) return
         packageName = packageInstaller.getSessionInfo(sessionId)?.appPackageName
 
-        val progressDialog =
-            ProgressDialogFragment.newInstance(R.string.progress_dialog_title_install)
-        progressDialog.show(apkListFragment.parentFragmentManager, "ProgressDialogFragment")
+        progressDialogViewModel.updateInstallApkStatus(0F, packageName)
     }
 
     override fun onBadgingChanged(sessionId: Int) {
