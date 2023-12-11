@@ -38,7 +38,7 @@ enum class AppSortOptions {
 
     companion object {
         private val apkSortOptionsArray =
-            AppSortOptions.values().associateBy { it.ordinal }.withDefault { SORT_BY_NAME }
+            entries.associateBy { it.ordinal }.withDefault { SORT_BY_NAME }
         operator fun get(sortMode: Int): AppSortOptions {
             return apkSortOptionsArray.getValue(sortMode)
         }
