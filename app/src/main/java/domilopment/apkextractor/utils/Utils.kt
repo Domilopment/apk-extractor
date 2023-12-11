@@ -104,8 +104,8 @@ object Utils {
     fun getAnnotatedString(
         text: CharSequence?, searchString: String?, color: Color
     ): AnnotatedString? {
-        if (text == null) return null
-        return if (!searchString.isNullOrBlank() && text.contains(
+        return if (text == null) null
+        else if (!searchString.isNullOrBlank() && text.contains(
                 searchString, ignoreCase = true
             )
         ) {
