@@ -8,9 +8,28 @@ import android.net.Uri
 import android.os.Binder
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -24,14 +43,21 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
+import domilopment.apkextractor.Screen
 import domilopment.apkextractor.autoBackup.AutoBackupService
-import domilopment.apkextractor.databinding.ActivityMainBinding
+import domilopment.apkextractor.data.rememberAppBarState
+import domilopment.apkextractor.ui.composables.APKExtractorAppBar
+import domilopment.apkextractor.ui.composables.APKExtractorBottomNavigation
+import domilopment.apkextractor.ui.composables.ApkExtractorNavHost
+import domilopment.apkextractor.ui.theme.APKExtractorTheme
+import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.FileUtil
+import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.settings.SettingsManager
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var settingsManager: SettingsManager
     private lateinit var appUpdateManager: AppUpdateManager
@@ -70,9 +96,84 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        setContent {
+            val model = viewModel<MainViewModel>()
+            val mainScreenState = model.mainScreenState
+            val actionModeState = model.actionModeState
+            val navController = rememberNavController()
+            val appBarState = rememberAppBarState(navController = navController)
+            val scope = rememberCoroutineScope()
+            val snackbarHostState = remember { SnackbarHostState() }
+
+            APKExtractorTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                ) {
+                    Scaffold(topBar = {
+                        APKExtractorAppBar(
+                            appBarState = appBarState,
+                            modifier = Modifier.fillMaxWidth(),
+                            isSearchActive = mainScreenState.isAppBarSearchActive,
+                            searchText = mainScreenState.appBarSearchText,
+                            isActionModeActive = mainScreenState.isActionModeActive,
+                            isAllItemsChecked = actionModeState.selectAllItemsCheck,
+                            onSearchQueryChanged = { model.updateSearchQuery(it) },
+                            onTriggerSearch = { model.setSearchBarState(it) },
+                            onEndActionMode = {
+                                model.setActionModeState(false)
+                                model.resetActionMode()
+                            },
+                            onCheckAllItems = { model.updateActionMode(selectAllItems = it) },
+                            selectedApplicationsCount = actionModeState.selectedItemCount
+                        )
+                    }, bottomBar = {
+                        APKExtractorBottomNavigation(items = listOf(
+                            Screen.AppList, Screen.ApkList
+                        ),
+                            navController = navController,
+                            appBarState = appBarState,
+                            isActionMode = mainScreenState.isActionModeActive,
+                            onNavigate = {
+                                model.resetAppBarState()
+                            })
+                    }, snackbarHost = {
+                        SnackbarHost(hostState = snackbarHostState, snackbar = { snackbarData ->
+                            val visuals = snackbarData.visuals as MySnackbarVisuals
+                            val offset =
+                                (visuals.snackbarOffset?.let { if (it > 0.dp) -it + 86.dp /* BottomNavBar height */ else 0.dp }
+                                    ?: 0.dp)
+                            Snackbar(
+                                modifier = Modifier
+                                    .padding(12.dp)
+                                    .offset(y = offset),
+                                contentColor = visuals.messageColor ?: SnackbarDefaults.contentColor
+                            ) {
+                                Text(text = visuals.message)
+                            }
+                        })
+                    }) { contentPadding ->
+                        ApkExtractorNavHost(modifier = Modifier.padding(contentPadding),
+                            navController = navController,
+                            showSnackbar = {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(it)
+                                }
+                            },
+                            searchQuery = mainScreenState.appBarSearchText,
+                            isActionMode = mainScreenState.isActionModeActive,
+                            isActionModeAllItemsSelected = actionModeState.selectAllItemsCheck,
+                            onTriggerActionMode = {
+                                model.setActionModeState(true)
+                                model.updateActionMode(selectedItems = 1)
+                            },
+                            onAppSelection = { isAllSelected, appCount ->
+                                model.updateActionMode(isAllSelected, appCount)
+                            })
+                    }
+                }
+            }
+        }
+
         settingsManager = SettingsManager(this)
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -105,12 +206,12 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
-                // If the update is downloaded but not installed,
-                // notify the user to complete the update.
-                if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
-                    popupSnackbarForCompleteUpdate()
-                }
+            // If the update is downloaded but not installed,
+            // notify the user to complete the update.
+            if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                popupSnackbarForCompleteUpdate()
             }
+        }
     }
 
     /**
@@ -226,7 +327,7 @@ class MainActivity : AppCompatActivity() {
     // Displays the snackbar notification and call to action.
     private fun popupSnackbarForCompleteUpdate() {
         Snackbar.make(
-            binding.container,
+            this.window.decorView.rootView,
             R.string.popup_snackbar_for_complete_update_text,
             Snackbar.LENGTH_INDEFINITE
         ).apply {
