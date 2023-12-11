@@ -7,7 +7,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -15,6 +14,11 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -25,6 +29,7 @@ import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.FileUtil
+import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.settings.SettingsManager
 import domilopment.apkextractor.utils.Utils
 import java.io.File
@@ -35,18 +40,21 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param view reference for Snackbar view
      * @param anchorView Anchor View for Snackbar
      */
-    fun actionSave(view: View, anchorView: View = view) {
+    fun actionSave(offset: Dp = 0.dp, showSnackbar: (MySnackbarVisuals) -> Unit) {
         val settingsManager = SettingsManager(context)
         when (val result = FileUtil(context).copy(
             app.appSourceDirectory, settingsManager.saveDir()!!, settingsManager.appName(app)
         )) {
             is ExtractionResult.Success -> {
                 EventDispatcher.emitEvent(Event(EventType.SAVED, result.uri))
-                Snackbar.make(
-                    view,
-                    context.getString(R.string.snackbar_successful_extracted, app.appName),
-                    Snackbar.LENGTH_LONG
-                ).setAnchorView(anchorView).show()
+                showSnackbar(MySnackbarVisuals(
+                    actionLabel = null,
+                    duration = SnackbarDuration.Short,
+                    message = context.getString(R.string.snackbar_successful_extracted, app.appName),
+                    withDismissAction = false,
+                    messageColor = null,
+                    snackbarOffset = offset
+                ))
             }
 
             is ExtractionResult.Failure -> MaterialAlertDialogBuilder(context).apply {
@@ -127,7 +135,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param view reference for Snackbar view
      * @param anchorView Anchor View for Snackbar
      */
-    fun actionSaveImage(view: View, anchorView: View = view) {
+    fun actionSaveImage(offset: Dp = 0.dp, showSnackbar: (MySnackbarVisuals) -> Unit) {
         val resolver = context.contentResolver
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, app.appName)
@@ -150,11 +158,14 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
             resolver.openOutputStream(it)
         }?.use {
             val result = app.appIcon.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, it)
-            if (result) Snackbar.make(
-                view,
-                context.getString(R.string.snackbar_successful_save_image),
-                Snackbar.LENGTH_LONG
-            ).setAnchorView(anchorView).show()
+            if (result) showSnackbar(MySnackbarVisuals(
+                actionLabel = null,
+                duration = SnackbarDuration.Short,
+                message = context.getString(R.string.snackbar_successful_save_image),
+                withDismissAction = false,
+                messageColor = null,
+                snackbarOffset = offset
+            ))
         }
     }
 
@@ -166,7 +177,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param view reference for Snackbar view
      * @param anchorView Anchor View for Snackbar
      */
-    fun actionOpenShop(view: View, anchorView: View = view) {
+    fun actionOpenShop(offset: Dp = 0.dp, showSnackbar: (MySnackbarVisuals) -> Unit) {
         app.installationSource?.also {
             try {
                 val shopIntent = Intent(Intent.ACTION_VIEW).apply {
@@ -175,11 +186,14 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
                 }
                 context.startActivity(shopIntent)
             } catch (e: ActivityNotFoundException) {
-                Snackbar.make(
-                    view,
-                    context.getString(R.string.snackbar_no_activity_for_market_intent),
-                    Snackbar.LENGTH_LONG
-                ).setAnchorView(anchorView).show()
+                showSnackbar(MySnackbarVisuals(
+                    actionLabel = null,
+                    duration = SnackbarDuration.Short,
+                    message = context.getString(R.string.snackbar_no_activity_for_market_intent),
+                    withDismissAction = false,
+                    messageColor = Color.Red,
+                    snackbarOffset = offset
+                ))
             }
         }
     }

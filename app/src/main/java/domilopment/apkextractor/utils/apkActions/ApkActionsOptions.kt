@@ -2,22 +2,33 @@ package domilopment.apkextractor.utils.apkActions
 
 import android.content.Context
 import android.content.Intent
-import android.view.View
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 
-enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val icon: Int) {
-    SAVE("save_apk", R.string.action_bottom_sheet_save, R.drawable.ic_baseline_save_24) {
+enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val icon: ImageVector) {
+    SAVE("save_apk", R.string.action_bottom_sheet_save, Icons.Default.Save) {
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            params.views?.let { ApkActionsManager(context, app).actionSave(it.first, it.second) }
+            val dialogHeight = params.dialogHeight ?: 0.dp
+            params.callbackFun?.let { ApkActionsManager(context, app).actionSave(dialogHeight, it) }
         }
 
     },
-    SHARE("share_apk", R.string.action_bottom_sheet_share, R.drawable.ic_share_24dp) {
+    SHARE("share_apk", R.string.action_bottom_sheet_share, Icons.Default.Share) {
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
@@ -25,19 +36,18 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         }
     },
 
-    ICON("save_icon", R.string.action_bottom_sheet_save_image, R.drawable.ic_baseline_image_24) {
+    ICON("save_icon", R.string.action_bottom_sheet_save_image, Icons.Default.Image) {
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            params.views?.let {
-                ApkActionsManager(context, app).actionSaveImage(
-                    it.first, it.second
-                )
+            val dialogHeight = params.dialogHeight ?: 0.dp
+            params.callbackFun?.let {
+                ApkActionsManager(context, app).actionSaveImage(dialogHeight, it)
             }
         }
     },
     SETTINGS(
-        "open_settings", R.string.action_bottom_sheet_settings, R.drawable.ic_baseline_settings_24
+        "open_settings", R.string.action_bottom_sheet_settings, Icons.Default.Settings
     ) {
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
@@ -46,7 +56,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         }
     },
     OPEN(
-        "open_app", R.string.action_bottom_sheet_open, R.drawable.ic_baseline_android_24
+        "open_app", R.string.action_bottom_sheet_open, Icons.Default.Android
     ) {
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
@@ -55,7 +65,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         }
     },
     UNINSTALL(
-        "uninstall_app", R.string.action_bottom_sheet_uninstall, R.drawable.ic_baseline_delete_24
+        "uninstall_app", R.string.action_bottom_sheet_uninstall, Icons.Default.Delete
     ) {
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
@@ -77,17 +87,22 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
     }
 
     class ApkActionOptionParams private constructor(
-        val views: Pair<View, View>?,
+        val dialogHeight: Dp?,
+        val callbackFun: ((MySnackbarVisuals) -> Unit)? = null,
         val shareResult: ActivityResultLauncher<Intent>?,
         val deleteResult: ActivityResultLauncher<Intent>?
     ) {
         data class Builder(
-            private var views: Pair<View, View>? = null,
+            private var dialogHeight: Dp? = null,
+            private var callbackFun: ((MySnackbarVisuals) -> Unit)? = null,
             private var shareResult: ActivityResultLauncher<Intent>? = null,
             private var deleteResult: ActivityResultLauncher<Intent>? = null
         ) {
-            fun setViews(view: View, anchorView: View = view) =
-                apply { this.views = Pair(view, anchorView) }
+            fun setDialogHeight(dialogHeight: Dp) =
+                apply { this.dialogHeight = dialogHeight }
+
+            fun setCallbackFun(showSnackbar: (MySnackbarVisuals) -> Unit) =
+                apply { this.callbackFun = showSnackbar }
 
             fun setShareResult(activityResultLauncher: ActivityResultLauncher<Intent>) =
                 apply { this.shareResult = activityResultLauncher }
@@ -95,7 +110,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
             fun setDeleteResult(activityResultLauncher: ActivityResultLauncher<Intent>) =
                 apply { this.deleteResult = activityResultLauncher }
 
-            fun build() = ApkActionOptionParams(views, shareResult, deleteResult)
+            fun build() = ApkActionOptionParams(dialogHeight, callbackFun, shareResult, deleteResult)
         }
     }
 }

@@ -152,7 +152,7 @@ private fun AppListItemSwipeLeft(
             maxLines = 1
         )
         Icon(
-            painter = painterResource(id = leftSwipeAction.icon),
+            imageVector = leftSwipeAction.icon,
             contentDescription = null,
             modifier = Modifier
                 .padding(6.dp)
@@ -173,7 +173,7 @@ private fun AppListItemSwipeRight(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            painter = painterResource(id = rightSwipeAction.icon),
+            imageVector = rightSwipeAction.icon,
             contentDescription = null,
             modifier = Modifier
                 .padding(6.dp)
