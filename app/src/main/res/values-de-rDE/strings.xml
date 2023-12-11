@@ -122,6 +122,7 @@
     <string name="menu_show_save_dir">Gespeicherte APKs</string>
     <string name="action_settings">Einstellungen</string>
     <string name="menu_show_app_list">Installierte Apps</string>
+    <string name="menu_refresh_app_list">Aktualisieren</string>
 
     <string name="sort_order_asc">ASC</string>
     <string name="sort_order_desc">DESC</string>
@@ -138,6 +139,7 @@
     <string name="menu_sort_apk_file_mod_date_asc">Änderungszeitpunkt (älteste zuerst)</string>
     <string name="menu_sort_apk_file_mod_date_desc">Änderungszeitpunkt (neuste zuerst)</string>
     <string name="menu_show_open_documents">Weitere APKs</string>
+    <string name="menu_refresh_apk_list">Aktualisieren</string>
 
     <!-- APK Selected Alert -->
     <string name="alert_apk_selected_title">APK Verwendungszweck</string>
