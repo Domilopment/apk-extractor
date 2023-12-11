@@ -5,8 +5,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import domilopment.apkextractor.data.ApkListFragmentUIState
-import domilopment.apkextractor.data.ApkOptionsBottomSheetUIState
+import domilopment.apkextractor.data.ApkListScreenState
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
@@ -26,25 +25,22 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.concurrent.CancellationException
 import domilopment.apkextractor.utils.eventHandler.Observer
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.mapLatest
 
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class ApkListViewModel(application: Application) : AndroidViewModel(application), Observer {
     override val key: String = "ApkListViewModel"
 
     private val apksRepository =
         PackageArchiveRepository(ListOfAPKs.getPackageArchives(application))
 
-    private val _apkListFragmentState: MutableStateFlow<ApkListFragmentUIState> =
-        MutableStateFlow(ApkListFragmentUIState())
-    val apkListFragmentState: StateFlow<ApkListFragmentUIState> =
-        _apkListFragmentState.asStateFlow()
-
-    private val _apkOptionsBottomSheetState: MutableStateFlow<ApkOptionsBottomSheetUIState> =
-        MutableStateFlow(ApkOptionsBottomSheetUIState())
-    val akpOptionsBottomSheetUIState: StateFlow<ApkOptionsBottomSheetUIState> =
-        _apkOptionsBottomSheetState.asStateFlow()
+    private val _apkListFragmentState: MutableStateFlow<ApkListScreenState> =
+        MutableStateFlow(ApkListScreenState())
+    val apkListFragmentState: StateFlow<ApkListScreenState> = _apkListFragmentState.asStateFlow()
 
     private val _searchQuery: MutableStateFlow<String?> = MutableStateFlow(null)
     val searchQuery: StateFlow<String?> = _searchQuery.asStateFlow()
@@ -63,9 +59,9 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
                         apkList
                     } else {
                         apkList.filter {
-                            it.fileName?.contains(
+                            it.fileName.contains(
                                 searchString, ignoreCase = true
-                            ) ?: false || it.appName?.contains(
+                            ) || it.appName?.contains(
                                 searchString, ignoreCase = true
                             ) ?: false || it.appPackageName?.contains(
                                 searchString, ignoreCase = true
@@ -118,9 +114,9 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
      */
     fun selectPackageArchive(app: PackageArchiveModel?) {
         if (app?.isPackageArchiveInfoLoaded == false) app.packageArchiveInfo(context)
-        _apkOptionsBottomSheetState.update { state ->
+        _apkListFragmentState.update { state ->
             state.copy(
-                packageArchiveModel = app
+                selectedPackageArchiveModel = app
             )
         }
     }
@@ -154,13 +150,24 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
                 DocumentsContract.Document.COLUMN_SIZE
             )?.let {
                 PackageArchiveModel(it.uri, it.displayName!!, it.lastModified!!, it.size!!)
-            }?.also { apksRepository.add(it) }
+            }?.also {
+                _apkListFragmentState.update { state ->
+                    state.copy(appList = state.appList.toMutableList().apply { add(it) })
+                }
+                apksRepository.updateApps()
+            }
         }
     }
 
     fun remove(apk: PackageArchiveModel) {
+        _apkListFragmentState.update { state ->
+            state.copy(
+                appList = state.appList.filter { it.fileUri != apk.fileUri },
+                selectedPackageArchiveModel = if (state.selectedPackageArchiveModel?.fileUri == apk.fileUri) null else state.selectedPackageArchiveModel
+            )
+        }
         viewModelScope.launch {
-            apksRepository.remove(apk)
+            apksRepository.updateApps()
         }
     }
 
