@@ -13,16 +13,4 @@ class PackageArchiveRepository(private val packageArchiveService: ListOfAPKs) {
             packageArchiveService.updateData()
         }
     }
-
-    suspend fun add(packageArchive: PackageArchiveModel) {
-        withContext(Dispatchers.IO) {
-            packageArchiveService.add(packageArchive)
-        }
-    }
-
-    suspend fun remove(packageArchive: PackageArchiveModel) {
-        withContext(Dispatchers.IO) {
-            packageArchiveService.remove(packageArchive)
-        }
-    }
 }

@@ -81,20 +81,6 @@ class ListOfAPKs private constructor(context: Context) {
         _apks.tryEmit(packageArchiveModels)
     }
 
-    fun add(packageArchive: PackageArchiveModel) {
-        val cache = _apks.replayCache.toMutableList()
-        if (cache.isNotEmpty()) cache.last().apply { add(packageArchive) }.also {
-            _apks.tryEmit(it)
-        } else updateData()
-    }
-
-    fun remove(packageArchive: PackageArchiveModel) {
-        val cache = _apks.replayCache.toMutableList()
-        if (cache.isNotEmpty()) cache.last().apply { remove(packageArchive) }.also {
-            _apks.tryEmit(it)
-        } else updateData()
-    }
-
     companion object {
         private lateinit var INSTANCE: ListOfAPKs
 
