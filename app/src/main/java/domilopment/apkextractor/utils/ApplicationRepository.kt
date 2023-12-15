@@ -15,4 +15,16 @@ class ApplicationRepository(private val applicationService: ListOfApps) {
             applicationService.updateData()
         }
     }
+
+    suspend fun addApp(app: ApplicationModel) {
+        withContext(Dispatchers.IO) {
+            applicationService.add(app)
+        }
+    }
+
+    suspend fun removeApp(app: ApplicationModel) {
+        withContext(Dispatchers.IO) {
+            applicationService.remove(app)
+        }
+    }
 }

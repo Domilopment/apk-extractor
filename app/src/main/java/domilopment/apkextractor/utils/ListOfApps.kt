@@ -10,18 +10,19 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class ListOfApps private constructor(context: Context) {
     private val packageManager = context.packageManager
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-    private val _apps =
-        MutableSharedFlow<Triple<MutableList<ApplicationModel>, MutableList<ApplicationModel>, MutableList<ApplicationModel>>>(
-            replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    private val _apps: NonComparingMutableStateFlow<Triple<MutableList<ApplicationModel>, MutableList<ApplicationModel>, MutableList<ApplicationModel>>> =
+        NonComparingMutableStateFlow(
+            Triple(mutableListOf(), mutableListOf(), mutableListOf())
         )
 
     val apps: Flow<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> =
-        _apps.asSharedFlow()
+        _apps.asStateFlow()
 
     // initialize APK list
     init {
@@ -69,7 +70,41 @@ class ListOfApps private constructor(context: Context) {
             }
         }
 
-        _apps.tryEmit(Triple(newUpdatedSystemApps, newSystemApps, newUserApps))
+        _apps.value = Triple(newUpdatedSystemApps, newSystemApps, newUserApps)
+    }
+
+    suspend fun add(app: ApplicationModel) {
+        val apps = _apps.value.copy()
+        val updatedSysApps = apps.first.toMutableList()
+        val sysApps = apps.second.toMutableList()
+        val userApps = apps.third.toMutableList()
+
+        when (ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) {
+            (app.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) -> {
+                if (updatedSysApps.find { it.appPackageName == app.appPackageName } == null) updatedSysApps.add(
+                    app
+                )
+                sysApps.removeIf { it.appPackageName == app.appPackageName }
+            }
+
+            else -> if (userApps.find { it.appPackageName == app.appPackageName } == null) userApps.add(
+                app
+            )
+        }
+
+        _apps.value = Triple(updatedSysApps, sysApps, userApps)
+    }
+
+    suspend fun remove(app: ApplicationModel) {
+        val apps = _apps.value.copy()
+        val updatedSysApps = apps.first.toMutableList()
+        val sysApps = apps.second.toMutableList()
+        val userApps = apps.third.toMutableList()
+
+        if (updatedSysApps.removeIf { it.appPackageName == app.appPackageName }) sysApps.add(app)
+        else userApps.removeIf { it.appPackageName == app.appPackageName }
+
+        _apps.value = Triple(updatedSysApps, sysApps, userApps)
     }
 
     companion object {

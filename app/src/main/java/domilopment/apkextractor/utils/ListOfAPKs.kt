@@ -10,16 +10,15 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class ListOfAPKs private constructor(context: Context) {
     private val contentResolver = context.contentResolver
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-    private val _apks = MutableSharedFlow<MutableList<PackageArchiveModel>>(
-        replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    private val _apks = NonComparingMutableStateFlow<MutableList<PackageArchiveModel>>(mutableListOf())
 
-    val apks: Flow<List<PackageArchiveModel>> = _apks.asSharedFlow()
+    val apks: Flow<List<PackageArchiveModel>> = _apks.asStateFlow()
 
     init {
         updateData()
@@ -79,6 +78,18 @@ class ListOfAPKs private constructor(context: Context) {
                 }
             }
         _apks.tryEmit(packageArchiveModels)
+    }
+
+    suspend fun add(apk: PackageArchiveModel) {
+        val apks = _apks.value.toMutableList()
+        apks.add(apk)
+        _apks.value = apks
+    }
+
+    suspend fun remove(apk: PackageArchiveModel) {
+        val apks = _apks.value.toMutableList()
+        apks.removeIf { it.fileUri == apk.fileUri }
+        _apks.value = apks
     }
 
     companion object {
