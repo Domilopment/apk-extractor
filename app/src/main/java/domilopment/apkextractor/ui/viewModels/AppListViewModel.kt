@@ -72,11 +72,11 @@ class AppListViewModel(application: Application) : AndroidViewModel(application)
 
     override fun onEventReceived(event: Event<*>) {
         when (event.eventType) {
-            EventType.INSTALLED -> updateApps()
+            EventType.INSTALLED -> addApps(event.data as String)
             EventType.UNINSTALLED -> if (Utils.isPackageInstalled(
                     context.packageManager, event.data as String
                 )
-            ) updateApps()
+            ) uninstallApps(event.data)
 
             else -> return
         }
@@ -102,16 +102,6 @@ class AppListViewModel(application: Application) : AndroidViewModel(application)
     }
 
     /**
-     * Set View state of action mode
-     * @param actionMode Boolean of action mode is active
-     */
-    fun addActionModeCallback(actionMode: Boolean) {
-        _mainFragmentState.update { state ->
-            state.copy(actionMode = actionMode)
-        }
-    }
-
-    /**
      * Update App list
      */
     fun updateApps() {
@@ -123,17 +113,26 @@ class AppListViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun addApps(packageName: String) {
+        viewModelScope.launch {
+            async { appsRepository.addApp(ApplicationModel(context.packageManager, packageName)) }
+        }
+    }
+
     fun uninstallApps(packageName: String) {
         if (Utils.isPackageInstalled(context.packageManager, packageName)) return
-        _mainFragmentState.update {
-            it.copy(
-                isRefreshing = true,
-                appList = it.appList.filter { it.appPackageName != packageName },
-                selectedApp = if (it.selectedApp?.appPackageName == packageName) null else it.selectedApp
-            )
-        }
-        viewModelScope.launch {
-            async { appsRepository.updateApps() }
+
+        _mainFragmentState.value.appList.find { it.appPackageName == packageName }?.let { app ->
+            _mainFragmentState.update {
+                it.copy(
+                    isRefreshing = true,
+                    appList = it.appList.toMutableList().apply { remove(app) },
+                    selectedApp = if (it.selectedApp?.appPackageName == packageName) null else it.selectedApp
+                )
+            }
+            viewModelScope.launch {
+                async { appsRepository.removeApp(app) }
+            }
         }
     }
 

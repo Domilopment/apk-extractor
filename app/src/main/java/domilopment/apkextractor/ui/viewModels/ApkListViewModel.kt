@@ -154,7 +154,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
                 _apkListFragmentState.update { state ->
                     state.copy(appList = state.appList.toMutableList().apply { add(it) })
                 }
-                apksRepository.updateApps()
+                apksRepository.addApk(it)
             }
         }
     }
@@ -167,7 +167,7 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
             )
         }
         viewModelScope.launch {
-            apksRepository.updateApps()
+            apksRepository.removeApk(apk)
         }
     }
 
