@@ -39,7 +39,8 @@ fun AppListContent(
     onRefresh: () -> Unit,
     rightSwipeAction: ApkActionsOptions,
     leftSwipeAction: ApkActionsOptions,
-    swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit
+    swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit,
+    uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
     val state = rememberPullRefreshState(refreshing = refreshing, onRefresh = onRefresh)
 
@@ -52,7 +53,8 @@ fun AppListContent(
             triggerActionMode = triggerActionMode,
             rightSwipeAction = rightSwipeAction,
             leftSwipeAction = leftSwipeAction,
-            swipeActionCallback = swipeActionCallback
+            swipeActionCallback = swipeActionCallback,
+            uninstalledAppFound = uninstalledAppFound
         )
 
         PullRefreshIndicator(
@@ -89,8 +91,7 @@ private fun AppListScreenPreview() {
             Button(onClick = { actionMode = false }) {
                 Text(text = "Stop ActionMode")
             }
-            AppListContent(
-                appList = apps,
+            AppListContent(appList = apps,
                 searchString = "",
                 isSwipeToDismiss = !actionMode,
                 updateApp = { app ->
@@ -112,8 +113,9 @@ private fun AppListScreenPreview() {
                     }
                 },
                 rightSwipeAction = ApkActionsOptions.SAVE,
-                leftSwipeAction = ApkActionsOptions.SHARE
-            ) { app, action -> null }
+                leftSwipeAction = ApkActionsOptions.SHARE,
+                swipeActionCallback = { _, _ -> },
+                uninstalledAppFound = { _ -> })
         }
     }
 }

@@ -119,20 +119,24 @@ class AppListViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun uninstallApps(packageName: String) {
-        if (Utils.isPackageInstalled(context.packageManager, packageName)) return
+    fun uninstallApps(app: ApplicationModel) {
+        if (Utils.isPackageInstalled(context.packageManager, app.appPackageName)) return
 
-        _mainFragmentState.value.appList.find { it.appPackageName == packageName }?.let { app ->
-            _mainFragmentState.update {
-                it.copy(
-                    isRefreshing = true,
-                    appList = it.appList.toMutableList().apply { remove(app) },
-                    selectedApp = if (it.selectedApp?.appPackageName == packageName) null else it.selectedApp
-                )
-            }
-            viewModelScope.launch {
-                async { appsRepository.removeApp(app) }
-            }
+        _mainFragmentState.update { state ->
+            state.copy(
+                isRefreshing = true,
+                appList = state.appList.filter { it.appPackageName != app.appPackageName },
+                selectedApp = if (state.selectedApp?.appPackageName == app.appPackageName) null else state.selectedApp
+            )
+        }
+        viewModelScope.launch {
+            async { appsRepository.removeApp(app) }
+        }
+    }
+
+    private fun uninstallApps(packageName: String) {
+        _mainFragmentState.value.appList.find { it.appPackageName == packageName }?.let {
+            uninstallApps(it)
         }
     }
 

@@ -30,13 +30,17 @@ fun ApkListContent(
     refreshing: Boolean,
     isPullToRefresh: Boolean,
     onRefresh: () -> Unit,
-    onClick: (PackageArchiveModel) -> Unit
+    onClick: (PackageArchiveModel) -> Unit,
+    deletedDocumentFound: (PackageArchiveModel) -> Unit
 ) {
     val state = rememberPullRefreshState(refreshing = refreshing, onRefresh = onRefresh)
 
     Box(Modifier.then(if (isPullToRefresh) Modifier.pullRefresh(state) else Modifier)) {
         ApkList(
-            apkList = apkList, searchString = searchString, onClick = onClick
+            apkList = apkList,
+            searchString = searchString,
+            onClick = onClick,
+            deletedDocumentFound = deletedDocumentFound
         )
 
         PullRefreshIndicator(
@@ -97,8 +101,7 @@ private fun ApkListScreenPreview() {
 
     MaterialTheme {
         Column {
-            ApkListContent(
-                apkList = apks,
+            ApkListContent(apkList = apks,
                 searchString = "",
                 refreshing = refreshing,
                 isPullToRefresh = true,
@@ -110,7 +113,8 @@ private fun ApkListScreenPreview() {
                         refreshing = false
                     }
                 },
-            ) { _ -> null }
+                onClick = { _ -> },
+                deletedDocumentFound = { _ -> })
         }
     }
 }

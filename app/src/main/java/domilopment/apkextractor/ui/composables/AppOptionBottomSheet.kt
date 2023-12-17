@@ -79,10 +79,17 @@ fun AppOptionsBottomSheet(
     onActionSaveImage: PermissionState,
     intentUninstallApp: ManagedActivityResultLauncher<Intent, ActivityResult>,
     onActionUninstall: () -> Unit,
+    uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
+    val context = LocalContext.current
+    if (!Utils.isPackageInstalled(context.packageManager, app.appPackageName)) {
+        uninstalledAppFound(app)
+        return
+    }
+
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    val apkOptions = ApkActionsManager(LocalContext.current, app)
+    val apkOptions = ApkActionsManager(context, app)
 
     ModalBottomSheet(onDismissRequest = onDismissRequest,
         sheetState = sheetState,

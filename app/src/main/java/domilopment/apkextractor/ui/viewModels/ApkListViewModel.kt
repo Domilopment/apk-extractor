@@ -160,6 +160,8 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun remove(apk: PackageArchiveModel) {
+        if (FileUtil(context).doesDocumentExist(apk.fileUri)) return
+
         _apkListFragmentState.update { state ->
             state.copy(
                 appList = state.appList.filter { it.fileUri != apk.fileUri },

@@ -50,6 +50,7 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.ui.ExpandableText
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 
@@ -64,7 +65,13 @@ fun ApkOptionBottomSheet(
     onActionInstall: () -> Unit,
     onActionDelete: () -> Unit,
     onActionUninstall: () -> Unit,
+    deletedDocumentFound: (PackageArchiveModel) -> Unit
 ) {
+    if (!FileUtil(LocalContext.current).doesDocumentExist(apk.fileUri)) {
+        deletedDocumentFound(apk)
+        return
+    }
+
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 

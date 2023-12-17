@@ -12,11 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.ui.composables.attrColorResource
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
 
 @Composable
@@ -24,11 +26,17 @@ fun ApkList(
     apkList: List<PackageArchiveModel>,
     searchString: String?,
     onClick: (PackageArchiveModel) -> Unit,
+    deletedDocumentFound: (PackageArchiveModel) -> Unit,
 ) {
     val highlightColor = attrColorResource(attrId = android.R.attr.textColorHighlight)
 
     LazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
         items(items = apkList, key = { it.fileUri }) { apk ->
+            if (!FileUtil(LocalContext.current).doesDocumentExist(apk.fileUri)) {
+                deletedDocumentFound(apk)
+                return@items
+            }
+
             ApkListItem(
                 apkFileName = Utils.getAnnotatedString(
                     apk.fileName, searchString, highlightColor
@@ -78,9 +86,10 @@ private fun ApkListPreview() {
     }
     MaterialTheme {
         Column {
-            ApkList(
-                apkList = apks, searchString = ""
-            ) { apk -> Log.e(apk.fileName, apk.appPackageName.toString()) }
+            ApkList(apkList = apks,
+                searchString = "",
+                onClick = { apk -> Log.e(apk.fileName, apk.appPackageName.toString()) },
+                deletedDocumentFound = { _ -> })
         }
     }
 }

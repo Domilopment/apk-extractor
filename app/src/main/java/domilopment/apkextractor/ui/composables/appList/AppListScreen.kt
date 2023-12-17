@@ -79,7 +79,7 @@ fun AppListScreen(
     val uninstallApp =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
             appToUninstall?.let {
-                model.uninstallApps(it.appPackageName)
+                model.uninstallApps(it)
                 appToUninstall = null
             }
         }
@@ -224,9 +224,8 @@ fun AppListScreen(
             onActionShare = shareApp,
             onActionSaveImage = saveImage,
             intentUninstallApp = uninstallApp,
-            onActionUninstall = {
-                appToUninstall = selectedApp
-            },
+            onActionUninstall = { appToUninstall = selectedApp },
+            uninstalledAppFound = model::uninstallApps
         )
     }
 
@@ -252,7 +251,8 @@ fun AppListScreen(
         settingsManager.getLeftSwipeAction() ?: ApkActionsOptions.SHARE
     }
 
-    AppListContent(appList = state.appList,
+    AppListContent(
+        appList = state.appList,
         searchString = searchString,
         isSwipeToDismiss = !isActionMode,
         updateApp = { app ->
@@ -283,5 +283,7 @@ fun AppListScreen(
                 ApkActionsOptions.ApkActionOptionParams.Builder().setCallbackFun(showSnackbar)
                     .setShareResult(shareApp).setDeleteResult(uninstallApp).build()
             )
-        })
+        },
+        uninstalledAppFound = model::uninstallApps
+    )
 }

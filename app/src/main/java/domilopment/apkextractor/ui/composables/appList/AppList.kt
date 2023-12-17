@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.composables.appList
 
-import android.R
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -20,7 +19,6 @@ import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
@@ -34,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.ui.composables.attrColorResource
+import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.Utils.getAnnotatedString
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 
@@ -55,12 +53,21 @@ fun AppList(
     triggerActionMode: (ApplicationModel) -> Unit,
     rightSwipeAction: ApkActionsOptions,
     leftSwipeAction: ApkActionsOptions,
-    swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit
+    swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit,
+    uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
-    val highlightColor = attrColorResource(attrId = R.attr.textColorHighlight)
+    val highlightColor = attrColorResource(attrId = android.R.attr.textColorHighlight)
 
     LazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
         items(items = appList, key = { it.appPackageName }) { app ->
+            if (!Utils.isPackageInstalled(
+                    LocalContext.current.packageManager, app.appPackageName
+                )
+            ) {
+                uninstalledAppFound(app)
+                return@items
+            }
+
             val state = rememberDismissState(confirmValueChange = {
                 if (it == DismissValue.DismissedToStart) {
                     swipeActionCallback(app, leftSwipeAction)
@@ -88,7 +95,9 @@ fun AppList(
                         leftSwipeAction = leftSwipeAction, modifier = Modifier.background(color)
                     )
 
-                    null -> this
+                    null -> {
+                        // Nothing to do
+                    }
                 }
             }, content = {
                 AppListItem(appName = getAnnotatedString(
@@ -211,8 +220,7 @@ private fun AppListPreview() {
             Button(onClick = { actionMode = false }) {
                 Text(text = "Stop ActionMode")
             }
-            AppList(
-                appList = apps,
+            AppList(appList = apps,
                 isSwipeToDismiss = !actionMode,
                 searchString = "",
                 updateApp = { app ->
@@ -224,8 +232,9 @@ private fun AppListPreview() {
                 },
                 triggerActionMode = { if (!actionMode) actionMode = true },
                 rightSwipeAction = ApkActionsOptions.SAVE,
-                leftSwipeAction = ApkActionsOptions.SHARE
-            ) { app, action -> Log.e(action.name, app.appPackageName) }
+                leftSwipeAction = ApkActionsOptions.SHARE,
+                swipeActionCallback = { app, action -> Log.e(action.name, app.appPackageName) },
+                uninstalledAppFound = { _ -> })
         }
     }
 }

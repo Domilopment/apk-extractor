@@ -162,7 +162,8 @@ fun ApkListScreen(
                         Intent.ACTION_DELETE, Uri.fromParts("package", it.appPackageName, null)
                     )
                 )
-            })
+            },
+            deletedDocumentFound = model::remove)
     }
 
     if (progressDialogState.shouldBeShown) ProgressDialog(
@@ -177,6 +178,7 @@ fun ApkListScreen(
         refreshing = state.isRefreshing,
         isPullToRefresh = true,
         onRefresh = model::updatePackageArchives,
-        onClick = model::selectPackageArchive
+        onClick = model::selectPackageArchive,
+        deletedDocumentFound = model::remove
     )
 }
