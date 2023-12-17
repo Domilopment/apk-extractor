@@ -1,6 +1,8 @@
 package domilopment.apkextractor.ui
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,7 +21,11 @@ fun ExpandableText(
     }
     Text(
         text = text,
-        modifier = modifier.clickable { expanded = !expanded },
+        modifier = modifier
+            .animateContentSize()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() }, indication = null
+            ) { expanded = !expanded },
         maxLines = if (expanded) Int.MAX_VALUE else maxLines,
         overflow = overflow
     )
