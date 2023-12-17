@@ -12,16 +12,11 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
-import android.view.View
 import androidx.activity.result.ActivityResultLauncher
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.ExtractionResult
@@ -40,21 +35,20 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param view reference for Snackbar view
      * @param anchorView Anchor View for Snackbar
      */
-    fun actionSave(offset: Dp = 0.dp, showSnackbar: (MySnackbarVisuals) -> Unit) {
+    fun actionSave(showSnackbar: (MySnackbarVisuals) -> Unit) {
         val settingsManager = SettingsManager(context)
         when (val result = FileUtil(context).copy(
             app.appSourceDirectory, settingsManager.saveDir()!!, settingsManager.appName(app)
         )) {
             is ExtractionResult.Success -> {
                 EventDispatcher.emitEvent(Event(EventType.SAVED, result.uri))
-                showSnackbar(MySnackbarVisuals(
-                    actionLabel = null,
-                    duration = SnackbarDuration.Short,
-                    message = context.getString(R.string.snackbar_successful_extracted, app.appName),
-                    withDismissAction = false,
-                    messageColor = null,
-                    snackbarOffset = offset
-                ))
+                showSnackbar(
+                    MySnackbarVisuals(
+                        duration = SnackbarDuration.Short, message = context.getString(
+                            R.string.snackbar_successful_extracted, app.appName
+                        )
+                    )
+                )
             }
 
             is ExtractionResult.Failure -> MaterialAlertDialogBuilder(context).apply {
@@ -135,7 +129,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param view reference for Snackbar view
      * @param anchorView Anchor View for Snackbar
      */
-    fun actionSaveImage(offset: Dp = 0.dp, showSnackbar: (MySnackbarVisuals) -> Unit) {
+    fun actionSaveImage(showSnackbar: (MySnackbarVisuals) -> Unit) {
         val resolver = context.contentResolver
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, app.appName)
@@ -158,14 +152,12 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
             resolver.openOutputStream(it)
         }?.use {
             val result = app.appIcon.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, it)
-            if (result) showSnackbar(MySnackbarVisuals(
-                actionLabel = null,
-                duration = SnackbarDuration.Short,
-                message = context.getString(R.string.snackbar_successful_save_image),
-                withDismissAction = false,
-                messageColor = null,
-                snackbarOffset = offset
-            ))
+            if (result) showSnackbar(
+                MySnackbarVisuals(
+                    duration = SnackbarDuration.Short,
+                    message = context.getString(R.string.snackbar_successful_save_image)
+                )
+            )
         }
     }
 
@@ -177,7 +169,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param view reference for Snackbar view
      * @param anchorView Anchor View for Snackbar
      */
-    fun actionOpenShop(offset: Dp = 0.dp, showSnackbar: (MySnackbarVisuals) -> Unit) {
+    fun actionOpenShop(showSnackbar: (MySnackbarVisuals) -> Unit) {
         app.installationSource?.also {
             try {
                 val shopIntent = Intent(Intent.ACTION_VIEW).apply {
@@ -186,14 +178,13 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
                 }
                 context.startActivity(shopIntent)
             } catch (e: ActivityNotFoundException) {
-                showSnackbar(MySnackbarVisuals(
-                    actionLabel = null,
-                    duration = SnackbarDuration.Short,
-                    message = context.getString(R.string.snackbar_no_activity_for_market_intent),
-                    withDismissAction = false,
-                    messageColor = Color.Red,
-                    snackbarOffset = offset
-                ))
+                showSnackbar(
+                    MySnackbarVisuals(
+                        duration = SnackbarDuration.Short,
+                        message = context.getString(R.string.snackbar_no_activity_for_market_intent),
+                        messageColor = Color.Red
+                    )
+                )
             }
         }
     }

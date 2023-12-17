@@ -1,7 +1,11 @@
 package domilopment.apkextractor.ui.composables
 
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
+import android.os.Build
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +17,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,65 +34,69 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.boundsInParent
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.isGranted
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
+import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AppOptionsBottomSheet(
     app: ApplicationModel,
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     onFavoriteChanged: (Boolean) -> Unit,
-    onActionSave: () -> Unit,
-    onActionShare: () -> Unit,
-    onActionSaveImage: () -> Unit,
-    onActionOpenApp: () -> Unit,
-    onActionOpenSettings: () -> Unit,
+    onActionShare: ManagedActivityResultLauncher<Intent, ActivityResult>,
+    onActionSaveImage: PermissionState,
+    intentUninstallApp: ManagedActivityResultLauncher<Intent, ActivityResult>,
     onActionUninstall: () -> Unit,
-    onActionOpenStorePage: () -> Unit,
-    onDialogPositioned: (Dp) -> Unit
 ) {
-    val localDensity = LocalDensity.current
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest, modifier = Modifier.onGloballyPositioned {
-            onDialogPositioned(with(localDensity) { it.boundsInParent().height.toDp() })
-        }, sheetState = sheetState, windowInsets = WindowInsets(bottom = 24.dp)
-    ) {
-        AppSheetHeader(
-            appName = app.appName,
-            packageName = app.appPackageName,
-            appIcon = app.appIcon,
-            isFavorite = app.isFavorite,
-            onFavoriteChanged = onFavoriteChanged
-        )
-        HorizontalDivider()
-        AppSheetInfo(
-            sourceDirectory = app.appSourceDirectory,
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val apkOptions = ApkActionsManager(LocalContext.current, app)
+
+    ModalBottomSheet(onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
+        windowInsets = WindowInsets(bottom = 24.dp),
+        dragHandle = {
+            AppSheetHeader(
+                appName = app.appName,
+                packageName = app.appPackageName,
+                appIcon = app.appIcon,
+                isFavorite = app.isFavorite,
+                snackbarHostState = snackbarHostState,
+                onFavoriteChanged = onFavoriteChanged
+            )
+        }) {
+        AppSheetInfo(sourceDirectory = app.appSourceDirectory,
             apkSize = app.apkSize,
             versionName = app.appVersionName,
             versionNumber = app.appVersionCode,
@@ -97,18 +104,34 @@ fun AppOptionsBottomSheet(
             installTime = app.appInstallTime,
             updateTime = app.appUpdateTime,
             installationSource = app.installationSource,
-            onOpenStorePage = onActionOpenStorePage
-        )
-        HorizontalDivider()
-        AppSheetActions(
-            app = app,
-            onActionSave = onActionSave,
-            onActionShare = onActionShare,
-            onActionSaveImage = onActionSaveImage,
-            onActionOpenApp = onActionOpenApp,
-            onActionOpenSettings = onActionOpenSettings,
-            onActionUninstall = onActionUninstall
-        )
+            onOpenStorePage = {
+                apkOptions.actionOpenShop {
+                    scope.launch { snackbarHostState.showSnackbar(it) }
+                }
+            })
+        HorizontalDivider(modifier = Modifier.padding(4.dp))
+        AppSheetActions(app = app,
+            onActionSave = {
+                apkOptions.actionSave {
+                    scope.launch { snackbarHostState.showSnackbar(it) }
+                }
+            },
+            onActionShare = { apkOptions.actionShare(onActionShare) },
+            onActionSaveImage = label@{
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !onActionSaveImage.status.isGranted) {
+                    onActionSaveImage.launchPermissionRequest()
+                    return@label
+                }
+                apkOptions.actionSaveImage {
+                    scope.launch { snackbarHostState.showSnackbar(it) }
+                }
+            },
+            onActionOpenApp = apkOptions::actionOpenApp,
+            onActionOpenSettings = apkOptions::actionShowSettings,
+            onActionUninstall = {
+                onActionUninstall()
+                apkOptions.actionUninstall(intentUninstallApp)
+            })
     }
 }
 
@@ -277,36 +300,51 @@ private fun AppSheetHeader(
     packageName: String,
     appIcon: Drawable,
     isFavorite: Boolean,
+    snackbarHostState: SnackbarHostState,
     onFavoriteChanged: (Boolean) -> Unit
 ) {
-    ListItem(headlineContent = {
-        Text(
-            text = appName,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1
-        )
-    }, modifier = Modifier.height(72.dp), supportingContent = {
-        Text(
-            text = packageName,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1
-        )
-    }, leadingContent = {
-        Image(
-            painter = rememberDrawablePainter(drawable = appIcon),
-            contentDescription = stringResource(id = R.string.list_item_Image_description),
-            modifier = Modifier.width(72.dp)
-        )
-    }, trailingContent = {
-        IconToggleButton(checked = isFavorite, onCheckedChange = onFavoriteChanged) {
-            Icon(
-                imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
-                contentDescription = null
+    Column(
+        modifier = Modifier.padding(vertical = 8.dp), verticalArrangement = Arrangement.Center
+    ) {
+        SnackbarHost(
+            hostState = snackbarHostState,
+        ) {
+            val visuals = it.visuals as MySnackbarVisuals
+            Snackbar(
+                snackbarData = it,
+                contentColor = visuals.messageColor ?: SnackbarDefaults.contentColor
             )
         }
-    })
+        ListItem(headlineContent = {
+            Text(
+                text = appName,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
+        }, modifier = Modifier.height(72.dp), supportingContent = {
+            Text(
+                text = packageName,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
+        }, leadingContent = {
+            Image(
+                painter = rememberDrawablePainter(drawable = appIcon),
+                contentDescription = stringResource(id = R.string.list_item_Image_description),
+                modifier = Modifier.width(72.dp)
+            )
+        }, trailingContent = {
+            IconToggleButton(checked = isFavorite, onCheckedChange = onFavoriteChanged) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                    contentDescription = null
+                )
+            }
+        })
+        HorizontalDivider(modifier = Modifier.padding(4.dp))
+    }
 }

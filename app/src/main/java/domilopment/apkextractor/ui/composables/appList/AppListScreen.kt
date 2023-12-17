@@ -5,7 +5,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,9 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import domilopment.apkextractor.R
@@ -70,9 +67,6 @@ fun AppListScreen(
         SettingsManager(context)
     }
 
-    var dialogHeight by remember {
-        mutableStateOf(0.dp)
-    }
     var appToUninstall by remember {
         mutableStateOf<ApplicationModel?>(null)
     }
@@ -94,15 +88,11 @@ fun AppListScreen(
             if (isPermissionGranted) state.selectedApp?.let {
                 ApkActionsManager(
                     context, it
-                ).actionSaveImage(dialogHeight, showSnackbar)
+                ).actionSaveImage(showSnackbar)
             } else showSnackbar(
                 MySnackbarVisuals(
-                    actionLabel = null,
                     duration = SnackbarDuration.Short,
                     message = context.getString(R.string.snackbar_need_permission_save_image),
-                    withDismissAction = false,
-                    messageColor = null,
-                    snackbarOffset = null
                 )
             )
         }
@@ -147,17 +137,12 @@ fun AppListScreen(
             }.show()
             else showSnackbar(
                 MySnackbarVisuals(
-                    actionLabel = null,
-                    message = context.resources.getQuantityString(
+                    duration = SnackbarDuration.Long, message = context.resources.getQuantityString(
                         R.plurals.snackbar_successful_extracted_multiple,
                         size,
                         app?.appName,
                         size - 1
-                    ),
-                    duration = SnackbarDuration.Long,
-                    withDismissAction = false,
-                    messageColor = null,
-                    snackbarOffset = null
+                    )
                 )
             )
 
@@ -223,12 +208,9 @@ fun AppListScreen(
     }
 
     state.selectedApp?.let { selectedApp ->
-        val apkOptions = ApkActionsManager(context, selectedApp)
-        AppOptionsBottomSheet(app = selectedApp,
-            onDismissRequest = {
-                model.selectApplication(null)
-                dialogHeight = 0.dp
-            },
+        AppOptionsBottomSheet(
+            app = selectedApp,
+            onDismissRequest = { model.selectApplication(null) },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             onFavoriteChanged = { isChecked ->
                 settingsManager.editFavorites(selectedApp.appPackageName, isChecked)
@@ -239,23 +221,13 @@ fun AppListScreen(
                 )
                 model.sortFavorites()
             },
-            onActionSave = { apkOptions.actionSave(dialogHeight, showSnackbar) },
-            onActionShare = { apkOptions.actionShare(shareApp) },
-            onActionSaveImage = label@{
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !saveImage.status.isGranted) {
-                    saveImage.launchPermissionRequest()
-                    return@label
-                }
-                apkOptions.actionSaveImage(dialogHeight, showSnackbar)
-            },
-            onActionOpenApp = { apkOptions.actionOpenApp() },
-            onActionOpenSettings = { apkOptions.actionShowSettings() },
+            onActionShare = shareApp,
+            onActionSaveImage = saveImage,
+            intentUninstallApp = uninstallApp,
             onActionUninstall = {
                 appToUninstall = selectedApp
-                apkOptions.actionUninstall(uninstallApp)
             },
-            onActionOpenStorePage = { apkOptions.actionOpenShop(dialogHeight, showSnackbar) },
-            onDialogPositioned = { dialogHeight = it })
+        )
     }
 
     if (showFilter) AppFilterBottomSheet(
@@ -308,9 +280,8 @@ fun AppListScreen(
             apkAction.getAction(
                 context,
                 app,
-                ApkActionsOptions.ApkActionOptionParams.Builder().setDialogHeight(dialogHeight)
-                    .setCallbackFun(showSnackbar).setShareResult(shareApp)
-                    .setDeleteResult(uninstallApp).build()
+                ApkActionsOptions.ApkActionOptionParams.Builder().setCallbackFun(showSnackbar)
+                    .setShareResult(shareApp).setDeleteResult(uninstallApp).build()
             )
         })
 }

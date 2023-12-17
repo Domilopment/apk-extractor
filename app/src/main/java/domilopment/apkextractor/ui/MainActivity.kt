@@ -13,26 +13,24 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -61,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var settingsManager: SettingsManager
     private lateinit var appUpdateManager: AppUpdateManager
+    private lateinit var snackbarHostState: SnackbarHostState
 
     // while waiting for chooseSaveDir to deliver and apply Result,
     // onStart will be called and Ask for Save Dir even save dir is chosen but not applied.
@@ -103,7 +102,6 @@ class MainActivity : AppCompatActivity() {
             val navController = rememberNavController()
             val appBarState = rememberAppBarState(navController = navController)
             val scope = rememberCoroutineScope()
-            val snackbarHostState = remember { SnackbarHostState() }
 
             APKExtractorTheme {
                 Surface(
@@ -139,17 +137,10 @@ class MainActivity : AppCompatActivity() {
                     }, snackbarHost = {
                         SnackbarHost(hostState = snackbarHostState, snackbar = { snackbarData ->
                             val visuals = snackbarData.visuals as MySnackbarVisuals
-                            val offset =
-                                (visuals.snackbarOffset?.let { if (it > 0.dp) -it + 86.dp /* BottomNavBar height */ else 0.dp }
-                                    ?: 0.dp)
                             Snackbar(
-                                modifier = Modifier
-                                    .padding(12.dp)
-                                    .offset(y = offset),
+                                snackbarData = snackbarData,
                                 contentColor = visuals.messageColor ?: SnackbarDefaults.contentColor
-                            ) {
-                                Text(text = visuals.message)
-                            }
+                            )
                         })
                     }) { contentPadding ->
                         ApkExtractorNavHost(modifier = Modifier.padding(contentPadding),
@@ -179,6 +170,8 @@ class MainActivity : AppCompatActivity() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         appUpdateManager = AppUpdateManagerFactory.create(applicationContext)
+
+        snackbarHostState = SnackbarHostState()
 
         appUpdateManager.registerListener(installStateUpdatedListener)
 
@@ -326,13 +319,20 @@ class MainActivity : AppCompatActivity() {
 
     // Displays the snackbar notification and call to action.
     private fun popupSnackbarForCompleteUpdate() {
-        Snackbar.make(
-            this.window.decorView.rootView,
-            R.string.popup_snackbar_for_complete_update_text,
-            Snackbar.LENGTH_INDEFINITE
-        ).apply {
-            setAction(R.string.popup_snackbar_for_complete_update_action) { appUpdateManager.completeUpdate() }
-            show()
+        lifecycleScope.launch {
+            val result = snackbarHostState.showSnackbar(
+                MySnackbarVisuals(
+                    actionLabel = getString(R.string.popup_snackbar_for_complete_update_action),
+                    duration = SnackbarDuration.Indefinite,
+                    message = getString(R.string.popup_snackbar_for_complete_update_text),
+                )
+            )
+            when (result) {
+                SnackbarResult.ActionPerformed -> appUpdateManager.completeUpdate()
+                else -> {
+                    // Nothing to do
+                }
+            }
         }
     }
 

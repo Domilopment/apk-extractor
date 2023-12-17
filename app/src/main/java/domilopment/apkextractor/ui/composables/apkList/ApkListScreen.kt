@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.Screen
 import domilopment.apkextractor.data.PackageArchiveModel
@@ -53,10 +52,6 @@ fun ApkListScreen(
 
     var sortDialog by remember {
         mutableStateOf(false)
-    }
-
-    var dialogHeight by remember {
-        mutableStateOf(0.dp)
     }
 
     val selectApk =
@@ -133,10 +128,7 @@ fun ApkListScreen(
 
     state.selectedPackageArchiveModel?.let {
         ApkOptionBottomSheet(apk = it,
-            onDismissRequest = {
-                model.selectPackageArchive(null)
-                dialogHeight = 0.dp
-            },
+            onDismissRequest = { model.selectPackageArchive(null) },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             onRefresh = { model.forceRefresh(it) },
             onActionShare = {
@@ -170,8 +162,7 @@ fun ApkListScreen(
                         Intent.ACTION_DELETE, Uri.fromParts("package", it.appPackageName, null)
                     )
                 )
-            },
-            onDialogPositioned = { dialogHeight = it })
+            })
     }
 
     if (progressDialogState.shouldBeShown) ProgressDialog(

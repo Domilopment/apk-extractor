@@ -30,23 +30,26 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.boundsInParent
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,23 +63,24 @@ fun ApkOptionBottomSheet(
     onActionInstall: () -> Unit,
     onActionDelete: () -> Unit,
     onActionUninstall: () -> Unit,
-    onDialogPositioned: (Dp) -> Unit
 ) {
-    val localDensity = LocalDensity.current
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest, modifier = Modifier.onGloballyPositioned {
-            onDialogPositioned(with(localDensity) { it.boundsInParent().height.toDp() })
-        }, sheetState = sheetState, windowInsets = WindowInsets(bottom = 24.dp)
-    ) {
-        ApkSheetHeader(
-            apkName = apk.appName,
-            fileName = apk.fileName,
-            packageName = apk.appPackageName,
-            appIcon = apk.appIcon,
-            isRefreshing = apk.isPackageArchiveInfoLoading,
-            onRefresh = onRefresh
-        )
-        HorizontalDivider()
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    ModalBottomSheet(onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
+        windowInsets = WindowInsets(bottom = 24.dp),
+        dragHandle = {
+            ApkSheetHeader(
+                apkName = apk.appName,
+                fileName = apk.fileName,
+                packageName = apk.appPackageName,
+                appIcon = apk.appIcon,
+                isRefreshing = apk.isPackageArchiveInfoLoading,
+                snackbarHostState = snackbarHostState,
+                onRefresh = onRefresh
+            )
+        }) {
         ApkSheetInfo(
             sourceDirectory = apk.fileUri,
             apkFileName = apk.fileName,
@@ -85,7 +89,7 @@ fun ApkOptionBottomSheet(
             versionName = apk.appVersionName,
             versionNumber = apk.appVersionCode,
         )
-        HorizontalDivider()
+        HorizontalDivider(modifier = Modifier.padding(4.dp))
         ApkSheetActions(
             packageName = apk.appPackageName,
             onActionShare = onActionShare,
@@ -201,44 +205,58 @@ fun ApkSheetHeader(
     packageName: String?,
     appIcon: Drawable?,
     isRefreshing: Boolean,
+    snackbarHostState: SnackbarHostState,
     onRefresh: () -> Unit
 ) {
-    ListItem(headlineContent = {
-        if (packageName != null) Text(
-            text = packageName,
-            modifier = Modifier.fillMaxWidth(),
-            fontSize = 12.sp,
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis
-        )
-    }, modifier = Modifier.height(72.dp), overlineContent = {
-        Text(
-            text = apkName?.toString() ?: fileName,
-            modifier = Modifier.fillMaxWidth(),
-            fontSize = 16.sp,
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis
-        )
-    }, leadingContent = {
-        val context = LocalContext.current
-        Image(
-            painter = rememberDrawablePainter(
-                drawable = appIcon ?: ResourcesCompat.getDrawable(
-                    context.resources, android.R.drawable.sym_def_app_icon, context.theme
-                )
-            ),
-            contentDescription = stringResource(id = R.string.list_item_Image_description),
-            modifier = Modifier.width(72.dp)
-        )
-    }, trailingContent = {
-        if (isRefreshing) CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.secondary,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-        ) else FilledTonalIconButton(onClick = onRefresh) {
-            Icon(imageVector = Icons.Default.Refresh, contentDescription = null)
+    Column(
+        modifier = Modifier.padding(vertical = 8.dp), verticalArrangement = Arrangement.Center
+    ) {
+        SnackbarHost(
+            hostState = snackbarHostState,
+        ) {
+            val visuals = it.visuals as MySnackbarVisuals
+            Snackbar(
+                snackbarData = it,
+                contentColor = visuals.messageColor ?: SnackbarDefaults.contentColor
+            )
         }
-    })
-
+        ListItem(headlineContent = {
+            if (packageName != null) Text(
+                text = packageName,
+                modifier = Modifier.fillMaxWidth(),
+                fontSize = 12.sp,
+                maxLines = 1,
+                textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis
+            )
+        }, modifier = Modifier.height(72.dp), overlineContent = {
+            Text(
+                text = apkName?.toString() ?: fileName,
+                modifier = Modifier.fillMaxWidth(),
+                fontSize = 16.sp,
+                maxLines = 1,
+                textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis
+            )
+        }, leadingContent = {
+            val context = LocalContext.current
+            Image(
+                painter = rememberDrawablePainter(
+                    drawable = appIcon ?: ResourcesCompat.getDrawable(
+                        context.resources, android.R.drawable.sym_def_app_icon, context.theme
+                    )
+                ),
+                contentDescription = stringResource(id = R.string.list_item_Image_description),
+                modifier = Modifier.width(72.dp)
+            )
+        }, trailingContent = {
+            if (isRefreshing) CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.secondary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            ) else FilledTonalIconButton(onClick = onRefresh) {
+                Icon(imageVector = Icons.Default.Refresh, contentDescription = null)
+            }
+        })
+        HorizontalDivider(modifier = Modifier.padding(4.dp))
+    }
 }

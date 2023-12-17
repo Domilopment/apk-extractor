@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
@@ -23,8 +22,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            val dialogHeight = params.dialogHeight ?: 0.dp
-            params.callbackFun?.let { ApkActionsManager(context, app).actionSave(dialogHeight, it) }
+            params.callbackFun?.let { ApkActionsManager(context, app).actionSave(it) }
         }
 
     },
@@ -40,9 +38,8 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            val dialogHeight = params.dialogHeight ?: 0.dp
             params.callbackFun?.let {
-                ApkActionsManager(context, app).actionSaveImage(dialogHeight, it)
+                ApkActionsManager(context, app).actionSaveImage(it)
             }
         }
     },
@@ -87,7 +84,6 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
     }
 
     class ApkActionOptionParams private constructor(
-        val dialogHeight: Dp?,
         val callbackFun: ((MySnackbarVisuals) -> Unit)? = null,
         val shareResult: ActivityResultLauncher<Intent>?,
         val deleteResult: ActivityResultLauncher<Intent>?
@@ -98,8 +94,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
             private var shareResult: ActivityResultLauncher<Intent>? = null,
             private var deleteResult: ActivityResultLauncher<Intent>? = null
         ) {
-            fun setDialogHeight(dialogHeight: Dp) =
-                apply { this.dialogHeight = dialogHeight }
+            fun setDialogHeight(dialogHeight: Dp) = apply { this.dialogHeight = dialogHeight }
 
             fun setCallbackFun(showSnackbar: (MySnackbarVisuals) -> Unit) =
                 apply { this.callbackFun = showSnackbar }
@@ -110,7 +105,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
             fun setDeleteResult(activityResultLauncher: ActivityResultLauncher<Intent>) =
                 apply { this.deleteResult = activityResultLauncher }
 
-            fun build() = ApkActionOptionParams(dialogHeight, callbackFun, shareResult, deleteResult)
+            fun build() = ApkActionOptionParams(callbackFun, shareResult, deleteResult)
         }
     }
 }
