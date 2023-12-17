@@ -1,12 +1,9 @@
 package domilopment.apkextractor.ui.composables.avtionMenu
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -95,11 +92,12 @@ fun ActionsMenu(
                 modifier = Modifier.width(IntrinsicSize.Max)
             ) {
                 menuItems.overflowItems.forEach { item ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(text = stringResource(id = item.titleRes))
-                        }, onClick = item.onClick
-                    )
+                    DropdownMenuItem(text = {
+                        Text(text = stringResource(id = item.titleRes))
+                    }, onClick = {
+                        item.onClick()
+                        onToggleOverflow(false)
+                    })
                 }
             }
         }
