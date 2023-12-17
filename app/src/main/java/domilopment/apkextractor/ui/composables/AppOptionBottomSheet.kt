@@ -61,6 +61,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.ui.ExpandableText
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
@@ -217,7 +218,7 @@ private fun AppSheetInfo(
             .padding(8.dp, 0.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(
+        ExpandableText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_source_directory, sourceDirectory
             ), maxLines = 1, overflow = TextOverflow.Ellipsis

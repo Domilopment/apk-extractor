@@ -49,6 +49,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.ui.ExpandableText
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 
@@ -165,7 +166,7 @@ fun ApkSheetInfo(
             .padding(8.dp, 0.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(
+        ExpandableText(
             text = stringResource(
                 id = R.string.apk_bottom_sheet_source_uri, sourceDirectory
             ), maxLines = 1, overflow = TextOverflow.Ellipsis
