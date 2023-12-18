@@ -139,7 +139,7 @@ fun ApkListScreen(
             },
             onActionInstall = {
                 progressDialogViewModel.installApk(
-                    it.fileUri, PackageInstallerSessionCallback(context, progressDialogViewModel)
+                    it.fileUri, PackageInstallerSessionCallback(context.packageManager.packageInstaller, progressDialogViewModel)
                 )
             },
             onActionDelete = {

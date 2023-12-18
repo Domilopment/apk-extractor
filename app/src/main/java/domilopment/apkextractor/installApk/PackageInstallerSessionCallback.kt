@@ -8,11 +8,9 @@ import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 
 class PackageInstallerSessionCallback(
-    context: Context,
+    private val packageInstaller: PackageInstaller,
     private val progressDialogViewModel: ProgressDialogViewModel,
 ) : PackageInstaller.SessionCallback() {
-    private val packageInstaller =
-        context.applicationContext.packageManager.packageInstaller
     private var packageName: String? = null
     var initialSessionId: Int = -1
 
