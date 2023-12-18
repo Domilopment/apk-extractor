@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.appList
 
-import android.R
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -15,14 +14,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDismissState
+import androidx.compose.material3.rememberSwipeToDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -57,7 +55,7 @@ fun AppList(
     swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit,
     uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
-    val highlightColor = attrColorResource(attrId = R.attr.textColorHighlight)
+    val highlightColor = attrColorResource(attrId = android.R.attr.textColorHighlight)
 
     LazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
         items(items = appList, key = { it.appPackageName }) { app ->
@@ -69,38 +67,44 @@ fun AppList(
                 return@items
             }
 
-            val state = rememberDismissState(confirmValueChange = {
-                if (it == DismissValue.DismissedToStart) {
+            val state = rememberSwipeToDismissState(confirmValueChange = {
+                if (it == SwipeToDismissValue.EndToStart) {
                     swipeActionCallback(app, leftSwipeAction)
-                } else if (it == DismissValue.DismissedToEnd) {
+                } else if (it == SwipeToDismissValue.StartToEnd) {
                     swipeActionCallback(app, rightSwipeAction)
                 }
                 false
             }, positionalThreshold = { it })
 
-            SwipeToDismissBox(state = state, backgroundContent = {
-                val color by animateColorAsState(
+            SwipeToDismissBox(
+                state = state, backgroundContent = {
+                    val color by animateColorAsState(
+                        when (state.dismissDirection) {
+                            SwipeToDismissValue.StartToEnd, SwipeToDismissValue.EndToStart -> MaterialTheme.colorScheme.primaryContainer
+                            SwipeToDismissValue.Settled -> Color.Transparent
+                        }, label = ""
+                    )
+
                     when (state.dismissDirection) {
-                        null -> Color.Transparent
-                        DismissDirection.StartToEnd, DismissDirection.EndToStart -> MaterialTheme.colorScheme.primaryContainer
-                    }, label = ""
-                )
+                        SwipeToDismissValue.StartToEnd -> AppListItemSwipeRight(
+                            rightSwipeAction = rightSwipeAction,
+                            modifier = Modifier.background(color)
+                        )
 
-                when (state.dismissDirection) {
-                    DismissDirection.StartToEnd -> AppListItemSwipeRight(
-                        rightSwipeAction = rightSwipeAction,
-                        modifier = Modifier.background(color)
-                    )
+                        SwipeToDismissValue.EndToStart -> AppListItemSwipeLeft(
+                            leftSwipeAction = leftSwipeAction, modifier = Modifier.background(color)
+                        )
 
-                    DismissDirection.EndToStart -> AppListItemSwipeLeft(
-                        leftSwipeAction = leftSwipeAction, modifier = Modifier.background(color)
-                    )
-
-                    null -> {
-                        // Nothing to do
+                        else -> {
+                            // Nothing to do
+                        }
                     }
-                }
-            }, content = {
+                }, enableDismissFromStartToEnd = getSwipeDirections(
+                    app, isSwipeToDismiss, rightSwipeAction
+                ), enableDismissFromEndToStart = getSwipeDirections(
+                    app, isSwipeToDismiss, leftSwipeAction
+                )
+            ) {
                 AppListItem(appName = getAnnotatedString(
                     app.appName, searchString, highlightColor
                 )!!,
@@ -113,36 +117,17 @@ fun AppList(
                     isFavorite = app.isFavorite,
                     onClick = { updateApp(app) },
                     onLongClick = { triggerActionMode(app) })
-            }, directions = getSwipeDirections(
-                app, isSwipeToDismiss, rightSwipeAction, leftSwipeAction
-            )
-            )
+            }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 private fun getSwipeDirections(
     app: ApplicationModel,
     isSwipeToDismiss: Boolean,
-    rightSwipeAction: ApkActionsOptions,
-    leftSwipeAction: ApkActionsOptions
-): Set<DismissDirection> {
-    if (!isSwipeToDismiss) return setOf()
-
-    val swipeDirs = mutableSetOf<DismissDirection>()
-
-    if (ApkActionsOptions.isOptionSupported(
-            app, leftSwipeAction
-        )
-    ) swipeDirs.add(DismissDirection.EndToStart)
-
-    if (ApkActionsOptions.isOptionSupported(
-            app, rightSwipeAction
-        )
-    ) swipeDirs.add(DismissDirection.StartToEnd)
-
-    return swipeDirs
+    swipeDirection: ApkActionsOptions,
+): Boolean {
+    return isSwipeToDismiss && ApkActionsOptions.isOptionSupported(app, swipeDirection)
 }
 
 @Composable
