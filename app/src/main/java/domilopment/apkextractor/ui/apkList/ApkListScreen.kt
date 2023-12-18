@@ -19,7 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import domilopment.apkextractor.R
-import domilopment.apkextractor.Screen
+import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet

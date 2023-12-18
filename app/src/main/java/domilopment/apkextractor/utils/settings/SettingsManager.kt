@@ -12,7 +12,6 @@ import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.ListOfApps
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories

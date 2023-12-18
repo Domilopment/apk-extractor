@@ -8,9 +8,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import domilopment.apkextractor.BottomBarItem
+import domilopment.apkextractor.ui.navigation.BottomBarItem
 import domilopment.apkextractor.R
-import domilopment.apkextractor.Screen
+import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.actionBar.ActionMenuItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged

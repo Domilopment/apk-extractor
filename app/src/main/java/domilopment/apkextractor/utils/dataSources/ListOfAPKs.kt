@@ -1,15 +1,14 @@
-package domilopment.apkextractor.utils
+package domilopment.apkextractor.utils.dataSources
 
 import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.data.PackageArchiveModel
-import domilopment.apkextractor.utils.settings.SettingsManager
-import kotlinx.coroutines.channels.BufferOverflow
+import domilopment.apkextractor.utils.Constants
+import domilopment.apkextractor.utils.FileUtil
+import domilopment.apkextractor.utils.NonComparingMutableStateFlow
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class ListOfAPKs private constructor(context: Context) {
@@ -97,7 +96,7 @@ class ListOfAPKs private constructor(context: Context) {
 
         fun getPackageArchives(context: Context): ListOfAPKs {
             synchronized(ListOfApps::class.java) {
-                if (!::INSTANCE.isInitialized) {
+                if (!Companion::INSTANCE.isInitialized) {
                     INSTANCE = ListOfAPKs(context.applicationContext)
                 }
             }

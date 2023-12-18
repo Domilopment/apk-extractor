@@ -1,9 +1,9 @@
 package domilopment.apkextractor.utils
 
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.dataSources.ListOfApps
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 
 class ApplicationRepository(private val applicationService: ListOfApps) {

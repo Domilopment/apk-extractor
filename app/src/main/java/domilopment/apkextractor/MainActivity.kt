@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui
+package domilopment.apkextractor
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -39,11 +39,9 @@ import com.google.android.play.core.install.model.ActivityResult
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
-import domilopment.apkextractor.BuildConfig
-import domilopment.apkextractor.R
-import domilopment.apkextractor.Screen
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.rememberAppBarState
+import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.actionBar.APKExtractorAppBar
 import domilopment.apkextractor.ui.navigation.APKExtractorBottomNavigation
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost

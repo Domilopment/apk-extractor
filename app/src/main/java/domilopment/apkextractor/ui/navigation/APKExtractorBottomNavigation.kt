@@ -23,8 +23,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import domilopment.apkextractor.BottomBarItem
-import domilopment.apkextractor.Screen
+import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.data.AppBarState
 
 @Composable

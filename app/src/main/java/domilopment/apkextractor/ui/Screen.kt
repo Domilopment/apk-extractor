@@ -1,4 +1,4 @@
-package domilopment.apkextractor
+package domilopment.apkextractor.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
@@ -10,7 +10,9 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.ui.graphics.vector.ImageVector
+import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.actionBar.ActionMenuItem
+import domilopment.apkextractor.ui.navigation.BottomBarItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -53,7 +55,8 @@ sealed interface Screen {
                 }, icon = Icons.Default.Settings, contentDescription = null
             )
         )
-        override val bottomBarActions = listOf(BottomBarItem(icon = Icons.Default.Save, onClick = {
+        override val bottomBarActions = listOf(
+            BottomBarItem(icon = Icons.Default.Save, onClick = {
             _buttons.tryEmit(ScreenActions.Save)
         }),
             BottomBarItem(

@@ -1,4 +1,4 @@
-package domilopment.apkextractor.utils
+package domilopment.apkextractor.utils.dataSources
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
@@ -6,10 +6,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.data.ApplicationModel
-import kotlinx.coroutines.channels.BufferOverflow
+import domilopment.apkextractor.utils.Constants
+import domilopment.apkextractor.utils.NonComparingMutableStateFlow
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class ListOfApps private constructor(context: Context) {
@@ -112,7 +111,7 @@ class ListOfApps private constructor(context: Context) {
 
         fun getApplications(context: Context): ListOfApps {
             synchronized(ListOfApps::class.java) {
-                if (!::INSTANCE.isInitialized) {
+                if (!Companion::INSTANCE.isInitialized) {
                     INSTANCE = ListOfApps(context.applicationContext)
                 }
             }

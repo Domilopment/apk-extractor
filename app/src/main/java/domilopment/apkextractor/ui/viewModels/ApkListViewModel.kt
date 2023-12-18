@@ -11,7 +11,7 @@ import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.ListOfAPKs
+import domilopment.apkextractor.utils.dataSources.ListOfAPKs
 import domilopment.apkextractor.utils.PackageArchiveRepository
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import domilopment.apkextractor.utils.settings.SettingsManager

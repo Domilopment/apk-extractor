@@ -14,7 +14,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import domilopment.apkextractor.ui.MainActivity
+import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.ExtractionResult

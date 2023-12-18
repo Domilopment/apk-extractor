@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import domilopment.apkextractor.data.*
 import domilopment.apkextractor.utils.ApplicationRepository
-import domilopment.apkextractor.utils.ListOfApps
+import domilopment.apkextractor.utils.dataSources.ListOfApps
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType

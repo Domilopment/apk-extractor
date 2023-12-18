@@ -25,7 +25,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import domilopment.apkextractor.R
-import domilopment.apkextractor.Screen
+import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
 import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet

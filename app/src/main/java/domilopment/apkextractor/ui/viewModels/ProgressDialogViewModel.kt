@@ -8,12 +8,12 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import domilopment.apkextractor.SingleTimeEvent
+import domilopment.apkextractor.utils.SingleTimeEvent
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
-import domilopment.apkextractor.ui.MainActivity
+import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.utils.ExtractionResult
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher

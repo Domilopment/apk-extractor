@@ -5,12 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.ApplicationRepository
-import domilopment.apkextractor.utils.ListOfApps
-import kotlinx.coroutines.async
+import domilopment.apkextractor.utils.dataSources.ListOfApps
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class SettingsFragmentViewModel(application: Application) : AndroidViewModel(application) {
