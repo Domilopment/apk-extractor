@@ -44,9 +44,9 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.Screen
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.rememberAppBarState
-import domilopment.apkextractor.ui.composables.APKExtractorAppBar
-import domilopment.apkextractor.ui.composables.APKExtractorBottomNavigation
-import domilopment.apkextractor.ui.composables.ApkExtractorNavHost
+import domilopment.apkextractor.ui.actionBar.APKExtractorAppBar
+import domilopment.apkextractor.ui.navigation.APKExtractorBottomNavigation
+import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.Constants

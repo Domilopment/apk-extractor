@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables.apkList
+package domilopment.apkextractor.ui.apkList
 
 import android.content.Context
 import android.content.Intent
@@ -22,9 +22,9 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.Screen
 import domilopment.apkextractor.data.PackageArchiveModel
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
-import domilopment.apkextractor.ui.composables.ApkOptionBottomSheet
-import domilopment.apkextractor.ui.composables.ApkSortMenu
-import domilopment.apkextractor.ui.composables.ProgressDialog
+import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet
+import domilopment.apkextractor.ui.dialogs.ApkSortMenu
+import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.utils.FileUtil

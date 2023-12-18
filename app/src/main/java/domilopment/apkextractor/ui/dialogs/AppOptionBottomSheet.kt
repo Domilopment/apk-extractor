@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables
+package domilopment.apkextractor.ui.dialogs
 
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -61,7 +61,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
-import domilopment.apkextractor.ui.ExpandableText
+import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager

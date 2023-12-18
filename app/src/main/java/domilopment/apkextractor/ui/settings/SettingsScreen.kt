@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables
+package domilopment.apkextractor.ui.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.viewinterop.AndroidViewBinding

@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables.apkList
+package domilopment.apkextractor.ui.apkList
 
 import android.graphics.drawable.Drawable
 import android.net.Uri

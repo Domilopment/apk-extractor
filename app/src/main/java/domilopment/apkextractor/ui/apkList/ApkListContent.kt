@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables.apkList
+package domilopment.apkextractor.ui.apkList
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Box

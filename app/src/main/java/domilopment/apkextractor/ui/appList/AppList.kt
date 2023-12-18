@@ -1,5 +1,6 @@
-package domilopment.apkextractor.ui.composables.appList
+package domilopment.apkextractor.ui.appList
 
+import android.R
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -38,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.ApplicationModel
-import domilopment.apkextractor.ui.composables.attrColorResource
+import domilopment.apkextractor.ui.attrColorResource
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.Utils.getAnnotatedString
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
@@ -56,7 +57,7 @@ fun AppList(
     swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit,
     uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
-    val highlightColor = attrColorResource(attrId = android.R.attr.textColorHighlight)
+    val highlightColor = attrColorResource(attrId = R.attr.textColorHighlight)
 
     LazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
         items(items = appList, key = { it.appPackageName }) { app ->

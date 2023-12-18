@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables.appList
+package domilopment.apkextractor.ui.appList
 
 import android.Manifest
 import android.content.ClipData
@@ -27,9 +27,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import domilopment.apkextractor.R
 import domilopment.apkextractor.Screen
 import domilopment.apkextractor.data.ApplicationModel
-import domilopment.apkextractor.ui.composables.AppFilterBottomSheet
-import domilopment.apkextractor.ui.composables.AppOptionsBottomSheet
-import domilopment.apkextractor.ui.composables.ProgressDialog
+import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
+import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
+import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.utils.FileUtil

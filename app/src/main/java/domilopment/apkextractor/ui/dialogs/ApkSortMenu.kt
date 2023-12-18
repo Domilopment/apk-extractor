@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables
+package domilopment.apkextractor.ui.dialogs
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.DropdownMenuItem

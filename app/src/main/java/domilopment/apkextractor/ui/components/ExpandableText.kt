@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui
+package domilopment.apkextractor.ui.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable

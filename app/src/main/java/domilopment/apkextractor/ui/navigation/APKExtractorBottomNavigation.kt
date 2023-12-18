@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables
+package domilopment.apkextractor.ui.navigation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

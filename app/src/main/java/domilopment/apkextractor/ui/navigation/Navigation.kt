@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables
+package domilopment.apkextractor.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -7,8 +7,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import domilopment.apkextractor.Screen
-import domilopment.apkextractor.ui.composables.apkList.ApkListScreen
-import domilopment.apkextractor.ui.composables.appList.AppListScreen
+import domilopment.apkextractor.ui.apkList.ApkListScreen
+import domilopment.apkextractor.ui.appList.AppListScreen
+import domilopment.apkextractor.ui.settings.SettingsScreen
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel

@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables
+package domilopment.apkextractor.ui.dialogs
 
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -49,7 +49,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
-import domilopment.apkextractor.ui.ExpandableText
+import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils

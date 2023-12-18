@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables.apkList
+package domilopment.apkextractor.ui.apkList
 
 import android.net.Uri
 import android.util.Log
@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.PackageArchiveModel
-import domilopment.apkextractor.ui.composables.attrColorResource
+import domilopment.apkextractor.ui.attrColorResource
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
 

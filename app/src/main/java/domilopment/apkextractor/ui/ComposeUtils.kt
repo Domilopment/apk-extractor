@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables
+package domilopment.apkextractor.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable

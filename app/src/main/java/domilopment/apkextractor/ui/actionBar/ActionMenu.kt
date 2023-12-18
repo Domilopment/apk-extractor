@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables.avtionMenu
+package domilopment.apkextractor.ui.actionBar
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons

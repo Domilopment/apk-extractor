@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.composables
+package domilopment.apkextractor.ui.dialogs
 
 import android.content.SharedPreferences
 import androidx.compose.foundation.horizontalScroll
@@ -61,6 +61,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.R
+import domilopment.apkextractor.ui.components.SegmentedButtonColumn
+import domilopment.apkextractor.ui.components.SegmentedButtonColumnScope
 import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
