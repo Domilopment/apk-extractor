@@ -1,19 +1,21 @@
-package domilopment.apkextractor.utils.dataSources
+package domilopment.apkextractor.dependencyInjection.applications
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.preference.PreferenceManager
 import domilopment.apkextractor.data.ApplicationModel
-import domilopment.apkextractor.utils.Constants
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.NonComparingMutableStateFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
-class ListOfApps private constructor(context: Context) {
+class ListOfApps private constructor(
+    context: Context, private val preferences: PreferenceRepository
+) {
     private val packageManager = context.packageManager
-    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     private val _apps: NonComparingMutableStateFlow<Triple<MutableList<ApplicationModel>, MutableList<ApplicationModel>, MutableList<ApplicationModel>>> =
         NonComparingMutableStateFlow(
@@ -25,17 +27,20 @@ class ListOfApps private constructor(context: Context) {
 
     // initialize APK list
     init {
-        updateData()
+        runBlocking { updateData() }
     }
 
     /**
      * Update Installed APK lists
      */
-    fun updateData() {
+    suspend fun updateData() {
         // Ensure all list are Empty!
         val newUpdatedSystemApps = mutableListOf<ApplicationModel>()
         val newSystemApps = mutableListOf<ApplicationModel>()
         val newUserApps = mutableListOf<ApplicationModel>()
+
+        val favorites = preferences.appListFavorites.first()
+
         // Fill each list with its specific type
         val applicationsInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             packageManager.getInstalledApplications(
@@ -47,8 +52,6 @@ class ListOfApps private constructor(context: Context) {
             packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
         }
 
-        val favorites =
-            sharedPreferences.getStringSet(Constants.PREFERENCE_KEY_FAVORITES, setOf()) ?: setOf()
         applicationsInfo.forEach { packageInfo: ApplicationInfo ->
             ApplicationModel(
                 packageManager = packageManager,
@@ -109,10 +112,12 @@ class ListOfApps private constructor(context: Context) {
     companion object {
         private lateinit var INSTANCE: ListOfApps
 
-        fun getApplications(context: Context): ListOfApps {
+        fun getApplications(
+            context: Context, preferenceRepository: PreferenceRepository
+        ): ListOfApps {
             synchronized(ListOfApps::class.java) {
                 if (!Companion::INSTANCE.isInitialized) {
-                    INSTANCE = ListOfApps(context.applicationContext)
+                    INSTANCE = ListOfApps(context.applicationContext, preferenceRepository)
                 }
             }
             return INSTANCE
