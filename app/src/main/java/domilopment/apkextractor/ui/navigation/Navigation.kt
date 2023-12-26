@@ -2,6 +2,7 @@ package domilopment.apkextractor.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -31,8 +32,8 @@ fun ApkExtractorNavHost(
         navController = navController, startDestination = Screen.AppList.route, modifier = modifier
     ) {
         composable(Screen.AppList.route) {
-            val model = viewModel<AppListViewModel>()
-            val progressDialogViewModel = viewModel<ProgressDialogViewModel>()
+            val model = hiltViewModel<AppListViewModel>()
+            val progressDialogViewModel = hiltViewModel<ProgressDialogViewModel>()
 
             AppListScreen(
                 model = model,
@@ -47,8 +48,8 @@ fun ApkExtractorNavHost(
             )
         }
         composable(Screen.ApkList.route) {
-            val model = viewModel<ApkListViewModel>()
-            val progressDialogViewModel = viewModel<ProgressDialogViewModel>()
+            val model = hiltViewModel<ApkListViewModel>()
+            val progressDialogViewModel = hiltViewModel<ProgressDialogViewModel>()
 
             ApkListScreen(model = model,
                 progressDialogViewModel = progressDialogViewModel,

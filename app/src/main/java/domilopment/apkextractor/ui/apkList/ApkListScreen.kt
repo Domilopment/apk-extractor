@@ -33,7 +33,7 @@ import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
-import domilopment.apkextractor.utils.settings.SettingsManager
+import domilopment.apkextractor.utils.settings.ApkSortOptions
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -49,6 +49,8 @@ fun ApkListScreen(
     val context = LocalContext.current
     val state by model.apkListFragmentState.collectAsState()
     val progressDialogState by progressDialogViewModel.progressDialogState.collectAsState()
+    val saveDir by model.saveDir.collectAsState(initial = null)
+    val sortOrder by model.sortOrder.collectAsState(initial = ApkSortOptions.SORT_BY_FILE_SIZE_DESC)
 
     var sortDialog by remember {
         mutableStateOf(false)
@@ -57,7 +59,7 @@ fun ApkListScreen(
     val selectApk =
         rememberLauncherForActivityResult(object : ActivityResultContracts.OpenDocument() {
             override fun createIntent(context: Context, input: Array<String>): Intent {
-                val pickerInitialUri = SettingsManager(context).saveDir().let {
+                val pickerInitialUri = saveDir?.let {
                     DocumentsContract.buildDocumentUriUsingTree(
                         it, DocumentsContract.getTreeDocumentId(it)
                     )
@@ -120,6 +122,7 @@ fun ApkListScreen(
     }
 
     ApkSortMenu(
+        sortOrder = sortOrder,
         expanded = sortDialog,
         onDismissRequest = { sortDialog = false },
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -127,7 +130,8 @@ fun ApkListScreen(
     )
 
     state.selectedPackageArchiveModel?.let {
-        ApkOptionBottomSheet(apk = it,
+        ApkOptionBottomSheet(
+            apk = it,
             onDismissRequest = { model.selectPackageArchive(null) },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             onRefresh = { model.forceRefresh(it) },
@@ -139,7 +143,9 @@ fun ApkListScreen(
             },
             onActionInstall = {
                 progressDialogViewModel.installApk(
-                    it.fileUri, PackageInstallerSessionCallback(context.packageManager.packageInstaller, progressDialogViewModel)
+                    it.fileUri, PackageInstallerSessionCallback(
+                        context.packageManager.packageInstaller, progressDialogViewModel
+                    )
                 )
             },
             onActionDelete = {
@@ -163,7 +169,8 @@ fun ApkListScreen(
                     )
                 )
             },
-            deletedDocumentFound = model::remove)
+            deletedDocumentFound = model::remove
+        )
     }
 
     if (progressDialogState.shouldBeShown) ProgressDialog(

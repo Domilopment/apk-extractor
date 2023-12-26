@@ -5,16 +5,17 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.ApkListScreenState
 import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.dataSources.ListOfAPKs
-import domilopment.apkextractor.utils.PackageArchiveRepository
+import domilopment.apkextractor.dependencyInjection.packageArchive.PackageArchiveRepository
+import domilopment.apkextractor.utils.settings.PackageArchiveUtils
 import domilopment.apkextractor.utils.settings.ApkSortOptions
-import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -25,25 +26,28 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.concurrent.CancellationException
 import domilopment.apkextractor.utils.eventHandler.Observer
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.mapLatest
+import javax.inject.Inject
 
-@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-class ApkListViewModel(application: Application) : AndroidViewModel(application), Observer {
+@HiltViewModel
+@OptIn(FlowPreview::class)
+class ApkListViewModel @Inject constructor(
+    application: Application,
+    private val preferenceRepository: PreferenceRepository,
+    private val apksRepository: PackageArchiveRepository
+) : AndroidViewModel(application), Observer {
     override val key: String = "ApkListViewModel"
-
-    private val apksRepository =
-        PackageArchiveRepository(ListOfAPKs.getPackageArchives(application))
 
     private val _apkListFragmentState: MutableStateFlow<ApkListScreenState> =
         MutableStateFlow(ApkListScreenState())
     val apkListFragmentState: StateFlow<ApkListScreenState> = _apkListFragmentState.asStateFlow()
 
     private val _searchQuery: MutableStateFlow<String?> = MutableStateFlow(null)
-    val searchQuery: StateFlow<String?> = _searchQuery.asStateFlow()
+
+    val saveDir = preferenceRepository.saveDir
+    val sortOrder = preferenceRepository.apkSortOrder
 
     private val context get() = getApplication<Application>().applicationContext
 
@@ -51,8 +55,10 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         viewModelScope.launch {
-            searchQuery.debounce(500)
-                .combine(apksRepository.apks.mapLatest { SettingsManager(context).sortApkData(it) }) { searchQuery, apkList ->
+            _searchQuery.debounce(500)
+                .combine(apksRepository.apks.combine(sortOrder) { apkList, sortOrder ->
+                    PackageArchiveUtils.sortApkData(apkList, sortOrder)
+                }) { searchQuery, apkList ->
                     val searchString = searchQuery?.trim()
 
                     return@combine if (searchString.isNullOrBlank()) {
@@ -189,19 +195,8 @@ class ApkListViewModel(application: Application) : AndroidViewModel(application)
         _apkListFragmentState.update { state ->
             state.copy(isRefreshing = true)
         }
-
-        var sortedApps: List<PackageArchiveModel>? = null
-
-        _apkListFragmentState.update { state ->
-            sortedApps = SettingsManager(context).sortApkData(state.appList, sortPreferenceId)
-            state.copy(
-                appList = sortedApps!!, isRefreshing = false
-            )
-        }
-        loadArchiveInfoJob = viewModelScope.async(Dispatchers.IO) {
-            sortedApps?.forEach {
-                it.packageArchiveInfo(context)
-            }
+        viewModelScope.launch {
+            preferenceRepository.setApkSortOrder(sortPreferenceId.name)
         }
     }
 }

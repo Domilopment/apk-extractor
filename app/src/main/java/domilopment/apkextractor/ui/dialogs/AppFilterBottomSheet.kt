@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.dialogs
 
-import android.content.SharedPreferences
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,7 +42,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,7 +57,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.preference.PreferenceManager
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.components.SegmentedButtonColumn
 import domilopment.apkextractor.ui.components.SegmentedButtonColumnScope
@@ -74,25 +71,45 @@ import domilopment.apkextractor.utils.settings.AppSortOptions
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppFilterBottomSheet(
+    updatedSystemApps: Boolean,
+    systemApps: Boolean,
+    userApps: Boolean,
+    sortOrder: Boolean,
+    sort: AppSortOptions,
+    prefSortFavorites: Boolean,
+    installationSource: String?,
+    appCategory: String?,
+    otherFilters: Set<String>,
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     changeSelection: (String, Boolean) -> Unit,
-    sortApps: () -> Unit,
-    sortFavorites: () -> Unit,
-    filterApps: () -> Unit
+    setSortOrder: (Boolean) -> Unit,
+    sortApps: (Int) -> Unit,
+    sortFavorites: (Boolean) -> Unit,
+    setInstallationSource: (String?) -> Unit,
+    setCategory: (String?) -> Unit,
+    setFilterOthers: (Set<String>) -> Unit
 ) {
-    val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         windowInsets = WindowInsets(bottom = 24.dp)
     ) {
-        AppFilterAppType(sharedPreferences, changeSelection)
+        AppFilterAppType(updatedSystemApps, systemApps, userApps, changeSelection)
         Spacer(modifier = Modifier.height(8.dp))
         Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
-            AppFilterSort(sharedPreferences, sortApps, sortFavorites)
+            AppFilterSort(
+                sortOrder, sort, prefSortFavorites, setSortOrder, sortApps, sortFavorites
+            )
             Spacer(modifier = Modifier.height(8.dp))
-            AppFilterApps(sharedPreferences, filterApps)
+            AppFilterApps(
+                installationSource,
+                appCategory,
+                otherFilters,
+                setInstallationSource,
+                setCategory,
+                setFilterOthers
+            )
         }
     }
 }
@@ -198,20 +215,14 @@ private fun <T : AppFilter> FilterMenuChip(
 }
 
 @Composable
-private fun AppFilterApps(sharedPreferences: SharedPreferences, filterApps: () -> Unit) {
-    var installationSource by remember {
-        mutableStateOf(sharedPreferences.getString(Constants.PREFERENCE_KEY_FILTER_INSTALLER, null))
-    }
-    var appCategory by remember {
-        mutableStateOf(sharedPreferences.getString(Constants.PREFERENCE_KEY_FILTER_CATEGORY, null))
-    }
-    var otherFilters by remember {
-        mutableStateOf(
-            sharedPreferences.getStringSet(
-                Constants.PREFERENCE_KEY_FILTER_OTHERS, setOf()
-            ) ?: setOf()
-        )
-    }
+private fun AppFilterApps(
+    installationSource: String?,
+    appCategory: String?,
+    otherFilters: Set<String>,
+    setInstallationSource: (String?) -> Unit,
+    setCategory: (String?) -> Unit,
+    setFilterOthers: (Set<String>) -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(4.dp)
@@ -229,68 +240,36 @@ private fun AppFilterApps(sharedPreferences: SharedPreferences, filterApps: () -
                 filterOptions = AppFilterInstaller.entries.toTypedArray(),
                 menuTitle = stringResource(id = R.string.installation_sources),
                 neutralMenuOptionTitle = stringResource(id = R.string.all_sources),
-                onSelectItem = {
-                    sharedPreferences.edit()
-                        .putString(Constants.PREFERENCE_KEY_FILTER_INSTALLER, it).apply()
-                    installationSource = it
-                    filterApps()
-                },
+                onSelectItem = setInstallationSource,
                 onDeselectItem = {
-                    sharedPreferences.edit().remove(Constants.PREFERENCE_KEY_FILTER_INSTALLER)
-                        .apply()
-                    installationSource = null
-                    filterApps()
+                    setInstallationSource(null)
                 })
             FilterMenuChip(prefString = appCategory,
                 filterOptions = AppFilterCategories.entries.toTypedArray(),
                 menuTitle = stringResource(id = R.string.app_categories),
                 neutralMenuOptionTitle = stringResource(id = R.string.filter_category_all),
-                onSelectItem = {
-                    sharedPreferences.edit().putString(Constants.PREFERENCE_KEY_FILTER_CATEGORY, it)
-                        .apply()
-                    appCategory = it
-                    filterApps()
-                },
+                onSelectItem = setCategory,
                 onDeselectItem = {
-                    sharedPreferences.edit().remove(Constants.PREFERENCE_KEY_FILTER_CATEGORY)
-                        .apply()
-                    appCategory = null
-                    filterApps()
+                    setCategory(null)
                 })
             FilterChip(
                 prefSet = otherFilters,
                 filterOptions = AppFilterOthers.FAVORITES,
-                onClick = {
-                    sharedPreferences.edit()
-                        .putStringSet(Constants.PREFERENCE_KEY_FILTER_OTHERS, it).apply()
-                    otherFilters = it
-                    filterApps()
-                })
+                onClick = setFilterOthers
+            )
         }
     }
 }
 
 @Composable
 private fun AppFilterSort(
-    sharedPreferences: SharedPreferences, sortApps: () -> Unit, sortFavorites: () -> Unit
+    sortOrder: Boolean,
+    sort: AppSortOptions,
+    prefSortFavorites: Boolean,
+    setSortOrder: (Boolean) -> Unit,
+    sortApps: (Int) -> Unit,
+    sortFavorites: (Boolean) -> Unit
 ) {
-    var sortOrder by remember {
-        mutableStateOf(
-            sharedPreferences.getBoolean(Constants.PREFERENCE_KEY_APP_SORT_ASC, true)
-        )
-    }
-    var sort by remember {
-        mutableIntStateOf(
-            sharedPreferences.getInt(
-                Constants.PREFERENCE_KEY_APP_SORT, AppSortOptions.SORT_BY_NAME.ordinal
-            )
-        )
-    }
-    var prefSortFavorites by remember {
-        mutableStateOf(
-            sharedPreferences.getBoolean(Constants.PREFERENCE_KEY_SORT_FAVORITES, true)
-        )
-    }
     Column(
         modifier = Modifier
             .padding(4.dp)
@@ -301,11 +280,7 @@ private fun AppFilterSort(
         Row(modifier = Modifier.height(IntrinsicSize.Max)) {
             Button(
                 onClick = {
-                    val newOrder = !sortOrder
-                    sharedPreferences.edit()
-                        .putBoolean(Constants.PREFERENCE_KEY_APP_SORT_ASC, newOrder).apply()
-                    sortOrder = newOrder
-                    sortApps()
+                    setSortOrder(!sortOrder)
                 }, modifier = Modifier
                     .fillMaxHeight()
                     .padding(8.dp, 0.dp)
@@ -318,7 +293,8 @@ private fun AppFilterSort(
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.Sort,
                         contentDescription = null,
-                        Modifier.conditional(sortOrder,
+                        Modifier.conditional(
+                            sortOrder,
                             ifTrue = { scale(scaleX = 1f, scaleY = -1f) })
                     )
                 }
@@ -329,13 +305,9 @@ private fun AppFilterSort(
                     .padding(8.dp, 0.dp)
             ) {
                 SegmentedButton(
-                    selected = sort == AppSortOptions.SORT_BY_NAME.ordinal,
+                    selected = sort == AppSortOptions.SORT_BY_NAME,
                     onClick = {
-                        sharedPreferences.edit().putInt(
-                            Constants.PREFERENCE_KEY_APP_SORT, AppSortOptions.SORT_BY_NAME.ordinal
-                        ).apply()
-                        sort = AppSortOptions.SORT_BY_NAME.ordinal
-                        sortApps()
+                        sortApps(AppSortOptions.SORT_BY_NAME.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = SegmentedButtonColumnScope.SegmentedButtonDefaults.itemShape(
@@ -348,14 +320,9 @@ private fun AppFilterSort(
                     )
                 }
                 SegmentedButton(
-                    selected = sort == AppSortOptions.SORT_BY_PACKAGE.ordinal,
+                    selected = sort == AppSortOptions.SORT_BY_PACKAGE,
                     onClick = {
-                        sharedPreferences.edit().putInt(
-                            Constants.PREFERENCE_KEY_APP_SORT,
-                            AppSortOptions.SORT_BY_PACKAGE.ordinal
-                        ).apply()
-                        sort = AppSortOptions.SORT_BY_PACKAGE.ordinal
-                        sortApps()
+                        sortApps(AppSortOptions.SORT_BY_PACKAGE.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = SegmentedButtonColumnScope.SegmentedButtonDefaults.itemShape(
@@ -368,14 +335,9 @@ private fun AppFilterSort(
                     )
                 }
                 SegmentedButton(
-                    selected = sort == AppSortOptions.SORT_BY_INSTALL_TIME.ordinal,
+                    selected = sort == AppSortOptions.SORT_BY_INSTALL_TIME,
                     onClick = {
-                        sharedPreferences.edit().putInt(
-                            Constants.PREFERENCE_KEY_APP_SORT,
-                            AppSortOptions.SORT_BY_INSTALL_TIME.ordinal
-                        ).apply()
-                        sort = AppSortOptions.SORT_BY_INSTALL_TIME.ordinal
-                        sortApps()
+                        sortApps(AppSortOptions.SORT_BY_INSTALL_TIME.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = SegmentedButtonColumnScope.SegmentedButtonDefaults.itemShape(
@@ -388,14 +350,9 @@ private fun AppFilterSort(
                     )
                 }
                 SegmentedButton(
-                    selected = sort == AppSortOptions.SORT_BY_UPDATE_TIME.ordinal,
+                    selected = sort == AppSortOptions.SORT_BY_UPDATE_TIME,
                     onClick = {
-                        sharedPreferences.edit().putInt(
-                            Constants.PREFERENCE_KEY_APP_SORT,
-                            AppSortOptions.SORT_BY_UPDATE_TIME.ordinal
-                        ).apply()
-                        sort = AppSortOptions.SORT_BY_UPDATE_TIME.ordinal
-                        sortApps()
+                        sortApps(AppSortOptions.SORT_BY_UPDATE_TIME.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = SegmentedButtonColumnScope.SegmentedButtonDefaults.itemShape(
@@ -408,14 +365,9 @@ private fun AppFilterSort(
                     )
                 }
                 SegmentedButton(
-                    selected = sort == AppSortOptions.SORT_BY_APK_SIZE.ordinal,
+                    selected = sort == AppSortOptions.SORT_BY_APK_SIZE,
                     onClick = {
-                        sharedPreferences.edit().putInt(
-                            Constants.PREFERENCE_KEY_APP_SORT,
-                            AppSortOptions.SORT_BY_APK_SIZE.ordinal
-                        ).apply()
-                        sort = AppSortOptions.SORT_BY_APK_SIZE.ordinal
-                        sortApps()
+                        sortApps(AppSortOptions.SORT_BY_APK_SIZE.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = SegmentedButtonColumnScope.SegmentedButtonDefaults.itemShape(
@@ -439,10 +391,7 @@ private fun AppFilterSort(
         ) {
             Text(text = stringResource(id = R.string.sort_favorites))
             Switch(checked = prefSortFavorites, onCheckedChange = {
-                sharedPreferences.edit().putBoolean(Constants.PREFERENCE_KEY_SORT_FAVORITES, it)
-                    .apply()
-                prefSortFavorites = it
-                sortFavorites()
+                sortFavorites(it)
             })
         }
     }
@@ -451,23 +400,11 @@ private fun AppFilterSort(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppFilterAppType(
-    sharedPreferences: SharedPreferences, changeSelection: (String, Boolean) -> Unit
+    updatedSystemApps: Boolean,
+    systemApps: Boolean,
+    userApps: Boolean,
+    changeSelection: (String, Boolean) -> Unit
 ) {
-    var updatedSystemApps by remember {
-        mutableStateOf(
-            sharedPreferences.getBoolean(Constants.PREFERENCE_KEY_UPDATED_SYSTEM_APPS, false)
-        )
-    }
-    var systemApps by remember {
-        mutableStateOf(
-            sharedPreferences.getBoolean(Constants.PREFERENCE_KEY_SYSTEM_APPS, false)
-        )
-    }
-    var userApps by remember {
-        mutableStateOf(
-            sharedPreferences.getBoolean(Constants.PREFERENCE_KEY_USER_APPS, true)
-        )
-    }
     Column(modifier = Modifier.padding(8.dp)) {
         Text(
             text = stringResource(id = R.string.app_type_header),
@@ -484,9 +421,6 @@ private fun AppFilterAppType(
         ) {
             SegmentedButton(checked = updatedSystemApps,
                 onCheckedChange = {
-                    sharedPreferences.edit()
-                        .putBoolean(Constants.PREFERENCE_KEY_UPDATED_SYSTEM_APPS, it).apply()
-                    updatedSystemApps = it
                     changeSelection(Constants.PREFERENCE_KEY_UPDATED_SYSTEM_APPS, it)
                 },
                 modifier = Modifier.fillMaxHeight(),
@@ -507,9 +441,6 @@ private fun AppFilterAppType(
             }
             SegmentedButton(checked = systemApps,
                 onCheckedChange = {
-                    sharedPreferences.edit().putBoolean(Constants.PREFERENCE_KEY_SYSTEM_APPS, it)
-                        .apply()
-                    systemApps = it
                     changeSelection(Constants.PREFERENCE_KEY_SYSTEM_APPS, it)
                 },
                 shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
@@ -529,9 +460,6 @@ private fun AppFilterAppType(
             }
             SegmentedButton(checked = userApps,
                 onCheckedChange = {
-                    sharedPreferences.edit().putBoolean(Constants.PREFERENCE_KEY_USER_APPS, it)
-                        .apply()
-                    userApps = it
                     changeSelection(Constants.PREFERENCE_KEY_USER_APPS, it)
                 },
                 shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
@@ -557,5 +485,22 @@ private fun AppFilterAppType(
 @Composable
 private fun AppFilterBottomSheetPreview() {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    AppFilterBottomSheet({}, sheetState = state, { _, _ -> }, {}, {}, {})
+    AppFilterBottomSheet(updatedSystemApps = false,
+        systemApps = false,
+        userApps = true,
+        sortOrder = false,
+        sort = AppSortOptions.SORT_BY_NAME,
+        prefSortFavorites = true,
+        installationSource = null,
+        appCategory = null,
+        otherFilters = emptySet(),
+        onDismissRequest = {},
+        sheetState = state,
+        changeSelection = { _, _ -> },
+        setSortOrder = {},
+        sortApps = {},
+        sortFavorites = {},
+        setInstallationSource = {},
+        setCategory = {},
+        setFilterOthers = {})
 }

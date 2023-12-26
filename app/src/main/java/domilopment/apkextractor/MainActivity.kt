@@ -1,15 +1,16 @@
 package domilopment.apkextractor
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Binder
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,13 +24,19 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -39,40 +46,27 @@ import com.google.android.play.core.install.model.ActivityResult
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
+import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.rememberAppBarState
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.actionBar.APKExtractorAppBar
+import domilopment.apkextractor.ui.dialogs.AskForSaveDirDialog
 import domilopment.apkextractor.ui.navigation.APKExtractorBottomNavigation
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.MainViewModel
-import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
-import domilopment.apkextractor.utils.settings.SettingsManager
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var settingsManager: SettingsManager
     private lateinit var appUpdateManager: AppUpdateManager
     private lateinit var snackbarHostState: SnackbarHostState
 
-    // while waiting for chooseSaveDir to deliver and apply Result,
-    // onStart will be called and Ask for Save Dir even save dir is chosen but not applied.
-    private var waitForRes = false
-
-    private val chooseSaveDir =
-        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) {
-            it?.also { saveDirUri ->
-                takeUriPermission(saveDirUri)
-                waitForRes = false
-            } ?: run {
-                waitForRes = false
-                showDialog()
-            }
-        }
+    private val model by viewModels<MainViewModel>()
 
     private val activityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
@@ -94,14 +88,46 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         setContent {
-            val model = viewModel<MainViewModel>()
             val mainScreenState = model.mainScreenState
             val actionModeState = model.actionModeState
+            val saveDir by model.saveDir.collectAsState()
+            val dynamicColors by model.materialYou.collectAsState(true)
             val navController = rememberNavController()
             val appBarState = rememberAppBarState(navController = navController)
             val scope = rememberCoroutineScope()
 
-            APKExtractorTheme {
+            var showAskForSaveDir by remember {
+                mutableStateOf(false)
+            }
+
+            val chooseSaveDir =
+                rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) {
+                    it?.also { saveDirUri ->
+                        takeUriPermission(saveDir, saveDirUri, model::setSaveDir)
+                    }
+                }
+
+            DisposableEffect(key1 = lifecycle, key2 = saveDir) {
+                // Create an observer that triggers our remembered callbacks
+                // for sending analytics events
+                val observer = LifecycleEventObserver { _, event ->
+                    when (event) {
+                        Lifecycle.Event.ON_START -> showAskForSaveDir = mustAskForSaveDir(saveDir)
+
+                        else -> {}
+                    }
+                }
+
+                // Add the observer to the lifecycle
+                lifecycle.addObserver(observer)
+
+                // When the effect leaves the Composition, remove the observer
+                onDispose {
+                    lifecycle.removeObserver(observer)
+                }
+            }
+
+            APKExtractorTheme(dynamicColor = dynamicColors) {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
@@ -158,14 +184,12 @@ class MainActivity : AppCompatActivity() {
                             onAppSelection = { isAllSelected, appCount ->
                                 model.updateActionMode(isAllSelected, appCount)
                             })
+
+                        if (showAskForSaveDir) AskForSaveDirDialog(chooseSaveDir = chooseSaveDir)
                     }
                 }
             }
         }
-
-        settingsManager = SettingsManager(this)
-
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         appUpdateManager = AppUpdateManagerFactory.create(applicationContext)
 
@@ -173,24 +197,21 @@ class MainActivity : AppCompatActivity() {
 
         appUpdateManager.registerListener(installStateUpdatedListener)
 
-        if (sharedPreferences.getBoolean(
-                Constants.PREFERENCE_CHECK_UPDATE_ON_START, true
-            )
-        ) checkForAppUpdates()
+        lifecycleScope.launch {
+            if (model.updateOnStart.first()) checkForAppUpdates()
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        // Check if Save dir is Selected, Writing permission to dir and whether dir exists
-        // if not ask for select dir
-        showDialog()
-
         // Checks if Service isn't running but should be
-        if (settingsManager.shouldStartService()) startForegroundService(
-            Intent(
-                this, AutoBackupService::class.java
+        lifecycleScope.launch {
+            if (model.autoBackup.first()) startForegroundService(
+                Intent(
+                    this@MainActivity, AutoBackupService::class.java
+                )
             )
-        )
+        }
     }
 
     override fun onResume() {
@@ -262,36 +283,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Show dialog that prompts the user to select a save dir, for the app to be able save APKs
-     */
-    private fun showDialog() {
-        if (!waitForRes && mustAskForSaveDir()) {
-            MaterialAlertDialogBuilder(this).apply {
-                setMessage(R.string.alert_save_path_message)
-                setTitle(R.string.alert_save_path_title)
-                setCancelable(false)
-                setPositiveButton(R.string.alert_save_path_ok) { _, _ ->
-                    waitForRes = true
-                    chooseSaveDir.launch(null)
-                }
-            }.show()
-        }
-    }
-
-    /**
      * Checks for picked Save Directory and for Access to this Dir
      * @return Have to ask user for Save Dir
      */
-    private fun mustAskForSaveDir(): Boolean {
-        if (!sharedPreferences.contains(Constants.PREFERENCE_KEY_SAVE_DIR)) return true
-
-        val path = SettingsManager(this).saveDir()
-        return path == null || checkUriPermission(
-            path,
+    private fun mustAskForSaveDir(saveDir: Uri?): Boolean {
+        return saveDir == null || checkUriPermission(
+            saveDir,
             Binder.getCallingPid(),
             Binder.getCallingUid(),
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        ) == PackageManager.PERMISSION_DENIED || !FileUtil(this).doesDocumentExist(path)
+        ) == PackageManager.PERMISSION_DENIED || !FileUtil(this).doesDocumentExist(saveDir)
     }
 
     private fun checkForAppUpdates() {
@@ -345,8 +346,7 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             setNeutralButton(R.string.popup_dialog_for_notify_about_update_button_neutral) { dialog, _ ->
-                sharedPreferences.edit()
-                    .putBoolean(Constants.PREFERENCE_CHECK_UPDATE_ON_START, false).apply()
+                model.setUpdateOnStart(false)
                 dialog.dismiss()
             }
         }.show()
@@ -367,19 +367,18 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Take Uri Permission for Save Dir
-     * @param uri content uri for selected save path
+     * @param newUri content uri for selected save path
      */
-    private fun takeUriPermission(uri: Uri) {
+    private fun takeUriPermission(oldUri: Uri?, newUri: Uri, saveUri: (String) -> Unit) {
         val takeFlags: Int =
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        settingsManager.saveDir()?.also { oldPath ->
+        oldUri?.let { oldPath ->
             if (oldPath in contentResolver.persistedUriPermissions.map { it.uri }) contentResolver.releasePersistableUriPermission(
                 oldPath, takeFlags
             )
         }
-        sharedPreferences.edit().putString(Constants.PREFERENCE_KEY_SAVE_DIR, uri.toString())
-            .apply()
-        contentResolver.takePersistableUriPermission(uri, takeFlags)
+        saveUri(newUri.toString())
+        contentResolver.takePersistableUriPermission(newUri, takeFlags)
     }
 
     companion object {

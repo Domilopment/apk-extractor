@@ -2,24 +2,35 @@ package domilopment.apkextractor
 
 import android.app.Application
 import android.content.res.Configuration
+import com.google.android.material.color.DynamicColors
+import dagger.hilt.android.HiltAndroidApp
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.settings.SettingsManager
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
-class ApkExtractorApplication: Application() {
-    private lateinit var settingsManager: SettingsManager
+@HiltAndroidApp
+class ApkExtractorApplication : Application() {
+    @Inject
+    lateinit var prefs: PreferenceRepository
 
     override fun onCreate() {
         super.onCreate()
-        settingsManager = SettingsManager(this)
-
         // Set Material You Colors
-        settingsManager.useMaterialYou(this)
+        DynamicColors.applyToActivitiesIfAvailable(this)
 
-        // Set UI Mode
-        settingsManager.changeUIMode()
+        runBlocking {
+            // Set UI Mode
+            SettingsManager.changeUIMode(prefs.nightMode.first())
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        settingsManager.changeUIMode()
+        runBlocking {
+            // Set UI Mode
+            SettingsManager.changeUIMode(prefs.nightMode.first())
+        }
     }
 }

@@ -17,9 +17,9 @@ import androidx.core.app.NotificationManagerCompat
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.ExtractionResult
 import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.*
 import java.io.FileNotFoundException
 
@@ -32,7 +32,9 @@ import java.io.FileNotFoundException
 class AsyncBackupTask(
     private val pendingResult: BroadcastReceiver.PendingResult,
     private val context: Context,
-    packageName: String,
+    private val appName: Set<String>,
+    private val saveDir: Uri,
+    packageName: String
 ) : CoroutineScope by GlobalScope {
     companion object {
         private const val CHANNEL_ID = "domilopment.apkextractor.BROADCAST_RECEIVER"
@@ -58,12 +60,12 @@ class AsyncBackupTask(
     }
 
     private fun doInBackground(): Uri? {
-        val path = SettingsManager(context).saveDir()
-
         // Try to Backup App
         return try {
             when (val result = FileUtil(context).copy(
-                app.appSourceDirectory, path!!, SettingsManager(context).appName(app)
+                app.appSourceDirectory, saveDir, ApplicationUtil.appName(
+                    app, appName
+                )
             )) {
                 is ExtractionResult.Success -> result.uri
                 is ExtractionResult.Failure -> null

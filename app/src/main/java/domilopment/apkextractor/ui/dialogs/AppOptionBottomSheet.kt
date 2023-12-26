@@ -3,6 +3,7 @@ package domilopment.apkextractor.ui.dialogs
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
@@ -62,6 +63,7 @@ import com.google.accompanist.permissions.isGranted
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.ui.components.ExpandableText
+import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
@@ -72,6 +74,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppOptionsBottomSheet(
     app: ApplicationModel,
+    saveDir: Uri,
+    appName: Set<String>,
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     onFavoriteChanged: (Boolean) -> Unit,
@@ -120,11 +124,14 @@ fun AppOptionsBottomSheet(
         HorizontalDivider(modifier = Modifier.padding(4.dp))
         AppSheetActions(app = app,
             onActionSave = {
-                apkOptions.actionSave {
+                apkOptions.actionSave(saveDir, { it.appName }) {
                     scope.launch { snackbarHostState.showSnackbar(it) }
                 }
             },
-            onActionShare = { apkOptions.actionShare(onActionShare) },
+            onActionShare = {
+                apkOptions.actionShare(onActionShare,
+                    { app -> ApplicationUtil.appName(app, appName) })
+            },
             onActionSaveImage = label@{
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !onActionSaveImage.status.isGranted) {
                     onActionSaveImage.launchPermissionRequest()

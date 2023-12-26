@@ -32,11 +32,12 @@ import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
+import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
-import domilopment.apkextractor.utils.settings.SettingsManager
+import domilopment.apkextractor.utils.settings.AppSortOptions
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -55,16 +56,26 @@ fun AppListScreen(
 ) {
     val context = LocalContext.current
     val state by model.mainFragmentState.collectAsState()
+    val saveDir by model.saveDir.collectAsState(initial = null)
+    val appName by model.appName.collectAsState(initial = setOf("0:name"))
+    val updatedSysApps by model.updatedSystemApps.collectAsState(initial = false)
+    val systemApps by model.systemApps.collectAsState(initial = false)
+    val userApps by model.userApps.collectAsState(initial = true)
+    val sortAsc by model.appSortAsc.collectAsState(initial = true)
+    val sort by model.appSortOrder.collectAsState(initial = AppSortOptions.SORT_BY_NAME)
+    val sortFavorites by model.appSortFavorites.collectAsState(initial = true)
+    val installationSource by model.filterInstaller.collectAsState(initial = null)
+    val category by model.filterCategory.collectAsState(initial = null)
+    val otherFilter by model.filterOthers.collectAsState(initial = setOf())
+    val rightSwipeAction by model.rightSwipeAction.collectAsState(initial = ApkActionsOptions.SAVE)
+    val leftSwipeAction by model.leftSwipeAction.collectAsState(initial = ApkActionsOptions.SHARE)
+
     val progressDialogState by progressDialogModel.progressDialogState.collectAsState()
     val extractionResult by progressDialogModel.extractionResult.collectAsState()
     val shareResult by progressDialogModel.shareResult.collectAsState()
 
     var showFilter by rememberSaveable {
         mutableStateOf(false)
-    }
-
-    val settingsManager = remember {
-        SettingsManager(context)
     }
 
     var appToUninstall by remember {
@@ -208,34 +219,40 @@ fun AppListScreen(
     }
 
     state.selectedApp?.let { selectedApp ->
-        AppOptionsBottomSheet(
-            app = selectedApp,
+        AppOptionsBottomSheet(app = selectedApp,
+            saveDir = saveDir!!,
+            appName = appName,
             onDismissRequest = { model.selectApplication(null) },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             onFavoriteChanged = { isChecked ->
-                settingsManager.editFavorites(selectedApp.appPackageName, isChecked)
-                val newApp = selectedApp.copy(isFavorite = isChecked)
-                model.updateApp(newApp)
-                if (selectedApp.appPackageName == newApp.appPackageName) model.selectApplication(
-                    newApp
-                )
-                model.sortFavorites()
+                model.editFavorites(selectedApp.appPackageName, isChecked)
             },
             onActionShare = shareApp,
             onActionSaveImage = saveImage,
             intentUninstallApp = uninstallApp,
             onActionUninstall = { appToUninstall = selectedApp },
-            uninstalledAppFound = model::uninstallApps
-        )
+            uninstalledAppFound = { model.uninstallApps(it) })
     }
 
     if (showFilter) AppFilterBottomSheet(
+        updatedSystemApps = updatedSysApps,
+        systemApps = systemApps,
+        userApps = userApps,
+        sortOrder = sortAsc,
+        sort = sort,
+        prefSortFavorites = sortFavorites,
+        installationSource = installationSource,
+        appCategory = category,
+        otherFilters = otherFilter,
         onDismissRequest = { showFilter = false },
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         changeSelection = model::changeSelection,
-        sortApps = model::sortApps,
-        sortFavorites = model::sortFavorites,
-        filterApps = model::filterApps
+        setSortOrder = model::setSortAsc,
+        sortApps = model::setSortOrder,
+        sortFavorites = model::setSortFavorites,
+        setInstallationSource = model::setInstallationSource,
+        setCategory = model::setCategory,
+        setFilterOthers = model::setOtherFilter
     )
 
     if (progressDialogState.shouldBeShown) ProgressDialog(
@@ -243,13 +260,6 @@ fun AppListScreen(
         title = stringResource(id = R.string.progress_dialog_title_placeholder),
         onDismissRequest = progressDialogModel::resetProgress
     )
-
-    val rightSwipeAction = remember {
-        settingsManager.getRightSwipeAction() ?: ApkActionsOptions.SAVE
-    }
-    val leftSwipeAction = remember {
-        settingsManager.getLeftSwipeAction() ?: ApkActionsOptions.SHARE
-    }
 
     AppListContent(
         appList = state.appList,
@@ -277,12 +287,12 @@ fun AppListScreen(
         leftSwipeAction = leftSwipeAction,
         swipeActionCallback = { app, apkAction ->
             appToUninstall = app
-            apkAction.getAction(
-                context,
+            apkAction.getAction(context,
                 app,
-                ApkActionsOptions.ApkActionOptionParams.Builder().setCallbackFun(showSnackbar)
-                    .setShareResult(shareApp).setDeleteResult(uninstallApp).build()
-            )
+                ApkActionsOptions.ApkActionOptionParams.Builder().setSaveDir(saveDir!!)
+                    .setAppNameBuilder { ApplicationUtil.appName(it, setOf()) }
+                    .setCallbackFun(showSnackbar).setShareResult(shareApp)
+                    .setDeleteResult(uninstallApp).build())
         },
         uninstalledAppFound = model::uninstallApps
     )

@@ -7,23 +7,38 @@ import android.provider.DocumentsContract
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
 import domilopment.apkextractor.autoBackup.AsyncBackupTask.Companion.ACTION_DELETE_APK
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.settings.SettingsManager
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 class PackageBroadcastReceiver : BroadcastReceiver() {
+
+    @Inject
+    lateinit var preferenceRepository: PreferenceRepository
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             // Check for App Updates
-            Intent.ACTION_PACKAGE_REPLACED ->
-                intent.data?.encodedSchemeSpecificPart?.let { packageName ->
-                    // Check if Updated App is in Backup List
-                    if (
-                        SettingsManager(context).listOfAutoBackupApps()!!.contains(packageName)
-                    ) {
-                        val pendingResult: PendingResult = goAsync()
-                        val asyncTask = AsyncBackupTask(pendingResult, context, packageName)
-                        asyncTask.execute()
-                    }
+            Intent.ACTION_PACKAGE_REPLACED -> intent.data?.encodedSchemeSpecificPart?.let { packageName ->
+                val autoBackupList = runBlocking {
+                    preferenceRepository.autoBackupAppList.first()
                 }
+                val appSaveName = runBlocking {
+                    preferenceRepository.appSaveName.first()
+                }
+                val saveDir = runBlocking {
+                    preferenceRepository.saveDir.first()
+                }
+                // Check if Updated App is in Backup List
+                if (autoBackupList.contains(packageName) && saveDir != null) {
+                    val pendingResult: PendingResult = goAsync()
+                    val asyncTask =
+                        AsyncBackupTask(pendingResult, context, appSaveName, saveDir, packageName)
+                    asyncTask.execute()
+                }
+            }
 
             // Foreground Notification Button Call
             AutoBackupService.ACTION_STOP_SERVICE -> {
@@ -34,7 +49,11 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
 
             // Restart Service on Device Boot
             Intent.ACTION_BOOT_COMPLETED, Intent.ACTION_LOCKED_BOOT_COMPLETED -> {
-                if (SettingsManager(context).shouldStartService()) {
+                val isBackupService = runBlocking {
+                    preferenceRepository.autoBackupService.first()
+                }
+
+                if (SettingsManager.shouldStartService(isBackupService)) {
                     context.startForegroundService(Intent(context, AutoBackupService::class.java))
                 }
             }
@@ -48,8 +67,7 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
             ACTION_DELETE_APK -> {
                 intent.data?.let {
                     val deleted = DocumentsContract.deleteDocument(
-                        context.contentResolver,
-                        it
+                        context.contentResolver, it
                     )
                     if (deleted) with(NotificationManagerCompat.from(context)) {
                         val id = intent.getIntExtra("ID", -1)

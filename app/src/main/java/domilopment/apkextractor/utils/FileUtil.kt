@@ -6,7 +6,6 @@ import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.ApplicationModel
-import domilopment.apkextractor.utils.settings.SettingsManager
 import java.io.*
 
 class FileUtil(private val context: Context) {
@@ -72,11 +71,11 @@ class FileUtil(private val context: Context) {
      * @param app Application for sharing
      * @return Shareable Uri of Application APK
      */
-    fun shareURI(app: ApplicationModel): Uri {
+    fun shareURI(app: ApplicationModel, appName: String): Uri {
         return FileProvider.getUriForFile(
             context, "${BuildConfig.APPLICATION_ID}.provider", File(app.appSourceDirectory).copyTo(
                 File(
-                    context.cacheDir, SettingsManager(context).appName(app)
+                    context.cacheDir, appName
                 ), true
             )
         )

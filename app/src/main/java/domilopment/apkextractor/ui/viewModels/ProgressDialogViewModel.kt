@@ -8,31 +8,39 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.utils.SingleTimeEvent
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.MainActivity
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.ExtractionResult
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class ProgressDialogViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class ProgressDialogViewModel @Inject constructor(
+    application: Application, preferenceRepository: PreferenceRepository
+) : AndroidViewModel(application) {
     private val _progressDialogState: MutableStateFlow<ProgressDialogUiState> =
         MutableStateFlow(ProgressDialogUiState())
     val progressDialogState: StateFlow<ProgressDialogUiState> = _progressDialogState.asStateFlow()
@@ -46,15 +54,19 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
         MutableStateFlow(null)
     val shareResult: StateFlow<SingleTimeEvent<ArrayList<Uri>?>?> = _shareResult.asStateFlow()
 
+    val saveDir = preferenceRepository.saveDir
+    val appName = preferenceRepository.appSaveName
+
     private val context get() = getApplication<Application>().applicationContext
+
+    private var runningTask: Job? = null
 
     /**
      * save multiple apps to filesystem
      * @param list of apps user wants to save
      */
     fun saveApps(list: List<ApplicationModel>) {
-        viewModelScope.launch {
-            val settingsManager = SettingsManager(context)
+        runningTask = viewModelScope.launch {
             val fileUtil = FileUtil(context)
             var application: ApplicationModel? = null
             var errorMessage: String? = null
@@ -80,8 +92,8 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
                     withContext(Dispatchers.IO) {
                         val newFile = fileUtil.copy(
                             app.appSourceDirectory,
-                            settingsManager.saveDir()!!,
-                            settingsManager.appName(app)
+                            saveDir.first()!!,
+                            ApplicationUtil.appName(app, appName.first())
                         )
                         when (newFile) {
                             is ExtractionResult.Failure -> errorMessage = newFile.errorMessage
@@ -114,7 +126,7 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
      * @param list list of all apps
      */
     fun createShareUrisForApps(list: List<ApplicationModel>) {
-        viewModelScope.launch {
+        runningTask = viewModelScope.launch {
             val files = ArrayList<Uri>()
             val fileUtil = FileUtil(context)
             val jobList = ArrayList<Deferred<Any?>>()
@@ -132,7 +144,8 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
             }.forEach { app ->
                 jobList.add(async {
                     withContext(Dispatchers.IO) {
-                        fileUtil.shareURI(app).also {
+                        val name = ApplicationUtil.appName(app, appName.first())
+                        fileUtil.shareURI(app, name).also {
                             files.add(it)
                         }
                     }
@@ -155,7 +168,7 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
      * @param apkUri uri from Intent return data
      */
     fun installApk(apkUri: Uri, callback: PackageInstallerSessionCallback) {
-        viewModelScope.launch(Dispatchers.Main) {
+        runningTask = viewModelScope.launch(Dispatchers.Main) {
             val packageInstaller = context.applicationContext.packageManager.packageInstaller
             val contentResolver = context.applicationContext.contentResolver
             packageInstaller.registerSessionCallback(callback)
@@ -223,6 +236,8 @@ class ProgressDialogViewModel(application: Application) : AndroidViewModel(appli
      * Reset Progress dialog state back to default
      */
     fun resetProgress() {
+        runningTask?.cancel()
+        runningTask = null
         _progressDialogState.value = ProgressDialogUiState()
     }
 }

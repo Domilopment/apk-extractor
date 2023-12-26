@@ -25,7 +25,6 @@ import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
-import domilopment.apkextractor.utils.settings.SettingsManager
 import domilopment.apkextractor.utils.Utils
 import java.io.File
 
@@ -35,11 +34,12 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param view reference for Snackbar view
      * @param anchorView Anchor View for Snackbar
      */
-    fun actionSave(showSnackbar: (MySnackbarVisuals) -> Unit) {
-        val settingsManager = SettingsManager(context)
-        when (val result = FileUtil(context).copy(
-            app.appSourceDirectory, settingsManager.saveDir()!!, settingsManager.appName(app)
-        )) {
+    fun actionSave(
+        saveDir: Uri,
+        appNameBuilder: (ApplicationModel) -> String,
+        showSnackbar: (MySnackbarVisuals) -> Unit
+    ) {
+        when (val result = FileUtil(context).copy(app.appSourceDirectory, saveDir, appNameBuilder(app))) {
             is ExtractionResult.Success -> {
                 EventDispatcher.emitEvent(Event(EventType.SAVED, result.uri))
                 showSnackbar(
@@ -80,8 +80,8 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * Creates an share Intent for apk source file of selected app
      * @param shareApp ActivityResultLauncher to launch Intent
      */
-    fun actionShare(shareApp: ActivityResultLauncher<Intent>) {
-        val file = FileUtil(context).shareURI(app)
+    fun actionShare(shareApp: ActivityResultLauncher<Intent>, appName: (ApplicationModel) -> String) {
+        val file = FileUtil(context).shareURI(app, appName(app))
         Intent(Intent.ACTION_SEND).apply {
             setDataAndType(file, FileUtil.MIME_TYPE)
             putExtra(Intent.EXTRA_STREAM, file)

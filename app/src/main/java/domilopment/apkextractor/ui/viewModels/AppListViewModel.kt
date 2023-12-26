@@ -2,64 +2,104 @@ package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.*
-import domilopment.apkextractor.utils.ApplicationRepository
-import domilopment.apkextractor.utils.dataSources.ListOfApps
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
+import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.eventHandler.Observer
 import domilopment.apkextractor.utils.Utils
-import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-class AppListViewModel(application: Application) : AndroidViewModel(application), Observer {
+@HiltViewModel
+@OptIn(FlowPreview::class)
+class AppListViewModel @Inject constructor(
+    application: Application,
+    private val preferenceRepository: PreferenceRepository,
+    private val appsRepository: ApplicationRepository
+) : AndroidViewModel(application), Observer {
     override val key: String = "AppListViewModel"
-
-    private val appsRepository = ApplicationRepository(ListOfApps.getApplications(application))
 
     private val _mainFragmentState: MutableStateFlow<AppListScreenState> =
         MutableStateFlow(AppListScreenState())
     val mainFragmentState: StateFlow<AppListScreenState> = _mainFragmentState.asStateFlow()
 
     private val _searchQuery: MutableStateFlow<String?> = MutableStateFlow(null)
-    val searchQuery: StateFlow<String?> = _searchQuery.asStateFlow()
+
+    private val appListFavorites = preferenceRepository.appListFavorites
+    val saveDir = preferenceRepository.saveDir
+    val appName = preferenceRepository.appSaveName
+    val appSortOrder = preferenceRepository.appSortOrder
+    val appSortFavorites = preferenceRepository.appSortFavorites
+    val appSortAsc = preferenceRepository.appSortAsc
+    val updatedSystemApps = preferenceRepository.updatedSysApps
+    val systemApps = preferenceRepository.sysApps
+    val userApps = preferenceRepository.userApps
+    val filterInstaller = preferenceRepository.appFilterInstaller
+    val filterCategory = preferenceRepository.appFilterCategory
+    val filterOthers = preferenceRepository.appFilterOthers
+    val rightSwipeAction = preferenceRepository.appRightSwipeAction
+    val leftSwipeAction = preferenceRepository.appLeftSwipeAction
 
     private val context get() = getApplication<Application>().applicationContext
 
     init {
         // Set applications in view once they are loaded
         viewModelScope.launch {
-            searchQuery.debounce(500L)
-                .combine(appsRepository.apps.mapLatest { userConfigFilteredApps(it) }) { searchQuery, appList ->
-                    val searchString = searchQuery?.trim()
+            _searchQuery.debounce(500L).combine(combine(
+                combine(
+                    combine(
+                        appsRepository.apps,
+                        updatedSystemApps,
+                        systemApps,
+                        userApps,
+                        appListFavorites
+                    ) { appList, updatedSysApps, sysApps, userApps, favorites ->
+                        ApplicationUtil.selectedAppTypes(
+                            appList, updatedSysApps, sysApps, userApps, favorites
+                        )
+                    }, filterInstaller, filterCategory, filterOthers
+                ) { appList, installer, category, others ->
+                    ApplicationUtil.filterApps(appList, installer, category, others)
+                }, appSortOrder, appSortFavorites, appSortAsc
+            ) { appList, sortMode, sortFavorites, sortAsc ->
+                ApplicationUtil.sortAppData(appList, sortMode.ordinal, sortFavorites, sortAsc)
+            }) { searchQuery, appList ->
+                val searchString = searchQuery?.trim()
 
-                    return@combine if (searchString.isNullOrBlank()) {
-                        appList
-                    } else {
-                        appList.filter {
-                            it.appName.contains(
-                                searchString, ignoreCase = true
-                            ) || it.appPackageName.contains(
-                                searchString, ignoreCase = true
-                            )
-                        }
-                    }
-                }.collect {
-                    _mainFragmentState.update { state ->
-                        state.copy(
-                            appList = it, isRefreshing = false
+                return@combine if (searchString.isNullOrBlank()) {
+                    appList
+                } else {
+                    appList.filter {
+                        it.appName.contains(
+                            searchString, ignoreCase = true
+                        ) || it.appPackageName.contains(
+                            searchString, ignoreCase = true
                         )
                     }
                 }
+            }.collect { appList ->
+                _mainFragmentState.update { state ->
+                    state.copy(appList = appList,
+                        isRefreshing = false,
+                        selectedApp = state.selectedApp?.let { sa ->
+                            appList.find {
+                                it.appPackageName == sa.appPackageName
+                            }
+                        })
+                }
+            }
         }
 
         EventDispatcher.registerObserver(this, EventType.INSTALLED, EventType.UNINSTALLED)
@@ -141,52 +181,6 @@ class AppListViewModel(application: Application) : AndroidViewModel(application)
     }
 
     /**
-     * Sorts data on Call after Selected Sort type
-     */
-    fun sortApps() {
-        _mainFragmentState.update {
-            it.copy(isRefreshing = true)
-        }
-        viewModelScope.launch {
-            _mainFragmentState.update { state ->
-                state.copy(
-                    appList = withContext(Dispatchers.IO) {
-                        SettingsManager(context).sortAppData(state.appList)
-                    }, isRefreshing = false
-                )
-            }
-        }
-    }
-
-    /**
-     * if new Favorite is added, sort to top of the list, if removed sort back in list with selected options
-     */
-    fun sortFavorites() {
-        val settingsManager = SettingsManager(context)
-        viewModelScope.launch {
-            _mainFragmentState.update { state ->
-                val sortedList = withContext(Dispatchers.IO) {
-                    settingsManager.sortAppData(state.appList)
-                }
-                state.copy(appList = sortedList)
-            }
-        }
-    }
-
-    fun filterApps() {
-        viewModelScope.launch {
-            appsRepository.apps.collect {
-                _mainFragmentState.update { state ->
-                    val sortedList = withContext(Dispatchers.IO) {
-                        userConfigFilteredApps(it)
-                    }
-                    state.copy(appList = sortedList)
-                }
-            }
-        }
-    }
-
-    /**
      * update State for List view inside UI once user changed selected app types inside the Settings
      * @param key key of switch preference who has changed
      * @param b true for should be selected, false if no longer should be included
@@ -194,55 +188,17 @@ class AppListViewModel(application: Application) : AndroidViewModel(application)
      */
     @Throws(Exception::class)
     fun changeSelection(key: String, b: Boolean) {
-        if (key !in listOf(
-                "updated_system_apps", "system_apps", "user_apps"
-            )
-        ) throw Exception("No available key provided!")
-
-        val settingsManager = SettingsManager(context)
-
         _mainFragmentState.update { state ->
             state.copy(isRefreshing = true)
         }
-
         viewModelScope.launch {
-            appsRepository.apps.collect {
-                val selectedAppTypes = async(Dispatchers.IO) {
-                    return@async when (key) {
-                        "updated_system_apps" -> settingsManager.selectedAppTypes(
-                            it, selectUpdatedSystemApps = b
-                        )
-
-                        "system_apps" -> settingsManager.selectedAppTypes(
-                            it, selectSystemApps = b
-                        )
-
-                        "user_apps" -> settingsManager.selectedAppTypes(
-                            it, selectUserApps = b
-                        )
-
-                        else -> null
-                    }?.let {
-                        settingsManager.sortAppData(settingsManager.filterApps(it))
-                    }
-                }
-                selectedAppTypes.await()?.let {
-                    _mainFragmentState.update { state ->
-                        state.copy(appList = it, isRefreshing = false)
-                    }
-                }
+            when (key) {
+                "updated_system_apps" -> preferenceRepository.setUpdatedSysApps(b)
+                "system_apps" -> preferenceRepository.setSysApps(b)
+                "user_apps" -> preferenceRepository.setUserApps(b)
+                else -> throw Exception("No available key provided!")
             }
         }
-    }
-
-    private fun userConfigFilteredApps(apps: Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>): List<ApplicationModel> {
-        val settingsManager = SettingsManager(context)
-
-        return settingsManager.sortAppData(
-            settingsManager.filterApps(
-                settingsManager.selectedAppTypes(apps)
-            )
-        )
     }
 
     fun updateApp(app: ApplicationModel) {
@@ -256,6 +212,39 @@ class AppListViewModel(application: Application) : AndroidViewModel(application)
     fun selectAllApps(select: Boolean) {
         _mainFragmentState.update { state ->
             state.copy(appList = state.appList.toMutableList().map { it.copy(isChecked = select) })
+        }
+    }
+
+    fun setSortAsc(b: Boolean) {
+        viewModelScope.launch { preferenceRepository.setAppSortAsc(b) }
+    }
+
+    fun setSortOrder(value: Int) {
+        viewModelScope.launch { preferenceRepository.setAppSortOrder(value) }
+    }
+
+    fun setSortFavorites(b: Boolean) {
+        viewModelScope.launch { preferenceRepository.setAppSortFavorites(b) }
+    }
+
+    fun setInstallationSource(value: String?) {
+        viewModelScope.launch { preferenceRepository.setAppFilterInstaller(value) }
+    }
+
+    fun setCategory(s: String?) {
+        viewModelScope.launch { preferenceRepository.setAppFilterCategory(s) }
+    }
+
+    fun setOtherFilter(strings: Set<String>) {
+        viewModelScope.launch { preferenceRepository.setAppFilterOthers(strings) }
+    }
+
+    fun editFavorites(appPackageName: String, checked: Boolean) {
+        viewModelScope.launch {
+            ApplicationUtil.editFavorites(appListFavorites.first(), appPackageName, checked).let {
+                preferenceRepository.setAppListFavorites(it)
+            }
+
         }
     }
 }
