@@ -1,16 +1,17 @@
 package domilopment.apkextractor.ui.navigation
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -84,14 +85,20 @@ private fun ActionModeBar(items: List<BottomBarItem>) {
             modifier = Modifier.fillMaxWidth()
         ) {
             items.forEach { item ->
-                FilledTonalButton(
+                OutlinedButton(
                     onClick = item.onClick,
                     modifier = Modifier
                         .height(64.dp)
                         .weight(1f)
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    border = BorderStroke(width = 2.dp, MaterialTheme.colorScheme.onPrimary)
                 ) {
-                    Icon(imageVector = item.icon, contentDescription = null, modifier = Modifier.size(42.dp))
+                    Icon(
+                        imageVector = item.icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(42.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
                 }
             }
         }
