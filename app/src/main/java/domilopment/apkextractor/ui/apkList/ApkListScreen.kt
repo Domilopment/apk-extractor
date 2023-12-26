@@ -176,7 +176,8 @@ fun ApkListScreen(
     if (progressDialogState.shouldBeShown) ProgressDialog(
         state = progressDialogState,
         title = stringResource(id = R.string.progress_dialog_title_install),
-        onDismissRequest = progressDialogViewModel::resetProgress
+        onDismissRequest = progressDialogViewModel::resetProgress,
+        onCancel = progressDialogViewModel::resetProgress
     )
 
     ApkListContent(

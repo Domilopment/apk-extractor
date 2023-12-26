@@ -258,7 +258,8 @@ fun AppListScreen(
     if (progressDialogState.shouldBeShown) ProgressDialog(
         state = progressDialogState,
         title = stringResource(id = R.string.progress_dialog_title_placeholder),
-        onDismissRequest = progressDialogModel::resetProgress
+        onDismissRequest = progressDialogModel::resetProgress,
+        onCancel = progressDialogModel::resetProgress
     )
 
     AppListContent(

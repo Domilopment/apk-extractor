@@ -2,19 +2,13 @@ package domilopment.apkextractor.ui.dialogs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,56 +19,45 @@ import androidx.compose.ui.window.DialogProperties
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ProgressDialogUiState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProgressDialog(state: ProgressDialogUiState, title: String, onDismissRequest: () -> Unit) {
-    BasicAlertDialog(
-        onDismissRequest = onDismissRequest,
-        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Max)
-                .padding(8.dp),
-            shape = RoundedCornerShape(24.dp),
+fun ProgressDialog(
+    state: ProgressDialogUiState, title: String, onDismissRequest: () -> Unit, onCancel: () -> Unit
+) {
+    AlertDialog(onDismissRequest = onDismissRequest, confirmButton = {
+        TextButton(onClick = onCancel) {
+            Text(text = "Cancel")
+        }
+    }, text = {
+        Column(
+            verticalArrangement = Arrangement.Center,
         ) {
-            Column(
+            LinearProgressIndicator(
+                progress = { state.progress / state.tasks },
+                modifier = Modifier.fillMaxWidth(),
+                trackColor = Color.LightGray
+            )
+            Text(text = state.process ?: "", maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.Center,
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = title,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 20.dp),
-                    style = MaterialTheme.typography.titleLarge
-                )
-                LinearProgressIndicator(
-                    progress = { state.progress },
-                    modifier = Modifier.fillMaxWidth(),
-                    trackColor = Color.LightGray
-                )
-                Text(text = state.process ?: "", maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = stringResource(
-                            id = R.string.progress_dialog_percentage,
-                            if (state.tasks > 0) (state.progress / state.tasks) * 100 else 0
-                        )
+                    text = stringResource(
+                        id = R.string.progress_dialog_percentage,
+                        if (state.tasks > 0) (state.progress / state.tasks) * 100 else 0
                     )
-                    Text(
-                        text = stringResource(
-                            id = R.string.progress_dialog_value, state.progress.toInt(), state.tasks
-                        )
+                )
+                Text(
+                    text = stringResource(
+                        id = R.string.progress_dialog_value, state.progress.toInt(), state.tasks
                     )
-                }
+                )
             }
         }
-    }
+    }, title = {
+        Text(text = title)
+    }, properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+    )
 }
