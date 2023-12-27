@@ -25,7 +25,7 @@ fun ProgressDialog(
 ) {
     AlertDialog(onDismissRequest = onDismissRequest, confirmButton = {
         TextButton(onClick = onCancel) {
-            Text(text = "Cancel")
+            Text(text = stringResource(id = R.string.app_name_dialog_cancel))
         }
     }, text = {
         Column(

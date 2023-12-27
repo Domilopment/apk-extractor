@@ -88,7 +88,7 @@ private fun ActionModeBar(items: List<BottomBarItem>) {
                 OutlinedButton(
                     onClick = item.onClick,
                     modifier = Modifier
-                        .height(64.dp)
+                        .height(48.dp)
                         .weight(1f)
                         .padding(horizontal = 16.dp),
                     border = BorderStroke(width = 2.dp, MaterialTheme.colorScheme.onPrimary)
