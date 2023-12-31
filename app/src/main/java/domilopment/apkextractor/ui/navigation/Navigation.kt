@@ -1,12 +1,16 @@
 package domilopment.apkextractor.ui.navigation
 
+import android.net.Uri
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.google.android.play.core.appupdate.AppUpdateManager
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
@@ -26,7 +30,10 @@ fun ApkExtractorNavHost(
     onTriggerActionMode: () -> Unit,
     isActionMode: Boolean,
     isActionModeAllItemsSelected: Boolean,
-    onAppSelection: (Boolean, Int) -> Unit
+    onAppSelection: (Boolean, Int) -> Unit,
+    chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
+    appUpdateManager: AppUpdateManager,
+    inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
     NavHost(
         navController = navController, startDestination = Screen.AppList.route, modifier = modifier
@@ -58,9 +65,15 @@ fun ApkExtractorNavHost(
                 showSnackbar = { showSnackbar(it) })
         }
         composable(Screen.Settings.route) {
-            val model = viewModel<SettingsFragmentViewModel>()
+            val model = hiltViewModel<SettingsFragmentViewModel>()
 
-            SettingsScreen(model = model)
+            SettingsScreen(
+                model = model,
+                showSnackbar = showSnackbar,
+                chooseSaveDir = chooseSaveDir,
+                appUpdateManager = appUpdateManager,
+                inAppUpdateResultLauncher = inAppUpdateResultLauncher
+            )
         }
     }
 }

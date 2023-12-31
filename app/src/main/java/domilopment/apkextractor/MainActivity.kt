@@ -167,7 +167,8 @@ class MainActivity : AppCompatActivity() {
                             )
                         })
                     }) { contentPadding ->
-                        ApkExtractorNavHost(modifier = Modifier.padding(contentPadding),
+                        ApkExtractorNavHost(
+                            modifier = Modifier.padding(contentPadding),
                             navController = navController,
                             showSnackbar = {
                                 scope.launch {
@@ -183,7 +184,11 @@ class MainActivity : AppCompatActivity() {
                             },
                             onAppSelection = { isAllSelected, appCount ->
                                 model.updateActionMode(isAllSelected, appCount)
-                            })
+                            },
+                            chooseSaveDir = chooseSaveDir,
+                            appUpdateManager = appUpdateManager,
+                            inAppUpdateResultLauncher = activityResultLauncher
+                        )
 
                         if (showAskForSaveDir) AskForSaveDirDialog(chooseSaveDir = chooseSaveDir)
                     }
@@ -369,15 +374,16 @@ class MainActivity : AppCompatActivity() {
      * Take Uri Permission for Save Dir
      * @param newUri content uri for selected save path
      */
-    private fun takeUriPermission(oldUri: Uri?, newUri: Uri, saveUri: (String) -> Unit) {
+    private fun takeUriPermission(oldUri: Uri?, newUri: Uri, saveUri: (Uri) -> Unit) {
         val takeFlags: Int =
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+
         oldUri?.let { oldPath ->
-            if (oldPath in contentResolver.persistedUriPermissions.map { it.uri }) contentResolver.releasePersistableUriPermission(
+            if (oldPath in contentResolver.persistedUriPermissions.map { it.uri } && oldPath != newUri) contentResolver.releasePersistableUriPermission(
                 oldPath, takeFlags
             )
         }
-        saveUri(newUri.toString())
+        saveUri(newUri)
         contentResolver.takePersistableUriPermission(newUri, takeFlags)
     }
 

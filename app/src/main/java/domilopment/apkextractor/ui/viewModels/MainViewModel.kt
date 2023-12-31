@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.viewModels
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -59,7 +60,7 @@ class MainViewModel @Inject constructor(private val preferenceRepository: Prefer
         actionModeState = ActionModeState()
     }
 
-    fun setSaveDir(value: String) {
+    fun setSaveDir(value: Uri) {
         viewModelScope.launch { preferenceRepository.setSaveDir(value) }
     }
 
