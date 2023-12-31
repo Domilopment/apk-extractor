@@ -1,35 +1,109 @@
 package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
-import domilopment.apkextractor.dependencyInjection.applications.ListOfApps
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
+import domilopment.apkextractor.utils.settings.AppSortOptions
+import domilopment.apkextractor.utils.settings.ApplicationUtil
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsFragmentViewModel @Inject constructor(
-    application: Application, private val appsRepository: ApplicationRepository
+    application: Application,
+    appsRepository: ApplicationRepository,
+    private val settings: PreferenceRepository
 ) : AndroidViewModel(application) {
-    private val _applications: MutableStateFlow<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> =
-        MutableStateFlow(
-            Triple(listOf(), listOf(), listOf())
+    val applications = appsRepository.apps.map {
+        ApplicationUtil.selectedAppTypes(
+            it,
+            selectUpdatedSystemApps = true,
+            selectSystemApps = false,
+            selectUserApps = true,
+            setOf()
         )
+    }.map {
+        ApplicationUtil.sortAppData(
+            it,
+            sortMode = AppSortOptions.SORT_BY_NAME.ordinal,
+            sortFavorites = false,
+            sortAsc = true
+        )
+    }.map { list -> list.associateBy({ it.appName }, { it.appPackageName }) }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), emptyMap()
+    )
 
-    val applications: StateFlow<Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>> =
-        _applications.asStateFlow()
+    val saveDir = settings.saveDir.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
+    )
+    val autoBackupService = settings.autoBackupService.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
+    )
+    val autoBackupList = settings.autoBackupAppList.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), setOf()
+    )
+    val nightMode = settings.nightMode.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+    )
+    val useMaterialYou = settings.useMaterialYou.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
+    )
+    val language = settings.locale.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), "default"
+    )
+    val rightSwipeAction = settings.appRightSwipeAction.map { it.preferenceValue }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        ApkActionsOptions.SAVE.preferenceValue
+    )
+    val leftSwipeAction = settings.appLeftSwipeAction.map { it.preferenceValue }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        ApkActionsOptions.SHARE.preferenceValue
+    )
+    val checkUpdateOnStart = settings.checkUpdateOnStart.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
+    )
 
-    init {
-        viewModelScope.launch {
-            appsRepository.apps.collect {
-                _applications.value = it
-            }
-        }
+    fun setAutoBackupService(b: Boolean) {
+        viewModelScope.launch { settings.setAutoBackupService(b) }
+    }
+
+    fun setAutoBackupList(set: Set<String>) {
+        viewModelScope.launch { settings.setListOfAutoBackupApps(set) }
+    }
+
+    fun setNightMode(mode: Int) {
+        viewModelScope.launch { settings.setNightMode(mode) }
+    }
+
+    fun setUseMaterialYou(b: Boolean) {
+        viewModelScope.launch { settings.setUseMaterialYou(b) }
+    }
+
+    fun setLanguage(s: String) {
+        viewModelScope.launch { settings.setLocale(s) }
+    }
+
+    fun setRightSwipeAction(s: String) {
+        viewModelScope.launch { settings.setRightSwipeAction(s) }
+    }
+
+    fun setLeftSwipeAction(s: String) {
+        viewModelScope.launch { settings.setLeftSwipeAction(s) }
+    }
+
+    fun setCheckUpdateOnStart(b: Boolean) {
+        viewModelScope.launch { settings.setCheckUpdateOnStart(b) }
     }
 }
