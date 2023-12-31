@@ -5,6 +5,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,8 +42,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -200,6 +206,7 @@ private fun SearchBar(
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     Surface(
         modifier = Modifier
@@ -208,61 +215,61 @@ private fun SearchBar(
         elevation = AppBarDefaults.BottomAppBarElevation,
         color = MaterialTheme.colorScheme.primary
     ) {
-        TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
-            value = text,
-            onValueChange = {
-                onTextChange(it)
-            },
-            placeholder = {
-                Text(
-                    modifier = Modifier.alpha(ContentAlpha.medium),
-                    text = stringResource(id = R.string.menu_search),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            },
-            textStyle = TextStyle(
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                textDecoration = TextDecoration.Underline
-            ),
-            singleLine = true,
-            leadingIcon = {
+        TextField(modifier = Modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequester)
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown(pass = PointerEventPass.Initial)
+                    val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
+                    if (upEvent != null) {
+                        focusManager.clearFocus()
+                        focusRequester.requestFocus()
+                        keyboard?.show()
+                    }
+                }
+            }, value = text, onValueChange = {
+            onTextChange(it)
+        }, placeholder = {
+            Text(
+                modifier = Modifier.alpha(ContentAlpha.medium),
+                text = stringResource(id = R.string.menu_search),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }, textStyle = TextStyle(
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+            textDecoration = TextDecoration.Underline
+        ), singleLine = true, leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search Icon",
+                modifier = Modifier.alpha(ContentAlpha.medium),
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+        }, trailingIcon = {
+            IconButton(onClick = {
+                if (text.isNotEmpty()) {
+                    onTextChange("")
+                } else {
+                    onCloseClicked()
+                }
+            }) {
                 Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon",
-                    modifier = Modifier.alpha(ContentAlpha.medium),
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close Icon",
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
-            },
-            trailingIcon = {
-                IconButton(onClick = {
-                    if (text.isNotEmpty()) {
-                        onTextChange("")
-                    } else {
-                        onCloseClicked()
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close Icon",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(onSearch = {
-                onSearchClicked(text)
-            }),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                cursorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = ContentAlpha.medium),
-            )
+            }
+        }, keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Search
+        ), keyboardActions = KeyboardActions(onSearch = {
+            onSearchClicked(text)
+        }), colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            cursorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = ContentAlpha.medium),
+        )
         )
 
         LaunchedEffect(focusRequester) {
