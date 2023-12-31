@@ -24,6 +24,7 @@ import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPrefer
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.APP_AUTO_BACKUP_LIST
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.AUTO_BACKUP_SERVICE
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.CHECK_UPDATE_ON_START
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.LOCALE
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.MATERIAL_YOU
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.NIGHT_MODE
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.SAVE_DIR
@@ -43,7 +44,7 @@ import javax.inject.Inject
 
 interface PreferenceRepository {
     val saveDir: Flow<Uri?>
-    suspend fun setSaveDir(uri: String)
+    suspend fun setSaveDir(uri: Uri)
 
     val updatedSysApps: Flow<Boolean>
     suspend fun setUpdatedSysApps(value: Boolean)
@@ -101,6 +102,9 @@ interface PreferenceRepository {
 
     val nightMode: Flow<Int>
     suspend fun setNightMode(value: Int)
+
+    val locale: Flow<String>
+    suspend fun setLocale(value: String)
 }
 
 class MyPreferenceRepository @Inject constructor(
@@ -129,6 +133,7 @@ class MyPreferenceRepository @Inject constructor(
         val AUTO_BACKUP_SERVICE = booleanPreferencesKey("auto_backup")
         val MATERIAL_YOU = booleanPreferencesKey("use_material_you")
         val NIGHT_MODE = stringPreferencesKey("list_preference_ui_mode")
+        val LOCALE = stringPreferencesKey("list_preference_locale_list")
     }
 
     private fun <T> getPreference(key: Preferences.Key<T>): Flow<T?> =
@@ -153,7 +158,7 @@ class MyPreferenceRepository @Inject constructor(
     }
 
     override val saveDir: Flow<Uri?> = getPreference(SAVE_DIR).map { it?.let { Uri.parse(it) } }
-    override suspend fun setSaveDir(uri: String) = setPreference(SAVE_DIR, uri)
+    override suspend fun setSaveDir(uri: Uri) = setPreference(SAVE_DIR, uri.toString())
 
     override val updatedSysApps: Flow<Boolean> =
         getPreference(UPDATED_SYSTEM_APPS).map { it ?: false }
@@ -270,4 +275,8 @@ class MyPreferenceRepository @Inject constructor(
         getPreference(NIGHT_MODE).map { it?.toInt() ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM }
 
     override suspend fun setNightMode(value: Int) = setPreference(NIGHT_MODE, value.toString())
+
+    override val locale: Flow<String> = getPreference(LOCALE).map { it ?: "default" }
+
+    override suspend fun setLocale(value: String) = setPreference(LOCALE, value)
 }
