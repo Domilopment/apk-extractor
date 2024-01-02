@@ -3,9 +3,15 @@ package domilopment.apkextractor.autoBackup
 import android.content.Intent
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import androidx.preference.PreferenceManager
+import dagger.hilt.android.AndroidEntryPoint
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AutoBackupTileService : TileService() {
+    @Inject lateinit var settings: PreferenceRepository
+
     // Called when the user adds your tile.
     override fun onTileAdded() {
         super.onTileAdded()
@@ -50,7 +56,8 @@ class AutoBackupTileService : TileService() {
      * @param value boolean value for preference, to be applied
      */
     private fun updateAutoBackupPreference(value: Boolean) {
-        PreferenceManager.getDefaultSharedPreferences(this).edit()
-            .putBoolean("auto_backup", value).apply()
+        runBlocking {
+            settings.setAutoBackupService(value)
+        }
     }
 }

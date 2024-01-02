@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.provider.DocumentsContract
 import androidx.core.app.NotificationManagerCompat
-import androidx.preference.PreferenceManager
+import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.autoBackup.AsyncBackupTask.Companion.ACTION_DELETE_APK
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.settings.SettingsManager
@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class PackageBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
@@ -42,8 +43,7 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
 
             // Foreground Notification Button Call
             AutoBackupService.ACTION_STOP_SERVICE -> {
-                PreferenceManager.getDefaultSharedPreferences(context).edit()
-                    .putBoolean("auto_backup", false).apply()
+                runBlocking { preferenceRepository.setAutoBackupService(false) }
                 context.stopService(Intent(context, AutoBackupService::class.java))
             }
 

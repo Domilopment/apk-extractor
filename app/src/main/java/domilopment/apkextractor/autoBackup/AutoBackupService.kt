@@ -5,12 +5,17 @@ import android.content.*
 import android.os.IBinder
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
-import androidx.preference.PreferenceManager
+import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.R
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.lang.IllegalArgumentException
 import java.util.concurrent.atomic.AtomicInteger
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AutoBackupService : Service() {
     companion object {
         private const val CHANNEL_ID = "domilopment.apkextractor.AUTO_BACKUP_SERVICE"
@@ -26,6 +31,8 @@ class AutoBackupService : Service() {
     }
 
     private lateinit var br: BroadcastReceiver
+
+    @Inject lateinit var settings: PreferenceRepository
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -64,10 +71,9 @@ class AutoBackupService : Service() {
         }
         stopForeground(STOP_FOREGROUND_REMOVE)
         // Restart Service if kill isn't called by user
-        if (
-            PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getBoolean("auto_backup", false)
-        ) restartService()
+        runBlocking {
+            if (settings.autoBackupService.first()) restartService()
+        }
     }
 
     /**
