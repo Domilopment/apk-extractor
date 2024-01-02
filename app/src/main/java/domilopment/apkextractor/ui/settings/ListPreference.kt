@@ -79,36 +79,34 @@ fun <T> ListPreference(
             dialog = true
         })
 
-    if (dialog) AlertDialog(onDismissRequest = {
-        dialog = false
-        value = state.value
-    }, confirmButton = {}, dismissButton = {
-        TextButton(onClick = {
-            dialog = false
-            value = state.value
-        }) {
-            Text(text = stringResource(id = R.string.app_name_dialog_cancel))
-        }
-    }, title = { Text(text = name) }, text = {
-        LazyColumn {
-            items(items = entriesMap, key = { it.second }) {
-                ListItem(headlineContent = { Text(text = it.first) },
-                    modifier = Modifier.clickable {
-                        val newValue = when (state.value!!) {
-                            is Int -> it.second.toInt() as T
-                            is String -> it.second as T
-                            else -> error("Unknown Generic Type")
-                        }
-                        onClick(newValue)
-                        dialog = false
-                    },
-                    leadingContent = {
-                        RadioButton(
-                            selected = value.toString() == it.second, onClick = null
-                        )
-                    })
+    if (dialog) AlertDialog(onDismissRequest = { dialog = false },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = { dialog = false }) {
+                Text(text = stringResource(id = R.string.app_name_dialog_cancel))
             }
-        }
-    })
+        },
+        title = { Text(text = name) },
+        text = {
+            LazyColumn {
+                items(items = entriesMap, key = { it.second }) {
+                    ListItem(headlineContent = { Text(text = it.first) },
+                        modifier = Modifier.clickable {
+                            val newValue = when (state.value!!) {
+                                is Int -> it.second.toInt() as T
+                                is String -> it.second as T
+                                else -> error("Unknown Generic Type")
+                            }
+                            onClick(newValue)
+                            dialog = false
+                        },
+                        leadingContent = {
+                            RadioButton(
+                                selected = value.toString() == it.second, onClick = null
+                            )
+                        })
+                }
+            }
+        })
 }
 

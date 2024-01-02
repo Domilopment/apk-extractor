@@ -98,13 +98,7 @@ fun MultiSelectListPreference(
             dialog = true
         })
 
-    if (dialog) AlertDialog(onDismissRequest = {
-        dialog = false
-        value.apply {
-            clear()
-            addAll(state.value)
-        }
-    }, confirmButton = {
+    if (dialog) AlertDialog(onDismissRequest = { dialog = false }, confirmButton = {
         TextButton(onClick = {
             onClick(value.toSet())
             dialog = false
@@ -112,13 +106,7 @@ fun MultiSelectListPreference(
             Text(text = stringResource(id = R.string.app_name_dialog_ok))
         }
     }, dismissButton = {
-        TextButton(onClick = {
-            dialog = false
-            value.apply {
-                clear()
-                addAll(state.value)
-            }
-        }) {
+        TextButton(onClick = { dialog = false }) {
             Text(text = stringResource(id = R.string.app_name_dialog_cancel))
         }
     }, title = { Text(text = name) }, text = {

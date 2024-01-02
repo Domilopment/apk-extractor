@@ -44,11 +44,14 @@ class SettingsFragmentViewModel @Inject constructor(
     val saveDir = settings.saveDir.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
     )
+    val saveName = settings.appSaveName.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), setOf("0:name")
+    )
     val autoBackupService = settings.autoBackupService.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
     )
     val autoBackupList = settings.autoBackupAppList.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), setOf()
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), emptySet()
     )
     val nightMode = settings.nightMode.stateIn(
         viewModelScope,
@@ -74,6 +77,10 @@ class SettingsFragmentViewModel @Inject constructor(
     val checkUpdateOnStart = settings.checkUpdateOnStart.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
     )
+
+    fun setAppSaveName(set: Set<String>) {
+        viewModelScope.launch { settings.setAppSaveName(set) }
+    }
 
     fun setAutoBackupService(b: Boolean) {
         viewModelScope.launch { settings.setAutoBackupService(b) }
