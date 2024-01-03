@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AppBarDefaults
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -26,6 +23,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -38,7 +36,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -55,6 +52,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.AppBarState
+import domilopment.apkextractor.ui.keyboardAsState
 
 @Composable
 fun APKExtractorAppBar(
@@ -74,8 +72,7 @@ fun APKExtractorAppBar(
         AnimatedVisibility(
             visible = !isActionModeActive && !isSearchActive, enter = fadeIn(), exit = fadeOut()
         ) {
-            DefaultAppBar(
-                appBarState = appBarState,
+            DefaultAppBar(appBarState = appBarState,
                 modifier,
                 onActionSearch = { onTriggerSearch(true) })
         }
@@ -207,12 +204,13 @@ private fun SearchBar(
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    val isKeyboardOpen by keyboardAsState()
 
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp),
-        elevation = AppBarDefaults.BottomAppBarElevation,
+        shadowElevation = 8.dp,
         color = MaterialTheme.colorScheme.primary
     ) {
         TextField(modifier = Modifier
@@ -222,7 +220,7 @@ private fun SearchBar(
                 awaitEachGesture {
                     awaitFirstDown(pass = PointerEventPass.Initial)
                     val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
-                    if (upEvent != null) {
+                    if (upEvent != null && !isKeyboardOpen) {
                         focusManager.clearFocus()
                         focusRequester.requestFocus()
                         keyboard?.show()
@@ -232,9 +230,8 @@ private fun SearchBar(
             onTextChange(it)
         }, placeholder = {
             Text(
-                modifier = Modifier.alpha(ContentAlpha.medium),
                 text = stringResource(id = R.string.menu_search),
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
             )
         }, textStyle = TextStyle(
             color = MaterialTheme.colorScheme.onPrimary,
@@ -244,8 +241,7 @@ private fun SearchBar(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search Icon",
-                modifier = Modifier.alpha(ContentAlpha.medium),
-                tint = MaterialTheme.colorScheme.onPrimary
+                tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
             )
         }, trailingIcon = {
             IconButton(onClick = {
@@ -265,10 +261,11 @@ private fun SearchBar(
             imeAction = ImeAction.Search
         ), keyboardActions = KeyboardActions(onSearch = {
             onSearchClicked(text)
+            focusManager.clearFocus()
         }), colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
-            cursorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = ContentAlpha.medium),
+            cursorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
         )
         )
 
