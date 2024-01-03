@@ -72,12 +72,17 @@ class FileUtil(private val context: Context) {
      * @return Shareable Uri of Application APK
      */
     fun shareURI(app: ApplicationModel, appName: String): Uri {
-        return FileProvider.getUriForFile(
-            context, "${BuildConfig.APPLICATION_ID}.provider", File(app.appSourceDirectory).copyTo(
+        val file = try {
+            File(app.appSourceDirectory).copyTo(
                 File(
                     context.cacheDir, appName
                 ), true
             )
+        } catch (e: FileAlreadyExistsException) {
+            File.createTempFile(appName, PREFIX, context.cacheDir)
+        }
+        return FileProvider.getUriForFile(
+            context, "${BuildConfig.APPLICATION_ID}.provider", file
         )
     }
 

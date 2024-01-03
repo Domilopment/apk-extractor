@@ -145,11 +145,7 @@ class ProgressDialogViewModel @Inject constructor(
                 jobList.add(async {
                     withContext(Dispatchers.IO) {
                         val name = ApplicationUtil.appName(app, appName.first())
-                        try {
-                            fileUtil.shareURI(app, name)
-                        } catch (e: FileAlreadyExistsException) {
-                            null
-                        }?.also {
+                        fileUtil.shareURI(app, name).also {
                             files.add(it)
                         }
                     }
