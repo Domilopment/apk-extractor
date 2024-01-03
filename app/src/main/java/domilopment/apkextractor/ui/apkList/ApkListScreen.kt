@@ -49,8 +49,8 @@ fun ApkListScreen(
     val context = LocalContext.current
     val state by model.apkListFragmentState.collectAsState()
     val progressDialogState by progressDialogViewModel.progressDialogState.collectAsState()
-    val saveDir by model.saveDir.collectAsState(initial = null)
-    val sortOrder by model.sortOrder.collectAsState(initial = ApkSortOptions.SORT_BY_FILE_SIZE_DESC)
+    val saveDir by model.saveDir.collectAsState()
+    val sortOrder by model.sortOrder.collectAsState()
 
     var sortDialog by remember {
         mutableStateOf(false)

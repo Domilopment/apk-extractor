@@ -27,8 +27,10 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.CancellationException
 import domilopment.apkextractor.utils.eventHandler.Observer
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,8 +48,14 @@ class ApkListViewModel @Inject constructor(
 
     private val _searchQuery: MutableStateFlow<String?> = MutableStateFlow(null)
 
-    val saveDir = preferenceRepository.saveDir
-    val sortOrder = preferenceRepository.apkSortOrder
+    val saveDir = preferenceRepository.saveDir.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
+    )
+    val sortOrder = preferenceRepository.apkSortOrder.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        ApkSortOptions.SORT_BY_FILE_SIZE_DESC
+    )
 
     private val context get() = getApplication<Application>().applicationContext
 

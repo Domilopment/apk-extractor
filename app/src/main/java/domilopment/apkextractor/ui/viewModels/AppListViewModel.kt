@@ -12,13 +12,17 @@ import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.eventHandler.Observer
 import domilopment.apkextractor.utils.Utils
+import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
+import domilopment.apkextractor.utils.settings.AppSortOptions
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
@@ -38,19 +42,51 @@ class AppListViewModel @Inject constructor(
     private val _searchQuery: MutableStateFlow<String?> = MutableStateFlow(null)
 
     private val appListFavorites = preferenceRepository.appListFavorites
-    val saveDir = preferenceRepository.saveDir
-    val appName = preferenceRepository.appSaveName
-    val appSortOrder = preferenceRepository.appSortOrder
-    val appSortFavorites = preferenceRepository.appSortFavorites
-    val appSortAsc = preferenceRepository.appSortAsc
-    val updatedSystemApps = preferenceRepository.updatedSysApps
-    val systemApps = preferenceRepository.sysApps
-    val userApps = preferenceRepository.userApps
-    val filterInstaller = preferenceRepository.appFilterInstaller
-    val filterCategory = preferenceRepository.appFilterCategory
-    val filterOthers = preferenceRepository.appFilterOthers
-    val rightSwipeAction = preferenceRepository.appRightSwipeAction
-    val leftSwipeAction = preferenceRepository.appLeftSwipeAction
+    val saveDir = preferenceRepository.saveDir.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
+    )
+    val appName = preferenceRepository.appSaveName.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), setOf("0:name")
+    )
+    val appSortOrder = preferenceRepository.appSortOrder.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        AppSortOptions.SORT_BY_NAME
+    )
+    val appSortFavorites = preferenceRepository.appSortFavorites.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
+    )
+    val appSortAsc = preferenceRepository.appSortAsc.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
+    )
+    val updatedSystemApps = preferenceRepository.updatedSysApps.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
+    )
+    val systemApps = preferenceRepository.sysApps.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
+    )
+    val userApps = preferenceRepository.userApps.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
+    )
+    val filterInstaller = preferenceRepository.appFilterInstaller.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
+    )
+    val filterCategory = preferenceRepository.appFilterCategory.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
+    )
+    val filterOthers = preferenceRepository.appFilterOthers.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), emptySet()
+    )
+    val rightSwipeAction = preferenceRepository.appRightSwipeAction.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        ApkActionsOptions.SAVE
+    )
+    val leftSwipeAction = preferenceRepository.appLeftSwipeAction.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        ApkActionsOptions.SHARE
+    )
 
     private val context get() = getApplication<Application>().applicationContext
 
