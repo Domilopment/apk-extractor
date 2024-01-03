@@ -58,7 +58,6 @@ dependencies {
     implementation "androidx.datastore:datastore-preferences:1.0.0"
     implementation 'androidx.browser:browser:1.7.0'
     implementation 'androidx.core:core-splashscreen:1.0.1'
-    annotationProcessor "com.android.databinding:compiler:3.1.4"
     implementation 'com.google.android.play:app-update:2.1.0'
     implementation 'com.google.android.play:app-update-ktx:2.1.0'
     implementation "com.google.dagger:hilt-android:2.48.1"
