@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -92,8 +92,7 @@ fun AppFilterBottomSheet(
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-        windowInsets = WindowInsets(bottom = 24.dp)
+        sheetState = sheetState
     ) {
         AppFilterAppType(updatedSystemApps, systemApps, userApps, changeSelection)
         Spacer(modifier = Modifier.height(8.dp))
@@ -111,6 +110,7 @@ fun AppFilterBottomSheet(
                 setFilterOthers
             )
         }
+        Spacer(modifier = Modifier.navigationBarsPadding())
     }
 }
 

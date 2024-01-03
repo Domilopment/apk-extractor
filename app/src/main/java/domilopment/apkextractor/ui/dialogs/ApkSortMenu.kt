@@ -1,6 +1,7 @@
 package domilopment.apkextractor.ui.dialogs
 
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -10,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 
@@ -27,8 +27,7 @@ fun ApkSortMenu(
     if (expanded) ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
-        sheetState = sheetState,
-        windowInsets = WindowInsets(bottom = 24.dp)
+        sheetState = sheetState
     ) {
         DropdownMenuItem(text = { Text(text = stringResource(id = R.string.menu_sort_apk_file_name_asc)) },
             onClick = {
@@ -85,5 +84,6 @@ fun ApkSortMenu(
                     selected = sortOrder == ApkSortOptions.SORT_BY_FILE_SIZE_ASC, onClick = null
                 )
             })
+        Spacer(modifier = Modifier.navigationBarsPadding())
     }
 }

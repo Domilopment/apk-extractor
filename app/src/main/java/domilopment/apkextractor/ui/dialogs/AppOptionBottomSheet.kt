@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,11 +38,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDefaults
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,8 +58,8 @@ import com.google.accompanist.permissions.isGranted
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.ui.components.ExpandableText
+import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.settings.ApplicationUtil
-import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
@@ -95,19 +90,19 @@ fun AppOptionsBottomSheet(
     val snackbarHostState = remember { SnackbarHostState() }
     val apkOptions = ApkActionsManager(context, app)
 
-    ModalBottomSheet(onDismissRequest = onDismissRequest,
+    SnackbarHostModalBottomSheet(
+        onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        windowInsets = WindowInsets(bottom = 24.dp),
-        dragHandle = {
-            AppSheetHeader(
-                appName = app.appName,
-                packageName = app.appPackageName,
-                appIcon = app.appIcon,
-                isFavorite = app.isFavorite,
-                snackbarHostState = snackbarHostState,
-                onFavoriteChanged = onFavoriteChanged
-            )
-        }) {
+        snackbarHostState = snackbarHostState
+    ) {
+        AppSheetHeader(
+            appName = app.appName,
+            packageName = app.appPackageName,
+            appIcon = app.appIcon,
+            isFavorite = app.isFavorite,
+            onFavoriteChanged = onFavoriteChanged
+        )
+        HorizontalDivider(modifier = Modifier.padding(4.dp))
         AppSheetInfo(sourceDirectory = app.appSourceDirectory,
             apkSize = app.apkSize,
             versionName = app.appVersionName,
@@ -315,51 +310,36 @@ private fun AppSheetHeader(
     packageName: String,
     appIcon: Drawable,
     isFavorite: Boolean,
-    snackbarHostState: SnackbarHostState,
     onFavoriteChanged: (Boolean) -> Unit
 ) {
-    Column(
-        modifier = Modifier.padding(vertical = 8.dp), verticalArrangement = Arrangement.Center
-    ) {
-        SnackbarHost(
-            hostState = snackbarHostState,
-        ) {
-            val visuals = it.visuals as MySnackbarVisuals
-            Snackbar(
-                snackbarData = it,
-                contentColor = visuals.messageColor ?: SnackbarDefaults.contentColor
+    ListItem(headlineContent = {
+        Text(
+            text = appName,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
+        )
+    }, modifier = Modifier.height(72.dp), supportingContent = {
+        Text(
+            text = packageName,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
+        )
+    }, leadingContent = {
+        Image(
+            painter = rememberDrawablePainter(drawable = appIcon),
+            contentDescription = stringResource(id = R.string.list_item_Image_description),
+            modifier = Modifier.width(72.dp)
+        )
+    }, trailingContent = {
+        IconToggleButton(checked = isFavorite, onCheckedChange = onFavoriteChanged) {
+            Icon(
+                imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                contentDescription = null
             )
         }
-        ListItem(headlineContent = {
-            Text(
-                text = appName,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
-            )
-        }, modifier = Modifier.height(72.dp), supportingContent = {
-            Text(
-                text = packageName,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
-            )
-        }, leadingContent = {
-            Image(
-                painter = rememberDrawablePainter(drawable = appIcon),
-                contentDescription = stringResource(id = R.string.list_item_Image_description),
-                modifier = Modifier.width(72.dp)
-            )
-        }, trailingContent = {
-            IconToggleButton(checked = isFavorite, onCheckedChange = onFavoriteChanged) {
-                Icon(
-                    imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
-                    contentDescription = null
-                )
-            }
-        })
-        HorizontalDivider(modifier = Modifier.padding(4.dp))
-    }
+    })
 }
