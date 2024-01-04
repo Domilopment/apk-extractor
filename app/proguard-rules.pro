@@ -19,6 +19,3 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
-# keep NavHostFragment in activity_main: FragmentContainerView
--keep class androidx.navigation.fragment.NavHostFragment
