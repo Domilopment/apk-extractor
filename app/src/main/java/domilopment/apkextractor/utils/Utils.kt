@@ -70,31 +70,6 @@ object Utils {
     }
 
     /**
-     * Creates a String Spannable from text, that shows the position of the search word inside the String
-     * @param text text that is displayed to the user
-     * @return String spannable with color marked search word
-     */
-    @Deprecated(
-        "will be no longer needed when UI switched to Compose", ReplaceWith(
-            "getAnnotatedString(text, searchString, color)",
-            "domilopment.apkextractor.utils.Utils.getAnnotatedString"
-        )
-    )
-    fun getSpannable(text: CharSequence?, searchString: String, colorInt: Int): Spannable? {
-        val spannable = text?.toSpannable()
-        if (searchString.isNotBlank() && text?.contains(searchString, ignoreCase = true) == true) {
-            val startIndex = text.toString().lowercase().indexOf(searchString.lowercase())
-            spannable?.setSpan(
-                ForegroundColorSpan(colorInt),
-                startIndex,
-                startIndex + searchString.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-        return spannable
-    }
-
-    /**
      * Creates an Annotated from text, that shows the position of the search word inside the String
      * @param text text that is displayed to the user
      * @param searchString the text to be contained in parameter text
