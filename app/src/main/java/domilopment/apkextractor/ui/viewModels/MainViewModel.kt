@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.ActionModeState
 import domilopment.apkextractor.data.MainScreenState
+import domilopment.apkextractor.data.UiMode
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -27,20 +28,27 @@ class MainViewModel @Inject constructor(private val preferenceRepository: Prefer
     val saveDir = preferenceRepository.saveDir.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
     )
-    val materialYou = preferenceRepository.useMaterialYou
-    val autoBackup = preferenceRepository.autoBackupService
-    val updateOnStart = preferenceRepository.checkUpdateOnStart
+    val materialYou = preferenceRepository.useMaterialYou.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
+    )
+    val autoBackup = preferenceRepository.autoBackupService.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
+    )
+    val updateOnStart = preferenceRepository.checkUpdateOnStart.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
+    )
 
     fun updateSearchQuery(query: String) {
         mainScreenState = mainScreenState.copy(appBarSearchText = query)
     }
 
-    fun setSearchBarState(open: Boolean) {
-        mainScreenState = mainScreenState.copy(isAppBarSearchActive = open)
+    fun setSearchBarState() {
+        mainScreenState = mainScreenState.copy(uiMode = UiMode.Search)
     }
 
-    fun setActionModeState(active: Boolean) {
-        mainScreenState = mainScreenState.copy(isActionModeActive = active)
+    fun setActionModeState() {
+        mainScreenState =
+            mainScreenState.copy(uiMode = UiMode.Action(prevMode = mainScreenState.uiMode))
     }
 
     fun resetAppBarState() {
@@ -56,8 +64,17 @@ class MainViewModel @Inject constructor(private val preferenceRepository: Prefer
         )
     }
 
-    fun resetActionMode() {
-        actionModeState = ActionModeState()
+    fun onReturnUiMode() {
+        mainScreenState = mainScreenState.copy(
+            uiMode = when (mainScreenState.uiMode) {
+                UiMode.Search -> UiMode.Home
+                is UiMode.Action -> {
+                    actionModeState = ActionModeState()
+                    (mainScreenState.uiMode as UiMode.Action).prevMode
+                }
+                else -> mainScreenState.uiMode
+            }
+        )
     }
 
     fun setSaveDir(value: Uri) {

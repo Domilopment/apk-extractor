@@ -1,5 +1,9 @@
 package domilopment.apkextractor.ui.navigation
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -36,8 +40,29 @@ fun APKExtractorBottomNavigation(
     modifier: Modifier = Modifier,
     onNavigate: () -> Unit
 ) {
-    if (isActionMode && appBarState.actionModeActions.isNotEmpty()) ActionModeBar(appBarState.actionModeActions)
-    else if (appBarState.hasBottomNavigation) NavigationBar(modifier = modifier) {
+    AnimatedContent(targetState = isActionMode, transitionSpec = {
+        slideInVertically(initialOffsetY = { it }) togetherWith fadeOut()
+    }, label = "Bottom Navigation Content") { actionMode ->
+        when {
+            actionMode && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(appBarState.actionModeActions)
+            appBarState.hasBottomNavigation -> DefaultBottomNavigation(
+                items = items,
+                navController = navController,
+                modifier = modifier,
+                onNavigate = onNavigate
+            )
+        }
+    }
+}
+
+@Composable
+private fun DefaultBottomNavigation(
+    items: List<Screen>,
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    onNavigate: () -> Unit
+) {
+    NavigationBar(modifier = modifier) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         items.forEach { item ->

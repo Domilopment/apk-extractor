@@ -48,6 +48,7 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.autoBackup.AutoBackupService
+import domilopment.apkextractor.data.UiMode
 import domilopment.apkextractor.data.rememberAppBarState
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.actionBar.APKExtractorAppBar
@@ -91,13 +92,17 @@ class MainActivity : AppCompatActivity() {
             val mainScreenState = model.mainScreenState
             val actionModeState = model.actionModeState
             val saveDir by model.saveDir.collectAsState()
-            val dynamicColors by model.materialYou.collectAsState(true)
+            val dynamicColors by model.materialYou.collectAsState()
             val navController = rememberNavController()
             val appBarState = rememberAppBarState(navController = navController)
             val scope = rememberCoroutineScope()
 
             var showAskForSaveDir by remember {
                 mutableStateOf(false)
+            }
+
+            val isActionModeActive = remember(key1 = mainScreenState.uiMode) {
+                mainScreenState.uiMode is UiMode.Action
             }
 
             val chooseSaveDir =
@@ -135,16 +140,12 @@ class MainActivity : AppCompatActivity() {
                         APKExtractorAppBar(
                             appBarState = appBarState,
                             modifier = Modifier.fillMaxWidth(),
-                            isSearchActive = mainScreenState.isAppBarSearchActive,
+                            uiMode = mainScreenState.uiMode,
                             searchText = mainScreenState.appBarSearchText,
-                            isActionModeActive = mainScreenState.isActionModeActive,
                             isAllItemsChecked = actionModeState.selectAllItemsCheck,
                             onSearchQueryChanged = { model.updateSearchQuery(it) },
-                            onTriggerSearch = { model.setSearchBarState(it) },
-                            onEndActionMode = {
-                                model.setActionModeState(false)
-                                model.resetActionMode()
-                            },
+                            onTriggerSearch = { model.setSearchBarState() },
+                            onReturnUiMode = { model.onReturnUiMode() },
                             onCheckAllItems = { model.updateActionMode(selectAllItems = it) },
                             selectedApplicationsCount = actionModeState.selectedItemCount
                         )
@@ -154,10 +155,8 @@ class MainActivity : AppCompatActivity() {
                         ),
                             navController = navController,
                             appBarState = appBarState,
-                            isActionMode = mainScreenState.isActionModeActive,
-                            onNavigate = {
-                                model.resetAppBarState()
-                            })
+                            isActionMode = isActionModeActive,
+                            onNavigate = { model.resetAppBarState() })
                     }, snackbarHost = {
                         SnackbarHost(hostState = snackbarHostState, snackbar = { snackbarData ->
                             val visuals = snackbarData.visuals as MySnackbarVisuals
@@ -176,10 +175,10 @@ class MainActivity : AppCompatActivity() {
                                 }
                             },
                             searchQuery = mainScreenState.appBarSearchText,
-                            isActionMode = mainScreenState.isActionModeActive,
+                            isActionMode = isActionModeActive,
                             isActionModeAllItemsSelected = actionModeState.selectAllItemsCheck,
                             onTriggerActionMode = {
-                                model.setActionModeState(true)
+                                model.setActionModeState()
                                 model.updateActionMode(selectedItems = 1)
                             },
                             onAppSelection = { isAllSelected, appCount ->

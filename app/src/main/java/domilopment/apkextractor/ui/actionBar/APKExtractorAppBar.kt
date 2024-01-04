@@ -1,9 +1,10 @@
 package domilopment.apkextractor.ui.actionBar
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -52,49 +53,46 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.AppBarState
+import domilopment.apkextractor.data.UiMode
 import domilopment.apkextractor.ui.keyboardAsState
 
 @Composable
 fun APKExtractorAppBar(
     appBarState: AppBarState,
     modifier: Modifier = Modifier,
+    uiMode: UiMode,
     searchText: String,
-    isSearchActive: Boolean,
     isAllItemsChecked: Boolean,
     onSearchQueryChanged: (String) -> Unit,
-    onTriggerSearch: (Boolean) -> Unit,
-    isActionModeActive: Boolean,
-    onEndActionMode: () -> Unit,
+    onTriggerSearch: () -> Unit,
+    onReturnUiMode: () -> Unit,
     onCheckAllItems: (Boolean) -> Unit,
     selectedApplicationsCount: Int
 ) {
     Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)) {
-        AnimatedVisibility(
-            visible = !isActionModeActive && !isSearchActive, enter = fadeIn(), exit = fadeOut()
-        ) {
-            DefaultAppBar(appBarState = appBarState,
-                modifier,
-                onActionSearch = { onTriggerSearch(true) })
-        }
-        AnimatedVisibility(
-            visible = !isActionModeActive && isSearchActive, enter = fadeIn(), exit = fadeOut()
-        ) {
-            SearchBar(
-                text = searchText, onTextChange = onSearchQueryChanged, onCloseClicked = {
-                    if (searchText.isNotEmpty()) onSearchQueryChanged("") else onTriggerSearch(
-                        false
-                    )
-                }, onSearchClicked = onSearchQueryChanged
-            )
-        }
-        AnimatedVisibility(visible = isActionModeActive, enter = fadeIn(), exit = fadeOut()) {
-            ActionModeBar(
-                modifier,
-                isAllItemsChecked,
-                selectedApplicationsCount,
-                onEndActionMode,
-                onCheckAllItems
-            )
+        AnimatedContent(targetState = uiMode, transitionSpec = {
+            fadeIn() togetherWith fadeOut()
+        }, label = "Actionbar Content") { uiMode ->
+            when (uiMode) {
+                UiMode.Home -> DefaultAppBar(
+                    appBarState = appBarState,
+                    modifier,
+                    onActionSearch = onTriggerSearch)
+
+                UiMode.Search -> SearchBar(
+                    text = searchText, onTextChange = onSearchQueryChanged, onCloseClicked = {
+                        if (searchText.isNotEmpty()) onSearchQueryChanged("") else onReturnUiMode()
+                    }, onSearchClicked = onSearchQueryChanged
+                )
+
+                is UiMode.Action -> ActionModeBar(
+                    modifier,
+                    isAllItemsChecked,
+                    selectedApplicationsCount,
+                    onReturnUiMode,
+                    onCheckAllItems
+                )
+            }
         }
     }
 }
