@@ -56,7 +56,7 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
-import domilopment.apkextractor.ui.viewModels.SettingsFragmentViewModel
+import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.SettingsManager
@@ -65,7 +65,7 @@ import java.util.Locale
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingsScreen(
-    model: SettingsFragmentViewModel,
+    model: SettingsScreenViewModel,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
     context: Context = LocalContext.current,

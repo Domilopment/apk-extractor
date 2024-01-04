@@ -18,7 +18,7 @@ import domilopment.apkextractor.ui.settings.SettingsScreen
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
-import domilopment.apkextractor.ui.viewModels.SettingsFragmentViewModel
+import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
 
 @Composable
@@ -65,7 +65,7 @@ fun ApkExtractorNavHost(
                 showSnackbar = { showSnackbar(it) })
         }
         composable(Screen.Settings.route) {
-            val model = hiltViewModel<SettingsFragmentViewModel>()
+            val model = hiltViewModel<SettingsScreenViewModel>()
 
             SettingsScreen(
                 model = model,

@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsFragmentViewModel @Inject constructor(
+class SettingsScreenViewModel @Inject constructor(
     application: Application,
     appsRepository: ApplicationRepository,
     private val settings: PreferenceRepository
@@ -28,7 +28,7 @@ class SettingsFragmentViewModel @Inject constructor(
             selectUpdatedSystemApps = true,
             selectSystemApps = false,
             selectUserApps = true,
-            setOf()
+            emptySet()
         )
     }.map {
         ApplicationUtil.sortAppData(

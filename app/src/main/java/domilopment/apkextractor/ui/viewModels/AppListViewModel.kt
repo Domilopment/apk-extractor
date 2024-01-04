@@ -93,36 +93,38 @@ class AppListViewModel @Inject constructor(
     init {
         // Set applications in view once they are loaded
         viewModelScope.launch {
-            _searchQuery.debounce(500L).combine(combine(
+            combine(
+                appsRepository.apps, updatedSystemApps, systemApps, userApps, appListFavorites
+            ) { appList, updatedSysApps, sysApps, userApps, favorites ->
+                ApplicationUtil.selectedAppTypes(
+                    appList, updatedSysApps, sysApps, userApps, favorites
+                )
+            }.let {
                 combine(
-                    combine(
-                        appsRepository.apps,
-                        updatedSystemApps,
-                        systemApps,
-                        userApps,
-                        appListFavorites
-                    ) { appList, updatedSysApps, sysApps, userApps, favorites ->
-                        ApplicationUtil.selectedAppTypes(
-                            appList, updatedSysApps, sysApps, userApps, favorites
-                        )
-                    }, filterInstaller, filterCategory, filterOthers
+                    it, filterInstaller, filterCategory, filterOthers
                 ) { appList, installer, category, others ->
                     ApplicationUtil.filterApps(appList, installer, category, others)
-                }, appSortOrder, appSortFavorites, appSortAsc
-            ) { appList, sortMode, sortFavorites, sortAsc ->
-                ApplicationUtil.sortAppData(appList, sortMode.ordinal, sortFavorites, sortAsc)
-            }) { searchQuery, appList ->
-                val searchString = searchQuery?.trim()
+                }
+            }.let {
+                combine(
+                    it, appSortOrder, appSortFavorites, appSortAsc
+                ) { appList, sortMode, sortFavorites, sortAsc ->
+                    ApplicationUtil.sortAppData(appList, sortMode.ordinal, sortFavorites, sortAsc)
+                }
+            }.let {
+                _searchQuery.debounce(500L).combine(it) { searchQuery, appList ->
+                    val searchString = searchQuery?.trim()
 
-                return@combine if (searchString.isNullOrBlank()) {
-                    appList
-                } else {
-                    appList.filter {
-                        it.appName.contains(
-                            searchString, ignoreCase = true
-                        ) || it.appPackageName.contains(
-                            searchString, ignoreCase = true
-                        )
+                    return@combine if (searchString.isNullOrBlank()) {
+                        appList
+                    } else {
+                        appList.filter {
+                            it.appName.contains(
+                                searchString, ignoreCase = true
+                            ) || it.appPackageName.contains(
+                                searchString, ignoreCase = true
+                            )
+                        }
                     }
                 }
             }.collect { appList ->
