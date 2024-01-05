@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BatteryStd
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.ModeNight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
@@ -151,6 +152,7 @@ fun SettingsScreen(
         PreferenceCategory(title = R.string.save_header) {
             Preference(name = R.string.choose_save_dir,
                 summary = R.string.choose_save_dir_summary,
+                icon = Icons.Default.Folder,
                 onClick = {
                     val pickerInitialUri = model.saveDir.value?.let {
                         DocumentsContract.buildDocumentUriUsingTree(
