@@ -67,7 +67,7 @@ fun MultiSelectListPreference(
     state: State<Set<String>>,
     onClick: (Set<String>) -> Unit
 ) {
-    val entriesMap = entries.zip(entryValues)
+    val entriesMap = remember { entries.zip(entryValues) }
 
     val value = rememberSaveable(saver = listSaver(save = { stateList ->
         if (stateList.isNotEmpty()) {

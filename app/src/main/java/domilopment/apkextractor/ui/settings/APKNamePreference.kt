@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -85,8 +86,8 @@ fun APKNamePreference(
     state: State<Set<String>>,
     onClick: (Set<String>) -> Unit
 ) {
-    val entriesMap = entries.zip(entryValues)
     val context = LocalContext.current
+    val entriesMap = remember { entries.zip(entryValues) }
 
     val value = rememberSaveable(saver = listSaver(save = { stateList ->
         if (stateList.isNotEmpty()) {
@@ -119,7 +120,13 @@ fun APKNamePreference(
         mutableStateOf(false)
     }
 
-    if (!value.any { it == "name" || it == "package" }) Toast.makeText(
+    val isValid by remember {
+        derivedStateOf {
+            value.any { it == "name" || it == "package" }
+        }
+    }
+
+    if (!isValid) Toast.makeText(
         context, context.getString(R.string.app_save_name_toast), Toast.LENGTH_LONG
     ).show()
 
@@ -148,7 +155,7 @@ fun APKNamePreference(
             val selectedItemsInOrder = dragMap.map { it.second }.filter { it in value }
             onClick(value.map { "${selectedItemsInOrder.indexOf(it)}:$it" }.toSet())
             dialog = false
-        }, enabled = value.any { it == "name" || it == "package" }) {
+        }, enabled = isValid) {
             Text(text = stringResource(id = R.string.app_name_dialog_ok))
         }
     }, dismissButton = {

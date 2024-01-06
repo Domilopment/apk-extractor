@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -59,7 +60,7 @@ fun <T> ListPreference(
     state: State<T>,
     onClick: (T) -> Unit
 ) {
-    val entriesMap = entries.zip(entryValues)
+    val entriesMap = remember { entries.zip(entryValues) }
 
     var value by rememberSaveable {
         mutableStateOf(state.value)
