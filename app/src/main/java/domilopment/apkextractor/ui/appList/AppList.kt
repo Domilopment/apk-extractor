@@ -105,12 +105,20 @@ fun AppList(
                     app, isSwipeToDismiss, leftSwipeAction
                 )
             ) {
-                AppListItem(appName = getAnnotatedString(
-                    app.appName, searchString, highlightColor
-                )!!,
-                    appPackageName = getAnnotatedString(
+                val appName = remember(app.appName, searchString) {
+                    getAnnotatedString(
+                        app.appName, searchString, highlightColor
+                    )
+                }
+
+                val packageName = remember(app.appPackageName, searchString) {
+                    getAnnotatedString(
                         app.appPackageName, searchString, highlightColor
-                    )!!,
+                    )
+                }
+
+                AppListItem(appName = appName!!,
+                    appPackageName = packageName!!,
                     appIcon = app.appIcon,
                     apkSize = app.apkSize,
                     isChecked = app.isChecked,

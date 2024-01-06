@@ -37,20 +37,39 @@ fun ApkList(
                 return@items
             }
 
-            ApkListItem(
-                apkFileName = Utils.getAnnotatedString(
+            val fileName = remember(apk.fileName, searchString) {
+                Utils.getAnnotatedString(
                     apk.fileName, searchString, highlightColor
-                )!!,
-                appName = Utils.getAnnotatedString(apk.appName, searchString, highlightColor),
-                appPackageName = Utils.getAnnotatedString(
+                )
+            }
+
+            val appName = remember(apk.appName, searchString) {
+                Utils.getAnnotatedString(
+                    apk.appName, searchString, highlightColor
+                )
+            }
+
+            val packageName = remember(apk.appPackageName, searchString) {
+                Utils.getAnnotatedString(
                     apk.appPackageName, searchString, highlightColor
-                ),
+                )
+            }
+
+            val versionName =
+                if (apk.appVersionName != null && apk.appVersionCode != null) stringResource(
+                    id = R.string.apk_holder_version, apk.appVersionName!!, apk.appVersionCode!!
+                ) else null
+
+            val versionInfo = remember(versionName, searchString) {
+                Utils.getAnnotatedString(versionName, searchString, highlightColor)
+            }
+
+            ApkListItem(
+                apkFileName = fileName!!,
+                appName = appName,
+                appPackageName = packageName,
                 appIcon = apk.appIcon,
-                apkVersionInfo = if (apk.appVersionName != null && apk.appVersionCode != null) Utils.getAnnotatedString(
-                    stringResource(
-                        id = R.string.apk_holder_version, apk.appVersionName!!, apk.appVersionCode!!
-                    ), searchString, highlightColor
-                ) else null,
+                apkVersionInfo = versionInfo,
                 isLoading = apk.isPackageArchiveInfoLoading
             ) { onClick(apk) }
         }
