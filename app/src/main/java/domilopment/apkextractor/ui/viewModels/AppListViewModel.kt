@@ -41,7 +41,9 @@ class AppListViewModel @Inject constructor(
 
     private val _searchQuery: MutableStateFlow<String?> = MutableStateFlow(null)
 
-    private val appListFavorites = preferenceRepository.appListFavorites
+    private val appListFavorites = preferenceRepository.appListFavorites.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), emptySet()
+    )
     val saveDir = preferenceRepository.saveDir.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
     )
