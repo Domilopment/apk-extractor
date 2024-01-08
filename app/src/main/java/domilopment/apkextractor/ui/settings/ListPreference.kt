@@ -60,7 +60,7 @@ fun <T> ListPreference(
     state: State<T>,
     onClick: (T) -> Unit
 ) {
-    val entriesMap = remember { entries.zip(entryValues) }
+    val entriesMap = remember(entries, entryValues) { entries.zip(entryValues) }
 
     var value by rememberSaveable {
         mutableStateOf(state.value)
