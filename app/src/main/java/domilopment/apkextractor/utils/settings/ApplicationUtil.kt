@@ -57,8 +57,8 @@ object ApplicationUtil {
             if (selectSystemApps) mData.addAll(systemApps)
         }
         if (selectUserApps) mData.addAll(userApps)
-        mData.forEach {
-            it.isFavorite = it.appPackageName in favorites
+        if (favorites.isNotEmpty()) mData.map {
+            it.copy(isFavorite = it.appPackageName in favorites)
         }
         return mData
     }
