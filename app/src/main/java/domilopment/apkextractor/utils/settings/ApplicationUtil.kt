@@ -57,10 +57,9 @@ object ApplicationUtil {
             if (selectSystemApps) mData.addAll(systemApps)
         }
         if (selectUserApps) mData.addAll(userApps)
-        if (favorites.isNotEmpty()) mData.map {
+        return mData.map {
             it.copy(isFavorite = it.appPackageName in favorites)
         }
-        return mData
     }
 
     /**

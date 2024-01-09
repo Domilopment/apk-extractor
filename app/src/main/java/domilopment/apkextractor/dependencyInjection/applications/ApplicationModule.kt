@@ -22,10 +22,8 @@ abstract class ApplicationModule {
     companion object {
         @Singleton
         @Provides
-        fun provideApplicationDataSource(
-            @ApplicationContext context: Context, preferenceRepository: PreferenceRepository
-        ): ListOfApps {
-            return ListOfApps.getApplications(context, preferenceRepository)
+        fun provideApplicationDataSource(@ApplicationContext context: Context): ListOfApps {
+            return ListOfApps.getApplications(context)
         }
     }
 }

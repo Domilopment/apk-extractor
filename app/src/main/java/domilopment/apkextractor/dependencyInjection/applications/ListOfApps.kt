@@ -5,16 +5,12 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import domilopment.apkextractor.data.ApplicationModel
-import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.NonComparingMutableStateFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
-class ListOfApps private constructor(
-    context: Context, private val preferences: PreferenceRepository
-) {
+class ListOfApps private constructor(context: Context) {
     private val packageManager = context.packageManager
 
     private val _apps: NonComparingMutableStateFlow<Triple<MutableList<ApplicationModel>, MutableList<ApplicationModel>, MutableList<ApplicationModel>>> =
@@ -39,8 +35,6 @@ class ListOfApps private constructor(
         val newSystemApps = mutableListOf<ApplicationModel>()
         val newUserApps = mutableListOf<ApplicationModel>()
 
-        val favorites = preferences.appListFavorites.first()
-
         // Fill each list with its specific type
         val applicationsInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             packageManager.getInstalledApplications(
@@ -54,9 +48,7 @@ class ListOfApps private constructor(
 
         applicationsInfo.forEach { packageInfo: ApplicationInfo ->
             ApplicationModel(
-                packageManager = packageManager,
-                appPackageName = packageInfo.packageName,
-                isFavorite = packageInfo.packageName in favorites
+                packageManager = packageManager, appPackageName = packageInfo.packageName,
             ).also {
                 when {
                     (it.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP -> newUpdatedSystemApps.add(
@@ -112,12 +104,10 @@ class ListOfApps private constructor(
     companion object {
         private lateinit var INSTANCE: ListOfApps
 
-        fun getApplications(
-            context: Context, preferenceRepository: PreferenceRepository
-        ): ListOfApps {
+        fun getApplications(context: Context): ListOfApps {
             synchronized(ListOfApps::class.java) {
                 if (!Companion::INSTANCE.isInitialized) {
-                    INSTANCE = ListOfApps(context.applicationContext, preferenceRepository)
+                    INSTANCE = ListOfApps(context.applicationContext)
                 }
             }
             return INSTANCE
