@@ -18,9 +18,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissValue
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissState
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -67,10 +67,10 @@ fun AppList(
                 return@items
             }
 
-            val state = rememberSwipeToDismissState(confirmValueChange = {
-                if (it == SwipeToDismissValue.EndToStart) {
+            val state = rememberSwipeToDismissBoxState(confirmValueChange = {
+                if (it == SwipeToDismissBoxValue.EndToStart) {
                     swipeActionCallback(app, leftSwipeAction)
-                } else if (it == SwipeToDismissValue.StartToEnd) {
+                } else if (it == SwipeToDismissBoxValue.StartToEnd) {
                     swipeActionCallback(app, rightSwipeAction)
                 }
                 false
@@ -80,18 +80,18 @@ fun AppList(
                 state = state, backgroundContent = {
                     val color by animateColorAsState(
                         when (state.dismissDirection) {
-                            SwipeToDismissValue.StartToEnd, SwipeToDismissValue.EndToStart -> MaterialTheme.colorScheme.primaryContainer
-                            SwipeToDismissValue.Settled -> Color.Transparent
+                            SwipeToDismissBoxValue.Settled -> Color.Transparent
+                            SwipeToDismissBoxValue.StartToEnd, SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.primaryContainer
                         }, label = ""
                     )
 
                     when (state.dismissDirection) {
-                        SwipeToDismissValue.StartToEnd -> AppListItemSwipeRight(
+                        SwipeToDismissBoxValue.StartToEnd -> AppListItemSwipeRight(
                             rightSwipeAction = rightSwipeAction,
                             modifier = Modifier.background(color)
                         )
 
-                        SwipeToDismissValue.EndToStart -> AppListItemSwipeLeft(
+                        SwipeToDismissBoxValue.EndToStart -> AppListItemSwipeLeft(
                             leftSwipeAction = leftSwipeAction, modifier = Modifier.background(color)
                         )
 
