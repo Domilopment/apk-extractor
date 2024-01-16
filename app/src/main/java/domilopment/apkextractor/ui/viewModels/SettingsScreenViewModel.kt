@@ -22,22 +22,24 @@ class SettingsScreenViewModel @Inject constructor(
     appsRepository: ApplicationRepository,
     private val settings: PreferenceRepository
 ) : AndroidViewModel(application) {
-    val applications = appsRepository.apps.map {
+    val applications = appsRepository.apps.map { apps ->
         ApplicationUtil.selectedAppTypes(
-            it,
+            apps,
             selectUpdatedSystemApps = true,
             selectSystemApps = false,
             selectUserApps = true,
             emptySet()
-        )
-    }.map {
-        ApplicationUtil.sortAppData(
-            it,
-            sortMode = AppSortOptions.SORT_BY_NAME.ordinal,
-            sortFavorites = false,
-            sortAsc = true
-        )
-    }.map { list -> list.associateBy({ it.appName }, { it.appPackageName }) }.stateIn(
+        ).let {
+            ApplicationUtil.sortAppData(
+                it,
+                sortMode = AppSortOptions.SORT_BY_NAME.ordinal,
+                sortFavorites = false,
+                sortAsc = true
+            )
+        }.let { list ->
+            list.associateBy({ it.appName }, { it.appPackageName })
+        }
+    }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), emptyMap()
     )
 

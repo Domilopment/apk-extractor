@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
                                     snackbarHostState.showSnackbar(it)
                                 }
                             },
-                            searchQuery = mainScreenState.appBarSearchText,
+                            searchQuery = mainScreenState.appBarSearchText.trim(),
                             isActionMode = isActionModeActive,
                             isActionModeAllItemsSelected = actionModeState.selectAllItemsCheck,
                             onTriggerActionMode = {
