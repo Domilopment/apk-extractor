@@ -38,7 +38,6 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
             ApkActionsManager(context, app).actionShare(params.shareResult, params.appNameBuilder)
         }
     },
-
     ICON("save_icon", R.string.action_bottom_sheet_save_image, Icons.Default.Image) {
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
