@@ -36,6 +36,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -98,6 +99,30 @@ fun SettingsScreen(
         }
     }
 
+    val isSelectAutoBackupApps by remember {
+        derivedStateOf {
+            autoBackupService.value && apps.isNotEmpty()
+        }
+    }
+    val selectAutoBackupAppsEntries by remember {
+        derivedStateOf {
+            apps.keys.toTypedArray()
+        }
+    }
+    val selectAutoBackupAppsEntryValues by remember {
+        derivedStateOf {
+            apps.values.toTypedArray()
+        }
+    }
+
+    val isUpdateAvailable by remember {
+        derivedStateOf {
+            appUpdateInfo?.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && appUpdateInfo?.isUpdateTypeAllowed(
+                AppUpdateType.FLEXIBLE
+            ) == true
+        }
+    }
+
     val ignoreBatteryOptimizationResult =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val isIgnoringBatteryOptimization =
@@ -139,9 +164,7 @@ fun SettingsScreen(
                 MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)
             ),
             summary = R.string.update_available_summary,
-            isPreferenceVisible = appUpdateInfo!!.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && appUpdateInfo!!.isUpdateTypeAllowed(
-                AppUpdateType.FLEXIBLE
-            ),
+            isPreferenceVisible = isUpdateAvailable,
             onClick = {
                 appUpdateManager.startUpdateFlowForResult(
                     appUpdateInfo!!,
@@ -161,12 +184,14 @@ fun SettingsScreen(
                     }
                     chooseSaveDir.launch(pickerInitialUri)
                 })
-            APKNamePreference(name = R.string.app_save_name,
+            APKNamePreference(
+                name = R.string.app_save_name,
                 summary = R.string.app_save_name_summary,
                 entries = R.array.app_save_name_names,
                 entryValues = R.array.app_save_name_values,
                 state = model.saveName.collectAsState(),
-                onClick = model::setAppSaveName)
+                onClick = model::setAppSaveName
+            )
             SwitchPreferenceCompat(name = R.string.auto_backup,
                 summary = R.string.auto_backup_summary,
                 state = autoBackupService,
@@ -188,9 +213,9 @@ fun SettingsScreen(
                 })
             MultiSelectListPreference(
                 name = stringResource(id = R.string.auto_backup_app_list),
-                enabled = autoBackupService.value && apps.isNotEmpty(),
-                entries = apps.keys.toTypedArray(),
-                entryValues = apps.values.toTypedArray(),
+                enabled = isSelectAutoBackupApps,
+                entries = selectAutoBackupAppsEntries,
+                entryValues = selectAutoBackupAppsEntryValues,
                 summary = stringResource(id = R.string.auto_backup_app_list_summary),
                 state = autoBackupList,
                 onClick = model::setAutoBackupList
@@ -210,7 +235,9 @@ fun SettingsScreen(
             SwitchPreferenceCompat(name = R.string.use_material_you,
                 summary = R.string.use_material_you_summary,
                 state = model.useMaterialYou.collectAsState(),
-                isVisible = DynamicColors.isDynamicColorAvailable(),
+                isVisible = remember {
+                    DynamicColors.isDynamicColorAvailable()
+                },
                 onClick = {
                     model.setUseMaterialYou(it)
                     if (it) {
@@ -271,7 +298,8 @@ fun SettingsScreen(
                 state = model.checkUpdateOnStart.collectAsState(),
                 onClick = model::setCheckUpdateOnStart
             )
-            Preference(name = R.string.clear_cache,
+            Preference(
+                name = R.string.clear_cache,
                 summary = R.string.clear_cache_summary,
                 onClick = {
                     if (context.cacheDir?.deleteRecursively() == true) Toast.makeText(
@@ -288,8 +316,7 @@ fun SettingsScreen(
                     context, Uri.parse("https://github.com/domilopment/apk-extractor")
                 )
             })
-            Preference(
-                name = R.string.googleplay,
+            Preference(name = R.string.googleplay,
                 summary = R.string.googleplay_summary,
                 onClick = {
                     try {
