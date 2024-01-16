@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ApplicationModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
@@ -22,15 +23,10 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            params.saveDir?.let { saveDir ->
-                params.callbackFun?.let { showSnackbar ->
-                    params.appNameBuilder?.let { appNameBuilder ->
-                        ApkActionsManager(context, app).actionSave(
-                            saveDir, appNameBuilder, showSnackbar
-                        )
-                    }
-                }
-            }
+            if (params.saveDir == null || params.callbackFun == null || params.appNameBuilder == null) return
+            ApkActionsManager(context, app).actionSave(
+                params.saveDir, params.appNameBuilder, params.callbackFun
+            )
         }
 
     },
@@ -38,9 +34,8 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            params.appNameBuilder?.also { appName ->
-                params.shareResult?.also { ApkActionsManager(context, app).actionShare(it, appName) }
-            }
+            if (params.appNameBuilder == null || params.shareResult == null) return
+            ApkActionsManager(context, app).actionShare(params.shareResult, params.appNameBuilder)
         }
     },
 
@@ -78,6 +73,17 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
             params.deleteResult?.let { ApkActionsManager(context, app).actionUninstall(it) }
+        }
+    },
+    NONE(
+        "none", R.string.action_none, ImageVector.Builder(
+            defaultWidth = 1.dp, defaultHeight = 1.dp, viewportWidth = 1f, viewportHeight = 1f
+        ).build()
+    ) {
+        override fun getAction(
+            context: Context, app: ApplicationModel, params: ApkActionOptionParams
+        ) {
+            // None
         }
     };
 

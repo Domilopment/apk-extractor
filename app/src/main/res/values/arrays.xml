@@ -46,6 +46,7 @@
         <item>@string/action_bottom_sheet_settings</item>
         <item>@string/action_bottom_sheet_open</item>
         <item>@string/action_bottom_sheet_uninstall</item>
+        <item>@string/action_none</item>
     </string-array>
     <string-array name="apk_swipe_options_values">
         <item>save_apk</item>
@@ -54,5 +55,6 @@
         <item>open_settings</item>
         <item>open_app</item>
         <item>uninstall_app</item>
+        <item>none</item>
     </string-array>
 </resources>

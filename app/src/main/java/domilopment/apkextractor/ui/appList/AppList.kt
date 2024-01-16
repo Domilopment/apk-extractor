@@ -135,7 +135,9 @@ private fun getSwipeDirections(
     isSwipeToDismiss: Boolean,
     swipeDirection: ApkActionsOptions,
 ): Boolean {
-    return isSwipeToDismiss && ApkActionsOptions.isOptionSupported(app, swipeDirection)
+    return isSwipeToDismiss && swipeDirection != ApkActionsOptions.NONE && ApkActionsOptions.isOptionSupported(
+        app, swipeDirection
+    )
 }
 
 @Composable

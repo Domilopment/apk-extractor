@@ -205,6 +205,8 @@
     <string name="snackbar_need_permission_save_image">Need Storage Permission to Save Images</string>
     <string name="snackbar_no_activity_for_market_intent">Could not open Store page</string>
 
+    <string name="action_none">None</string>
+
     <!-- Apk Options Bottom Sheet -->
     <string name="apk_bottom_sheet_source_uri">APK Source-Uri: %s</string>
     <string name="apk_bottom_sheet_file_name">APK file name: %s</string>
