@@ -291,7 +291,7 @@ fun AppListScreen(
             apkAction.getAction(context,
                 app,
                 ApkActionsOptions.ApkActionOptionParams.Builder().setSaveDir(saveDir!!)
-                    .setAppNameBuilder { ApplicationUtil.appName(it, setOf()) }
+                    .setAppNameBuilder { ApplicationUtil.appName(it, appName) }
                     .setCallbackFun(showSnackbar).setShareResult(shareApp)
                     .setDeleteResult(uninstallApp).build())
         },

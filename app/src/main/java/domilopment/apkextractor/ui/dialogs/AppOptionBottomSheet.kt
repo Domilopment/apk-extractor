@@ -119,13 +119,16 @@ fun AppOptionsBottomSheet(
         HorizontalDivider(modifier = Modifier.padding(4.dp))
         AppSheetActions(app = app,
             onActionSave = {
-                apkOptions.actionSave(saveDir, { it.appName }) {
+                apkOptions.actionSave(saveDir, { app ->
+                    ApplicationUtil.appName(app, appName)
+                }) {
                     scope.launch { snackbarHostState.showSnackbar(it) }
                 }
             },
             onActionShare = {
-                apkOptions.actionShare(onActionShare,
-                    { app -> ApplicationUtil.appName(app, appName) })
+                apkOptions.actionShare(onActionShare) { app ->
+                    ApplicationUtil.appName(app, appName)
+                }
             },
             onActionSaveImage = label@{
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !onActionSaveImage.status.isGranted) {
