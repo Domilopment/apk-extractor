@@ -275,8 +275,7 @@ fun SettingsScreen(
                 state = model.checkUpdateOnStart.collectAsState(),
                 onClick = model::setCheckUpdateOnStart
             )
-            Preference(
-                name = R.string.clear_cache,
+            Preference(name = R.string.clear_cache,
                 summary = R.string.clear_cache_summary,
                 onClick = {
                     if (context.cacheDir?.deleteRecursively() == true) Toast.makeText(
@@ -293,7 +292,8 @@ fun SettingsScreen(
                     context, Uri.parse("https://github.com/domilopment/apk-extractor")
                 )
             })
-            Preference(name = R.string.googleplay,
+            Preference(
+                name = R.string.googleplay,
                 summary = R.string.googleplay_summary,
                 onClick = {
                     try {

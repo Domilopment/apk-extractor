@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.settings
 
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
@@ -126,9 +125,11 @@ fun APKNamePreference(
         }
     }
 
-    if (!isValid) Toast.makeText(
-        context, context.getString(R.string.app_save_name_toast), Toast.LENGTH_LONG
-    ).show()
+    LaunchedEffect(isValid) {
+        if (!isValid) Toast.makeText(
+            context, context.getString(R.string.app_save_name_toast), Toast.LENGTH_LONG
+        ).show()
+    }
 
     Preference(icon = icon,
         enabled = enabled,
