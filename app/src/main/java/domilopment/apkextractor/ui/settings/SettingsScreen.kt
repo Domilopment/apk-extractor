@@ -73,7 +73,7 @@ fun SettingsScreen(
 ) {
     val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
 
-    val apps by model.applications.collectAsState()
+    val apps by model.autoBackupAppsListState.collectAsState()
     val autoBackupService = model.autoBackupService.collectAsState()
     val autoBackupList = model.autoBackupList.collectAsState()
     val batteryOptimization = remember {
@@ -99,16 +99,6 @@ fun SettingsScreen(
     val isSelectAutoBackupApps by remember {
         derivedStateOf {
             autoBackupService.value && apps.isNotEmpty()
-        }
-    }
-    val selectAutoBackupAppsEntries by remember {
-        derivedStateOf {
-            apps.keys.toTypedArray()
-        }
-    }
-    val selectAutoBackupAppsEntryValues by remember {
-        derivedStateOf {
-            apps.values.toTypedArray()
         }
     }
 
@@ -211,8 +201,8 @@ fun SettingsScreen(
             MultiSelectListPreference(
                 name = stringResource(id = R.string.auto_backup_app_list),
                 enabled = isSelectAutoBackupApps,
-                entries = selectAutoBackupAppsEntries,
-                entryValues = selectAutoBackupAppsEntryValues,
+                entries = apps.entries,
+                entryValues = apps.entryValues,
                 summary = stringResource(id = R.string.auto_backup_app_list_summary),
                 state = autoBackupList,
                 onClick = model::setAutoBackupList
@@ -285,7 +275,8 @@ fun SettingsScreen(
                 state = model.checkUpdateOnStart.collectAsState(),
                 onClick = model::setCheckUpdateOnStart
             )
-            Preference(name = R.string.clear_cache,
+            Preference(
+                name = R.string.clear_cache,
                 summary = R.string.clear_cache_summary,
                 onClick = {
                     if (context.cacheDir?.deleteRecursively() == true) Toast.makeText(
@@ -302,8 +293,7 @@ fun SettingsScreen(
                     context, Uri.parse("https://github.com/domilopment/apk-extractor")
                 )
             })
-            Preference(
-                name = R.string.googleplay,
+            Preference(name = R.string.googleplay,
                 summary = R.string.googleplay_summary,
                 onClick = {
                     try {

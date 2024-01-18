@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
 import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
@@ -22,7 +23,7 @@ class SettingsScreenViewModel @Inject constructor(
     appsRepository: ApplicationRepository,
     private val settings: PreferenceRepository
 ) : AndroidViewModel(application) {
-    val applications = appsRepository.apps.map { apps ->
+    val autoBackupAppsListState = appsRepository.apps.map { apps ->
         ApplicationUtil.selectedAppTypes(
             apps,
             selectUpdatedSystemApps = true,
@@ -37,10 +38,12 @@ class SettingsScreenViewModel @Inject constructor(
                 sortAsc = true
             )
         }.let { list ->
-            list.associateBy({ it.appName }, { it.appPackageName })
+            SettingsScreenAppAutoBackUpListState(list)
         }
     }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), emptyMap()
+        viewModelScope,
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        SettingsScreenAppAutoBackUpListState(emptyList())
     )
 
     val saveDir = settings.saveDir.stateIn(

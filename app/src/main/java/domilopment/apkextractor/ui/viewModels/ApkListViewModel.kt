@@ -63,10 +63,10 @@ class ApkListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _searchQuery.debounce(500)
-                .combine(apksRepository.apks.combine(sortOrder) { apkList, sortOrder ->
-                    PackageArchiveUtils.sortApkData(apkList, sortOrder)
-                }) { searchQuery, apkList ->
+            apksRepository.apks.combine(sortOrder) { apkList, sortOrder ->
+                PackageArchiveUtils.sortApkData(apkList, sortOrder)
+            }.let {
+                _searchQuery.debounce(500).combine(it) { searchQuery, apkList ->
                     val searchString = searchQuery?.trim()
 
                     return@combine if (searchString.isNullOrBlank()) {
@@ -103,6 +103,7 @@ class ApkListViewModel @Inject constructor(
                         }
                     }
                 }
+            }
         }
         // Set applications in view once they are loaded
         EventDispatcher.registerObserver(this, EventType.SAVED, EventType.DELETED)
