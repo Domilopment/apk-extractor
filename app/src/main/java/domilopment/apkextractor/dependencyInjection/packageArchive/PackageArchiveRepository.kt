@@ -1,6 +1,6 @@
 package domilopment.apkextractor.dependencyInjection.packageArchive
 
-import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.data.apkList.PackageArchiveModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

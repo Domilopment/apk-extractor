@@ -1,6 +1,6 @@
 package domilopment.apkextractor.utils.settings
 
-import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories

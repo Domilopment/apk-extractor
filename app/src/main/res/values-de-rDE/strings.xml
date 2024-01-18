@@ -53,7 +53,6 @@
 
     <string name="use_material_you">Aktiviere Material You</string>
     <string name="use_material_you_summary">Benutze die Dynamische Farbpalette, welche durch das ändern des Hintergrundes ab Android 12 Bereitgestellt wird.</string>
-    <string name="use_material_you_toast">Änderung nach neustart</string>
 
     <string name="advanced">Erweiterte Einstellungen</string>
     <string name="apk_swipe_action_right_title">Wischaktion nach rechts</string>
@@ -245,13 +244,13 @@
     <string name="popup_snackbar_for_complete_update_action">NEUSTART</string>
 
     <string name="popup_dialog_for_notify_about_update_title">Bitte erwäge zu aktualisieren</string>
-    <string name="popup_dialog_for_notify_about_update_text">Falls du updates auslässt, könntest du neue funktionen, Verbesserung in UI und Performance, aber am wichtigsten Bug and Crash fixes verpassen.</string>
+    <string name="popup_dialog_for_notify_about_update_text">Falls du updates auslässt, könntest du neue funktionen, Verbesserung in UI und Performance, aber am wichtigsten Bug and Crash fixes verpassen.\n\nDer Update am Start Dialog kann in den Einstellungen deaktiviert werden.</string>
     <string name="popup_dialog_for_notify_about_update_button_positive">Update</string>
     <string name="popup_dialog_for_notify_about_update_button_negative">Schließen</string>
     <string name="popup_dialog_for_notify_about_update_button_neutral">Frage nicht erneut</string>
 
     <string name="popup_dialog_update_failed_title">Update über die App fehlgesvhlagen</string>
-    <string name="popup_dialog_update_failed_text">Das update konnte nicht heruntergeladen oder Installiert werden. Versuche es erneut, lade es direkt aus dem Play Store herunter oder versuche es bein nächsten start der App erneut.\n\nMessage: %s</string>
+    <string name="popup_dialog_update_failed_text">Das update konnte nicht heruntergeladen oder Installiert werden. Versuche es erneut, lade es direkt aus dem Play Store herunter oder versuche es bein nächsten start der App erneut.</string>
     <string name="popup_dialog_update_failed_button_positive">Versuche erneut</string>
     <string name="popup_dialog_update_failed_button_negative">Schließen</string>
 

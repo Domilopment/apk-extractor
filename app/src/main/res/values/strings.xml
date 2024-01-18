@@ -54,7 +54,6 @@
 
     <string name="use_material_you">Use Material You</string>
     <string name="use_material_you_summary">Use Dynamic Color Theme, provided by Wallpaper colors in Android 12 und upwards</string>
-    <string name="use_material_you_toast">Changes after restart</string>
 
     <string name="advanced">Advanced Settings</string>
     <string name="apk_swipe_action_right_title">Right swipe action</string>
@@ -251,13 +250,13 @@
     <string name="popup_snackbar_for_complete_update_action">RESTART</string>
 
     <string name="popup_dialog_for_notify_about_update_title">Please consider updating</string>
-    <string name="popup_dialog_for_notify_about_update_text">If you skip updates, you miss out on new Features, Improvements of UI and Performance, but most Importantly Bug and Crash fixes.</string>
+    <string name="popup_dialog_for_notify_about_update_text">If you skip updates, you miss out on new Features, Improvements of UI and Performance, but most Importantly Bug and Crash fixes.\n\nYou Can disable the update on Start request in the Settings.</string>
     <string name="popup_dialog_for_notify_about_update_button_positive">Update</string>
     <string name="popup_dialog_for_notify_about_update_button_negative">Close</string>
     <string name="popup_dialog_for_notify_about_update_button_neutral">Don\'t ask again</string>
 
     <string name="popup_dialog_update_failed_title">In app update failed</string>
-    <string name="popup_dialog_update_failed_text">The app could not be updated, try again, load it directly from the Play Store or try next time you open the App.\n\nMessage: %s</string>
+    <string name="popup_dialog_update_failed_text">The app could not be updated, try again, load it directly from the Play Store or try next time you open the App.</string>
     <string name="popup_dialog_update_failed_button_positive">Try again</string>
     <string name="popup_dialog_update_failed_button_negative">Close</string>
 

@@ -3,7 +3,7 @@ package domilopment.apkextractor.utils.appFilterOptions
 import android.content.Context
 import android.content.pm.PackageManager
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.utils.Utils
 
 enum class AppFilterInstaller(private val packageName: String?) : AppFilter {

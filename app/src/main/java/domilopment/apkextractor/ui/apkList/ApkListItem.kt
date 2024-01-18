@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
-import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.data.apkList.PackageArchiveModel
 
 @Composable
 fun ApkListItem(

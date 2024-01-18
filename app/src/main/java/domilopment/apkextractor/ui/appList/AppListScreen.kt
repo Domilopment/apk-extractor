@@ -2,8 +2,6 @@ package domilopment.apkextractor.ui.appList
 
 import android.Manifest
 import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -23,12 +21,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.Screen
-import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
 import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
+import domilopment.apkextractor.ui.dialogs.ExtractionResultDialog
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
@@ -37,7 +35,6 @@ import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
-import domilopment.apkextractor.utils.settings.AppSortOptions
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -76,6 +73,10 @@ fun AppListScreen(
 
     var showFilter by rememberSaveable {
         mutableStateOf(false)
+    }
+
+    var extractionError: Pair<String?, String?>? by remember {
+        mutableStateOf(null)
     }
 
     var appToUninstall by remember {
@@ -125,27 +126,7 @@ fun AppListScreen(
 
     LaunchedEffect(key1 = extractionResult) {
         extractionResult?.getContentIfNotHandled()?.let { (errorMessage, app, size) ->
-            if (errorMessage != null) MaterialAlertDialogBuilder(context).apply {
-                setMessage(
-                    context.getString(
-                        R.string.snackbar_extraction_failed_message, errorMessage
-                    )
-                )
-                setTitle(
-                    context.getString(
-                        R.string.snackbar_extraction_failed, app?.appPackageName
-                    )
-                )
-                setPositiveButton(R.string.snackbar_extraction_failed_message_dismiss) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                setNeutralButton(R.string.snackbar_extraction_failed_message_copy_to_clipboard) { _, _ ->
-                    val clipboardManager =
-                        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clip = ClipData.newPlainText("APK Extractor: Error Message", errorMessage)
-                    clipboardManager.setPrimaryClip(clip)
-                }
-            }.show()
+            if (errorMessage != null) extractionError = Pair(app?.appName, errorMessage)
             else showSnackbar(
                 MySnackbarVisuals(
                     duration = SnackbarDuration.Long, message = context.resources.getQuantityString(
@@ -227,6 +208,9 @@ fun AppListScreen(
             onFavoriteChanged = { isChecked ->
                 model.editFavorites(selectedApp.appPackageName, isChecked)
             },
+            onSaveError = { appName, errorMessage ->
+                extractionError = Pair(appName, errorMessage)
+            },
             onActionShare = shareApp,
             onActionSaveImage = saveImage,
             intentUninstallApp = uninstallApp,
@@ -262,6 +246,14 @@ fun AppListScreen(
         onCancel = progressDialogModel::resetProgress
     )
 
+    extractionError?.let { (appName, errorMessage) ->
+        ExtractionResultDialog(
+            onDismissRequest = { extractionError = null },
+            appName = appName,
+            errorMessage = errorMessage
+        )
+    }
+
     AppListContent(
         appList = state.appList,
         searchString = searchString,
@@ -292,8 +284,10 @@ fun AppListScreen(
                 app,
                 ApkActionsOptions.ApkActionOptionParams.Builder().setSaveDir(saveDir!!)
                     .setAppNameBuilder { ApplicationUtil.appName(it, appName) }
-                    .setCallbackFun(showSnackbar).setShareResult(shareApp)
-                    .setDeleteResult(uninstallApp).build())
+                    .setCallbackFun(showSnackbar).setErrorCallBack { appName, errorMessage ->
+                        extractionError = Pair(appName, errorMessage)
+                    }.setShareResult(shareApp).setDeleteResult(uninstallApp).build()
+            )
         },
         uninstalledAppFound = model::uninstallApps
     )

@@ -2,7 +2,6 @@ package domilopment.apkextractor
 
 import android.app.Application
 import android.content.res.Configuration
-import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.HiltAndroidApp
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.settings.SettingsManager
@@ -18,8 +17,6 @@ class ApkExtractorApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         // Set Material You Colors
-        DynamicColors.applyToActivitiesIfAvailable(this)
-
         runBlocking {
             // Set UI Mode
             SettingsManager.changeUIMode(prefs.nightMode.first())

@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.Screen
-import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.data.apkList.PackageArchiveModel
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet
 import domilopment.apkextractor.ui.dialogs.ApkSortMenu
@@ -33,7 +33,6 @@ import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
-import domilopment.apkextractor.utils.settings.ApkSortOptions
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 

@@ -56,7 +56,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.settings.ApplicationUtil
@@ -74,6 +74,7 @@ fun AppOptionsBottomSheet(
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     onFavoriteChanged: (Boolean) -> Unit,
+    onSaveError: (String?, String?) -> Unit,
     onActionShare: ManagedActivityResultLauncher<Intent, ActivityResult>,
     onActionSaveImage: PermissionState,
     intentUninstallApp: ManagedActivityResultLauncher<Intent, ActivityResult>,
@@ -121,9 +122,9 @@ fun AppOptionsBottomSheet(
             onActionSave = {
                 apkOptions.actionSave(saveDir, { app ->
                     ApplicationUtil.appName(app, appName)
-                }) {
+                }, {
                     scope.launch { snackbarHostState.showSnackbar(it) }
-                }
+                }, onSaveError)
             },
             onActionShare = {
                 apkOptions.actionShare(onActionShare) { app ->

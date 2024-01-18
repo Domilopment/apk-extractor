@@ -2,7 +2,7 @@ package domilopment.apkextractor.dependencyInjection.packageArchive
 
 import android.content.Context
 import android.provider.DocumentsContract
-import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.data.apkList.PackageArchiveModel
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.NonComparingMutableStateFlow

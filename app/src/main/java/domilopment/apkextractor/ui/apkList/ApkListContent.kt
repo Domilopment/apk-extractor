@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
-import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.data.apkList.PackageArchiveModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

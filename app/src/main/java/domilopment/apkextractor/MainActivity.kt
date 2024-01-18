@@ -9,6 +9,8 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -33,11 +35,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.util.Consumer
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -48,11 +50,17 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.autoBackup.AutoBackupService
+import domilopment.apkextractor.data.ApkInstallationResult
+import domilopment.apkextractor.data.ApkInstallationResultType
+import domilopment.apkextractor.data.InAppUpdateResult
+import domilopment.apkextractor.data.InAppUpdateResultType
 import domilopment.apkextractor.data.UiMode
 import domilopment.apkextractor.data.rememberAppBarState
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.actionBar.APKExtractorAppBar
 import domilopment.apkextractor.ui.dialogs.AskForSaveDirDialog
+import domilopment.apkextractor.ui.dialogs.InAppUpdateDialog
+import domilopment.apkextractor.ui.dialogs.InstallationResultDialog
 import domilopment.apkextractor.ui.navigation.APKExtractorBottomNavigation
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
@@ -65,17 +73,10 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var appUpdateManager: AppUpdateManager
+    private lateinit var activityResultLauncher: ActivityResultLauncher<IntentSenderRequest>
     private lateinit var snackbarHostState: SnackbarHostState
 
     private val model by viewModels<MainViewModel>()
-
-    private val activityResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-            when (result.resultCode) {
-                RESULT_CANCELED -> popupDialogForNotifyAboutUpdate()
-                ActivityResult.RESULT_IN_APP_UPDATE_FAILED -> popupDialogUpdateFailed()
-            }
-        }
 
     private val installStateUpdatedListener = InstallStateUpdatedListener { state ->
         if (state.installStatus() == InstallStatus.DOWNLOADED) {
@@ -105,10 +106,29 @@ class MainActivity : AppCompatActivity() {
                 mainScreenState.uiMode is UiMode.Action
             }
 
+            var installationResult: ApkInstallationResult? by remember {
+                mutableStateOf(null)
+            }
+
+            var inAppUpdateResult: InAppUpdateResult? by remember {
+                mutableStateOf(null)
+            }
+
             val chooseSaveDir =
                 rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) {
                     it?.also { saveDirUri ->
                         takeUriPermission(saveDir, saveDirUri, model::setSaveDir)
+                    }
+                }
+
+            activityResultLauncher =
+                rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+                    when (result.resultCode) {
+                        RESULT_CANCELED -> inAppUpdateResult =
+                            InAppUpdateResult(InAppUpdateResultType.CANCELED)
+
+                        ActivityResult.RESULT_IN_APP_UPDATE_FAILED -> inAppUpdateResult =
+                            InAppUpdateResult(InAppUpdateResultType.UPDATE_FAILED)
                     }
                 }
 
@@ -119,7 +139,9 @@ class MainActivity : AppCompatActivity() {
                     when (event) {
                         Lifecycle.Event.ON_START -> showAskForSaveDir = mustAskForSaveDir(saveDir)
 
-                        else -> {}
+                        else -> {
+                            // Nothing to do
+                        }
                     }
                 }
 
@@ -129,6 +151,18 @@ class MainActivity : AppCompatActivity() {
                 // When the effect leaves the Composition, remove the observer
                 onDispose {
                     lifecycle.removeObserver(observer)
+                }
+            }
+
+            DisposableEffect(Unit) {
+                val listener = Consumer<Intent> { intent ->
+                    onNewIntent(intent) { resultType ->
+                        installationResult = ApkInstallationResult(resultType)
+                    }
+                }
+                addOnNewIntentListener(listener)
+                onDispose {
+                    removeOnNewIntentListener(listener)
                 }
             }
 
@@ -189,6 +223,21 @@ class MainActivity : AppCompatActivity() {
                             inAppUpdateResultLauncher = activityResultLauncher
                         )
 
+                        installationResult?.let {
+                            InstallationResultDialog(
+                                onDismissRequest = { installationResult = null },
+                                result = it.result,
+                            )
+                        }
+
+                        inAppUpdateResult?.let {
+                            InAppUpdateDialog(
+                                onDismissRequest = { inAppUpdateResult = null },
+                                confirmButtonOnClick = ::checkForAppUpdates,
+                                inAppUpdateResultType = it.resultType
+                            )
+                        }
+
                         if (showAskForSaveDir) AskForSaveDirDialog(chooseSaveDir = chooseSaveDir)
                     }
                 }
@@ -239,8 +288,8 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        if (intent?.action == PACKAGE_INSTALLATION_ACTION) {
+    private fun onNewIntent(intent: Intent, result: (ApkInstallationResultType) -> Unit) {
+        if (intent.action == PACKAGE_INSTALLATION_ACTION) {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                     val activityIntent =
@@ -252,39 +301,21 @@ class MainActivity : AppCompatActivity() {
                     startActivity(activityIntent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }
 
-                PackageInstaller.STATUS_SUCCESS -> MaterialAlertDialogBuilder(this).apply {
+                PackageInstaller.STATUS_SUCCESS -> {
                     val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
-                    setMessage(
-                        getString(
-                            R.string.installation_result_dialog_success_message, packageName
-                        )
-                    )
-                    setTitle(R.string.installation_result_dialog_success_title)
-                    setPositiveButton(R.string.installation_result_dialog_ok) { alert, _ ->
-                        alert.dismiss()
-                    }
-                }.show()
+                    result(ApkInstallationResultType.Success(packageName))
+                }
 
-                PackageInstaller.STATUS_FAILURE, PackageInstaller.STATUS_FAILURE_ABORTED, PackageInstaller.STATUS_FAILURE_BLOCKED, PackageInstaller.STATUS_FAILURE_CONFLICT, PackageInstaller.STATUS_FAILURE_INCOMPATIBLE, PackageInstaller.STATUS_FAILURE_INVALID, PackageInstaller.STATUS_FAILURE_STORAGE -> MaterialAlertDialogBuilder(
-                    this
-                ).apply {
+                PackageInstaller.STATUS_FAILURE, PackageInstaller.STATUS_FAILURE_ABORTED, PackageInstaller.STATUS_FAILURE_BLOCKED, PackageInstaller.STATUS_FAILURE_CONFLICT, PackageInstaller.STATUS_FAILURE_INCOMPATIBLE, PackageInstaller.STATUS_FAILURE_INVALID, PackageInstaller.STATUS_FAILURE_STORAGE -> {
                     val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
-                    setMessage(
-                        getString(
-                            R.string.installation_result_dialog_failed_message,
-                            packageName,
-                            intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
-
-                        )
-                    )
-                    setTitle(R.string.installation_result_dialog_failed_title)
-                    setPositiveButton(R.string.installation_result_dialog_ok) { alert, _ ->
-                        alert.dismiss()
-                    }
-                }.show()
+                    val errorMessage = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
+                        ?: "No Error message provided"
+                    result(ApkInstallationResultType.Failure(packageName, errorMessage))
+                }
             }
-        } else super.onNewIntent(intent)
+        }
     }
+
 
     /**
      * Checks for picked Save Directory and for Access to this Dir
@@ -337,36 +368,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun popupDialogForNotifyAboutUpdate() {
-        MaterialAlertDialogBuilder(this).apply {
-            setMessage(R.string.popup_dialog_for_notify_about_update_text)
-            setTitle(R.string.popup_dialog_for_notify_about_update_title)
-            setPositiveButton(R.string.popup_dialog_for_notify_about_update_button_positive) { _, _ ->
-                checkForAppUpdates()
-            }
-            setNegativeButton(R.string.popup_dialog_for_notify_about_update_button_negative) { dialog, _ ->
-                dialog.dismiss()
-            }
-            setNeutralButton(R.string.popup_dialog_for_notify_about_update_button_neutral) { dialog, _ ->
-                model.setUpdateOnStart(false)
-                dialog.dismiss()
-            }
-        }.show()
-    }
-
-    private fun popupDialogUpdateFailed(message: String? = "No Error message provided") {
-        MaterialAlertDialogBuilder(this).apply {
-            setMessage(getString(R.string.popup_dialog_update_failed_text, message))
-            setTitle(R.string.popup_dialog_update_failed_title)
-            setPositiveButton(R.string.popup_dialog_update_failed_button_positive) { _, _ ->
-                checkForAppUpdates()
-            }
-            setNegativeButton(R.string.popup_dialog_update_failed_button_negative) { dialog, _ ->
-                dialog.dismiss()
-            }
-        }.show()
     }
 
     /**

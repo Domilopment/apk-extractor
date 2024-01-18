@@ -4,13 +4,10 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
-import android.text.Spannable
-import android.text.style.ForegroundColorSpan
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.core.text.toSpannable
-import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.data.appList.ApplicationModel
 import java.text.SimpleDateFormat
 import java.util.*
 

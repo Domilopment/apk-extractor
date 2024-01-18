@@ -1,6 +1,6 @@
 package domilopment.apkextractor.utils.settings
 
-import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.data.apkList.PackageArchiveModel
 
 object PackageArchiveUtils {
     /**

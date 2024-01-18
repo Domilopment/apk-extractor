@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.data.apkList.PackageArchiveModel
 import domilopment.apkextractor.ui.attrColorResource
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils

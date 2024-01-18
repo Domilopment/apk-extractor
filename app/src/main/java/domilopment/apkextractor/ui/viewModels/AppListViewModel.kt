@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.*
+import domilopment.apkextractor.data.appList.AppListScreenState
+import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
 import domilopment.apkextractor.utils.settings.ApplicationUtil
@@ -151,7 +153,7 @@ class AppListViewModel @Inject constructor(
     override fun onEventReceived(event: Event<*>) {
         when (event.eventType) {
             EventType.INSTALLED -> addApps(event.data as String)
-            EventType.UNINSTALLED -> if (Utils.isPackageInstalled(
+            EventType.UNINSTALLED -> if (!Utils.isPackageInstalled(
                     context.packageManager, event.data as String
                 )
             ) uninstallApps(event.data)

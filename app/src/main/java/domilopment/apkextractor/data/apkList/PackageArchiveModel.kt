@@ -1,4 +1,4 @@
-package domilopment.apkextractor.data
+package domilopment.apkextractor.data.apkList
 
 import android.content.Context
 import android.content.pm.PackageManager

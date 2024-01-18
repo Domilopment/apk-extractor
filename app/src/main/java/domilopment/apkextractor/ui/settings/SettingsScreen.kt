@@ -1,8 +1,6 @@
 package domilopment.apkextractor.ui.settings
 
 import android.Manifest
-import android.app.Activity
-import android.app.Application
 import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -49,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.android.material.color.DynamicColors
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -232,25 +229,15 @@ fun SettingsScreen(
                     model.setNightMode(it)
                     SettingsManager.changeUIMode(it)
                 })
-            SwitchPreferenceCompat(name = R.string.use_material_you,
+            SwitchPreferenceCompat(
+                name = R.string.use_material_you,
                 summary = R.string.use_material_you_summary,
                 state = model.useMaterialYou.collectAsState(),
                 isVisible = remember {
-                    DynamicColors.isDynamicColorAvailable()
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 },
-                onClick = {
-                    model.setUseMaterialYou(it)
-                    if (it) {
-                        SettingsManager.useMaterialYou(
-                            context.applicationContext as Application, it
-                        )
-                        (context as Activity).recreate()
-                    } else Toast.makeText(
-                        context,
-                        context.getString(R.string.use_material_you_toast),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                })
+                onClick = model::setUseMaterialYou
+            )
             ListPreference(name = stringResource(id = R.string.locale_list_title),
                 summary = stringResource(
                     id = R.string.locale_list_summary,
@@ -298,8 +285,7 @@ fun SettingsScreen(
                 state = model.checkUpdateOnStart.collectAsState(),
                 onClick = model::setCheckUpdateOnStart
             )
-            Preference(
-                name = R.string.clear_cache,
+            Preference(name = R.string.clear_cache,
                 summary = R.string.clear_cache_summary,
                 onClick = {
                     if (context.cacheDir?.deleteRecursively() == true) Toast.makeText(
@@ -316,7 +302,8 @@ fun SettingsScreen(
                     context, Uri.parse("https://github.com/domilopment/apk-extractor")
                 )
             })
-            Preference(name = R.string.googleplay,
+            Preference(
+                name = R.string.googleplay,
                 summary = R.string.googleplay_summary,
                 onClick = {
                     try {

@@ -1,7 +1,7 @@
 package domilopment.apkextractor.utils.appFilterOptions
 
 import android.content.Context
-import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.data.appList.ApplicationModel
 
 interface AppFilter {
     val name: String?

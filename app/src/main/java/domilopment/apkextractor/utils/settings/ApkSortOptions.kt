@@ -2,7 +2,7 @@ package domilopment.apkextractor.utils.settings
 
 import androidx.annotation.StringRes
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.data.apkList.PackageArchiveModel
 
 enum class ApkSortOptions {
     SORT_BY_FILE_NAME_ASC {
@@ -31,11 +31,13 @@ enum class ApkSortOptions {
     };
 
     abstract val comparator: Comparator<PackageArchiveModel>
-    @get:StringRes abstract val displayNameRes: Int
+
+    @get:StringRes
+    abstract val displayNameRes: Int
 
     companion object {
-        private val apkSortOptionsArray = entries.associateBy { it.name }
-            .withDefault { SORT_BY_LAST_MODIFIED_DESC }
+        private val apkSortOptionsArray =
+            entries.associateBy { it.name }.withDefault { SORT_BY_LAST_MODIFIED_DESC }
 
         operator fun get(sortMode: String?): ApkSortOptions {
             return apkSortOptionsArray.getValue(sortMode.toString())

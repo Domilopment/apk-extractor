@@ -1,9 +1,7 @@
 package domilopment.apkextractor.utils.settings
 
-import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
-import com.google.android.material.color.DynamicColors
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 
@@ -33,17 +31,6 @@ object SettingsManager {
     fun shouldStartService(prefStartService: Boolean): Boolean {
         val service = AutoBackupService.isRunning
         return prefStartService and !service
-    }
-
-    /**
-     * Enable Material You if it's turned on and the User wishes to (Only after app Restart)
-     * @param application Application reference to enable Dynamic Colors
-     */
-    fun useMaterialYou(
-        application: Application, enabled: Boolean
-    ) {
-        val available = DynamicColors.isDynamicColorAvailable()
-        if (available && enabled) DynamicColors.applyToActivitiesIfAvailable(application)
     }
 
     /**

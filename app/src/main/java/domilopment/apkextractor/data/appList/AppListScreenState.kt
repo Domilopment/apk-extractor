@@ -1,4 +1,6 @@
-package domilopment.apkextractor.data
+package domilopment.apkextractor.data.appList
+
+import domilopment.apkextractor.data.appList.ApplicationModel
 
 data class AppListScreenState(
     var isRefreshing: Boolean = true,

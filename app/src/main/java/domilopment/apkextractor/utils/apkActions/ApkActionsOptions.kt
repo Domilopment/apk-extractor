@@ -14,7 +14,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 
@@ -23,12 +23,11 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            if (params.saveDir == null || params.callbackFun == null || params.appNameBuilder == null) return
+            if (params.saveDir == null || params.callbackFun == null || params.errorCallback == null || params.appNameBuilder == null) return
             ApkActionsManager(context, app).actionSave(
-                params.saveDir, params.appNameBuilder, params.callbackFun
+                params.saveDir, params.appNameBuilder, params.callbackFun, params.errorCallback
             )
         }
-
     },
     SHARE("share_apk", R.string.action_bottom_sheet_share, Icons.Default.Share) {
         override fun getAction(
@@ -102,6 +101,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         val saveDir: Uri?,
         val appNameBuilder: ((ApplicationModel) -> String)?,
         val callbackFun: ((MySnackbarVisuals) -> Unit)?,
+        val errorCallback: ((String?, String?) -> Unit)?,
         val shareResult: ActivityResultLauncher<Intent>?,
         val deleteResult: ActivityResultLauncher<Intent>?
     ) {
@@ -109,6 +109,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
             private var saveDir: Uri? = null,
             private var appNameBuilder: ((ApplicationModel) -> String)? = null,
             private var callbackFun: ((MySnackbarVisuals) -> Unit)? = null,
+            private var errorCallback: ((String?, String?) -> Unit)? = null,
             private var shareResult: ActivityResultLauncher<Intent>? = null,
             private var deleteResult: ActivityResultLauncher<Intent>? = null
         ) {
@@ -120,6 +121,9 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
             fun setCallbackFun(showSnackbar: (MySnackbarVisuals) -> Unit) =
                 apply { this.callbackFun = showSnackbar }
 
+            fun setErrorCallBack(errorDialogCallback: (String?, String?) -> Unit) =
+                apply { this.errorCallback = errorDialogCallback }
+
             fun setShareResult(activityResultLauncher: ActivityResultLauncher<Intent>) =
                 apply { this.shareResult = activityResultLauncher }
 
@@ -127,7 +131,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
                 apply { this.deleteResult = activityResultLauncher }
 
             fun build() = ApkActionOptionParams(
-                saveDir, appNameBuilder, callbackFun, shareResult, deleteResult
+                saveDir, appNameBuilder, callbackFun, errorCallback, shareResult, deleteResult
             )
         }
     }

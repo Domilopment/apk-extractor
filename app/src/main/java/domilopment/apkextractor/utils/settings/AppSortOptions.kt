@@ -1,6 +1,6 @@
 package domilopment.apkextractor.utils.settings
 
-import domilopment.apkextractor.data.ApplicationModel
+import domilopment.apkextractor.data.appList.ApplicationModel
 
 enum class AppSortOptions {
     SORT_BY_NAME {
@@ -39,6 +39,7 @@ enum class AppSortOptions {
     companion object {
         private val apkSortOptionsArray =
             entries.associateBy { it.ordinal }.withDefault { SORT_BY_NAME }
+
         operator fun get(sortMode: Int): AppSortOptions {
             return apkSortOptionsArray.getValue(sortMode)
         }

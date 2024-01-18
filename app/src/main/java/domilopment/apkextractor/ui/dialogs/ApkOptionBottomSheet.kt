@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.PackageArchiveModel
+import domilopment.apkextractor.data.apkList.PackageArchiveModel
 import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.FileUtil
