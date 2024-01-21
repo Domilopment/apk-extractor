@@ -1,6 +1,8 @@
 package domilopment.apkextractor.ui
 
 import android.view.ViewTreeObserver
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.ReadOnlyComposable
@@ -44,3 +46,14 @@ fun keyboardAsState(): State<Boolean> {
     }
     return rememberUpdatedState(isImeVisible)
 }
+
+@Composable
+@ReadOnlyComposable
+fun getDarkModeConfiguration(theme: Int) : Boolean {
+    return when (theme) {
+        AppCompatDelegate.MODE_NIGHT_YES -> true
+        AppCompatDelegate.MODE_NIGHT_NO -> false
+        else -> isSystemInDarkTheme()
+    }
+}
+

@@ -87,8 +87,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         installSplashScreen()
+        super.onCreate(savedInstanceState)
         setContent {
             val mainScreenState = model.mainScreenState
             val actionModeState = model.actionModeState

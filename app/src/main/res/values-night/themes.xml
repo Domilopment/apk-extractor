@@ -1,17 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
-
-        <!-- Material Theme Builder Colors -->
-        <item name="colorPrimary">@color/md_theme_dark_primary</item>
-        <item name="colorError">@color/md_theme_dark_error</item>
-        <item name="android:colorBackground">@color/md_theme_dark_background</item>
-
-    </style>
-
     <!-- Splash Screen Application Theme -->
     <style name="SplashTheme" parent="Theme.SplashScreen">
         <!-- Set the splash screen background, animated icon, and animation duration. -->
-        <item name="windowSplashScreenBackground">?attr/colorPrimaryDark</item>
+        <item name="windowSplashScreenBackground">@color/md_theme_dark_primary</item>
 
         <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
              animated drawable. One of these is required. -->
@@ -21,7 +12,7 @@
         </item>
 
         <!-- Set the theme of the Activity that directly follows your splash screen. -->
-        <item name="postSplashScreenTheme">@style/AppTheme</item>
+        <item name="postSplashScreenTheme">@style/ActivityTheme</item>
     </style>
 
 </resources>

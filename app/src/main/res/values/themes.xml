@@ -1,35 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar" />
 
-        <!-- material Theme Builder Colors -->
-        <item name="colorPrimary">@color/md_theme_light_primary</item>
-        <item name="colorError">@color/md_theme_light_error</item>
-        <item name="android:colorBackground">@color/md_theme_light_background</item>
-
-    </style>
-
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionModeOverlay">true</item>
-
-        <!-- Android 12 Splash Screen -->
-        <item name="android:windowSplashScreenBackground" tools:targetApi="s">
-            ?attr/colorPrimary
-        </item>
-        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">
-            @drawable/ic_launcher_foreground
-        </item>
-        <item name="android:windowSplashScreenBrandingImage" tools:targetApi="s">
-            @drawable/ic_window_splash_screen_branding_image
-        </item>
-    </style>
+    <style name="ActivityTheme" parent="Theme.AppCompat.DayNight.NoActionBar" />
 
     <!-- Splash Screen Application Theme -->
     <style name="SplashTheme" parent="Theme.SplashScreen">
         <!-- Set the splash screen background, animated icon, and animation duration. -->
-        <item name="windowSplashScreenBackground">?attr/colorPrimary</item>
+        <item name="windowSplashScreenBackground">@color/md_theme_light_primary</item>
 
         <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
              animated drawable. One of these is required. -->
@@ -39,7 +17,7 @@
         </item>
 
         <!-- Set the theme of the Activity that directly follows your splash screen. -->
-        <item name="postSplashScreenTheme">@style/AppTheme</item>
+        <item name="postSplashScreenTheme">@style/ActivityTheme</item>
     </style>
 
 </resources>

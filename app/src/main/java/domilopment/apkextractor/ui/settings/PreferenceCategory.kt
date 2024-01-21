@@ -27,7 +27,7 @@ fun PreferenceCategory(@StringRes title: Int, content: @Composable ColumnScope.(
             shape = RoundedCornerShape(8.dp),
         ) {
             Column {
-                content()
+                content(this)
             }
         }
     }

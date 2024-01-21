@@ -78,7 +78,7 @@ class ListOfAPKs private constructor(
                 }
             }
         }
-        _apks.tryEmit(packageArchiveModels)
+        _apks.value = packageArchiveModels
     }
 
     suspend fun add(apk: PackageArchiveModel) {
