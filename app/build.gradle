@@ -41,7 +41,7 @@ android {
         buildConfig true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.5.7'
+        kotlinCompilerExtensionVersion '1.5.8'
     }
     packagingOptions {
         resources {
@@ -70,8 +70,8 @@ dependencies {
     implementation 'androidx.core:core-splashscreen:1.0.1'
     implementation 'com.google.android.play:app-update:2.1.0'
     implementation 'com.google.android.play:app-update-ktx:2.1.0'
-    implementation "com.google.dagger:hilt-android:2.48.1"
-    kapt "com.google.dagger:hilt-compiler:2.48.1"
+    implementation 'com.google.dagger:hilt-android:2.50'
+    kapt 'com.google.dagger:hilt-compiler:2.50'
     implementation 'androidx.hilt:hilt-navigation-compose:1.1.0'
     implementation "androidx.compose.material:material-icons-extended"
     implementation "com.google.accompanist:accompanist-drawablepainter:0.32.0"
