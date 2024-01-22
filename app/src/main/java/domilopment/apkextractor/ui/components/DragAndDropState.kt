@@ -14,7 +14,6 @@ import androidx.compose.ui.geometry.Offset
 import kotlinx.coroutines.Job
 import java.util.Collections
 
-
 /**
  * Based on implementation by Francesc YE MON KYAW
  * https://medium.com/arpalar-tech/exploring-drag-and-drop-functionality-in-compose-665576ba89a0

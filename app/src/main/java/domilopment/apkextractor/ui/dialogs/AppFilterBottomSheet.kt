@@ -58,8 +58,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
-import domilopment.apkextractor.ui.components.SegmentedButtonColumn
-import domilopment.apkextractor.ui.components.SegmentedButtonColumnScope
+import domilopment.apkextractor.ui.components.SegmentedButton
+import domilopment.apkextractor.ui.components.SingleChoiceSegmentedButtonColumn
 import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
@@ -261,6 +261,7 @@ private fun AppFilterApps(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppFilterSort(
     sortOrder: Boolean,
@@ -299,7 +300,7 @@ private fun AppFilterSort(
                     )
                 }
             }
-            SegmentedButtonColumn(
+            SingleChoiceSegmentedButtonColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp, 0.dp)
@@ -310,9 +311,10 @@ private fun AppFilterSort(
                         sortApps(AppSortOptions.SORT_BY_NAME.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = SegmentedButtonColumnScope.SegmentedButtonDefaults.itemShape(
+                    shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
                         index = 0, count = 5
-                    )
+                    ),
+                    icon = {}
                 ) {
                     Text(
                         text = stringResource(id = R.string.menu_sort_app_name),
@@ -325,9 +327,10 @@ private fun AppFilterSort(
                         sortApps(AppSortOptions.SORT_BY_PACKAGE.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = SegmentedButtonColumnScope.SegmentedButtonDefaults.itemShape(
+                    shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
                         index = 1, count = 5
-                    )
+                    ),
+                    icon = {}
                 ) {
                     Text(
                         text = stringResource(id = R.string.menu_sort_app_package),
@@ -340,9 +343,10 @@ private fun AppFilterSort(
                         sortApps(AppSortOptions.SORT_BY_INSTALL_TIME.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = SegmentedButtonColumnScope.SegmentedButtonDefaults.itemShape(
+                    shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
                         index = 2, count = 5
-                    )
+                    ),
+                    icon = {}
                 ) {
                     Text(
                         text = stringResource(id = R.string.menu_sort_app_install),
@@ -355,9 +359,10 @@ private fun AppFilterSort(
                         sortApps(AppSortOptions.SORT_BY_UPDATE_TIME.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = SegmentedButtonColumnScope.SegmentedButtonDefaults.itemShape(
+                    shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
                         index = 3, count = 5
-                    )
+                    ),
+                    icon = {}
                 ) {
                     Text(
                         text = stringResource(id = R.string.menu_sort_app_update),
@@ -370,9 +375,10 @@ private fun AppFilterSort(
                         sortApps(AppSortOptions.SORT_BY_APK_SIZE.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = SegmentedButtonColumnScope.SegmentedButtonDefaults.itemShape(
+                    shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
                         index = 4, count = 5
-                    )
+                    ),
+                    icon = {}
                 ) {
                     Text(
                         text = stringResource(id = R.string.menu_sort_app_apk_size),
