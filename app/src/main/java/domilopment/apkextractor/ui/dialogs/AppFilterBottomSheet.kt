@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.dialogs
 
+import android.os.Build
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -110,7 +111,14 @@ fun AppFilterBottomSheet(
                 setFilterOthers
             )
         }
-        Spacer(modifier = Modifier.navigationBarsPadding())
+        Spacer(modifier = Modifier.conditional(condition = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R,
+            ifTrue = {
+                navigationBarsPadding()
+            },
+            ifFalse = {
+                padding(vertical = 24.dp)
+            })
+        )
     }
 }
 

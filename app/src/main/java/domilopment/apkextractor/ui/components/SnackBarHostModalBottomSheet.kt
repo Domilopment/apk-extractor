@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.components
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.utils.MySnackbarVisuals
+import domilopment.apkextractor.utils.conditional
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,8 +33,15 @@ fun SnackbarHostModalBottomSheet(
     ModalBottomSheet(onDismissRequest = onDismissRequest, sheetState = sheetState, dragHandle = {
         DragHandle(snackbarHostState = snackbarHostState)
     }) {
-        content(this)
-        Spacer(modifier = Modifier.navigationBarsPadding())
+        this.content()
+        Spacer(modifier = Modifier.conditional(condition = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R,
+            ifTrue = {
+                navigationBarsPadding()
+            },
+            ifFalse = {
+                padding(vertical = 24.dp)
+            })
+        )
     }
 }
 
