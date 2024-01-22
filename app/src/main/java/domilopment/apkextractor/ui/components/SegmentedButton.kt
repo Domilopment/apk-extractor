@@ -445,11 +445,11 @@ object SegmentedButtonDefaults {
 
         return when (index) {
             0 -> RoundedCornerShape(
-                CornerSize(0.dp), CornerSize(0.dp), baseShape.bottomEnd, baseShape.bottomStart
+                baseShape.topStart, baseShape.topEnd, CornerSize(0.dp), CornerSize(0.dp)
             )
 
             count - 1 -> RoundedCornerShape(
-                baseShape.topStart, baseShape.topEnd, CornerSize(0.dp), CornerSize(0.dp)
+                CornerSize(0.dp), CornerSize(0.dp), baseShape.bottomEnd, baseShape.bottomStart
             )
 
             else -> RectangleShape
