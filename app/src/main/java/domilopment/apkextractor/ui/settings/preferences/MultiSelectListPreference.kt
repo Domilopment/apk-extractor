@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.settings
+package domilopment.apkextractor.ui.settings.preferences
 
 import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes

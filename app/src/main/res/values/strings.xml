@@ -62,6 +62,9 @@
     <string name="apk_swipe_action_left_title">Left swipe action</string>
     <string name="apk_swipe_action_left_summary">Select what happens if you swipe to the left on an entry in the App list</string>
 
+    <string name="apk_swipe_action_threshold_title">Swipe Action Threshold Modifier</string>
+    <string name="apk_swipe_action_threshold_summary">Change the percentage of the Positional Threshold to trigger the swipe action more easy.</string>
+
     <string name="favorites">Favorites</string>
     <string name="sort_favorites">Sort Favorites on top</string>
 

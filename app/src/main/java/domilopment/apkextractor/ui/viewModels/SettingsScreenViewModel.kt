@@ -66,9 +66,6 @@ class SettingsScreenViewModel @Inject constructor(
     val useMaterialYou = settings.useMaterialYou.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
     )
-    val language = settings.locale.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), "default"
-    )
     val rightSwipeAction = settings.appRightSwipeAction.map { it.preferenceValue }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
@@ -78,6 +75,9 @@ class SettingsScreenViewModel @Inject constructor(
         viewModelScope,
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
         ApkActionsOptions.SHARE.preferenceValue
+    )
+    val swipeActionThresholdMod = settings.appSwipeActionThresholdMod.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), 100f
     )
     val checkUpdateOnStart = settings.checkUpdateOnStart.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
@@ -103,16 +103,16 @@ class SettingsScreenViewModel @Inject constructor(
         viewModelScope.launch { settings.setUseMaterialYou(b) }
     }
 
-    fun setLanguage(s: String) {
-        viewModelScope.launch { settings.setLocale(s) }
-    }
-
     fun setRightSwipeAction(s: String) {
         viewModelScope.launch { settings.setRightSwipeAction(s) }
     }
 
     fun setLeftSwipeAction(s: String) {
         viewModelScope.launch { settings.setLeftSwipeAction(s) }
+    }
+
+    fun setSwipeActionThresholdMod(f: Float) {
+        viewModelScope.launch { settings.setSwipeActionThresholdMod(f) }
     }
 
     fun setCheckUpdateOnStart(b: Boolean) {

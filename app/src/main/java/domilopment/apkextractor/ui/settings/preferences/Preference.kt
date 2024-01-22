@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.settings
+package domilopment.apkextractor.ui.settings.preferences
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column

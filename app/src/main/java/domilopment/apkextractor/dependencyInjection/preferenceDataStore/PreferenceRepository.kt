@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
@@ -22,9 +23,9 @@ import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPrefer
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.APP_SORT_FAVORITES
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.APP_SORT_ORDER
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.APP_AUTO_BACKUP_LIST
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.APP_SWIPE_ACTION_THRESHOLD_MODIFIER
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.AUTO_BACKUP_SERVICE
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.CHECK_UPDATE_ON_START
-import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.LOCALE
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.MATERIAL_YOU
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.NIGHT_MODE
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.SAVE_DIR
@@ -94,6 +95,9 @@ interface PreferenceRepository {
     val appLeftSwipeAction: Flow<ApkActionsOptions>
     suspend fun setLeftSwipeAction(value: String)
 
+    val appSwipeActionThresholdMod: Flow<Float>
+    suspend fun setSwipeActionThresholdMod(value: Float)
+
     val autoBackupService: Flow<Boolean>
     suspend fun setAutoBackupService(value: Boolean)
 
@@ -102,9 +106,6 @@ interface PreferenceRepository {
 
     val nightMode: Flow<Int>
     suspend fun setNightMode(value: Int)
-
-    val locale: Flow<String>
-    suspend fun setLocale(value: String)
 }
 
 class MyPreferenceRepository @Inject constructor(
@@ -127,13 +128,14 @@ class MyPreferenceRepository @Inject constructor(
         val APP_FILTER_OTHERS = stringSetPreferencesKey(Constants.PREFERENCE_KEY_FILTER_OTHERS)
         val APP_RIGHT_SWIPE_ACTION = stringPreferencesKey("list_preference_swipe_actions_right")
         val APP_LEFT_SWIPE_ACTION = stringPreferencesKey("list_preference_swipe_actions_left")
+        val APP_SWIPE_ACTION_THRESHOLD_MODIFIER =
+            floatPreferencesKey("swipe_action_threshold_modifier")
         val APP_AUTO_BACKUP_LIST = stringSetPreferencesKey("app_list_auto_backup")
         val APP_SAVE_NAME = stringSetPreferencesKey("app_save_name")
         val APK_SORT_ORDER = stringPreferencesKey("apk_sort")
         val AUTO_BACKUP_SERVICE = booleanPreferencesKey("auto_backup")
         val MATERIAL_YOU = booleanPreferencesKey("use_material_you")
         val NIGHT_MODE = stringPreferencesKey("list_preference_ui_mode")
-        val LOCALE = stringPreferencesKey("list_preference_locale_list")
     }
 
     private fun <T> getPreference(key: Preferences.Key<T>): Flow<T?> =
@@ -262,6 +264,12 @@ class MyPreferenceRepository @Inject constructor(
     override suspend fun setLeftSwipeAction(value: String) =
         setPreference(APP_LEFT_SWIPE_ACTION, value)
 
+    override val appSwipeActionThresholdMod: Flow<Float> =
+        getPreference(APP_SWIPE_ACTION_THRESHOLD_MODIFIER).map { it ?: 100f }
+
+    override suspend fun setSwipeActionThresholdMod(value: Float) =
+        setPreference(APP_SWIPE_ACTION_THRESHOLD_MODIFIER, value)
+
     override val autoBackupService: Flow<Boolean> =
         getPreference(AUTO_BACKUP_SERVICE).map { it ?: false }
 
@@ -275,8 +283,4 @@ class MyPreferenceRepository @Inject constructor(
         getPreference(NIGHT_MODE).map { it?.toInt() ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM }
 
     override suspend fun setNightMode(value: Int) = setPreference(NIGHT_MODE, value.toString())
-
-    override val locale: Flow<String> = getPreference(LOCALE).map { it ?: "default" }
-
-    override suspend fun setLocale(value: String) = setPreference(LOCALE, value)
 }

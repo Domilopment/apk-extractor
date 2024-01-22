@@ -21,6 +21,13 @@ import com.google.android.play.core.appupdate.AppUpdateInfo
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
+import domilopment.apkextractor.ui.settings.preferences.APKNamePreference
+import domilopment.apkextractor.ui.settings.preferences.ListPreference
+import domilopment.apkextractor.ui.settings.preferences.MultiSelectListPreference
+import domilopment.apkextractor.ui.settings.preferences.Preference
+import domilopment.apkextractor.ui.settings.preferences.PreferenceCategory
+import domilopment.apkextractor.ui.settings.preferences.SeekBarPreference
+import domilopment.apkextractor.ui.settings.preferences.SwitchPreferenceCompat
 
 @Composable
 fun SettingsContent(
@@ -48,6 +55,8 @@ fun SettingsContent(
     onRightSwipeAction: (String) -> Unit,
     leftSwipeAction: State<String>,
     onLeftSwipeAction: (String) -> Unit,
+    swipeActionThresholdMod: State<Float>,
+    onSwipeActionThresholdMod: (Float) -> Unit,
     batteryOptimization: State<Boolean>,
     onBatteryOptimization: (Boolean) -> Unit,
     checkUpdateOnStart: State<Boolean>,
@@ -146,6 +155,16 @@ fun SettingsContent(
                 entryValues = R.array.apk_swipe_options_values,
                 state = leftSwipeAction,
                 onClick = onLeftSwipeAction
+            )
+            SeekBarPreference(
+                name = stringResource(id = R.string.apk_swipe_action_threshold_title),
+                summary = stringResource(id = R.string.apk_swipe_action_threshold_summary),
+                min = 0f,
+                max = 100f,
+                steps = 100,
+                showValue = true,
+                state = swipeActionThresholdMod,
+                onValueChanged = onSwipeActionThresholdMod,
             )
             SwitchPreferenceCompat(
                 name = R.string.ignore_battery_optimization_title,

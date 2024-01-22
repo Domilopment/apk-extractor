@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -89,6 +90,10 @@ class AppListViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
         ApkActionsOptions.SHARE
     )
+    val swipeActionThresholdMod =
+        preferenceRepository.appSwipeActionThresholdMod.map { it / 100 }.stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), 1f
+        )
 
     private val context get() = getApplication<Application>().applicationContext
 

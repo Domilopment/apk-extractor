@@ -18,9 +18,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,6 +54,7 @@ fun AppList(
     rightSwipeAction: ApkActionsOptions,
     leftSwipeAction: ApkActionsOptions,
     swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit,
+    swipeActionThresholdModifier: Float,
     uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
     val highlightColor = attrColorResource(attrId = android.R.attr.textColorHighlight)
@@ -67,14 +69,20 @@ fun AppList(
                 return@items
             }
 
-            val state = rememberSwipeToDismissBoxState(confirmValueChange = {
-                if (it == SwipeToDismissBoxValue.EndToStart) {
-                    swipeActionCallback(app, leftSwipeAction)
-                } else if (it == SwipeToDismissBoxValue.StartToEnd) {
-                    swipeActionCallback(app, rightSwipeAction)
-                }
-                false
-            }, positionalThreshold = { it })
+            val density = LocalDensity.current
+            val state = remember(leftSwipeAction, rightSwipeAction, swipeActionThresholdModifier) {
+                SwipeToDismissBoxState(initialValue = SwipeToDismissBoxValue.Settled,
+                    density = density,
+                    confirmValueChange = {
+                        if (it == SwipeToDismissBoxValue.EndToStart) {
+                            swipeActionCallback(app, leftSwipeAction)
+                        } else if (it == SwipeToDismissBoxValue.StartToEnd) {
+                            swipeActionCallback(app, rightSwipeAction)
+                        }
+                        false
+                    },
+                    positionalThreshold = { it * swipeActionThresholdModifier })
+            }
 
             SwipeToDismissBox(
                 state = state, backgroundContent = {
@@ -230,6 +238,7 @@ private fun AppListPreview() {
                 rightSwipeAction = ApkActionsOptions.SAVE,
                 leftSwipeAction = ApkActionsOptions.SHARE,
                 swipeActionCallback = { app, action -> Log.e(action.name, app.appPackageName) },
+                swipeActionThresholdModifier = 1.0f,
                 uninstalledAppFound = { _ -> })
         }
     }

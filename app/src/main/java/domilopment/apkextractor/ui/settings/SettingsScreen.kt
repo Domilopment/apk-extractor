@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.material.color.DynamicColors
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -177,7 +178,7 @@ fun SettingsScreen(
             SettingsManager.changeUIMode(it)
         },
         dynamicColors = model.useMaterialYou.collectAsState(),
-        isDynamicColors = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
+        isDynamicColors = DynamicColors.isDynamicColorAvailable(),
         onDynamicColors = model::setUseMaterialYou,
         language = language,
         languageLocaleMap = localeMap,
@@ -186,6 +187,8 @@ fun SettingsScreen(
         onRightSwipeAction = model::setRightSwipeAction,
         leftSwipeAction = model.leftSwipeAction.collectAsState(),
         onLeftSwipeAction = model::setLeftSwipeAction,
+        swipeActionThresholdMod = model.swipeActionThresholdMod.collectAsState(),
+        onSwipeActionThresholdMod = { model.setSwipeActionThresholdMod(it) },
         batteryOptimization = batteryOptimization,
         onBatteryOptimization = {
             val isIgnoringBatteryOptimization =

@@ -41,6 +41,7 @@ fun AppListContent(
     rightSwipeAction: ApkActionsOptions,
     leftSwipeAction: ApkActionsOptions,
     swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit,
+    swipeActionThresholdModifier: Float,
     uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
     val state = rememberPullToRefreshState(enabled = { isPullToRefresh })
@@ -64,6 +65,7 @@ fun AppListContent(
             rightSwipeAction = rightSwipeAction,
             leftSwipeAction = leftSwipeAction,
             swipeActionCallback = swipeActionCallback,
+            swipeActionThresholdModifier = swipeActionThresholdModifier,
             uninstalledAppFound = uninstalledAppFound
         )
 
@@ -121,6 +123,7 @@ private fun AppListScreenPreview() {
                 rightSwipeAction = ApkActionsOptions.SAVE,
                 leftSwipeAction = ApkActionsOptions.SHARE,
                 swipeActionCallback = { _, _ -> },
+                swipeActionThresholdModifier = 1.0f,
                 uninstalledAppFound = { _ -> })
         }
     }

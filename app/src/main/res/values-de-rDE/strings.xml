@@ -61,6 +61,9 @@
     <string name="apk_swipe_action_left_title">Wischaktion nach links</string>
     <string name="apk_swipe_action_left_summary">Suche aus, was passiert, wenn du auf einem Eintrag in der App-Liste nach links wischst</string>
 
+    <string name="apk_swipe_action_threshold_title">Wischaktion Schwell-Modifier</string>
+    <string name="apk_swipe_action_threshold_summary">Ändere die Prozenzahl des, Positionsabhängigen Swellwertes um die Swipe Wischaktionen einfacher auszulösen.</string>
+
     <string name="favorites">Favoriten</string>
     <string name="sort_favorites">Sortiere Favoriten nach oben</string>
 
