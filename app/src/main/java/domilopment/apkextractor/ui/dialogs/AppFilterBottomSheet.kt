@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.dialogs
 
-import android.os.Build
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -33,7 +31,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -59,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
+import domilopment.apkextractor.ui.components.ApkExtractorBottomSheet
 import domilopment.apkextractor.ui.components.SegmentedButton
 import domilopment.apkextractor.ui.components.SingleChoiceSegmentedButtonColumn
 import domilopment.apkextractor.utils.Constants
@@ -91,7 +89,7 @@ fun AppFilterBottomSheet(
     setCategory: (String?) -> Unit,
     setFilterOthers: (Set<String>) -> Unit
 ) {
-    ModalBottomSheet(
+    ApkExtractorBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState
     ) {
@@ -111,14 +109,6 @@ fun AppFilterBottomSheet(
                 setFilterOthers
             )
         }
-        Spacer(modifier = Modifier.conditional(condition = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R,
-            ifTrue = {
-                navigationBarsPadding()
-            },
-            ifFalse = {
-                padding(vertical = 24.dp)
-            })
-        )
     }
 }
 
