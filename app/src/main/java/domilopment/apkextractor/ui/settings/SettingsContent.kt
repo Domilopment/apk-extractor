@@ -49,7 +49,7 @@ fun SettingsContent(
     isDynamicColors: Boolean,
     onDynamicColors: (Boolean) -> Unit,
     language: State<String>,
-    languageLocaleMap: Map<String?, String>,
+    languageLocaleDisplayName: String,
     onLanguage: (String) -> Unit,
     rightSwipeAction: State<String>,
     onRightSwipeAction: (String) -> Unit,
@@ -130,9 +130,7 @@ fun SettingsContent(
             )
             ListPreference(
                 name = stringResource(id = R.string.locale_list_title),
-                summary = stringResource(
-                    id = R.string.locale_list_summary, languageLocaleMap.getValue(language.value)
-                ),
+                summary = stringResource(id = R.string.locale_list_summary, languageLocaleDisplayName),
                 entries = stringArrayResource(id = R.array.locale_list_names),
                 entryValues = stringArrayResource(id = R.array.locale_list_values),
                 state = language,
@@ -157,8 +155,8 @@ fun SettingsContent(
                 onClick = onLeftSwipeAction
             )
             SeekBarPreference(
-                name = stringResource(id = R.string.apk_swipe_action_threshold_title),
-                summary = stringResource(id = R.string.apk_swipe_action_threshold_summary),
+                name = R.string.apk_swipe_action_threshold_title,
+                summary = R.string.apk_swipe_action_threshold_summary,
                 min = 0f,
                 max = 100f,
                 steps = 100,
