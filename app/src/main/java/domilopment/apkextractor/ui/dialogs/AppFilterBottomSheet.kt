@@ -322,7 +322,6 @@ private fun AppFilterSort(
                     shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
                         index = 0, count = 5
                     ),
-                    icon = {}
                 ) {
                     Text(
                         text = stringResource(id = R.string.menu_sort_app_name),
@@ -338,7 +337,6 @@ private fun AppFilterSort(
                     shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
                         index = 1, count = 5
                     ),
-                    icon = {}
                 ) {
                     Text(
                         text = stringResource(id = R.string.menu_sort_app_package),
@@ -354,7 +352,6 @@ private fun AppFilterSort(
                     shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
                         index = 2, count = 5
                     ),
-                    icon = {}
                 ) {
                     Text(
                         text = stringResource(id = R.string.menu_sort_app_install),
@@ -370,7 +367,6 @@ private fun AppFilterSort(
                     shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
                         index = 3, count = 5
                     ),
-                    icon = {}
                 ) {
                     Text(
                         text = stringResource(id = R.string.menu_sort_app_update),
@@ -386,7 +382,6 @@ private fun AppFilterSort(
                     shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
                         index = 4, count = 5
                     ),
-                    icon = {}
                 ) {
                     Text(
                         text = stringResource(id = R.string.menu_sort_app_apk_size),
