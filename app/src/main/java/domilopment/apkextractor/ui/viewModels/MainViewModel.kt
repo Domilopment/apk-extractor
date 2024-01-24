@@ -19,8 +19,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val preferenceRepository: PreferenceRepository) :
-    ViewModel() {
+class MainViewModel @Inject constructor(
+    private val preferenceRepository: PreferenceRepository
+) : ViewModel() {
     var mainScreenState by mutableStateOf(MainScreenState())
         private set
 

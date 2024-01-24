@@ -339,10 +339,14 @@ private fun AppSheetHeader(
             modifier = Modifier.width(72.dp)
         )
     }, trailingContent = {
-        IconToggleButton(checked = isFavorite, onCheckedChange = onFavoriteChanged) {
+        IconToggleButton(
+            checked = isFavorite,
+            onCheckedChange = onFavoriteChanged,
+            modifier = Modifier.width(72.dp)
+        ) {
             Icon(
                 imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
-                contentDescription = null
+                contentDescription = null,
             )
         }
     })
