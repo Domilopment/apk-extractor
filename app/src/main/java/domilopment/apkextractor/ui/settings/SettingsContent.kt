@@ -1,11 +1,10 @@
 package domilopment.apkextractor.ui.settings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BatteryStd
 import androidx.compose.material.icons.filled.Folder
@@ -25,9 +24,12 @@ import domilopment.apkextractor.ui.settings.preferences.APKNamePreference
 import domilopment.apkextractor.ui.settings.preferences.ListPreference
 import domilopment.apkextractor.ui.settings.preferences.MultiSelectListPreference
 import domilopment.apkextractor.ui.settings.preferences.Preference
-import domilopment.apkextractor.ui.settings.preferences.PreferenceCategory
+import domilopment.apkextractor.ui.settings.preferences.preferenceCategory
 import domilopment.apkextractor.ui.settings.preferences.SeekBarPreference
 import domilopment.apkextractor.ui.settings.preferences.SwitchPreferenceCompat
+import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBottom
+import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMiddle
+import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
 
 @Composable
 fun SettingsContent(
@@ -66,136 +68,176 @@ fun SettingsContent(
     onGooglePlay: () -> Unit,
     onPrivacyPolicy: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+    LazyColumn(
+        modifier = Modifier.padding(16.dp), state = rememberLazyListState()
     ) {
-        if (appUpdateInfo != null) Preference(
-            name = R.string.update_available_title,
-            modifier = Modifier.background(
-                MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)
-            ),
-            summary = R.string.update_available_summary,
-            isPreferenceVisible = isUpdateAvailable,
-            onClick = onUpdateAvailable
-        )
-        PreferenceCategory(title = R.string.save_header) {
-            Preference(
-                name = R.string.choose_save_dir,
-                summary = R.string.choose_save_dir_summary,
-                icon = Icons.Default.Folder,
-                onClick = onChooseSaveDir
-            )
-            APKNamePreference(
-                name = R.string.app_save_name,
-                summary = R.string.app_save_name_summary,
-                entries = R.array.app_save_name_names,
-                entryValues = R.array.app_save_name_values,
-                state = appSaveName,
-                onClick = onAppSaveName
-            )
-            SwitchPreferenceCompat(
-                name = R.string.auto_backup,
-                summary = R.string.auto_backup_summary,
-                state = autoBackupService,
-                onClick = onAutoBackupService
-            )
-            MultiSelectListPreference(
-                name = stringResource(id = R.string.auto_backup_app_list),
-                enabled = isSelectAutoBackupApps,
-                entries = autoBackupListApps.entries,
-                entryValues = autoBackupListApps.entryValues,
-                summary = stringResource(id = R.string.auto_backup_app_list_summary),
-                state = autoBackupList,
-                onClick = onAutoBackupList
+        item {
+            if (appUpdateInfo != null) Preference(
+                name = R.string.update_available_title,
+                modifier = Modifier.background(
+                    MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)
+                ),
+                summary = R.string.update_available_summary,
+                isPreferenceVisible = isUpdateAvailable,
+                onClick = onUpdateAvailable
             )
         }
-        PreferenceCategory(title = R.string.appearance) {
-            ListPreference(
-                name = R.string.ui_mode,
-                summary = R.string.ui_mode_summary,
-                icon = Icons.Default.ModeNight,
-                entries = R.array.ui_mode_names,
-                entryValues = R.array.ui_mode_values,
-                state = nightMode,
-                onClick = onNightMode
-            )
-            SwitchPreferenceCompat(
-                name = R.string.use_material_you,
-                summary = R.string.use_material_you_summary,
-                state = dynamicColors,
-                isVisible = isDynamicColors,
-                onClick = onDynamicColors
-            )
-            ListPreference(
-                name = stringResource(id = R.string.locale_list_title),
-                summary = stringResource(id = R.string.locale_list_summary, languageLocaleDisplayName),
-                entries = stringArrayResource(id = R.array.locale_list_names),
-                entryValues = stringArrayResource(id = R.array.locale_list_values),
-                state = language,
-                onClick = onLanguage
-            )
+
+        preferenceCategory(title = R.string.save_header) {
+            preferenceCategoryItemTop {
+                Preference(
+                    name = R.string.choose_save_dir,
+                    summary = R.string.choose_save_dir_summary,
+                    icon = Icons.Default.Folder,
+                    onClick = onChooseSaveDir
+                )
+            }
+            preferenceCategoryItemMiddle {
+                APKNamePreference(
+                    name = R.string.app_save_name,
+                    summary = R.string.app_save_name_summary,
+                    entries = R.array.app_save_name_names,
+                    entryValues = R.array.app_save_name_values,
+                    state = appSaveName,
+                    onClick = onAppSaveName
+                )
+            }
+            preferenceCategoryItemMiddle {
+                SwitchPreferenceCompat(
+                    name = R.string.auto_backup,
+                    summary = R.string.auto_backup_summary,
+                    state = autoBackupService,
+                    onClick = onAutoBackupService
+                )
+            }
+            preferenceCategoryItemBottom {
+                MultiSelectListPreference(
+                    name = stringResource(id = R.string.auto_backup_app_list),
+                    enabled = isSelectAutoBackupApps,
+                    entries = autoBackupListApps.entries,
+                    entryValues = autoBackupListApps.entryValues,
+                    summary = stringResource(id = R.string.auto_backup_app_list_summary),
+                    state = autoBackupList,
+                    onClick = onAutoBackupList
+                )
+            }
         }
-        PreferenceCategory(title = R.string.advanced) {
-            ListPreference(
-                name = R.string.apk_swipe_action_right_title,
-                summary = R.string.apk_swipe_action_right_summary,
-                entries = R.array.apk_swipe_options_entries,
-                entryValues = R.array.apk_swipe_options_values,
-                state = rightSwipeAction,
-                onClick = onRightSwipeAction
-            )
-            ListPreference(
-                name = R.string.apk_swipe_action_left_title,
-                summary = R.string.apk_swipe_action_left_summary,
-                entries = R.array.apk_swipe_options_entries,
-                entryValues = R.array.apk_swipe_options_values,
-                state = leftSwipeAction,
-                onClick = onLeftSwipeAction
-            )
-            SeekBarPreference(
-                name = R.string.apk_swipe_action_threshold_title,
-                summary = R.string.apk_swipe_action_threshold_summary,
-                min = 0f,
-                max = 100f,
-                steps = 100,
-                showValue = true,
-                state = swipeActionThresholdMod,
-                onValueChanged = onSwipeActionThresholdMod,
-            )
-            SwitchPreferenceCompat(
-                name = R.string.ignore_battery_optimization_title,
-                summary = R.string.ignore_battery_optimization_summary,
-                icon = Icons.Default.BatteryStd,
-                state = batteryOptimization,
-                onClick = onBatteryOptimization
-            )
-            SwitchPreferenceCompat(
-                name = R.string.check_update_on_start_title,
-                summary = R.string.check_update_on_start_summary,
-                state = checkUpdateOnStart,
-                onClick = onCheckUpdateOnStart
-            )
-            Preference(
-                name = R.string.clear_cache,
-                summary = R.string.clear_cache_summary,
-                onClick = onClearCache
-            )
+
+        preferenceCategory(title = R.string.appearance) {
+            preferenceCategoryItemTop {
+                ListPreference(
+                    name = R.string.ui_mode,
+                    summary = R.string.ui_mode_summary,
+                    icon = Icons.Default.ModeNight,
+                    entries = R.array.ui_mode_names,
+                    entryValues = R.array.ui_mode_values,
+                    state = nightMode,
+                    onClick = onNightMode
+                )
+            }
+            preferenceCategoryItemMiddle {
+                SwitchPreferenceCompat(
+                    name = R.string.use_material_you,
+                    summary = R.string.use_material_you_summary,
+                    state = dynamicColors,
+                    isVisible = isDynamicColors,
+                    onClick = onDynamicColors
+                )
+            }
+            preferenceCategoryItemBottom {
+                ListPreference(
+                    name = stringResource(id = R.string.locale_list_title),
+                    summary = stringResource(
+                        id = R.string.locale_list_summary, languageLocaleDisplayName
+                    ),
+                    entries = stringArrayResource(id = R.array.locale_list_names),
+                    entryValues = stringArrayResource(id = R.array.locale_list_values),
+                    state = language,
+                    onClick = onLanguage
+                )
+            }
         }
-        PreferenceCategory(title = R.string.info_header) {
-            Preference(
-                name = R.string.github, summary = R.string.github_summary, onClick = onGitHub
-            )
-            Preference(
-                name = R.string.googleplay,
-                summary = R.string.googleplay_summary,
-                onClick = onGooglePlay
-            )
-            Preference(name = R.string.privacy_policy_title, onClick = onPrivacyPolicy)
-            Preference(name = stringResource(id = R.string.version, BuildConfig.VERSION_NAME),
-                enabled = false,
-                onClick = {})
+
+        preferenceCategory(title = R.string.advanced) {
+            preferenceCategoryItemTop {
+                ListPreference(
+                    name = R.string.apk_swipe_action_right_title,
+                    summary = R.string.apk_swipe_action_right_summary,
+                    entries = R.array.apk_swipe_options_entries,
+                    entryValues = R.array.apk_swipe_options_values,
+                    state = rightSwipeAction,
+                    onClick = onRightSwipeAction
+                )
+            }
+            preferenceCategoryItemMiddle {
+                ListPreference(
+                    name = R.string.apk_swipe_action_left_title,
+                    summary = R.string.apk_swipe_action_left_summary,
+                    entries = R.array.apk_swipe_options_entries,
+                    entryValues = R.array.apk_swipe_options_values,
+                    state = leftSwipeAction,
+                    onClick = onLeftSwipeAction
+                )
+            }
+            preferenceCategoryItemMiddle {
+                SeekBarPreference(
+                    name = R.string.apk_swipe_action_threshold_title,
+                    summary = R.string.apk_swipe_action_threshold_summary,
+                    min = 0f,
+                    max = 100f,
+                    steps = 100,
+                    showValue = true,
+                    state = swipeActionThresholdMod,
+                    onValueChanged = onSwipeActionThresholdMod,
+                )
+            }
+            preferenceCategoryItemMiddle {
+                SwitchPreferenceCompat(
+                    name = R.string.ignore_battery_optimization_title,
+                    summary = R.string.ignore_battery_optimization_summary,
+                    icon = Icons.Default.BatteryStd,
+                    state = batteryOptimization,
+                    onClick = onBatteryOptimization
+                )
+            }
+            preferenceCategoryItemMiddle {
+                SwitchPreferenceCompat(
+                    name = R.string.check_update_on_start_title,
+                    summary = R.string.check_update_on_start_summary,
+                    state = checkUpdateOnStart,
+                    onClick = onCheckUpdateOnStart
+                )
+            }
+            preferenceCategoryItemBottom {
+                Preference(
+                    name = R.string.clear_cache,
+                    summary = R.string.clear_cache_summary,
+                    onClick = onClearCache
+                )
+            }
+        }
+
+        preferenceCategory(title = R.string.info_header) {
+            preferenceCategoryItemTop {
+                Preference(
+                    name = R.string.github, summary = R.string.github_summary, onClick = onGitHub
+                )
+            }
+            preferenceCategoryItemMiddle {
+                Preference(
+                    name = R.string.googleplay,
+                    summary = R.string.googleplay_summary,
+                    onClick = onGooglePlay
+                )
+            }
+            preferenceCategoryItemMiddle {
+                Preference(name = R.string.privacy_policy_title, onClick = onPrivacyPolicy)
+            }
+            preferenceCategoryItemBottom {
+                Preference(name = stringResource(
+                    id = R.string.version, BuildConfig.VERSION_NAME
+                ), enabled = false, onClick = {})
+            }
         }
     }
 }
