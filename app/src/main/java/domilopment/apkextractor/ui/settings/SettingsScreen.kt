@@ -119,8 +119,7 @@ fun SettingsScreen(
         }
     })
 
-    SettingsContent(
-        appUpdateInfo = appUpdateInfo,
+    SettingsContent(appUpdateInfo = appUpdateInfo,
         isUpdateAvailable = isUpdateAvailable,
         onUpdateAvailable = remember(appUpdateManager, appUpdateInfo, inAppUpdateResultLauncher) {
             {
@@ -177,17 +176,23 @@ fun SettingsScreen(
         isDynamicColors = remember { DynamicColors.isDynamicColorAvailable() },
         onDynamicColors = remember { model::setUseMaterialYou },
         language = language,
-        languageLocaleDisplayName = remember(language) {
+        languageLocaleDisplayName = remember(language.value) {
             when (language.value) {
-                null, "default" -> context.getString(R.string.locale_list_default)
+                "default" -> context.getString(R.string.locale_list_default)
                 Locale.ENGLISH.toLanguageTag() -> context.getString(R.string.locale_list_en)
                 Locale.GERMANY.toLanguageTag() -> context.getString(R.string.locale_list_de_de)
                 else -> context.getString(
-                    R.string.locale_list_not_supported, Locale.forLanguageTag(language.value).displayName
+                    R.string.locale_list_not_supported,
+                    Locale.forLanguageTag(language.value).displayName
                 )
             }
         },
-        onLanguage = remember { SettingsManager::setLocale },
+        onLanguage = remember(language) {
+            {
+                language.value = it
+                SettingsManager.setLocale(it)
+            }
+        },
         rightSwipeAction = model.rightSwipeAction.collectAsState(),
         onRightSwipeAction = remember { model::setRightSwipeAction },
         leftSwipeAction = model.leftSwipeAction.collectAsState(),
