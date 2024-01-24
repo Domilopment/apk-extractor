@@ -6,7 +6,7 @@
 
         <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
              animated drawable. One of these is required. -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_window_splash_screen_icon</item>
         <item name="android:windowSplashScreenBrandingImage" tools:targetApi="s">
             @drawable/ic_window_splash_screen_branding_image
         </item>
