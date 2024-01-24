@@ -27,6 +27,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,7 @@ import androidx.core.util.Consumer
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -87,8 +89,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        splashScreen.apply {
+            var keepOnScreen = true
+            lifecycleScope.launch {
+                lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    model.keepSplashScreen.collect {
+                        keepOnScreen = it
+                    }
+                }
+            }
+            setKeepOnScreenCondition { keepOnScreen }
+        }
         setContent {
             val mainScreenState = model.mainScreenState
             val actionModeState = model.actionModeState
@@ -164,6 +177,10 @@ class MainActivity : AppCompatActivity() {
                 onDispose {
                     removeOnNewIntentListener(listener)
                 }
+            }
+
+            LaunchedEffect(key1 = Unit) {
+                model.hideSplashScreen()
             }
 
             APKExtractorTheme(dynamicColor = dynamicColors) {

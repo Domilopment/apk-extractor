@@ -11,7 +11,9 @@ import domilopment.apkextractor.data.ActionModeState
 import domilopment.apkextractor.data.MainScreenState
 import domilopment.apkextractor.data.UiMode
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +26,9 @@ class MainViewModel @Inject constructor(private val preferenceRepository: Prefer
 
     var actionModeState by mutableStateOf(ActionModeState())
         private set
+
+    private val _keepSplashScreen = MutableStateFlow(true)
+    val keepSplashScreen = _keepSplashScreen.asStateFlow()
 
     val saveDir = preferenceRepository.saveDir.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
@@ -72,9 +77,14 @@ class MainViewModel @Inject constructor(private val preferenceRepository: Prefer
                     actionModeState = ActionModeState()
                     (mainScreenState.uiMode as UiMode.Action).prevMode
                 }
+
                 else -> mainScreenState.uiMode
             }
         )
+    }
+
+    fun hideSplashScreen() {
+        _keepSplashScreen.value = false
     }
 
     fun setSaveDir(value: Uri) {
