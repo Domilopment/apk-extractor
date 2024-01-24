@@ -2,7 +2,9 @@ package domilopment.apkextractor.ui.dialogs
 
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -203,6 +205,7 @@ fun ApkSheetInfo(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ApkSheetHeader(
     apkName: CharSequence?,
@@ -213,19 +216,21 @@ fun ApkSheetHeader(
     onRefresh: () -> Unit
 ) {
     ListItem(headlineContent = {
-        if (packageName != null) Text(
-            text = packageName,
-            modifier = Modifier.fillMaxWidth(),
-            fontSize = 12.sp,
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis
-        )
-    }, modifier = Modifier.height(72.dp), overlineContent = {
         Text(
             text = apkName?.toString() ?: fileName,
             modifier = Modifier.fillMaxWidth(),
             fontSize = 16.sp,
+            maxLines = 1,
+            textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis
+        )
+    }, modifier = Modifier.height(72.dp), supportingContent = {
+        if (packageName != null) Text(
+            text = packageName,
+            modifier = Modifier
+                .fillMaxWidth()
+                .basicMarquee(),
+            fontSize = 12.sp,
             maxLines = 1,
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis
