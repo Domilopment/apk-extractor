@@ -194,9 +194,9 @@ class MainActivity : AppCompatActivity() {
                             uiMode = mainScreenState.uiMode,
                             searchText = mainScreenState.appBarSearchText,
                             isAllItemsChecked = actionModeState.selectAllItemsCheck,
-                            onSearchQueryChanged = { model.updateSearchQuery(it) },
-                            onTriggerSearch = { model.setSearchBarState() },
-                            onReturnUiMode = { model.onReturnUiMode() },
+                            onSearchQueryChanged = model::updateSearchQuery,
+                            onTriggerSearch = model::setSearchBarState,
+                            onReturnUiMode = model::onReturnUiMode,
                             onCheckAllItems = { model.updateActionMode(selectAllItems = it) },
                             selectedApplicationsCount = actionModeState.selectedItemCount
                         )
@@ -207,7 +207,7 @@ class MainActivity : AppCompatActivity() {
                             navController = navController,
                             appBarState = appBarState,
                             isActionMode = isActionModeActive,
-                            onNavigate = { model.resetAppBarState() })
+                            onNavigate = model::resetAppBarState)
                     }, snackbarHost = {
                         SnackbarHost(hostState = snackbarHostState, snackbar = { snackbarData ->
                             val visuals = snackbarData.visuals as MySnackbarVisuals
@@ -229,8 +229,8 @@ class MainActivity : AppCompatActivity() {
                             isActionMode = isActionModeActive,
                             isActionModeAllItemsSelected = actionModeState.selectAllItemsCheck,
                             onTriggerActionMode = {
-                                model.setActionModeState()
                                 model.updateActionMode(selectedItems = 1)
+                                model.setActionModeState()
                             },
                             onAppSelection = { isAllSelected, appCount ->
                                 model.updateActionMode(isAllSelected, appCount)

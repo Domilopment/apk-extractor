@@ -65,7 +65,12 @@ class MainViewModel @Inject constructor(
         selectAllItems: Boolean = actionModeState.selectAllItemsCheck,
         selectedItems: Int = actionModeState.selectedItemCount
     ) {
-        actionModeState = actionModeState.copy(
+        if (selectedItems == 0) {
+            mainScreenState = mainScreenState.copy(
+                uiMode = (mainScreenState.uiMode as UiMode.Action).prevMode
+            )
+            actionModeState = ActionModeState()
+        } else actionModeState = actionModeState.copy(
             selectAllItemsCheck = selectAllItems, selectedItemCount = selectedItems
         )
     }
