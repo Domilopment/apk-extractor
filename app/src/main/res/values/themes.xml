@@ -2,7 +2,7 @@
 
     <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="ActivityTheme" parent="Theme.AppCompat.DayNight.NoActionBar" />
+    <style name="ActivityTheme" parent="Theme.Material3.DayNight.NoActionBar" />
 
     <!-- Splash Screen Application Theme -->
     <style name="SplashTheme" parent="Theme.SplashScreen">
