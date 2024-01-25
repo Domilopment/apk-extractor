@@ -32,6 +32,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -112,6 +113,12 @@ private fun DefaultAppBar(
         mutableStateOf(0.dp)
     }
 
+    val visibleItems by remember {
+        derivedStateOf {
+            (barWidth * 0.4f / 48.dp).toInt()
+        }
+    }
+
     TopAppBar(title = { Text(text = stringResource(id = appBarState.title)) },
         modifier = modifier.onGloballyPositioned {
             barWidth = with(localDensity) { it.size.width.toDp() }
@@ -143,7 +150,7 @@ private fun DefaultAppBar(
                     hasSearchIcon = appBarState.isSearchable,
                     isOpen = menuExpanded,
                     onToggleOverflow = { menuExpanded = it },
-                    maxVisibleItems = (barWidth * 0.4f / 48.dp).toInt(),
+                    maxVisibleItems = visibleItems,
                 )
             }
         })
