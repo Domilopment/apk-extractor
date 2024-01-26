@@ -34,8 +34,10 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import domilopment.apkextractor.R
@@ -175,6 +177,7 @@ fun APKNamePreference(
             else if (fromItem in value && toItem !in value) value.remove(fromItem)
         })
 
+        val haptic = LocalHapticFeedback.current
         LazyColumn(
             modifier = Modifier.pointerInput(Unit) {
                 detectDragGesturesAfterLongPress(onDrag = { change, offset ->
@@ -182,7 +185,10 @@ fun APKNamePreference(
                     itemListDragAndDropState.onDrag(offset)
                     handleOverscrollJob(overscrollJob, scope, itemListDragAndDropState)
                 },
-                    onDragStart = { offset -> itemListDragAndDropState.onDragStart(offset) },
+                    onDragStart = { offset ->
+                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        itemListDragAndDropState.onDragStart(offset)
+                    },
                     onDragEnd = { itemListDragAndDropState.onDragInterrupted() },
                     onDragCancel = { itemListDragAndDropState.onDragInterrupted() })
             }, state = itemListDragAndDropState.getLazyListState()

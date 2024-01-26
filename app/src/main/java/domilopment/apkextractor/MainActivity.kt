@@ -35,6 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.util.Consumer
 import androidx.lifecycle.Lifecycle
@@ -199,13 +201,15 @@ class MainActivity : AppCompatActivity() {
                             selectedApplicationsCount = actionModeState.selectedItemCount
                         )
                     }, bottomBar = {
-                        APKExtractorBottomNavigation(items = listOf(
-                            Screen.AppList, Screen.ApkList
-                        ),
+                        APKExtractorBottomNavigation(
+                            items = listOf(
+                                Screen.AppList, Screen.ApkList
+                            ),
                             navController = navController,
                             appBarState = appBarState,
                             isActionMode = isActionModeActive,
-                            onNavigate = model::resetAppBarState)
+                            onNavigate = model::resetAppBarState
+                        )
                     }, snackbarHost = {
                         SnackbarHost(hostState = snackbarHostState, snackbar = { snackbarData ->
                             val visuals = snackbarData.visuals as MySnackbarVisuals
@@ -215,6 +219,7 @@ class MainActivity : AppCompatActivity() {
                             )
                         })
                     }) { contentPadding ->
+                        val haptic = LocalHapticFeedback.current
                         ApkExtractorNavHost(
                             modifier = Modifier.padding(contentPadding),
                             navController = navController,
@@ -227,6 +232,7 @@ class MainActivity : AppCompatActivity() {
                             isActionMode = isActionModeActive,
                             isActionModeAllItemsSelected = actionModeState.selectAllItemsCheck,
                             onTriggerActionMode = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 model.updateActionMode(selectedItems = 1)
                                 model.setActionModeState()
                             },
