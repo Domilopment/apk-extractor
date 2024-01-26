@@ -54,6 +54,7 @@ fun AppList(
     rightSwipeAction: ApkActionsOptions,
     leftSwipeAction: ApkActionsOptions,
     swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit,
+    isSwipeActionCustomThreshold: Boolean,
     swipeActionThresholdModifier: Float,
     uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
@@ -70,7 +71,12 @@ fun AppList(
             }
 
             val density = LocalDensity.current
-            val state = remember(leftSwipeAction, rightSwipeAction, swipeActionThresholdModifier) {
+            val state = remember(
+                leftSwipeAction,
+                rightSwipeAction,
+                isSwipeActionCustomThreshold,
+                swipeActionThresholdModifier,
+            ) {
                 SwipeToDismissBoxState(initialValue = SwipeToDismissBoxValue.Settled,
                     density = density,
                     confirmValueChange = {
@@ -81,7 +87,10 @@ fun AppList(
                         }
                         false
                     },
-                    positionalThreshold = { it * swipeActionThresholdModifier })
+                    positionalThreshold = {
+                        if (isSwipeActionCustomThreshold) it * swipeActionThresholdModifier
+                        else with(density) { 56.dp.toPx() }
+                    })
             }
 
             SwipeToDismissBox(
@@ -103,9 +112,7 @@ fun AppList(
                             leftSwipeAction = leftSwipeAction, modifier = Modifier.background(color)
                         )
 
-                        else -> {
-                            // Nothing to do
-                        }
+                        else -> Unit
                     }
                 }, enableDismissFromStartToEnd = getSwipeDirections(
                     app, isSwipeToDismiss, rightSwipeAction
@@ -238,7 +245,8 @@ private fun AppListPreview() {
                 rightSwipeAction = ApkActionsOptions.SAVE,
                 leftSwipeAction = ApkActionsOptions.SHARE,
                 swipeActionCallback = { app, action -> Log.e(action.name, app.appPackageName) },
-                swipeActionThresholdModifier = 1.0f,
+                isSwipeActionCustomThreshold = false,
+                swipeActionThresholdModifier = 0.5f,
                 uninstalledAppFound = { _ -> })
         }
     }

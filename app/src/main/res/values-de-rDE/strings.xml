@@ -54,15 +54,21 @@
     <string name="use_material_you">Aktiviere Material You</string>
     <string name="use_material_you_summary">Benutze die Dynamische Farbpalette, welche durch das ändern des Hintergrundes ab Android 12 Bereitgestellt wird.</string>
 
-    <string name="advanced">Erweiterte Einstellungen</string>
+    <string name="apk_swipe_actions">Swipe Actions</string>
+
     <string name="apk_swipe_action_right_title">Wischaktion nach rechts</string>
     <string name="apk_swipe_action_right_summary">Suche aus, was passiert, wenn du auf einem Eintrag in der App-Liste nach rechts wischst</string>
 
     <string name="apk_swipe_action_left_title">Wischaktion nach links</string>
     <string name="apk_swipe_action_left_summary">Suche aus, was passiert, wenn du auf einem Eintrag in der App-Liste nach links wischst</string>
 
-    <string name="apk_swipe_action_threshold_title">Wischaktion Schwell-Modifier</string>
+    <string name="apk_swipe_action_custom_threshold_title">Aktiviere personalisierten Wischaktion Schwellwert</string>
+    <string name="apk_swipe_action_custom_threshold_summary">Benutze den Schwellwert-Modifer anstelle des standart Wertes von 56dp.</string>
+
+    <string name="apk_swipe_action_threshold_title">Wischaktion Schwellwert-Modifier</string>
     <string name="apk_swipe_action_threshold_summary">Ändere die Prozenzahl des, Positionsabhängigen Swellwertes um die Swipe Wischaktionen einfacher auszulösen.</string>
+
+    <string name="advanced">Erweiterte Einstellungen</string>
 
     <string name="favorites">Favoriten</string>
     <string name="sort_favorites">Sortiere Favoriten nach oben</string>

@@ -197,6 +197,8 @@ fun SettingsScreen(
         onRightSwipeAction = remember { model::setRightSwipeAction },
         leftSwipeAction = model.leftSwipeAction.collectAsState(),
         onLeftSwipeAction = remember { model::setLeftSwipeAction },
+        swipeActionCustomThreshold = model.swipeActionCustomThreshold.collectAsState(),
+        onSwipeActionCustomThreshold = remember { model::setSwipeActionCustomThreshold },
         swipeActionThresholdMod = model.swipeActionThresholdMod.collectAsState(),
         onSwipeActionThresholdMod = remember { model::setSwipeActionThresholdMod },
         batteryOptimization = batteryOptimization,

@@ -57,6 +57,8 @@ fun SettingsContent(
     onRightSwipeAction: (String) -> Unit,
     leftSwipeAction: State<String>,
     onLeftSwipeAction: (String) -> Unit,
+    swipeActionCustomThreshold: State<Boolean>,
+    onSwipeActionCustomThreshold: (Boolean) -> Unit,
     swipeActionThresholdMod: State<Float>,
     onSwipeActionThresholdMod: (Float) -> Unit,
     batteryOptimization: State<Boolean>,
@@ -158,7 +160,7 @@ fun SettingsContent(
             }
         }
 
-        preferenceCategory(title = R.string.advanced) {
+        preferenceCategory(title = R.string.apk_swipe_actions) {
             preferenceCategoryItemTop {
                 ListPreference(
                     name = R.string.apk_swipe_action_right_title,
@@ -180,7 +182,16 @@ fun SettingsContent(
                 )
             }
             preferenceCategoryItemMiddle {
+                SwitchPreferenceCompat(
+                    name = R.string.apk_swipe_action_custom_threshold_title,
+                    summary = R.string.apk_swipe_action_custom_threshold_summary,
+                    state = swipeActionCustomThreshold,
+                    onClick = onSwipeActionCustomThreshold
+                )
+            }
+            preferenceCategoryItemBottom {
                 SeekBarPreference(
+                    enabled = swipeActionCustomThreshold.value,
                     name = R.string.apk_swipe_action_threshold_title,
                     summary = R.string.apk_swipe_action_threshold_summary,
                     min = 0f,
@@ -191,7 +202,10 @@ fun SettingsContent(
                     onValueChanged = onSwipeActionThresholdMod,
                 )
             }
-            preferenceCategoryItemMiddle {
+        }
+
+        preferenceCategory(title = R.string.advanced) {
+            preferenceCategoryItemTop {
                 SwitchPreferenceCompat(
                     name = R.string.ignore_battery_optimization_title,
                     summary = R.string.ignore_battery_optimization_summary,

@@ -108,6 +108,7 @@ fun SeekBarPreference(
                         value = it
                     },
                     modifier = Modifier.weight(1f),
+                    enabled = enabled,
                     valueRange = min..max,
                     steps = steps,
                     interactionSource = interactionSource

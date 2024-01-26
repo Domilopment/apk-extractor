@@ -41,6 +41,7 @@ fun AppListContent(
     rightSwipeAction: ApkActionsOptions,
     leftSwipeAction: ApkActionsOptions,
     swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit,
+    isSwipeActionCustomThreshold: Boolean,
     swipeActionThresholdModifier: Float,
     uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
@@ -65,6 +66,7 @@ fun AppListContent(
             rightSwipeAction = rightSwipeAction,
             leftSwipeAction = leftSwipeAction,
             swipeActionCallback = swipeActionCallback,
+            isSwipeActionCustomThreshold = isSwipeActionCustomThreshold,
             swipeActionThresholdModifier = swipeActionThresholdModifier,
             uninstalledAppFound = uninstalledAppFound
         )
@@ -123,7 +125,8 @@ private fun AppListScreenPreview() {
                 rightSwipeAction = ApkActionsOptions.SAVE,
                 leftSwipeAction = ApkActionsOptions.SHARE,
                 swipeActionCallback = { _, _ -> },
-                swipeActionThresholdModifier = 1.0f,
+                isSwipeActionCustomThreshold = false,
+                swipeActionThresholdModifier = 0.5f,
                 uninstalledAppFound = { _ -> })
         }
     }

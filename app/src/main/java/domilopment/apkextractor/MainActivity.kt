@@ -152,9 +152,7 @@ class MainActivity : AppCompatActivity() {
                     when (event) {
                         Lifecycle.Event.ON_START -> showAskForSaveDir = mustAskForSaveDir(saveDir)
 
-                        else -> {
-                            // Nothing to do
-                        }
+                        else -> Unit
                     }
                 }
 
@@ -380,9 +378,7 @@ class MainActivity : AppCompatActivity() {
             )
             when (result) {
                 SnackbarResult.ActionPerformed -> appUpdateManager.completeUpdate()
-                else -> {
-                    // Nothing to do
-                }
+                else -> Unit
             }
         }
     }

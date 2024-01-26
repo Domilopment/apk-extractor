@@ -76,8 +76,11 @@ class SettingsScreenViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
         ApkActionsOptions.SHARE.preferenceValue
     )
+    val swipeActionCustomThreshold = settings.appSwipeActionCustomThreshold.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
+    )
     val swipeActionThresholdMod = settings.appSwipeActionThresholdMod.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), 100f
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), 32f
     )
     val checkUpdateOnStart = settings.checkUpdateOnStart.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
@@ -109,6 +112,10 @@ class SettingsScreenViewModel @Inject constructor(
 
     fun setLeftSwipeAction(s: String) {
         viewModelScope.launch { settings.setLeftSwipeAction(s) }
+    }
+
+    fun setSwipeActionCustomThreshold(b: Boolean) {
+        viewModelScope.launch { settings.setSwipeActionCustomThreshold(b) }
     }
 
     fun setSwipeActionThresholdMod(f: Float) {

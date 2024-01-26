@@ -23,6 +23,7 @@ import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPrefer
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.APP_SORT_FAVORITES
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.APP_SORT_ORDER
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.APP_AUTO_BACKUP_LIST
+import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.APP_SWIPE_ACTION_CUSTOM_THRESHOLD
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.APP_SWIPE_ACTION_THRESHOLD_MODIFIER
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.AUTO_BACKUP_SERVICE
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.MyPreferenceRepository.PreferencesKeys.CHECK_UPDATE_ON_START
@@ -95,6 +96,9 @@ interface PreferenceRepository {
     val appLeftSwipeAction: Flow<ApkActionsOptions>
     suspend fun setLeftSwipeAction(value: String)
 
+    val appSwipeActionCustomThreshold: Flow<Boolean>
+    suspend fun setSwipeActionCustomThreshold(value: Boolean)
+
     val appSwipeActionThresholdMod: Flow<Float>
     suspend fun setSwipeActionThresholdMod(value: Float)
 
@@ -128,6 +132,8 @@ class MyPreferenceRepository @Inject constructor(
         val APP_FILTER_OTHERS = stringSetPreferencesKey(Constants.PREFERENCE_KEY_FILTER_OTHERS)
         val APP_RIGHT_SWIPE_ACTION = stringPreferencesKey("list_preference_swipe_actions_right")
         val APP_LEFT_SWIPE_ACTION = stringPreferencesKey("list_preference_swipe_actions_left")
+        val APP_SWIPE_ACTION_CUSTOM_THRESHOLD =
+            booleanPreferencesKey("swipe_action_custom_threshold")
         val APP_SWIPE_ACTION_THRESHOLD_MODIFIER =
             floatPreferencesKey("swipe_action_threshold_modifier")
         val APP_AUTO_BACKUP_LIST = stringSetPreferencesKey("app_list_auto_backup")
@@ -264,8 +270,16 @@ class MyPreferenceRepository @Inject constructor(
     override suspend fun setLeftSwipeAction(value: String) =
         setPreference(APP_LEFT_SWIPE_ACTION, value)
 
+    override val appSwipeActionCustomThreshold: Flow<Boolean> =
+        getPreference(APP_SWIPE_ACTION_CUSTOM_THRESHOLD).map {
+            it ?: false
+        }
+
+    override suspend fun setSwipeActionCustomThreshold(value: Boolean) =
+        setPreference(APP_SWIPE_ACTION_CUSTOM_THRESHOLD, value)
+
     override val appSwipeActionThresholdMod: Flow<Float> =
-        getPreference(APP_SWIPE_ACTION_THRESHOLD_MODIFIER).map { it ?: 100f }
+        getPreference(APP_SWIPE_ACTION_THRESHOLD_MODIFIER).map { it ?: 32f }
 
     override suspend fun setSwipeActionThresholdMod(value: Float) =
         setPreference(APP_SWIPE_ACTION_THRESHOLD_MODIFIER, value)

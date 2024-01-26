@@ -66,6 +66,7 @@ fun AppListScreen(
     val otherFilter by model.filterOthers.collectAsState()
     val rightSwipeAction by model.rightSwipeAction.collectAsState()
     val leftSwipeAction by model.leftSwipeAction.collectAsState()
+    val swipeActionCustomThreshold by model.swipeActionCustomThreshold.collectAsState()
     val swipeActionThresholdMod by model.swipeActionThresholdMod.collectAsState()
 
     val progressDialogState by progressDialogModel.progressDialogState.collectAsState()
@@ -193,9 +194,7 @@ fun AppListScreen(
                     }
                 }
 
-                else -> {
-                    // Nothing to do
-                }
+                else -> Unit
             }
         }.launchIn(this)
     }
@@ -290,6 +289,7 @@ fun AppListScreen(
                     }.setShareResult(shareApp).setDeleteResult(uninstallApp).build()
             )
         },
+        isSwipeActionCustomThreshold = swipeActionCustomThreshold,
         swipeActionThresholdModifier = swipeActionThresholdMod,
         uninstalledAppFound = model::uninstallApps
     )

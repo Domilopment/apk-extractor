@@ -90,9 +90,13 @@ class AppListViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
         ApkActionsOptions.SHARE
     )
+    val swipeActionCustomThreshold =
+        preferenceRepository.appSwipeActionCustomThreshold.stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
+        )
     val swipeActionThresholdMod =
         preferenceRepository.appSwipeActionThresholdMod.map { it / 100 }.stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), 1f
+            viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), 0.32f
         )
 
     private val context get() = getApplication<Application>().applicationContext
