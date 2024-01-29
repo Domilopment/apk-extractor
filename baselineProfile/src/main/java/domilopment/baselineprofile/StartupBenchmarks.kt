@@ -79,6 +79,7 @@ class StartupBenchmarks {
                     device.findObject(By.text("USE THIS FOLDER")).clickAndWait(Until.newWindow(), 1_000)
                     device.findObject(By.text("ALLOW")).clickAndWait(Until.newWindow(), 1_000)
                 } catch (_: NullPointerException) {
+                    // Save dir already selected.
                 }
 
                 device.findObject(By.res("ActionsMoreVert")).clickAndWait(Until.newWindow(), 1_000)
