@@ -3,10 +3,14 @@ package domilopment.baselineprofile
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.Until
 
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.NullPointerException
 
 /**
  * This test class generates a basic startup baseline profile for the target package.
@@ -62,6 +66,21 @@ class BaselineProfileGenerator {
 
             // Check UiAutomator documentation for more information how to interact with the app.
             // https://d.android.com/training/testing/other-components/ui-automator
+
+            try {
+                device.findObject(By.text("OK")).clickAndWait(Until.newWindow(), 1_000)
+                device.findObject(By.text("USE THIS FOLDER")).clickAndWait(Until.newWindow(), 1_000)
+                device.findObject(By.text("ALLOW")).clickAndWait(Until.newWindow(), 1_000)
+            } catch (_: NullPointerException) {
+            }
+
+            device.findObject(By.res("ActionsMoreVert")).clickAndWait(Until.newWindow(), 1_000)
+            device.findObject(By.text("Settings")).clickAndWait(Until.newWindow(), 1_000)
+            device.findObject(By.res("SettingsLazyColumn")).also {
+                it.fling(Direction.DOWN)
+                it.fling(Direction.UP)
+            }
+            device.pressBack()
         }
     }
 }

@@ -11,7 +11,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 
 /**
@@ -74,7 +76,10 @@ fun ActionsMenu(
 
     if (menuItems.overflowItems.isNotEmpty()) {
         Box {
-            IconButton(onClick = { onToggleOverflow(true) }) {
+            IconButton(
+                onClick = { onToggleOverflow(true) },
+                modifier = Modifier.testTag("ActionsMoreVert")
+            ) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
                     contentDescription = "Overflow",
@@ -84,6 +89,7 @@ fun ActionsMenu(
             DropdownMenu(
                 expanded = isOpen,
                 onDismissRequest = { onToggleOverflow(false) },
+                modifier = Modifier.testTag("ActionDropdownMenu")
             ) {
                 menuItems.overflowItems.forEach { item ->
                     DropdownMenuItem(text = {

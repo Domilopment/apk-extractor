@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -71,7 +72,10 @@ fun SettingsContent(
     onPrivacyPolicy: () -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier.padding(16.dp), state = rememberLazyListState()
+        modifier = Modifier
+            .padding(16.dp)
+            .testTag("SettingsLazyColumn"),
+        state = rememberLazyListState()
     ) {
         item {
             if (appUpdateInfo != null) Preference(
