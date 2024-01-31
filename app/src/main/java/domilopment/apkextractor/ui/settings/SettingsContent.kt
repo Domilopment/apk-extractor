@@ -73,7 +73,7 @@ fun SettingsContent(
 ) {
     LazyColumn(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .testTag("SettingsLazyColumn"),
         state = rememberLazyListState()
     ) {
