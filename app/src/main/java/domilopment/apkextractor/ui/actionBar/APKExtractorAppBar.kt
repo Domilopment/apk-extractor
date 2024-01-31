@@ -76,9 +76,8 @@ fun APKExtractorAppBar(
         }, label = "Actionbar Content") { uiMode ->
             when (uiMode) {
                 UiMode.Home -> DefaultAppBar(
-                    appBarState = appBarState,
-                    modifier,
-                    onActionSearch = onTriggerSearch)
+                    appBarState = appBarState, modifier, onActionSearch = onTriggerSearch
+                )
 
                 UiMode.Search -> SearchBar(
                     text = searchText, onTextChange = onSearchQueryChanged, onCloseClicked = {
@@ -128,7 +127,7 @@ private fun DefaultAppBar(
             titleContentColor = MaterialTheme.colorScheme.onPrimary
         ),
         navigationIcon = {
-            if (appBarState.isBackArrow) IconButton(onClick = appBarState.onBackArrowClick) {
+            if (appBarState.isBackArrow) IconButton(onClick = appBarState.onBackArrowClick!!) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,

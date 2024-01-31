@@ -23,13 +23,10 @@ class AppBarState(
     scope: CoroutineScope,
 ) {
     init {
-        navController.currentBackStackEntryFlow
-            .distinctUntilChanged()
-            .onEach { backStackEntry ->
-                val route = backStackEntry.destination.route
-                currentScreen = getScreen(route)
-            }
-            .launchIn(scope)
+        navController.currentBackStackEntryFlow.distinctUntilChanged().onEach { backStackEntry ->
+            val route = backStackEntry.destination.route
+            currentScreen = getScreen(route)
+        }.launchIn(scope)
     }
 
     var currentScreen by mutableStateOf<Screen?>(null)
@@ -39,10 +36,10 @@ class AppBarState(
         get() = currentScreen?.appBarTitleRes ?: R.string.app_name
 
     val isBackArrow: Boolean
-        get() = currentScreen?.appBarNavIcon ?: true
+        get() = currentScreen?.appBarOnNavIconClick != null
 
-    val onBackArrowClick: () -> Unit
-        get() = { navController.navigateUp() }
+    val onBackArrowClick: (() -> Unit)?
+        get() = currentScreen?.appBarOnNavIconClick
 
     val isSearchable: Boolean
         get() = currentScreen?.isSearchable ?: false
@@ -66,6 +63,5 @@ class AppBarState(
 
 @Composable
 fun rememberAppBarState(
-    navController: NavController,
-    scope: CoroutineScope = rememberCoroutineScope()
+    navController: NavController, scope: CoroutineScope = rememberCoroutineScope()
 ) = remember { AppBarState(navController, scope) }

@@ -12,6 +12,7 @@ import android.os.PowerManager
 import android.provider.DocumentsContract
 import android.provider.Settings
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -41,10 +42,13 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
+import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.SettingsManager
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.util.Locale
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -52,6 +56,7 @@ import java.util.Locale
 fun SettingsScreen(
     model: SettingsScreenViewModel,
     showSnackbar: (MySnackbarVisuals) -> Unit,
+    onBackClicked: () -> Unit,
     chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
     context: Context = LocalContext.current,
     appUpdateManager: AppUpdateManager,
@@ -118,6 +123,19 @@ fun SettingsScreen(
             appUpdateInfo = info
         }
     })
+
+    BackHandler {
+        onBackClicked()
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        Screen.Settings.buttons.onEach { button ->
+            when (button) {
+                Screen.ScreenActions.NavigationIcon -> onBackClicked()
+                else -> Unit
+            }
+        }.launchIn(this)
+    }
 
     SettingsContent(appUpdateInfo = appUpdateInfo,
         isUpdateAvailable = isUpdateAvailable,

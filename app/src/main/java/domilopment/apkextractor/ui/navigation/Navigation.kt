@@ -47,7 +47,12 @@ fun ApkExtractorNavHost(
                 progressDialogModel = progressDialogViewModel,
                 searchString = searchQuery,
                 isActionMode = isActionMode,
-                onNavigate = { navController.navigate(Screen.Settings.route) },
+                onNavigate = {
+                    navController.navigate(Screen.Settings.route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
                 showSnackbar = showSnackbar,
                 onTriggerActionMode = onTriggerActionMode,
                 isActionModeAllItemsSelected = isActionModeAllItemsSelected,
@@ -61,7 +66,12 @@ fun ApkExtractorNavHost(
             ApkListScreen(model = model,
                 progressDialogViewModel = progressDialogViewModel,
                 searchString = searchQuery,
-                onNavigate = { navController.navigate(Screen.Settings.route) },
+                onNavigate = {
+                    navController.navigate(Screen.Settings.route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
                 showSnackbar = { showSnackbar(it) })
         }
         composable(Screen.Settings.route) {
@@ -70,6 +80,11 @@ fun ApkExtractorNavHost(
             SettingsScreen(
                 model = model,
                 showSnackbar = showSnackbar,
+                onBackClicked = {
+                    navController.popBackStack(
+                        Screen.Settings.route, inclusive = true, saveState = true
+                    )
+                },
                 chooseSaveDir = chooseSaveDir,
                 appUpdateManager = appUpdateManager,
                 inAppUpdateResultLauncher = inAppUpdateResultLauncher

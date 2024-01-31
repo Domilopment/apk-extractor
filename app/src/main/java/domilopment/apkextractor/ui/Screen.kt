@@ -21,7 +21,7 @@ sealed interface Screen {
     val routeNameRes: Int
     val route: String
     val icon: ImageVector
-    val appBarNavIcon: Boolean
+    val appBarOnNavIconClick: (() -> Unit)?
     val appBarTitleRes: Int
     val isSearchable: Boolean
     val appBarActions: List<ActionMenuItem>
@@ -29,14 +29,14 @@ sealed interface Screen {
     val bottomBarActions: List<BottomBarItem>
 
     enum class ScreenActions {
-        Refresh, Settings, FilterList, Sort, OpenExplorer, Share, Save
+        NavigationIcon, Refresh, Settings, FilterList, Sort, OpenExplorer, Share, Save
     }
 
     data object AppList : Screen {
         override val routeNameRes = R.string.menu_show_app_list
         override val route = "app_list_route"
         override val icon = Icons.Default.Apps
-        override val appBarNavIcon = false
+        override val appBarOnNavIconClick = null
         override val appBarTitleRes = R.string.app_name
         override val isSearchable = true
         override val hasBottomBar = true
@@ -57,10 +57,9 @@ sealed interface Screen {
         )
         override val bottomBarActions = listOf(
             BottomBarItem(icon = Icons.Default.Save, onClick = {
-            _buttons.tryEmit(ScreenActions.Save)
-        }),
-            BottomBarItem(
-                icon = Icons.Default.Share,
+                _buttons.tryEmit(ScreenActions.Save)
+            }),
+            BottomBarItem(icon = Icons.Default.Share,
                 onClick = { _buttons.tryEmit(ScreenActions.Share) })
         )
 
@@ -72,7 +71,7 @@ sealed interface Screen {
         override val routeNameRes = R.string.menu_show_save_dir
         override val route = "apk_list_route"
         override val icon = Icons.Default.Folder
-        override val appBarNavIcon = false
+        override val appBarOnNavIconClick = null
         override val appBarTitleRes = R.string.app_name
         override val isSearchable = true
         override val hasBottomBar = true
@@ -105,7 +104,9 @@ sealed interface Screen {
         override val routeNameRes = R.string.title_activity_settings
         override val route = "settings_route"
         override val icon = Icons.Default.Settings
-        override val appBarNavIcon = true
+        override val appBarOnNavIconClick: () -> Unit = {
+            _buttons.tryEmit(ScreenActions.NavigationIcon)
+        }
         override val appBarTitleRes = R.string.title_activity_settings
         override val isSearchable = false
         override val hasBottomBar = false
