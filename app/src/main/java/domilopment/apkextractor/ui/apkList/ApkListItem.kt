@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.apkList
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -108,16 +109,21 @@ private fun ApkListItemAvatar(appIcon: Drawable?) {
 private fun ApkListItemPreview() {
     val apk by remember {
         mutableStateOf(
-            PackageArchiveModel(
-                fileUri = Uri.parse(""),
-                fileName = "Test.apk",
-                fileLastModified = 0L,
-                fileSizeLong = 1024L,
-                appName = "Test",
-                appPackageName = "com.example.test",
-                appVersionCode = 1L,
-                appVersionName = "1.0",
-            )
+            object : PackageArchiveModel {
+                override val fileUri: Uri = Uri.parse("test")
+                override val fileName: String = "test.apk"
+                override val fileLastModified: Long = 0L
+                override val fileSize: Float = 1024F
+                override var appName: CharSequence? = "Test"
+                override var appPackageName: String? = "com.example.test"
+                override var appIcon: Drawable? = null
+                override var appVersionName: String? = "v1.0"
+                override var appVersionCode: Long? = 2L
+                override var isPackageArchiveInfoLoading: Boolean = false
+                override var isPackageArchiveInfoLoaded: Boolean = false
+                override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
+                override fun forceRefresh(context: Context): PackageArchiveModel = this
+            }
         )
     }
     MaterialTheme {

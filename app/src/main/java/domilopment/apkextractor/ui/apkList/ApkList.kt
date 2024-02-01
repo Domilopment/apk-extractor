@@ -1,5 +1,7 @@
 package domilopment.apkextractor.ui.apkList
 
+import android.content.Context
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -80,28 +82,49 @@ fun ApkList(
 @Composable
 private fun ApkListPreview() {
     val apks = remember {
-        mutableStateListOf(
-            PackageArchiveModel(
-                fileUri = Uri.parse("test"),
-                fileName = "Test.apk",
-                fileLastModified = 0L,
-                fileSizeLong = 1024L,
-            ), PackageArchiveModel(
-                fileUri = Uri.parse("test2"),
-                fileName = "Test2.apk",
-                fileLastModified = 0L,
-                fileSizeLong = 1024L,
-            ), PackageArchiveModel(
-                fileUri = Uri.parse("test (2)"),
-                fileName = "Test (2).apk",
-                fileLastModified = 0L,
-                fileSizeLong = 1024L,
-                appName = "Test",
-                appPackageName = "com.example.test",
-                appVersionCode = 2L,
-                appVersionName = "1.0.1",
-            )
-        )
+        mutableStateListOf(object : PackageArchiveModel {
+            override val fileUri: Uri = Uri.parse("test")
+            override val fileName: String = "test.apk"
+            override val fileLastModified: Long = 0L
+            override val fileSize: Float = 1024F
+            override var appName: CharSequence? = "Test"
+            override var appPackageName: String? = "com.example.test"
+            override var appIcon: Drawable? = null
+            override var appVersionName: String? = "v0"
+            override var appVersionCode: Long? = 0L
+            override var isPackageArchiveInfoLoading: Boolean = false
+            override var isPackageArchiveInfoLoaded: Boolean = false
+            override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
+            override fun forceRefresh(context: Context): PackageArchiveModel = this
+        }, object : PackageArchiveModel {
+            override val fileUri: Uri = Uri.parse("test2")
+            override val fileName: String = "test2.apk"
+            override val fileLastModified: Long = 0L
+            override val fileSize: Float = 1024F
+            override var appName: CharSequence? = "Test"
+            override var appPackageName: String? = "com.example.test2"
+            override var appIcon: Drawable? = null
+            override var appVersionName: String? = "v0"
+            override var appVersionCode: Long? = 0L
+            override var isPackageArchiveInfoLoading: Boolean = false
+            override var isPackageArchiveInfoLoaded: Boolean = false
+            override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
+            override fun forceRefresh(context: Context): PackageArchiveModel = this
+        }, object : PackageArchiveModel {
+            override val fileUri: Uri = Uri.parse("test (2)")
+            override val fileName: String = "test (2).apk"
+            override val fileLastModified: Long = 0L
+            override val fileSize: Float = 1024F
+            override var appName: CharSequence? = "Test"
+            override var appPackageName: String? = "com.example.test"
+            override var appIcon: Drawable? = null
+            override var appVersionName: String? = "v1.0.1"
+            override var appVersionCode: Long? = 2L
+            override var isPackageArchiveInfoLoading: Boolean = false
+            override var isPackageArchiveInfoLoaded: Boolean = false
+            override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
+            override fun forceRefresh(context: Context): PackageArchiveModel = this
+        })
     }
     MaterialTheme {
         Column {

@@ -7,6 +7,8 @@ import androidx.core.content.FileProvider
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.appList.ApplicationModel
 import java.io.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 class FileUtil(private val context: Context) {
 
@@ -84,6 +86,23 @@ class FileUtil(private val context: Context) {
         return FileProvider.getUriForFile(
             context, "${BuildConfig.APPLICATION_ID}.provider", file
         )
+    }
+
+    fun createZip(files: Array<String>, to: Uri, fileName: String) {
+        DocumentsContract.createDocument(
+            context.contentResolver, DocumentsContract.buildDocumentUriUsingTree(
+                to, DocumentsContract.getTreeDocumentId(to)
+            ), "application/octet-stream", "$fileName.xapk"
+        ).let { outputFile ->
+            // Create Output Stream for target APK file
+            ZipOutputStream(context.contentResolver.openOutputStream(outputFile!!))
+        }.use { output ->
+            for (file in files) FileInputStream(file).use { input ->
+                val entry = ZipEntry(file.substring(file.lastIndexOf("/") + 1))
+                output.putNextEntry(entry)
+                input.copyTo(output)
+            }
+        }
     }
 
     /**

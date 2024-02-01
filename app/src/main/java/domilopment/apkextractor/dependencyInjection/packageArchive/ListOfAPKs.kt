@@ -2,7 +2,9 @@ package domilopment.apkextractor.dependencyInjection.packageArchive
 
 import android.content.Context
 import android.provider.DocumentsContract
+import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
 import domilopment.apkextractor.data.apkList.PackageArchiveModel
+import domilopment.apkextractor.data.apkList.ZipPackageArchiveModel
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.NonComparingMutableStateFlow
@@ -59,22 +61,26 @@ class ListOfAPKs private constructor(
                     cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
 
                 while (cursor.moveToNext()) {
-                    val mimeType = cursor.getString(mimeTypeIndex)
-                    if (mimeType != FileUtil.MIME_TYPE) continue
-
                     val documentId = cursor.getString(documentIdIndex)
                     val displayName = cursor.getString(displayNameIndex)
                     val lastModified = cursor.getLong(lastModifiedIndex)
                     val size = cursor.getLong(sizeIndex)
+                    val mimeType = cursor.getString(mimeTypeIndex)
 
                     val documentUri =
                         DocumentsContract.buildDocumentUriUsingTree(childrenUri, documentId)
 
-                    packageArchiveModels.add(
-                        PackageArchiveModel(
+                    val model = when {
+                        mimeType == FileUtil.MIME_TYPE -> AppPackageArchiveModel(
                             documentUri, displayName, lastModified, size
                         )
-                    )
+                        displayName.endsWith(".xapk") -> ZipPackageArchiveModel(
+                            documentUri, displayName, lastModified, size
+                        )
+                        else -> continue
+                    }
+
+                    packageArchiveModels.add(model)
                 }
             }
         }

@@ -7,7 +7,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.apkList.ApkListScreenState
+import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
 import domilopment.apkextractor.data.apkList.PackageArchiveModel
+import domilopment.apkextractor.data.apkList.ZipPackageArchiveModel
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
@@ -95,10 +97,10 @@ class ApkListViewModel @Inject constructor(
                     }
                     loadArchiveInfoJob = viewModelScope.async(Dispatchers.IO) {
                         apks.forEach { model ->
-                            model.packageArchiveInfo(context)
+                            val newApk = model.packageArchiveInfo(context)
                             _apkListFragmentState.update { state ->
                                 state.copy(appList = state.appList.toMutableList()
-                                    .map { if (it.fileUri == model.fileUri) model.copy() else it })
+                                    .map { if (it.fileUri == model.fileUri) newApk else it })
                             }
                         }
                     }
@@ -164,7 +166,15 @@ class ApkListViewModel @Inject constructor(
                 DocumentsContract.Document.COLUMN_LAST_MODIFIED,
                 DocumentsContract.Document.COLUMN_SIZE
             )?.let {
-                PackageArchiveModel(it.uri, it.displayName!!, it.lastModified!!, it.size!!)
+                when {
+                    it.displayName!!.endsWith(".apk") -> AppPackageArchiveModel(
+                        it.uri, it.displayName, it.lastModified!!, it.size!!
+                    )
+                    it.displayName.endsWith(".xapk") -> ZipPackageArchiveModel(
+                        it.uri, it.displayName, it.lastModified!!, it.size!!
+                    )
+                    else -> null
+                }
             }?.also {
                 _apkListFragmentState.update { state ->
                     state.copy(appList = state.appList.toMutableList().apply { add(it) })
@@ -190,10 +200,10 @@ class ApkListViewModel @Inject constructor(
 
     fun forceRefresh(apk: PackageArchiveModel) {
         viewModelScope.async(Dispatchers.IO) {
-            apk.forceRefresh(context)
+            val newApk = apk.forceRefresh(context)
             _apkListFragmentState.update { state ->
                 state.copy(appList = state.appList.toMutableList()
-                    .map { if (it.fileUri == apk.fileUri) apk.copy() else it })
+                    .map { if (it.fileUri == apk.fileUri) newApk else it })
             }
         }
     }

@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import domilopment.apkextractor.R
+import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.data.apkList.PackageArchiveModel
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
@@ -77,7 +78,7 @@ fun ApkListScreen(
                     DocumentsContract.Document.COLUMN_SIZE
                 )
             }?.let { documentFile ->
-                PackageArchiveModel(
+                AppPackageArchiveModel(
                     documentFile.uri,
                     documentFile.displayName!!,
                     documentFile.lastModified!!,

@@ -19,6 +19,7 @@ data class ApplicationModel(
     val appName: String
         get() = packageManager.getApplicationLabel(packageInfo.applicationInfo).toString()
     val appSourceDirectory: String get() = packageInfo.applicationInfo.sourceDir
+    val appSplitSourceDirectories: Array<String>? get() = packageInfo.applicationInfo.splitSourceDirs
     val appIcon: Drawable get() = packageManager.getApplicationIcon(packageInfo.applicationInfo)
     val appVersionName: String? get() = packageInfo.versionName
     val appVersionCode: Long get() = Utils.versionCode(packageInfo)
