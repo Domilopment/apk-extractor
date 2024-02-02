@@ -1,9 +1,6 @@
 package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
-import android.app.PendingIntent
-import android.content.Intent
-import android.content.pm.PackageInstaller
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.lifecycle.AndroidViewModel
@@ -14,7 +11,6 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
-import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.ExtractionResult
@@ -22,6 +18,7 @@ import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.FileUtil
+import domilopment.apkextractor.utils.InstallationUtil
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -35,6 +32,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.zip.ZipInputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -165,54 +163,61 @@ class ProgressDialogViewModel @Inject constructor(
 
     /**
      * Install APK file from ACTION_OPEN_DOCUMENT uri
-     * @param apkUri uri from Intent return data
+     * @param fileUri uri from Intent return data
      */
-    fun installApk(apkUri: Uri, callback: PackageInstallerSessionCallback) {
+    fun installApk(fileUri: Uri, callback: PackageInstallerSessionCallback) {
         runningTask = viewModelScope.launch(Dispatchers.Main) {
             val packageInstaller = context.applicationContext.packageManager.packageInstaller
             val contentResolver = context.applicationContext.contentResolver
             packageInstaller.registerSessionCallback(callback)
 
             withContext(Dispatchers.IO) {
-                contentResolver.openInputStream(apkUri)?.use { apkStream ->
-                    val params =
-                        PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL)
-                    val sessionId = packageInstaller.createSession(params)
-                    callback.initialSessionId = sessionId
+                val (session, sessionId) = InstallationUtil.createSession(context)
+                callback.initialSessionId = sessionId
 
-                    _progressDialogState.update {
-                        it.copy(
-                            title = context.getString(R.string.progress_dialog_title_install),
-                            process = packageInstaller.getSessionInfo(sessionId)?.appPackageName
-                                ?: "",
-                            tasks = 100,
-                            shouldBeShown = true
-                        )
-                    }
+                _progressDialogState.update {
+                    it.copy(
+                        title = context.getString(R.string.progress_dialog_title_install),
+                        process = packageInstaller.getSessionInfo(sessionId)?.appPackageName ?: "",
+                        tasks = 100,
+                        shouldBeShown = true
+                    )
+                }
 
-                    val session = packageInstaller.openSession(sessionId)
+                val fileUtil = FileUtil(context)
 
-                    val length = FileUtil(context).getDocumentInfo(
-                        apkUri, DocumentsContract.Document.COLUMN_SIZE
-                    )?.size ?: -1
+                val mime = fileUtil.getDocumentInfo(
+                    fileUri, DocumentsContract.Document.COLUMN_MIME_TYPE
+                )?.mimeType
+                when (mime) {
+                    FileUtil.MIME_TYPE -> contentResolver.openInputStream(fileUri)
+                        ?.use { apkStream ->
+                            val length = FileUtil(context).getDocumentInfo(
+                                fileUri, DocumentsContract.Document.COLUMN_SIZE
+                            )?.size ?: -1
 
-                    session.openWrite("install_apk_session_$sessionId", 0, length)
-                        .use { outputStream ->
-                            apkStream.copyTo(outputStream)
-                            session.fsync(outputStream)
+                            InstallationUtil.addFileToSession(
+                                session, apkStream, "base.apk", length
+                            )
                         }
 
-                    val pendingIntent = Intent(context, MainActivity::class.java).apply {
-                        action = MainActivity.PACKAGE_INSTALLATION_ACTION
-                    }.let {
-                        PendingIntent.getActivity(
-                            context, sessionId, it, PendingIntent.FLAG_MUTABLE
-                        )
-                    }
-
-                    session.commit(pendingIntent.intentSender)
-                    session.close()
+                    "application/octet-stream" -> contentResolver.openInputStream(fileUri)
+                        ?.use { xApkStream ->
+                            ZipInputStream(xApkStream).use { input ->
+                                generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
+                                    .forEach { file ->
+                                        val bytes = input.readBytes()
+                                        InstallationUtil.addFileToSession(
+                                            session,
+                                            bytes.inputStream(),
+                                            file.name,
+                                            bytes.size.toLong()
+                                        )
+                                    }
+                            }
+                        }
                 }
+                InstallationUtil.finishSession(context, session, sessionId)
             }
         }
     }
