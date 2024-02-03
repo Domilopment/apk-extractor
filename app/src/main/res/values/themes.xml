@@ -4,6 +4,14 @@
 
     <style name="ActivityTheme" parent="Theme.Material3.DayNight.NoActionBar" />
 
+    <style name="InstallXapkActivityTheme" parent="Theme.Material3.DynamicColors.DayNight">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
     <!-- Splash Screen Application Theme -->
     <style name="SplashTheme" parent="Theme.SplashScreen">
         <!-- Set the splash screen background, animated icon, and animation duration. -->

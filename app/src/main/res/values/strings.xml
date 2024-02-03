@@ -242,6 +242,7 @@
     <string name="progress_dialog_title_save">Save APKs</string>
     <string name="progress_dialog_title_share">Prepare to Share</string>
     <string name="progress_dialog_title_install">Install APK</string>
+    <string name="progress_dialog_title_install_xapk">Install XAPK</string>
     <string name="progress_dialog_title_placeholder" translatable="false">Progress Dialog</string>
 
     <!-- Installation Result Dialog -->

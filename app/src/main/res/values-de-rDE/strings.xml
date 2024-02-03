@@ -237,6 +237,7 @@
     <string name="progress_dialog_title_save">Speichere APKs</string>
     <string name="progress_dialog_title_share">Vorbereite zum Teilen</string>
     <string name="progress_dialog_title_install">Installiere APK</string>
+    <string name="progress_dialog_title_install_xapk">Installiere XAPK</string>
 
     <!-- Installation Result Dialog -->
     <string name="installation_result_dialog_success_title">Installation Erfolgreich!</string>
