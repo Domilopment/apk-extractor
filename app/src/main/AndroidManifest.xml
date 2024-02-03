@@ -82,23 +82,29 @@
 
         <activity
             android:name=".InstallXapkActivity"
+            android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleInstance"
-            android:excludeFromRecents="true"
             android:theme="@style/InstallXapkActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="*" />
-                <data android:mimeType="*/*" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:pathPattern=".*\\.xapk" />
                 <data android:scheme="content" />
+                <data android:scheme="file" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="*" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:mimeType="*/*" />
                 <data android:pathPattern=".*\\.xapk" />
+                <data android:scheme="content" />
                 <data android:scheme="file" />
             </intent-filter>
         </activity>
