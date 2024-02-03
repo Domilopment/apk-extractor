@@ -5,8 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
-import android.util.Log
-import com.google.android.gms.common.util.IOUtils
 import domilopment.apkextractor.utils.Utils
 import java.io.File
 import java.io.IOException
@@ -40,8 +38,14 @@ data class ZipPackageArchiveModel(
         try {
             apkFile = File.createTempFile("temp", ".apk", context.cacheDir)
             ZipInputStream(context.contentResolver.openInputStream(fileUri)).use { input ->
-                val baseApk = generateSequence { input.nextEntry }.filter { it.name == "base.apk" }
-                    .map { input.readBytes() }.singleOrNull()
+                var baseApk: ByteArray? = null
+                var entry: ZipEntry?
+                while (run { entry = input.nextEntry; entry } != null) {
+                    if (entry?.name == "base.apk") {
+                        baseApk = input.readBytes()
+                        break
+                    }
+                }
 
                 if (baseApk != null && baseApk.inputStream()
                         .copyTo(apkFile.outputStream()) == baseApk.size.toLong()
