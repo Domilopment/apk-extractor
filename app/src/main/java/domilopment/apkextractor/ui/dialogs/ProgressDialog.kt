@@ -21,7 +21,12 @@ import domilopment.apkextractor.data.ProgressDialogUiState
 
 @Composable
 fun ProgressDialog(
-    state: ProgressDialogUiState, title: String, onDismissRequest: () -> Unit, onCancel: () -> Unit
+    state: ProgressDialogUiState,
+    title: String,
+    onDismissRequest: () -> Unit,
+    onCancel: () -> Unit,
+    dismissOnBackPress: Boolean = false,
+    dismissOnClickOutside: Boolean = false
 ) {
     AlertDialog(onDismissRequest = onDismissRequest, confirmButton = {
         TextButton(onClick = onCancel) {
@@ -58,6 +63,8 @@ fun ProgressDialog(
         }
     }, title = {
         Text(text = title)
-    }, properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+    }, properties = DialogProperties(
+        dismissOnBackPress = dismissOnBackPress, dismissOnClickOutside = dismissOnClickOutside
+    )
     )
 }

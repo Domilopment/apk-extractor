@@ -36,10 +36,14 @@ class InstallXapkActivity : ComponentActivity() {
             APKExtractorTheme(dynamicColor = true) {
                 Surface {
                     Box(contentAlignment = Alignment.Center) {
-                        if (uiState.shouldBeShown) ProgressDialog(state = uiState,
+                        if (uiState.shouldBeShown) ProgressDialog(
+                            state = uiState,
                             title = stringResource(id = R.string.progress_dialog_title_install_xapk),
                             onDismissRequest = { this@InstallXapkActivity.finish() },
-                            onCancel = { this@InstallXapkActivity.finish() })
+                            onCancel = { this@InstallXapkActivity.finish() },
+                            dismissOnBackPress = true,
+                            dismissOnClickOutside = true
+                        )
                     }
                 }
             }
@@ -134,7 +138,9 @@ class InstallXapkActivity : ComponentActivity() {
                     MaterialAlertDialogBuilder(this).setTitle(R.string.installation_result_dialog_failed_title)
                         .setMessage(
                             getString(
-                                R.string.installation_result_dialog_failed_message, packageName, errorMessage
+                                R.string.installation_result_dialog_failed_message,
+                                packageName,
+                                errorMessage
                             )
                         ).setPositiveButton(R.string.installation_result_dialog_ok) { dialog, _ ->
                             dialog.dismiss()
