@@ -6,6 +6,7 @@ import android.provider.DocumentsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.utils.SingleTimeEvent
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.appList.ApplicationModel
@@ -217,7 +218,9 @@ class ProgressDialogViewModel @Inject constructor(
                             }
                         }
                 }
-                InstallationUtil.finishSession(context, session, sessionId)
+                InstallationUtil.finishSession(
+                    context, session, sessionId, MainActivity::class.java
+                )
             }
         }
     }
