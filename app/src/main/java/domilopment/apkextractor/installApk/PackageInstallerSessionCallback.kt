@@ -40,6 +40,8 @@ class PackageInstallerSessionCallback(
 
         packageInstaller.unregisterSessionCallback(this)
         progressDialogViewModel.resetProgress()
-        if (success) EventDispatcher.emitEvent(Event(EventType.INSTALLED, packageName))
+        if (success && packageName != null) EventDispatcher.emitEvent(
+            Event(EventType.INSTALLED, packageName)
+        )
     }
 }
