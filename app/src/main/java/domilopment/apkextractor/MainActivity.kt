@@ -40,6 +40,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.core.content.IntentSanitizer
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.util.Consumer
 import androidx.lifecycle.Lifecycle
@@ -320,13 +321,22 @@ class MainActivity : AppCompatActivity() {
         if (intent.action == PACKAGE_INSTALLATION_ACTION) {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
+                    var proceed = true
                     val activityIntent =
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             intent.getParcelableExtra(Intent.EXTRA_INTENT, Intent::class.java)
                         } else {
                             intent.getParcelableExtra(Intent.EXTRA_INTENT)
+                        }?.let {
+                            IntentSanitizer.Builder().allowAnyComponent()
+                                .allowAction("android.content.pm.action.CONFIRM_INSTALL")
+                                .allowPackage("com.google.android.packageinstaller").allowExtra(
+                                    "android.content.pm.extra.SESSION_ID", Integer::class.java
+                                ).build().sanitize(it) {
+                                    proceed = false
+                                }
                         }
-                    startActivity(activityIntent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    if (proceed) startActivity(activityIntent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }
 
                 PackageInstaller.STATUS_SUCCESS -> {
