@@ -65,6 +65,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
+import domilopment.apkextractor.utils.ExtractionResult
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
@@ -76,11 +77,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppOptionsBottomSheet(
     app: ApplicationModel,
-    saveDir: Uri,
     appName: Set<String>,
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     onFavoriteChanged: (Boolean) -> Unit,
+    onActionSave: (ApplicationModel, (String, ExtractionResult)-> Unit, Boolean) -> Unit,
     onSaveError: (String?, String?) -> Unit,
     onActionShare: ManagedActivityResultLauncher<Intent, ActivityResult>,
     onActionSaveImage: PermissionState,
@@ -96,9 +97,6 @@ fun AppOptionsBottomSheet(
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    var isSaving: Boolean by remember {
-        mutableStateOf(false)
-    }
     var isSharing: Boolean by remember {
         mutableStateOf(false)
     }
@@ -132,17 +130,12 @@ fun AppOptionsBottomSheet(
             })
         HorizontalDivider(modifier = Modifier.padding(4.dp))
         AppSheetActions(app = app,
-            isSaving = isSaving,
             isSharing = isSharing,
             onActionSave = {
-                isSaving = true
                 scope.launch(Dispatchers.IO) {
-                    apkOptions.actionSave(saveDir, { app ->
-                        ApplicationUtil.appName(app, appName)
-                    }, {
+                    apkOptions.actionSave(onActionSave, {
                         scope.launch(Dispatchers.Main) { snackbarHostState.showSnackbar(it) }
                     }, onSaveError)
-                    isSaving = false
                 }
             },
             onActionShare = {
@@ -175,7 +168,6 @@ fun AppOptionsBottomSheet(
 @Composable
 private fun AppSheetActions(
     app: ApplicationModel,
-    isSaving: Boolean,
     isSharing: Boolean,
     onActionSave: () -> Unit,
     onActionShare: () -> Unit,
@@ -193,10 +185,8 @@ private fun AppSheetActions(
     ) {
         AssistChip(onClick = onActionSave,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_save)) },
-            enabled = !isSaving,
             leadingIcon = {
-                if (isSaving) CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                else Icon(
+               Icon(
                     imageVector = Icons.Default.Save, contentDescription = null
                 )
             })

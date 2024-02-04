@@ -32,35 +32,26 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param anchorView Anchor View for Snackbar
      */
     fun actionSave(
-        saveDir: Uri,
-        appNameBuilder: (ApplicationModel) -> String,
+        saveFunction: (ApplicationModel, (String, ExtractionResult) -> Unit, Boolean) -> Unit,
         showSnackbar: (MySnackbarVisuals) -> Unit,
         showErrorDialog: (String, String?) -> Unit
     ) {
-        val fileUtil = FileUtil(context)
-        val appName = appNameBuilder(app)
-        val splitSources = app.appSplitSourceDirectories
-        val result = if (splitSources.isNullOrEmpty()) fileUtil.copy(
-            app.appSourceDirectory, saveDir, appName
-        )
-        else fileUtil.createZip(
-            arrayOf(app.appSourceDirectory, *splitSources), saveDir, appName
-        )
-
-        when (result) {
-            is ExtractionResult.Success -> {
-                EventDispatcher.emitEvent(Event(EventType.SAVED, result.uri))
-                showSnackbar(
-                    MySnackbarVisuals(
-                        duration = SnackbarDuration.Short, message = context.getString(
-                            R.string.snackbar_successful_extracted, app.appName
+        saveFunction(app, { _, result ->
+            when (result) {
+                is ExtractionResult.Success -> {
+                    EventDispatcher.emitEvent(Event(EventType.SAVED, result.uri))
+                    showSnackbar(
+                        MySnackbarVisuals(
+                            duration = SnackbarDuration.Short, message = context.getString(
+                                R.string.snackbar_successful_extracted, app.appName
+                            )
                         )
                     )
-                )
-            }
+                }
 
-            is ExtractionResult.Failure -> showErrorDialog(app.appName, result.errorMessage)
-        }
+                is ExtractionResult.Failure -> showErrorDialog(app.appName, result.errorMessage)
+            }
+        }, true)
     }
 
     /**

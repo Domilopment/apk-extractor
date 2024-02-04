@@ -13,6 +13,7 @@ import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.utils.InstallationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.BufferedInputStream
 import java.io.InputStream
 import java.util.zip.ZipInputStream
 
@@ -43,7 +44,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
 
             val (session, sessionId) = InstallationUtil.createSession(context)
             sessionCallback.initialSessionId = sessionId
-            ZipInputStream(xApkInputStream).use { input ->
+            ZipInputStream(BufferedInputStream(xApkInputStream)).use { input ->
                 generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
                     .forEach { file ->
                         val bytes = input.readBytes()

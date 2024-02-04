@@ -140,9 +140,8 @@ class ApkListViewModel @Inject constructor(
                 app.packageArchiveInfo(context)
             }
             _apkListFragmentState.update { state ->
-                state.copy(
-                    selectedPackageArchiveModel = update.await()
-                )
+                state.copy(selectedPackageArchiveModel = update.await()
+                    .let { if (state.selectedPackageArchiveModel?.fileUri == it.fileUri) it else state.selectedPackageArchiveModel })
             }
         }
     }
@@ -179,9 +178,11 @@ class ApkListViewModel @Inject constructor(
                     it.displayName!!.endsWith(".apk") -> AppPackageArchiveModel(
                         it.uri, it.displayName, it.lastModified!!, it.size!!
                     )
+
                     it.displayName.endsWith(".xapk") -> ZipPackageArchiveModel(
                         it.uri, it.displayName, it.lastModified!!, it.size!!
                     )
+
                     else -> null
                 }
             }?.also {

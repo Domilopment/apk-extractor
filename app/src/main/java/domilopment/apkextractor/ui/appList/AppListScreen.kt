@@ -53,7 +53,6 @@ fun AppListScreen(
 ) {
     val context = LocalContext.current
     val state by model.mainFragmentState.collectAsState()
-    val saveDir by model.saveDir.collectAsState()
     val appName by model.appName.collectAsState()
     val updatedSysApps by model.updatedSystemApps.collectAsState()
     val systemApps by model.systemApps.collectAsState()
@@ -201,13 +200,13 @@ fun AppListScreen(
 
     state.selectedApp?.let { selectedApp ->
         AppOptionsBottomSheet(app = selectedApp,
-            saveDir = saveDir!!,
             appName = appName,
             onDismissRequest = { model.selectApplication(null) },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             onFavoriteChanged = { isChecked ->
                 model.editFavorites(selectedApp.appPackageName, isChecked)
             },
+            onActionSave = progressDialogModel::saveApp,
             onSaveError = { appName, errorMessage ->
                 extractionError = Pair(appName, errorMessage)
             },
@@ -282,8 +281,9 @@ fun AppListScreen(
             appToUninstall = app
             apkAction.getAction(context,
                 app,
-                ApkActionsOptions.ApkActionOptionParams.Builder().setSaveDir(saveDir!!)
+                ApkActionsOptions.ApkActionOptionParams.Builder()
                     .setAppNameBuilder { ApplicationUtil.appName(it, appName) }
+                    .saveFunction(progressDialogModel::saveApp)
                     .setCallbackFun(showSnackbar).setErrorCallBack { appName, errorMessage ->
                         extractionError = Pair(appName, errorMessage)
                     }.setShareResult(shareApp).setDeleteResult(uninstallApp).build()

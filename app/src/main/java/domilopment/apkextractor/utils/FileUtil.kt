@@ -26,6 +26,25 @@ class FileUtil(private val context: Context) {
         const val SUFFIX = ".apk"
     }
 
+    fun createDocumentFile(
+        to: Uri, fileName: String, mimeType: String, suffix: String
+    ): Uri? {
+        // Create new APK file in destination folder
+        return DocumentsContract.createDocument(
+            context.contentResolver, DocumentsContract.buildDocumentUriUsingTree(
+                to, DocumentsContract.getTreeDocumentId(to)
+            ), mimeType, "$fileName$suffix"
+        )
+    }
+
+    fun writeToZip(output: ZipOutputStream, file: String) {
+        FileInputStream(file).use { input ->
+            val entry = ZipEntry(file.substring(file.lastIndexOf("/") + 1))
+            output.putNextEntry(entry)
+            input.copyTo(output)
+        }
+    }
+
     /**
      * Copy APK file from Source to Chosen Save Director with Name
      * @param from
@@ -45,11 +64,7 @@ class FileUtil(private val context: Context) {
             // Create Input Stream from APK source file
             FileInputStream(from).use { input ->
                 // Create new APK file in destination folder
-                DocumentsContract.createDocument(
-                    context.contentResolver, DocumentsContract.buildDocumentUriUsingTree(
-                        to, DocumentsContract.getTreeDocumentId(to)
-                    ), MIME_TYPE, "$fileName.apk"
-                ).let { outputFile ->
+                createDocumentFile(to, fileName, MIME_TYPE, SUFFIX).let { outputFile ->
                     extractedApk = outputFile!!
                     // Create Output Stream for target APK file
                     context.contentResolver.openOutputStream(outputFile)
@@ -91,20 +106,14 @@ class FileUtil(private val context: Context) {
     fun createZip(files: Array<String>, to: Uri, fileName: String): ExtractionResult {
         return try {
             val extractedApk: Uri
-            DocumentsContract.createDocument(
-                context.contentResolver, DocumentsContract.buildDocumentUriUsingTree(
-                    to, DocumentsContract.getTreeDocumentId(to)
-                ), "application/octet-stream", "$fileName.xapk"
+            createDocumentFile(
+                to, fileName, "application/octet-stream", ".xapk"
             ).let { outputFile ->
                 extractedApk = outputFile!!
                 // Create Output Stream for target APK file
-                ZipOutputStream(context.contentResolver.openOutputStream(outputFile))
+                ZipOutputStream(BufferedOutputStream(context.contentResolver.openOutputStream(outputFile)))
             }.use { output ->
-                for (file in files) FileInputStream(file).use { input ->
-                    val entry = ZipEntry(file.substring(file.lastIndexOf("/") + 1))
-                    output.putNextEntry(entry)
-                    input.copyTo(output)
-                }
+                for (file in files) writeToZip(output, file)
             }
             ExtractionResult.Success(extractedApk)
         } catch (fnf_e: FileNotFoundException) {
@@ -127,12 +136,8 @@ class FileUtil(private val context: Context) {
         val outFile = File(context.cacheDir, "$appName.xapk").let {
             if (it.createNewFile()) it else File.createTempFile(appName, ".xapk", context.cacheDir)
         }
-        ZipOutputStream(outFile.outputStream()).use { output ->
-            for (file in files) FileInputStream(file).use { input ->
-                val entry = ZipEntry(file.substring(file.lastIndexOf("/") + 1))
-                output.putNextEntry(entry)
-                input.copyTo(output)
-            }
+        ZipOutputStream(BufferedOutputStream(outFile.outputStream())).use { output ->
+            for (file in files) writeToZip(output, file)
         }
         return FileProvider.getUriForFile(
             context, "${BuildConfig.APPLICATION_ID}.provider", outFile

@@ -33,8 +33,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.lang.Exception
 import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class ProgressDialogViewModel @Inject constructor(
@@ -117,6 +122,81 @@ class ProgressDialogViewModel @Inject constructor(
             }
             job.join()
             _extractionResult.value = SingleTimeEvent(Triple(errorMessage, application, list.size))
+        }
+    }
+
+    fun saveApp(
+        app: ApplicationModel, callback: (String, ExtractionResult) -> Unit, asXapk: Boolean = true
+    ) {
+        runningTask = viewModelScope.launch {
+            val fileUtil = FileUtil(context)
+            val appName = ApplicationUtil.appName(app, appName.first())
+            val splitSources = app.appSplitSourceDirectories
+            val files = arrayListOf(app.appSourceDirectory)
+
+            if (!splitSources.isNullOrEmpty() && asXapk) files.addAll(splitSources)
+
+            _progressDialogState.update {
+                it.copy(
+                    title = context.getString(R.string.progress_dialog_title_save),
+                    process = app.appPackageName,
+                    tasks = files.size,
+                    shouldBeShown = true
+                )
+            }
+
+            try {
+                val result: ExtractionResult
+                if (files.size == 1) {
+                    withContext(Dispatchers.Main) {
+                        _progressDialogState.update { state ->
+                            state.copy(progress = state.progress)
+                        }
+                    }
+                    withContext(Dispatchers.IO) {
+                        result = fileUtil.copy(
+                            files[0], saveDir.first()!!, appName
+                        )
+                    }
+                    withContext(Dispatchers.Main) {
+                        _progressDialogState.update { state ->
+                            state.copy(progress = state.progress + 1)
+                        }
+                    }
+                } else {
+                    val uri: Uri
+                    fileUtil.createDocumentFile(
+                        saveDir.first()!!, appName, "application/octet-stream", ".xapk"
+                    ).let { outputFile ->
+                        uri = outputFile!!
+                        // Create Output Stream for target APK file
+                        ZipOutputStream(BufferedOutputStream(context.contentResolver.openOutputStream(outputFile)))
+                    }.use { output ->
+                        for (file in files) {
+                            withContext(Dispatchers.Main) {
+                                _progressDialogState.update { state ->
+                                    state.copy(progress = state.progress)
+                                }
+                            }
+                            withContext(Dispatchers.IO) {
+                                fileUtil.writeToZip(output, file)
+                            }
+                            withContext(Dispatchers.Main) {
+                                _progressDialogState.update { state ->
+                                    state.copy(progress = state.progress + 1)
+                                }
+                            }
+                        }
+                        result = ExtractionResult.Success(uri)
+                    }
+                }
+                callback(app.appName, result)
+            } catch (jc_e: CancellationException) {
+                // Do Not return
+            } catch (e: Exception) {
+                callback(app.appName, ExtractionResult.Failure(e.message))
+            }
+            resetProgress()
         }
     }
 
@@ -204,7 +284,7 @@ class ProgressDialogViewModel @Inject constructor(
 
                     "application/octet-stream" -> contentResolver.openInputStream(fileUri)
                         ?.use { xApkStream ->
-                            ZipInputStream(xApkStream).use { input ->
+                            ZipInputStream(BufferedInputStream(xApkStream)).use { input ->
                                 generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
                                     .forEach { file ->
                                         val bytes = input.readBytes()
