@@ -35,7 +35,6 @@ object ApplicationUtil {
                     append(" ${names[v]}")
                 }
             }
-            append(FileUtil.PREFIX)
         }.removePrefix(" ").toString()
     }
 

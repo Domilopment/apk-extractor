@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -44,8 +45,11 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -65,6 +69,7 @@ import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -91,6 +96,12 @@ fun AppOptionsBottomSheet(
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    var isSaving: Boolean by remember {
+        mutableStateOf(false)
+    }
+    var isSharing: Boolean by remember {
+        mutableStateOf(false)
+    }
     val apkOptions = ApkActionsManager(context, app)
 
     SnackbarHostModalBottomSheet(
@@ -121,16 +132,26 @@ fun AppOptionsBottomSheet(
             })
         HorizontalDivider(modifier = Modifier.padding(4.dp))
         AppSheetActions(app = app,
+            isSaving = isSaving,
+            isSharing = isSharing,
             onActionSave = {
-                apkOptions.actionSave(saveDir, { app ->
-                    ApplicationUtil.appName(app, appName)
-                }, {
-                    scope.launch { snackbarHostState.showSnackbar(it) }
-                }, onSaveError)
+                isSaving = true
+                scope.launch(Dispatchers.IO) {
+                    apkOptions.actionSave(saveDir, { app ->
+                        ApplicationUtil.appName(app, appName)
+                    }, {
+                        scope.launch(Dispatchers.Main) { snackbarHostState.showSnackbar(it) }
+                    }, onSaveError)
+                    isSaving = false
+                }
             },
             onActionShare = {
-                apkOptions.actionShare(onActionShare) { app ->
-                    ApplicationUtil.appName(app, appName)
+                isSharing = true
+                scope.launch(Dispatchers.IO) {
+                    apkOptions.actionShare(onActionShare) { app ->
+                        ApplicationUtil.appName(app, appName)
+                    }
+                    isSharing = false
                 }
             },
             onActionSaveImage = label@{
@@ -154,6 +175,8 @@ fun AppOptionsBottomSheet(
 @Composable
 private fun AppSheetActions(
     app: ApplicationModel,
+    isSaving: Boolean,
+    isSharing: Boolean,
     onActionSave: () -> Unit,
     onActionShare: () -> Unit,
     onActionSaveImage: () -> Unit,
@@ -170,15 +193,19 @@ private fun AppSheetActions(
     ) {
         AssistChip(onClick = onActionSave,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_save)) },
+            enabled = !isSaving,
             leadingIcon = {
-                Icon(
+                if (isSaving) CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                else Icon(
                     imageVector = Icons.Default.Save, contentDescription = null
                 )
             })
         AssistChip(onClick = onActionShare,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_share)) },
+            enabled = !isSharing,
             leadingIcon = {
-                Icon(
+                if (isSharing) CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                else Icon(
                     imageVector = Icons.Default.Share, contentDescription = null
                 )
             })

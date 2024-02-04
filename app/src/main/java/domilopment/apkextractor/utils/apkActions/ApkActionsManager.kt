@@ -37,8 +37,17 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
         showSnackbar: (MySnackbarVisuals) -> Unit,
         showErrorDialog: (String, String?) -> Unit
     ) {
-        when (val result =
-            FileUtil(context).copy(app.appSourceDirectory, saveDir, appNameBuilder(app))) {
+        val fileUtil = FileUtil(context)
+        val appName = appNameBuilder(app)
+        val splitSources = app.appSplitSourceDirectories
+        val result = if (splitSources.isNullOrEmpty()) fileUtil.copy(
+            app.appSourceDirectory, saveDir, appName
+        )
+        else fileUtil.createZip(
+            arrayOf(app.appSourceDirectory, *splitSources), saveDir, appName
+        )
+
+        when (result) {
             is ExtractionResult.Success -> {
                 EventDispatcher.emitEvent(Event(EventType.SAVED, result.uri))
                 showSnackbar(
@@ -59,9 +68,14 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param shareApp ActivityResultLauncher to launch Intent
      */
     fun actionShare(
-        shareApp: ActivityResultLauncher<Intent>, appName: (ApplicationModel) -> String
+        shareApp: ActivityResultLauncher<Intent>, appNameBuilder: (ApplicationModel) -> String
     ) {
-        val file = FileUtil(context).shareURI(app, appName(app))
+        val fileUtil = FileUtil(context)
+        val appName = appNameBuilder(app)
+        val file = if (app.appSplitSourceDirectories.isNullOrEmpty()) fileUtil.shareURI(
+            app, appName
+        )
+        else fileUtil.shareZip(app, appName)
         Intent(Intent.ACTION_SEND).apply {
             setDataAndType(file, FileUtil.MIME_TYPE)
             putExtra(Intent.EXTRA_STREAM, file)

@@ -130,11 +130,20 @@ class ApkListViewModel @Inject constructor(
      * @param app selected application
      */
     fun selectPackageArchive(app: PackageArchiveModel?) {
-        if (app?.isPackageArchiveInfoLoaded == false) app.packageArchiveInfo(context)
         _apkListFragmentState.update { state ->
             state.copy(
                 selectedPackageArchiveModel = app
             )
+        }
+        if (app?.isPackageArchiveInfoLoaded == false) viewModelScope.launch {
+            val update = async(Dispatchers.IO) {
+                app.packageArchiveInfo(context)
+            }
+            _apkListFragmentState.update { state ->
+                state.copy(
+                    selectedPackageArchiveModel = update.await()
+                )
+            }
         }
     }
 

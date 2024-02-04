@@ -23,7 +23,7 @@ class FileUtil(private val context: Context) {
 
     companion object {
         const val MIME_TYPE = "application/vnd.android.package-archive"
-        const val PREFIX = ".apk"
+        const val SUFFIX = ".apk"
     }
 
     /**
@@ -48,7 +48,7 @@ class FileUtil(private val context: Context) {
                 DocumentsContract.createDocument(
                     context.contentResolver, DocumentsContract.buildDocumentUriUsingTree(
                         to, DocumentsContract.getTreeDocumentId(to)
-                    ), MIME_TYPE, fileName
+                    ), MIME_TYPE, "$fileName.apk"
                 ).let { outputFile ->
                     extractedApk = outputFile!!
                     // Create Output Stream for target APK file
@@ -77,32 +77,66 @@ class FileUtil(private val context: Context) {
         val file = try {
             File(app.appSourceDirectory).copyTo(
                 File(
-                    context.cacheDir, appName
+                    context.cacheDir, "$appName.apk"
                 ), true
             )
         } catch (e: FileAlreadyExistsException) {
-            File.createTempFile(appName, PREFIX, context.cacheDir)
+            File.createTempFile(appName, SUFFIX, context.cacheDir)
         }
         return FileProvider.getUriForFile(
             context, "${BuildConfig.APPLICATION_ID}.provider", file
         )
     }
 
-    fun createZip(files: Array<String>, to: Uri, fileName: String) {
-        DocumentsContract.createDocument(
-            context.contentResolver, DocumentsContract.buildDocumentUriUsingTree(
-                to, DocumentsContract.getTreeDocumentId(to)
-            ), "application/octet-stream", "$fileName.xapk"
-        ).let { outputFile ->
-            // Create Output Stream for target APK file
-            ZipOutputStream(context.contentResolver.openOutputStream(outputFile!!))
-        }.use { output ->
+    fun createZip(files: Array<String>, to: Uri, fileName: String): ExtractionResult {
+        return try {
+            val extractedApk: Uri
+            DocumentsContract.createDocument(
+                context.contentResolver, DocumentsContract.buildDocumentUriUsingTree(
+                    to, DocumentsContract.getTreeDocumentId(to)
+                ), "application/octet-stream", "$fileName.xapk"
+            ).let { outputFile ->
+                extractedApk = outputFile!!
+                // Create Output Stream for target APK file
+                ZipOutputStream(context.contentResolver.openOutputStream(outputFile))
+            }.use { output ->
+                for (file in files) FileInputStream(file).use { input ->
+                    val entry = ZipEntry(file.substring(file.lastIndexOf("/") + 1))
+                    output.putNextEntry(entry)
+                    input.copyTo(output)
+                }
+            }
+            ExtractionResult.Success(extractedApk)
+        } catch (fnf_e: FileNotFoundException) {
+            fnf_e.printStackTrace()
+            ExtractionResult.Failure(fnf_e.message)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ExtractionResult.Failure(e.message)
+        }
+    }
+
+    /**
+     * Creates a Uri for Provider
+     * @param app Application for sharing
+     * @return Shareable Uri of Application APK
+     */
+    fun shareZip(app: ApplicationModel, appName: String): Uri {
+        val files = arrayOf(app.appSourceDirectory, *app.appSplitSourceDirectories!!)
+
+        val outFile = File(context.cacheDir, "$appName.xapk").let {
+            if (it.createNewFile()) it else File.createTempFile(appName, ".xapk", context.cacheDir)
+        }
+        ZipOutputStream(outFile.outputStream()).use { output ->
             for (file in files) FileInputStream(file).use { input ->
                 val entry = ZipEntry(file.substring(file.lastIndexOf("/") + 1))
                 output.putNextEntry(entry)
                 input.copyTo(output)
             }
         }
+        return FileProvider.getUriForFile(
+            context, "${BuildConfig.APPLICATION_ID}.provider", outFile
+        )
     }
 
     /**

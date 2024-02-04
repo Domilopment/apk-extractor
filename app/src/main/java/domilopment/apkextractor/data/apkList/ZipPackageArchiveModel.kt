@@ -72,6 +72,8 @@ data class ZipPackageArchiveModel(
             isPackageArchiveInfoLoaded = true
         } catch (e: IOException) {
             // No Space left on Device, ...
+        } catch (oom_e: OutOfMemoryError) {
+            // Prevent crash if memory run out
         } finally {
             isPackageArchiveInfoLoading = false
             if (apkFile != null && apkFile.exists()) apkFile.delete()
