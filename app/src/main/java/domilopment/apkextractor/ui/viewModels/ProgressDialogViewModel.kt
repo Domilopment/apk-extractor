@@ -86,6 +86,8 @@ class ProgressDialogViewModel @Inject constructor(
             val job = launch extract@{
                 list.forEach { app ->
                     application = app
+                    val files = arrayListOf(app.appSourceDirectory)
+                    if (!app.appSplitSourceDirectories.isNullOrEmpty()) files.addAll(app.appSplitSourceDirectories!!)
                     withContext(Dispatchers.Main) {
                         _progressDialogState.update { state ->
                             state.copy(
@@ -94,10 +96,12 @@ class ProgressDialogViewModel @Inject constructor(
                         }
                     }
                     withContext(Dispatchers.IO) {
-                        val newFile = fileUtil.copy(
+                        val newFile = if (files.size == 1) fileUtil.copy(
                             app.appSourceDirectory,
                             saveDir.first()!!,
                             ApplicationUtil.appName(app, appName.first())
+                        ) else fileUtil.createZip(
+                            files.toTypedArray(), saveDir.first()!!, ApplicationUtil.appName(app, appName.first())
                         )
                         when (newFile) {
                             is ExtractionResult.Failure -> errorMessage = newFile.errorMessage
@@ -170,7 +174,13 @@ class ProgressDialogViewModel @Inject constructor(
                     ).let { outputFile ->
                         uri = outputFile!!
                         // Create Output Stream for target APK file
-                        ZipOutputStream(BufferedOutputStream(context.contentResolver.openOutputStream(outputFile)))
+                        ZipOutputStream(
+                            BufferedOutputStream(
+                                context.contentResolver.openOutputStream(
+                                    outputFile
+                                )
+                            )
+                        )
                     }.use { output ->
                         for (file in files) {
                             withContext(Dispatchers.Main) {
