@@ -92,7 +92,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:pathPattern=".*\\.xapk" />
+                <data android:host="*" />
+                <data android:pathSuffix=".xapk" />
                 <data android:scheme="content" />
                 <data android:scheme="file" />
             </intent-filter>
@@ -102,8 +103,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
+                <data android:host="*" />
                 <data android:mimeType="*/*" />
-                <data android:pathPattern=".*\\.xapk" />
+                <data android:pathSuffix=".xapk" />
                 <data android:scheme="content" />
                 <data android:scheme="file" />
             </intent-filter>
