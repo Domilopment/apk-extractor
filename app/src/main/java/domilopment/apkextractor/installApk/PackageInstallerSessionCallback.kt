@@ -1,14 +1,14 @@
 package domilopment.apkextractor.installApk
 
 import android.content.pm.PackageInstaller
-import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
+import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 
 class PackageInstallerSessionCallback(
     private val packageInstaller: PackageInstaller,
-    private val progressDialogViewModel: ProgressDialogViewModel,
+    private val progressDialogViewModel: ApkListViewModel,
 ) : PackageInstaller.SessionCallback() {
     private var packageName: String? = null
     var initialSessionId: Int = -1

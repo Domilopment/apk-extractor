@@ -22,7 +22,6 @@ import domilopment.apkextractor.data.ProgressDialogUiState
 @Composable
 fun ProgressDialog(
     state: ProgressDialogUiState,
-    title: String,
     onDismissRequest: () -> Unit,
     onCancel: () -> Unit,
     dismissOnBackPress: Boolean = false,
@@ -62,7 +61,9 @@ fun ProgressDialog(
             }
         }
     }, title = {
-        Text(text = title)
+        Text(
+            text = state.title ?: stringResource(id = R.string.progress_dialog_title_placeholder)
+        )
     }, properties = DialogProperties(
         dismissOnBackPress = dismissOnBackPress, dismissOnClickOutside = dismissOnClickOutside
     )

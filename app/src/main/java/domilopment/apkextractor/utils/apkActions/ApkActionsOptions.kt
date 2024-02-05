@@ -34,8 +34,8 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            if (params.appNameBuilder == null || params.shareResult == null) return
-            ApkActionsManager(context, app).actionShare(params.shareResult, params.appNameBuilder)
+            if (params.shareFunction == null || params.shareResult == null) return
+            ApkActionsManager(context, app).actionShare(params.shareResult, params.shareFunction)
         }
     },
     ICON("save_icon", R.string.action_bottom_sheet_save_image, Icons.Default.Image) {
@@ -99,24 +99,21 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
     }
 
     class ApkActionOptionParams private constructor(
-        val appNameBuilder: ((ApplicationModel) -> String)?,
         val saveFunction: ((ApplicationModel, (String, ExtractionResult) -> Unit, Boolean) -> Unit)?,
         val callbackFun: ((MySnackbarVisuals) -> Unit)?,
         val errorCallback: ((String?, String?) -> Unit)?,
         val shareResult: ActivityResultLauncher<Intent>?,
+        val shareFunction: ((ApplicationModel, (Uri) -> Unit) -> Unit)?,
         val deleteResult: ActivityResultLauncher<Intent>?
     ) {
         data class Builder(
-            private var appNameBuilder: ((ApplicationModel) -> String)? = null,
             private var saveFunction: ((ApplicationModel, (String, ExtractionResult) -> Unit, Boolean) -> Unit)? = null,
             private var callbackFun: ((MySnackbarVisuals) -> Unit)? = null,
             private var errorCallback: ((String?, String?) -> Unit)? = null,
             private var shareResult: ActivityResultLauncher<Intent>? = null,
+            private var shareFunction: ((ApplicationModel, (Uri) -> Unit) -> Unit)? = null,
             private var deleteResult: ActivityResultLauncher<Intent>? = null
         ) {
-            fun setAppNameBuilder(appNameBuilder: (ApplicationModel) -> String) =
-                apply { this.appNameBuilder = appNameBuilder }
-
             fun saveFunction(saveFunction: (ApplicationModel, (String, ExtractionResult) -> Unit, Boolean) -> Unit) =
                 apply { this.saveFunction = saveFunction }
 
@@ -129,11 +126,14 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
             fun setShareResult(activityResultLauncher: ActivityResultLauncher<Intent>) =
                 apply { this.shareResult = activityResultLauncher }
 
+            fun setShareFunction(shareFunction: ((ApplicationModel, (Uri) -> Unit) -> Unit)) =
+                apply { this.shareFunction = shareFunction }
+
             fun setDeleteResult(activityResultLauncher: ActivityResultLauncher<Intent>) =
                 apply { this.deleteResult = activityResultLauncher }
 
             fun build() = ApkActionOptionParams(
-                appNameBuilder, saveFunction, callbackFun, errorCallback, shareResult, deleteResult
+                saveFunction, callbackFun, errorCallback, shareResult, shareFunction, deleteResult
             )
         }
     }

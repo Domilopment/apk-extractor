@@ -6,6 +6,9 @@ import android.provider.DocumentsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import domilopment.apkextractor.MainActivity
+import domilopment.apkextractor.R
+import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.data.apkList.ApkListScreenState
 import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
 import domilopment.apkextractor.data.apkList.PackageArchiveModel
@@ -16,6 +19,8 @@ import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.dependencyInjection.packageArchive.PackageArchiveRepository
+import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
+import domilopment.apkextractor.utils.InstallationUtil
 import domilopment.apkextractor.utils.settings.PackageArchiveUtils
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import kotlinx.coroutines.Deferred
@@ -29,10 +34,14 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.CancellationException
 import domilopment.apkextractor.utils.eventHandler.Observer
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.withContext
+import java.io.BufferedInputStream
+import java.util.zip.ZipInputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,7 +50,7 @@ class ApkListViewModel @Inject constructor(
     application: Application,
     private val preferenceRepository: PreferenceRepository,
     private val apksRepository: PackageArchiveRepository
-) : AndroidViewModel(application), Observer {
+) : AndroidViewModel(application), Observer, ProgressDialogViewModel {
     override val key: String = "ApkListViewModel"
 
     private val _apkListFragmentState: MutableStateFlow<ApkListScreenState> =
@@ -49,6 +58,10 @@ class ApkListViewModel @Inject constructor(
     val apkListFragmentState: StateFlow<ApkListScreenState> = _apkListFragmentState.asStateFlow()
 
     private val _searchQuery: MutableStateFlow<String?> = MutableStateFlow(null)
+
+    private val _progressDialogState: MutableStateFlow<ProgressDialogUiState> =
+        MutableStateFlow(ProgressDialogUiState())
+    override val progressDialogState: StateFlow<ProgressDialogUiState> = _progressDialogState.asStateFlow()
 
     val saveDir = preferenceRepository.saveDir.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
@@ -62,6 +75,8 @@ class ApkListViewModel @Inject constructor(
     private val context get() = getApplication<Application>().applicationContext
 
     private var loadArchiveInfoJob: Deferred<Unit>? = null
+    // Task for ProgressDialog to Cancel
+    private var runningTask: Job? = null
 
     init {
         viewModelScope.launch {
@@ -227,5 +242,89 @@ class ApkListViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceRepository.setApkSortOrder(sortPreferenceId.name)
         }
+    }
+
+    /**
+     * Install APK file from ACTION_OPEN_DOCUMENT uri
+     * @param fileUri uri from Intent return data
+     */
+    fun installApk(fileUri: Uri, callback: PackageInstallerSessionCallback) {
+        runningTask = viewModelScope.launch(Dispatchers.Main) {
+            val packageInstaller = context.applicationContext.packageManager.packageInstaller
+            val contentResolver = context.applicationContext.contentResolver
+            packageInstaller.registerSessionCallback(callback)
+
+            withContext(Dispatchers.IO) {
+                val (session, sessionId) = InstallationUtil.createSession(context)
+                callback.initialSessionId = sessionId
+
+                _progressDialogState.update {
+                    it.copy(
+                        title = context.getString(R.string.progress_dialog_title_install),
+                        process = packageInstaller.getSessionInfo(sessionId)?.appPackageName ?: "",
+                        tasks = 100,
+                        shouldBeShown = true
+                    )
+                }
+
+                val fileUtil = FileUtil(context)
+
+                val mime = fileUtil.getDocumentInfo(
+                    fileUri, DocumentsContract.Document.COLUMN_MIME_TYPE
+                )?.mimeType
+                when (mime) {
+                    FileUtil.MIME_TYPE -> contentResolver.openInputStream(fileUri)
+                        ?.use { apkStream ->
+                            val length = FileUtil(context).getDocumentInfo(
+                                fileUri, DocumentsContract.Document.COLUMN_SIZE
+                            )?.size ?: -1
+
+                            InstallationUtil.addFileToSession(
+                                session, apkStream, "base.apk", length
+                            )
+                        }
+
+                    "application/octet-stream" -> contentResolver.openInputStream(fileUri)
+                        ?.use { xApkStream ->
+                            ZipInputStream(BufferedInputStream(xApkStream)).use { input ->
+                                generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
+                                    .forEach { file ->
+                                        val bytes = input.readBytes()
+                                        InstallationUtil.addFileToSession(
+                                            session,
+                                            bytes.inputStream(),
+                                            file.name,
+                                            bytes.size.toLong()
+                                        )
+                                    }
+                            }
+                        }
+                }
+                InstallationUtil.finishSession(
+                    context, session, sessionId, MainActivity::class.java
+                )
+            }
+        }
+    }
+
+    /**
+     * Update ProgressDialogState for APK installations
+     * @param progress current progress of installation
+     * @param packageName name of package being installed
+     */
+    fun updateInstallApkStatus(progress: Float, packageName: String? = "") {
+        _progressDialogState.update {
+            it.copy(
+                title = context.getString(R.string.progress_dialog_title_install),
+                process = packageName,
+                progress = progress * 100,
+            )
+        }
+    }
+
+    override fun resetProgress() {
+        runningTask?.cancel()
+        runningTask = null
+        _progressDialogState.value = ProgressDialogUiState()
     }
 }

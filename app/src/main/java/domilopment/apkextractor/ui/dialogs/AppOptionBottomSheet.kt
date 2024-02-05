@@ -66,7 +66,6 @@ import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.ExtractionResult
-import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
@@ -77,13 +76,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppOptionsBottomSheet(
     app: ApplicationModel,
-    appName: Set<String>,
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     onFavoriteChanged: (Boolean) -> Unit,
-    onActionSave: (ApplicationModel, (String, ExtractionResult)-> Unit, Boolean) -> Unit,
+    onActionSave: (ApplicationModel, (String, ExtractionResult) -> Unit, Boolean) -> Unit,
     onSaveError: (String?, String?) -> Unit,
-    onActionShare: ManagedActivityResultLauncher<Intent, ActivityResult>,
+    onActionShare: (ApplicationModel, (Uri) -> Unit) -> Unit,
+    onActionShareResult: ManagedActivityResultLauncher<Intent, ActivityResult>,
     onActionSaveImage: PermissionState,
     intentUninstallApp: ManagedActivityResultLauncher<Intent, ActivityResult>,
     onActionUninstall: () -> Unit,
@@ -132,20 +131,12 @@ fun AppOptionsBottomSheet(
         AppSheetActions(app = app,
             isSharing = isSharing,
             onActionSave = {
-                scope.launch(Dispatchers.IO) {
-                    apkOptions.actionSave(onActionSave, {
-                        scope.launch(Dispatchers.Main) { snackbarHostState.showSnackbar(it) }
-                    }, onSaveError)
-                }
+                apkOptions.actionSave(onActionSave, {
+                    scope.launch(Dispatchers.Main) { snackbarHostState.showSnackbar(it) }
+                }, onSaveError)
             },
             onActionShare = {
-                isSharing = true
-                scope.launch(Dispatchers.IO) {
-                    apkOptions.actionShare(onActionShare) { app ->
-                        ApplicationUtil.appName(app, appName)
-                    }
-                    isSharing = false
-                }
+                apkOptions.actionShare(onActionShareResult, onActionShare)
             },
             onActionSaveImage = label@{
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !onActionSaveImage.status.isGranted) {
@@ -186,7 +177,7 @@ private fun AppSheetActions(
         AssistChip(onClick = onActionSave,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_save)) },
             leadingIcon = {
-               Icon(
+                Icon(
                     imageVector = Icons.Default.Save, contentDescription = null
                 )
             })

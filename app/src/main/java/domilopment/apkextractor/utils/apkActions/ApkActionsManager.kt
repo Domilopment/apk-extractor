@@ -59,22 +59,18 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param shareApp ActivityResultLauncher to launch Intent
      */
     fun actionShare(
-        shareApp: ActivityResultLauncher<Intent>, appNameBuilder: (ApplicationModel) -> String
-    ) {
-        val fileUtil = FileUtil(context)
-        val appName = appNameBuilder(app)
-        val file = if (app.appSplitSourceDirectories.isNullOrEmpty()) fileUtil.shareURI(
-            app, appName
-        )
-        else fileUtil.shareZip(app, appName)
-        Intent(Intent.ACTION_SEND).apply {
-            setDataAndType(file, FileUtil.MIME_TYPE)
-            putExtra(Intent.EXTRA_STREAM, file)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }.let {
-            Intent.createChooser(it, context.getString(R.string.share_intent_title))
-        }.also {
-            shareApp.launch(it)
+        shareApp: ActivityResultLauncher<Intent>, shareFunction: (ApplicationModel, (Uri) -> Unit) -> Unit,
+        ) {
+        shareFunction(app) { file ->
+            Intent(Intent.ACTION_SEND).apply {
+                setDataAndType(file, FileUtil.MIME_TYPE)
+                putExtra(Intent.EXTRA_STREAM, file)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }.let {
+                Intent.createChooser(it, context.getString(R.string.share_intent_title))
+            }.also {
+                shareApp.launch(it)
+            }
         }
     }
 

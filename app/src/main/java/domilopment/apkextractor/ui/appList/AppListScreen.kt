@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import domilopment.apkextractor.R
@@ -29,8 +28,6 @@ import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
 import domilopment.apkextractor.ui.dialogs.ExtractionResultDialog
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
-import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
-import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
@@ -42,7 +39,6 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 fun AppListScreen(
     model: AppListViewModel,
-    progressDialogModel: ProgressDialogViewModel,
     searchString: String,
     onNavigate: () -> Unit,
     showSnackbar: (MySnackbarVisuals) -> Unit,
@@ -68,9 +64,9 @@ fun AppListScreen(
     val swipeActionCustomThreshold by model.swipeActionCustomThreshold.collectAsState()
     val swipeActionThresholdMod by model.swipeActionThresholdMod.collectAsState()
 
-    val progressDialogState by progressDialogModel.progressDialogState.collectAsState()
-    val extractionResult by progressDialogModel.extractionResult.collectAsState()
-    val shareResult by progressDialogModel.shareResult.collectAsState()
+    val progressDialogState by model.progressDialogState.collectAsState()
+    val extractionResult by model.extractionResult.collectAsState()
+    val shareResult by model.shareResult.collectAsState()
 
     var showFilter by rememberSaveable {
         mutableStateOf(false)
@@ -139,7 +135,7 @@ fun AppListScreen(
                 )
             )
 
-            progressDialogModel.resetProgress()
+            model.resetProgress()
         }
     }
 
@@ -161,7 +157,7 @@ fun AppListScreen(
                 shareApp.launch(it)
             }
 
-            progressDialogModel.resetProgress()
+            model.resetProgress()
         }
     }
 
@@ -178,7 +174,7 @@ fun AppListScreen(
                         if (list.isEmpty()) Toast.makeText(
                             context, R.string.toast_save_apps, Toast.LENGTH_SHORT
                         ).show()
-                        else progressDialogModel.saveApps(list)
+                        else model.saveApps(list)
                     }
                 }
 
@@ -189,7 +185,7 @@ fun AppListScreen(
                         if (it.isEmpty()) Toast.makeText(
                             context, R.string.toast_share_app, Toast.LENGTH_SHORT
                         ).show()
-                        else progressDialogModel.createShareUrisForApps(it)
+                        else model.createShareUrisForApps(it)
                     }
                 }
 
@@ -200,17 +196,17 @@ fun AppListScreen(
 
     state.selectedApp?.let { selectedApp ->
         AppOptionsBottomSheet(app = selectedApp,
-            appName = appName,
             onDismissRequest = { model.selectApplication(null) },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             onFavoriteChanged = { isChecked ->
                 model.editFavorites(selectedApp.appPackageName, isChecked)
             },
-            onActionSave = progressDialogModel::saveApp,
+            onActionSave = model::saveApp,
             onSaveError = { appName, errorMessage ->
                 extractionError = Pair(appName, errorMessage)
             },
-            onActionShare = shareApp,
+            onActionShare = model::createShareUrisForApp,
+            onActionShareResult = shareApp,
             onActionSaveImage = saveImage,
             intentUninstallApp = uninstallApp,
             onActionUninstall = { appToUninstall = selectedApp },
@@ -240,9 +236,8 @@ fun AppListScreen(
 
     if (progressDialogState.shouldBeShown) ProgressDialog(
         state = progressDialogState,
-        title = stringResource(id = R.string.progress_dialog_title_placeholder),
-        onDismissRequest = progressDialogModel::resetProgress,
-        onCancel = progressDialogModel::resetProgress
+        onDismissRequest = model::resetProgress,
+        onCancel = model::resetProgress
     )
 
     extractionError?.let { (appName, errorMessage) ->
@@ -279,14 +274,14 @@ fun AppListScreen(
         leftSwipeAction = leftSwipeAction,
         swipeActionCallback = { app, apkAction ->
             appToUninstall = app
-            apkAction.getAction(context,
+            apkAction.getAction(
+                context,
                 app,
-                ApkActionsOptions.ApkActionOptionParams.Builder()
-                    .setAppNameBuilder { ApplicationUtil.appName(it, appName) }
-                    .saveFunction(progressDialogModel::saveApp)
+                ApkActionsOptions.ApkActionOptionParams.Builder().saveFunction(model::saveApp)
                     .setCallbackFun(showSnackbar).setErrorCallBack { appName, errorMessage ->
                         extractionError = Pair(appName, errorMessage)
-                    }.setShareResult(shareApp).setDeleteResult(uninstallApp).build()
+                    }.setShareResult(shareApp).setShareFunction(model::createShareUrisForApp)
+                    .setDeleteResult(uninstallApp).build()
             )
         },
         isSwipeActionCustomThreshold = swipeActionCustomThreshold,

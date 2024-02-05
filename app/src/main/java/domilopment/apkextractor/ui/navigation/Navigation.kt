@@ -17,7 +17,6 @@ import domilopment.apkextractor.ui.appList.AppListScreen
 import domilopment.apkextractor.ui.settings.SettingsScreen
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
-import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
 
@@ -40,11 +39,9 @@ fun ApkExtractorNavHost(
     ) {
         composable(Screen.AppList.route) {
             val model = hiltViewModel<AppListViewModel>()
-            val progressDialogViewModel = hiltViewModel<ProgressDialogViewModel>()
 
             AppListScreen(
                 model = model,
-                progressDialogModel = progressDialogViewModel,
                 searchString = searchQuery,
                 isActionMode = isActionMode,
                 onNavigate = {
@@ -61,10 +58,8 @@ fun ApkExtractorNavHost(
         }
         composable(Screen.ApkList.route) {
             val model = hiltViewModel<ApkListViewModel>()
-            val progressDialogViewModel = hiltViewModel<ProgressDialogViewModel>()
 
             ApkListScreen(model = model,
-                progressDialogViewModel = progressDialogViewModel,
                 searchString = searchQuery,
                 onNavigate = {
                     navController.navigate(Screen.Settings.route) {

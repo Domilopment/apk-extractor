@@ -10,7 +10,6 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.stringResource
 import androidx.core.content.IntentSanitizer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
@@ -38,7 +37,6 @@ class InstallXapkActivity : ComponentActivity() {
                     Box(contentAlignment = Alignment.Center) {
                         if (uiState.shouldBeShown) ProgressDialog(
                             state = uiState,
-                            title = stringResource(id = R.string.progress_dialog_title_install_xapk),
                             onDismissRequest = { this@InstallXapkActivity.finish() },
                             onCancel = { this@InstallXapkActivity.finish() },
                             dismissOnBackPress = true,

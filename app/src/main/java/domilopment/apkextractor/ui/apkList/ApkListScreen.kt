@@ -17,17 +17,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
 import domilopment.apkextractor.ui.Screen
-import domilopment.apkextractor.data.apkList.PackageArchiveModel
 import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet
 import domilopment.apkextractor.ui.dialogs.ApkSortMenu
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
-import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
@@ -41,14 +38,13 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 fun ApkListScreen(
     model: ApkListViewModel,
-    progressDialogViewModel: ProgressDialogViewModel,
     searchString: String,
     onNavigate: () -> Unit,
     showSnackbar: (MySnackbarVisuals) -> Unit
 ) {
     val context = LocalContext.current
     val state by model.apkListFragmentState.collectAsState()
-    val progressDialogState by progressDialogViewModel.progressDialogState.collectAsState()
+    val progressDialogState by model.progressDialogState.collectAsState()
     val saveDir by model.saveDir.collectAsState()
     val sortOrder by model.sortOrder.collectAsState()
 
@@ -114,9 +110,7 @@ fun ApkListScreen(
                 Screen.ScreenActions.Refresh -> model.updatePackageArchives()
                 Screen.ScreenActions.Settings -> onNavigate()
 
-                else -> {
-                    // Nothing to do
-                }
+                else -> Unit
             }
         }.launchIn(this)
     }
@@ -142,9 +136,9 @@ fun ApkListScreen(
                 }, context.getString(R.string.share_intent_title)))
             },
             onActionInstall = {
-                progressDialogViewModel.installApk(
+                model.installApk(
                     it.fileUri, PackageInstallerSessionCallback(
-                        context.packageManager.packageInstaller, progressDialogViewModel
+                        context.packageManager.packageInstaller, model
                     )
                 )
             },
@@ -175,9 +169,8 @@ fun ApkListScreen(
 
     if (progressDialogState.shouldBeShown) ProgressDialog(
         state = progressDialogState,
-        title = stringResource(id = R.string.progress_dialog_title_install),
-        onDismissRequest = progressDialogViewModel::resetProgress,
-        onCancel = progressDialogViewModel::resetProgress
+        onDismissRequest = model::resetProgress,
+        onCancel = model::resetProgress
     )
 
     ApkListContent(

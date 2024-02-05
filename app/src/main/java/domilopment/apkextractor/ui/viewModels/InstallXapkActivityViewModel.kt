@@ -41,7 +41,6 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
 
     fun installXAPK(xApkInputStream: InputStream, sessionCallback: MySessionCallback) {
         viewModelScope.launch(Dispatchers.IO) {
-
             val (session, sessionId) = InstallationUtil.createSession(context)
             sessionCallback.initialSessionId = sessionId
             ZipInputStream(BufferedInputStream(xApkInputStream)).use { input ->
