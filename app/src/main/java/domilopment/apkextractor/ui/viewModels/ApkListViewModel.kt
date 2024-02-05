@@ -61,7 +61,8 @@ class ApkListViewModel @Inject constructor(
 
     private val _progressDialogState: MutableStateFlow<ProgressDialogUiState> =
         MutableStateFlow(ProgressDialogUiState())
-    override val progressDialogState: StateFlow<ProgressDialogUiState> = _progressDialogState.asStateFlow()
+    override val progressDialogState: StateFlow<ProgressDialogUiState> =
+        _progressDialogState.asStateFlow()
 
     val saveDir = preferenceRepository.saveDir.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
@@ -75,6 +76,7 @@ class ApkListViewModel @Inject constructor(
     private val context get() = getApplication<Application>().applicationContext
 
     private var loadArchiveInfoJob: Deferred<Unit>? = null
+
     // Task for ProgressDialog to Cancel
     private var runningTask: Job? = null
 
@@ -156,7 +158,7 @@ class ApkListViewModel @Inject constructor(
             }
             _apkListFragmentState.update { state ->
                 state.copy(selectedPackageArchiveModel = update.await()
-                    .let { if (state.selectedPackageArchiveModel?.fileUri == it.fileUri) it else state.selectedPackageArchiveModel })
+                    .let { newInfo -> state.selectedPackageArchiveModel.let { if (it?.fileUri == newInfo.fileUri) newInfo else it } })
             }
         }
     }
@@ -228,7 +230,8 @@ class ApkListViewModel @Inject constructor(
             val newApk = apk.forceRefresh(context)
             _apkListFragmentState.update { state ->
                 state.copy(appList = state.appList.toMutableList()
-                    .map { if (it.fileUri == apk.fileUri) newApk else it })
+                    .map { if (it.fileUri == apk.fileUri) newApk else it },
+                    selectedPackageArchiveModel = state.selectedPackageArchiveModel.let { if (it?.fileUri == apk.fileUri) apk else it })
             }
         }
     }
@@ -259,8 +262,11 @@ class ApkListViewModel @Inject constructor(
                 callback.initialSessionId = sessionId
 
                 _progressDialogState.update {
+                    val title = if (fileUri.path?.endsWith(".xapk") == true) "XAPK" else "APK"
                     it.copy(
-                        title = context.getString(R.string.progress_dialog_title_install),
+                        title = context.getString(
+                            R.string.progress_dialog_title_install, title
+                        ),
                         process = packageInstaller.getSessionInfo(sessionId)?.appPackageName ?: "",
                         tasks = 100,
                         shouldBeShown = true
@@ -316,7 +322,6 @@ class ApkListViewModel @Inject constructor(
     fun updateInstallApkStatus(progress: Float, packageName: String? = "") {
         _progressDialogState.update {
             it.copy(
-                title = context.getString(R.string.progress_dialog_title_install),
                 process = packageName,
                 progress = progress * 100,
             )

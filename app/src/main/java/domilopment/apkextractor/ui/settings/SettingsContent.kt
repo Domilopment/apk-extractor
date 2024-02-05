@@ -40,6 +40,8 @@ fun SettingsContent(
     onChooseSaveDir: () -> Unit,
     appSaveName: State<Set<String>>,
     onAppSaveName: (Set<String>) -> Unit,
+    isBackupModeXapk: State<Boolean>,
+    onBackupModeXapk: (Boolean) -> Unit,
     autoBackupService: State<Boolean>,
     onAutoBackupService: (Boolean) -> Unit,
     isSelectAutoBackupApps: Boolean,
@@ -106,6 +108,14 @@ fun SettingsContent(
                     entryValues = R.array.app_save_name_values,
                     state = appSaveName,
                     onClick = onAppSaveName
+                )
+            }
+            preferenceCategoryItemMiddle {
+                SwitchPreferenceCompat(
+                    name = R.string.backup_mode_xapk,
+                    summary = if (isBackupModeXapk.value) R.string.backup_mode_xapk_summary_active else R.string.backup_mode_xapk_summary_inactive,
+                    state = isBackupModeXapk,
+                    onClick = onBackupModeXapk
                 )
             }
             preferenceCategoryItemMiddle {

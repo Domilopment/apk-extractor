@@ -160,6 +160,8 @@ fun SettingsScreen(
         },
         appSaveName = model.saveName.collectAsState(),
         onAppSaveName = remember { model::setAppSaveName },
+        isBackupModeXapk = model.backupModeXapk.collectAsState(),
+        onBackupModeXapk = remember { model::setBackupModeXapk },
         autoBackupService = autoBackupService,
         onAutoBackupService = remember(allowNotifications, context) {
             func@{

@@ -79,7 +79,7 @@ fun AppOptionsBottomSheet(
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     onFavoriteChanged: (Boolean) -> Unit,
-    onActionSave: (ApplicationModel, (String, ExtractionResult) -> Unit, Boolean) -> Unit,
+    onActionSave: (ApplicationModel, (String, ExtractionResult) -> Unit) -> Unit,
     onSaveError: (String?, String?) -> Unit,
     onActionShare: (ApplicationModel, (Uri) -> Unit) -> Unit,
     onActionShareResult: ManagedActivityResultLauncher<Intent, ActivityResult>,

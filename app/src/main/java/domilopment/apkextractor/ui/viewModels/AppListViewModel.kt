@@ -70,9 +70,8 @@ class AppListViewModel @Inject constructor(
 
     private val appListFavorites = preferenceRepository.appListFavorites
     private val saveDir = preferenceRepository.saveDir
-    val appName = preferenceRepository.appSaveName.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), setOf("0:name")
-    )
+    private val backupXapk = preferenceRepository.backupModeXapk
+    private val appName = preferenceRepository.appSaveName
     val appSortOrder = preferenceRepository.appSortOrder.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
@@ -327,14 +326,15 @@ class AppListViewModel @Inject constructor(
     fun saveApps(list: List<ApplicationModel>) {
         runningTask = viewModelScope.launch {
             val fileUtil = FileUtil(context)
+            val backupMode = backupXapk.first()
             var application: ApplicationModel? = null
             var errorMessage: String? = null
 
             _progressDialogState.update {
                 it.copy(
-                    title = context.getString(R.string.progress_dialog_title_save),
-                    tasks = list.size,
-                    shouldBeShown = true
+                    title = context.getString(
+                        R.string.progress_dialog_title_save, if (backupMode) "XAPK" else "APK"
+                    ), tasks = list.size, shouldBeShown = true
                 )
             }
 
@@ -342,7 +342,10 @@ class AppListViewModel @Inject constructor(
                 list.forEach { app ->
                     application = app
                     val files = arrayListOf(app.appSourceDirectory)
-                    if (!app.appSplitSourceDirectories.isNullOrEmpty()) files.addAll(app.appSplitSourceDirectories!!)
+                    if (!app.appSplitSourceDirectories.isNullOrEmpty() && backupMode) files.addAll(
+                        app.appSplitSourceDirectories!!
+                    )
+
                     withContext(Dispatchers.Main) {
                         _progressDialogState.update { state ->
                             state.copy(
@@ -387,22 +390,22 @@ class AppListViewModel @Inject constructor(
     }
 
     fun saveApp(
-        app: ApplicationModel, callback: (String, ExtractionResult) -> Unit, asXapk: Boolean = true
+        app: ApplicationModel, callback: (String, ExtractionResult) -> Unit
     ) {
         runningTask = viewModelScope.launch {
             val fileUtil = FileUtil(context)
             val appName = ApplicationUtil.appName(app, appName.first())
+            val backupMode = backupXapk.first()
             val splitSources = app.appSplitSourceDirectories
             val files = arrayListOf(app.appSourceDirectory)
 
-            if (!splitSources.isNullOrEmpty() && asXapk) files.addAll(splitSources)
+            if (!splitSources.isNullOrEmpty() && backupMode) files.addAll(splitSources)
 
             _progressDialogState.update {
                 it.copy(
-                    title = context.getString(R.string.progress_dialog_title_save),
-                    process = app.appPackageName,
-                    tasks = files.size,
-                    shouldBeShown = true
+                    title = context.getString(
+                        R.string.progress_dialog_title_save, if (backupMode) "XAPK" else "APK"
+                    ), process = app.appPackageName, tasks = files.size, shouldBeShown = true
                 )
             }
 
@@ -466,6 +469,7 @@ class AppListViewModel @Inject constructor(
             val files = ArrayList<Uri>()
             val fileUtil = FileUtil(context)
             val jobList = ArrayList<Deferred<Any?>>()
+            val backupMode = backupXapk.first()
 
             _progressDialogState.update {
                 it.copy(
@@ -482,7 +486,7 @@ class AppListViewModel @Inject constructor(
                     withContext(Dispatchers.IO) {
                         val name = ApplicationUtil.appName(app, appName.first())
                         val uri =
-                            if (!app.appSplitSourceDirectories.isNullOrEmpty()) fileUtil.shareZip(
+                            if (!app.appSplitSourceDirectories.isNullOrEmpty() && backupMode) fileUtil.shareZip(
                                 app, name
                             ) else fileUtil.shareURI(app, name)
                         files.add(uri)
@@ -505,10 +509,11 @@ class AppListViewModel @Inject constructor(
         runningTask = viewModelScope.launch {
             val fileUtil = FileUtil(context)
             val name = ApplicationUtil.appName(app, appName.first())
+            val backupMode = backupXapk.first()
             val splitSources = app.appSplitSourceDirectories
             val splits = arrayListOf(app.appSourceDirectory)
 
-            if (!splitSources.isNullOrEmpty() && true) splits.addAll(splitSources)
+            if (!splitSources.isNullOrEmpty() && backupMode) splits.addAll(splitSources)
 
             _progressDialogState.update {
                 it.copy(
@@ -533,9 +538,7 @@ class AppListViewModel @Inject constructor(
                 withContext(Dispatchers.IO) {
                     val outFile = File(context.cacheDir, "$name.xapk").let {
                         if (it.createNewFile()) it else File.createTempFile(
-                            name,
-                            ".xapk",
-                            context.cacheDir
+                            name, ".xapk", context.cacheDir
                         )
                     }
                     ZipOutputStream(BufferedOutputStream(outFile.outputStream())).use { output ->

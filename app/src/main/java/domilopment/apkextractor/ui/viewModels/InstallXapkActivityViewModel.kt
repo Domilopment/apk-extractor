@@ -22,7 +22,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
 
     var uiState by mutableStateOf(
         ProgressDialogUiState(
-            title = context.getString(R.string.progress_dialog_title_install_xapk),
+            title = context.getString(R.string.progress_dialog_title_install, "XAPK"),
             process = null,
             progress = 0F,
             tasks = 100,

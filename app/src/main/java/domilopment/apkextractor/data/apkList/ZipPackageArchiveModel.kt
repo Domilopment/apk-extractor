@@ -72,7 +72,6 @@ data class ZipPackageArchiveModel(
                     } ?: returnApp
                 }
             }
-            isPackageArchiveInfoLoaded = true
         } catch (e: IOException) {
             // No Space left on Device, ...
         } catch (oom_e: OutOfMemoryError) {

@@ -29,6 +29,10 @@
     <string name="auto_backup_app_list">Choose Apps for Auto Backup</string>
     <string name="auto_backup_app_list_summary">Select Apps from which to create an automatic backup after update </string>
 
+    <string name="backup_mode_xapk">Backup split Source APKs</string>
+    <string name="backup_mode_xapk_summary_active">Backup base.apk + split apks as XAPK file</string>
+    <string name="backup_mode_xapk_summary_inactive">Only backup base.apk</string>
+
     <!-- Preferences Apps -->
     <string name="app_type_system">System</string>
     <string name="app_type_system_updated">System (updated)</string>
@@ -239,10 +243,9 @@
     <!-- App Extraction Progress Dialog -->
     <string name="progress_dialog_percentage">%.2f %%</string>
     <string name="progress_dialog_value">%d/%d</string>
-    <string name="progress_dialog_title_save">Save APKs</string>
+    <string name="progress_dialog_title_save">Save %ss</string>
     <string name="progress_dialog_title_share">Prepare to Share</string>
-    <string name="progress_dialog_title_install">Install APK</string>
-    <string name="progress_dialog_title_install_xapk">Install XAPK</string>
+    <string name="progress_dialog_title_install">Install %s</string>
     <string name="progress_dialog_title_placeholder" translatable="false">Progress Dialog</string>
 
     <!-- Installation Result Dialog -->

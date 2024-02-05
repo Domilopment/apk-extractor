@@ -99,7 +99,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
     }
 
     class ApkActionOptionParams private constructor(
-        val saveFunction: ((ApplicationModel, (String, ExtractionResult) -> Unit, Boolean) -> Unit)?,
+        val saveFunction: ((ApplicationModel, (String, ExtractionResult) -> Unit) -> Unit)?,
         val callbackFun: ((MySnackbarVisuals) -> Unit)?,
         val errorCallback: ((String?, String?) -> Unit)?,
         val shareResult: ActivityResultLauncher<Intent>?,
@@ -107,14 +107,14 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         val deleteResult: ActivityResultLauncher<Intent>?
     ) {
         data class Builder(
-            private var saveFunction: ((ApplicationModel, (String, ExtractionResult) -> Unit, Boolean) -> Unit)? = null,
+            private var saveFunction: ((ApplicationModel, (String, ExtractionResult) -> Unit) -> Unit)? = null,
             private var callbackFun: ((MySnackbarVisuals) -> Unit)? = null,
             private var errorCallback: ((String?, String?) -> Unit)? = null,
             private var shareResult: ActivityResultLauncher<Intent>? = null,
             private var shareFunction: ((ApplicationModel, (Uri) -> Unit) -> Unit)? = null,
             private var deleteResult: ActivityResultLauncher<Intent>? = null
         ) {
-            fun saveFunction(saveFunction: (ApplicationModel, (String, ExtractionResult) -> Unit, Boolean) -> Unit) =
+            fun saveFunction(saveFunction: (ApplicationModel, (String, ExtractionResult) -> Unit) -> Unit) =
                 apply { this.saveFunction = saveFunction }
 
             fun setCallbackFun(showSnackbar: (MySnackbarVisuals) -> Unit) =

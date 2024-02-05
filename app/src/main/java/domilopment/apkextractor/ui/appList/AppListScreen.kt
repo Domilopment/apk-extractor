@@ -49,7 +49,6 @@ fun AppListScreen(
 ) {
     val context = LocalContext.current
     val state by model.mainFragmentState.collectAsState()
-    val appName by model.appName.collectAsState()
     val updatedSysApps by model.updatedSystemApps.collectAsState()
     val systemApps by model.systemApps.collectAsState()
     val userApps by model.userApps.collectAsState()

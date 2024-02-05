@@ -55,7 +55,6 @@ data class AppPackageArchiveModel(
                     } ?: returnApp
                 }
             }
-            isPackageArchiveInfoLoaded = true
             return returnApp
         } catch (_: IOException) {
             // No Space left on Device, ...

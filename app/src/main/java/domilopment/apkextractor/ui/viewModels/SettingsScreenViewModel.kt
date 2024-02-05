@@ -85,6 +85,9 @@ class SettingsScreenViewModel @Inject constructor(
     val checkUpdateOnStart = settings.checkUpdateOnStart.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
     )
+    val backupModeXapk = settings.backupModeXapk.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
+    )
 
     fun setAppSaveName(set: Set<String>) {
         viewModelScope.launch { settings.setAppSaveName(set) }
@@ -124,5 +127,9 @@ class SettingsScreenViewModel @Inject constructor(
 
     fun setCheckUpdateOnStart(b: Boolean) {
         viewModelScope.launch { settings.setCheckUpdateOnStart(b) }
+    }
+
+    fun setBackupModeXapk(b: Boolean) {
+        viewModelScope.launch { settings.setBackupModeXapk(b) }
     }
 }

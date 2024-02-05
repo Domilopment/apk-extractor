@@ -32,11 +32,11 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param anchorView Anchor View for Snackbar
      */
     fun actionSave(
-        saveFunction: (ApplicationModel, (String, ExtractionResult) -> Unit, Boolean) -> Unit,
+        saveFunction: (ApplicationModel, (String, ExtractionResult) -> Unit) -> Unit,
         showSnackbar: (MySnackbarVisuals) -> Unit,
         showErrorDialog: (String, String?) -> Unit
     ) {
-        saveFunction(app, { _, result ->
+        saveFunction(app) { _, result ->
             when (result) {
                 is ExtractionResult.Success -> {
                     EventDispatcher.emitEvent(Event(EventType.SAVED, result.uri))
@@ -51,7 +51,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
 
                 is ExtractionResult.Failure -> showErrorDialog(app.appName, result.errorMessage)
             }
-        }, true)
+        }
     }
 
     /**
@@ -59,8 +59,9 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param shareApp ActivityResultLauncher to launch Intent
      */
     fun actionShare(
-        shareApp: ActivityResultLauncher<Intent>, shareFunction: (ApplicationModel, (Uri) -> Unit) -> Unit,
-        ) {
+        shareApp: ActivityResultLauncher<Intent>,
+        shareFunction: (ApplicationModel, (Uri) -> Unit) -> Unit,
+    ) {
         shareFunction(app) { file ->
             Intent(Intent.ACTION_SEND).apply {
                 setDataAndType(file, FileUtil.MIME_TYPE)
