@@ -44,8 +44,10 @@ data class ZipPackageArchiveModel(
                 while (run { entry = input.nextEntry; entry } != null) {
                     if (entry?.name == "base.apk") {
                         baseApk = input.readBytes()
+                        input.closeEntry()
                         break
                     }
+                    input.closeEntry()
                 }
 
                 if (baseApk != null && baseApk.inputStream()

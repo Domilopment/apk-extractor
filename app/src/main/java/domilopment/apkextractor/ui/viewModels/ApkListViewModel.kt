@@ -296,6 +296,7 @@ class ApkListViewModel @Inject constructor(
                                             file.name,
                                             bytes.size.toLong()
                                         )
+                                        input.closeEntry()
                                     }
                             }
                         }

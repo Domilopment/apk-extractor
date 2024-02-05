@@ -50,6 +50,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                         InstallationUtil.addFileToSession(
                             session, bytes.inputStream(), file.name, bytes.size.toLong()
                         )
+                        input.closeEntry()
                     }
             }
             InstallationUtil.finishSession(
