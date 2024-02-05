@@ -65,9 +65,7 @@ class InstallXapkActivity : ComponentActivity() {
             }
 
             override fun onActiveChanged(sessionId: Int, active: Boolean) {
-                if (sessionId != initialSessionId) return
-
-                model.setProgressDialogActive(active)
+                // Not used
             }
 
             override fun onProgressChanged(sessionId: Int, progress: Float) {
