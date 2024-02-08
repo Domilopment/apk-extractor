@@ -15,6 +15,7 @@ import java.util.zip.ZipInputStream
 data class ZipPackageArchiveModel(
     override val fileUri: Uri,
     override val fileName: String,
+    override val fileType: String,
     override val fileLastModified: Long,
     private val fileSizeLong: Long,
     override var appName: CharSequence? = null,

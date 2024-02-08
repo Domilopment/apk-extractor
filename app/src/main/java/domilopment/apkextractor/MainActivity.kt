@@ -1,11 +1,9 @@
 package domilopment.apkextractor
 
 import android.content.Intent
-import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Binder
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -40,9 +38,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
-import androidx.core.content.IntentSanitizer
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.util.Consumer
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
@@ -58,8 +54,6 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.autoBackup.AutoBackupService
-import domilopment.apkextractor.data.ApkInstallationResult
-import domilopment.apkextractor.data.ApkInstallationResultType
 import domilopment.apkextractor.data.InAppUpdateResult
 import domilopment.apkextractor.data.InAppUpdateResultType
 import domilopment.apkextractor.data.UiMode
@@ -68,7 +62,6 @@ import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.actionBar.APKExtractorAppBar
 import domilopment.apkextractor.ui.dialogs.AskForSaveDirDialog
 import domilopment.apkextractor.ui.dialogs.InAppUpdateDialog
-import domilopment.apkextractor.ui.dialogs.InstallationResultDialog
 import domilopment.apkextractor.ui.navigation.APKExtractorBottomNavigation
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
@@ -126,10 +119,6 @@ class MainActivity : AppCompatActivity() {
                 mainScreenState.uiMode is UiMode.Action
             }
 
-            var installationResult: ApkInstallationResult? by remember {
-                mutableStateOf(null)
-            }
-
             var inAppUpdateResult: InAppUpdateResult? by remember {
                 mutableStateOf(null)
             }
@@ -169,18 +158,6 @@ class MainActivity : AppCompatActivity() {
                 // When the effect leaves the Composition, remove the observer
                 onDispose {
                     lifecycle.removeObserver(observer)
-                }
-            }
-
-            DisposableEffect(Unit) {
-                val listener = Consumer<Intent> { intent ->
-                    onNewIntent(intent) { resultType ->
-                        installationResult = ApkInstallationResult(resultType)
-                    }
-                }
-                addOnNewIntentListener(listener)
-                onDispose {
-                    removeOnNewIntentListener(listener)
                 }
             }
 
@@ -252,13 +229,6 @@ class MainActivity : AppCompatActivity() {
                             inAppUpdateResultLauncher = activityResultLauncher
                         )
 
-                        installationResult?.let {
-                            InstallationResultDialog(
-                                onDismissRequest = { installationResult = null },
-                                result = it.result,
-                            )
-                        }
-
                         inAppUpdateResult?.let {
                             InAppUpdateDialog(
                                 onDismissRequest = { inAppUpdateResult = null },
@@ -316,44 +286,6 @@ class MainActivity : AppCompatActivity() {
         cacheDir.deleteRecursively()
         super.onDestroy()
     }
-
-    private fun onNewIntent(intent: Intent, result: (ApkInstallationResultType) -> Unit) {
-        if (intent.action == PACKAGE_INSTALLATION_ACTION) {
-            when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
-                PackageInstaller.STATUS_PENDING_USER_ACTION -> {
-                    var proceed = true
-                    val activityIntent =
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            intent.getParcelableExtra(Intent.EXTRA_INTENT, Intent::class.java)
-                        } else {
-                            intent.getParcelableExtra(Intent.EXTRA_INTENT)
-                        }?.let {
-                            IntentSanitizer.Builder().allowAnyComponent()
-                                .allowAction("android.content.pm.action.CONFIRM_INSTALL")
-                                .allowPackage("com.google.android.packageinstaller").allowExtra(
-                                    "android.content.pm.extra.SESSION_ID", Integer::class.java
-                                ).build().sanitize(it) {
-                                    proceed = false
-                                }
-                        }
-                    if (proceed) startActivity(activityIntent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                }
-
-                PackageInstaller.STATUS_SUCCESS -> {
-                    val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
-                    result(ApkInstallationResultType.Success(packageName))
-                }
-
-                PackageInstaller.STATUS_FAILURE, PackageInstaller.STATUS_FAILURE_ABORTED, PackageInstaller.STATUS_FAILURE_BLOCKED, PackageInstaller.STATUS_FAILURE_CONFLICT, PackageInstaller.STATUS_FAILURE_INCOMPATIBLE, PackageInstaller.STATUS_FAILURE_INVALID, PackageInstaller.STATUS_FAILURE_STORAGE -> {
-                    val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
-                    val errorMessage = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
-                        ?: "No Error message provided"
-                    result(ApkInstallationResultType.Failure(packageName, errorMessage))
-                }
-            }
-        }
-    }
-
 
     /**
      * Checks for picked Save Directory and for Access to this Dir

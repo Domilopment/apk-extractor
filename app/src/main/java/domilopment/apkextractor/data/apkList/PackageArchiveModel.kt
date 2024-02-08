@@ -7,6 +7,7 @@ import android.net.Uri
 interface PackageArchiveModel {
     val fileUri: Uri
     val fileName: String
+    val fileType: String
     val fileLastModified: Long
     val fileSize: Float
     var appName: CharSequence?

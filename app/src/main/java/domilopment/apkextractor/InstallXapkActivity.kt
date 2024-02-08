@@ -9,9 +9,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.core.content.IntentSanitizer
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.core.util.Consumer
+import domilopment.apkextractor.data.ApkInstallationResult
+import domilopment.apkextractor.data.ApkInstallationResultType
+import domilopment.apkextractor.ui.dialogs.InstallationResultDialog
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.InstallXapkActivityViewModel
@@ -26,12 +34,26 @@ abstract class MySessionCallback : PackageInstaller.SessionCallback() {
 class InstallXapkActivity : ComponentActivity() {
     private val model by viewModels<InstallXapkActivityViewModel>()
 
-    private lateinit var sessionCallback: MySessionCallback
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val uiState = model.uiState
+            var installationResult: ApkInstallationResult? by remember {
+                mutableStateOf(null)
+            }
+
+            DisposableEffect(Unit) {
+                val listener = Consumer<Intent> { intent ->
+                    onNewIntent(intent) { resultType ->
+                        installationResult = ApkInstallationResult(resultType)
+                    }
+                }
+                addOnNewIntentListener(listener)
+                onDispose {
+                    removeOnNewIntentListener(listener)
+                }
+            }
+
             APKExtractorTheme(dynamicColor = true) {
                 Surface {
                     Box(contentAlignment = Alignment.Center) {
@@ -42,59 +64,33 @@ class InstallXapkActivity : ComponentActivity() {
                             dismissOnBackPress = true,
                             dismissOnClickOutside = true
                         )
+
+                        installationResult?.let {
+                            InstallationResultDialog(
+                                onDismissRequest = {
+                                    installationResult = null
+                                    this@InstallXapkActivity.finish()
+                                },
+                                result = it.result,
+                            )
+                        }
                     }
                 }
             }
 
         }
         this.setFinishOnTouchOutside(true)
-        val packageInstaller = applicationContext.packageManager.packageInstaller
-        sessionCallback = object : MySessionCallback() {
-            private var packageName: String? = null
-            override var initialSessionId: Int = -1
-
-            override fun onCreated(sessionId: Int) {
-                if (sessionId != initialSessionId) return
-                packageName = packageInstaller.getSessionInfo(sessionId)?.appPackageName
-
-                model.updateState(packageName, 0F)
-            }
-
-            override fun onBadgingChanged(sessionId: Int) {
-                // Not used
-            }
-
-            override fun onActiveChanged(sessionId: Int, active: Boolean) {
-                // Not used
-            }
-
-            override fun onProgressChanged(sessionId: Int, progress: Float) {
-                if (sessionId != initialSessionId) return
-
-                packageName = packageInstaller.getSessionInfo(sessionId)?.appPackageName
-                model.updateState(packageName, progress)
-            }
-
-            override fun onFinished(sessionId: Int, success: Boolean) {
-                if (sessionId != initialSessionId) return
-
-                packageInstaller.unregisterSessionCallback(this)
-                model.setProgressDialogActive(false)
-                if (success && packageName != null) EventDispatcher.emitEvent(
-                    Event(EventType.INSTALLED, packageName)
-                )
-            }
-        }
-        packageInstaller.registerSessionCallback(sessionCallback)
 
         intent.data?.let { xApkUri ->
-            contentResolver.openInputStream(xApkUri)
-        }?.run {
-            model.installXAPK(this, sessionCallback)
+            model.installXAPK(xApkUri)
         } ?: super.finish()
     }
 
-    override fun onNewIntent(intent: Intent) {
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    private fun onNewIntent(intent: Intent, result: (ApkInstallationResultType) -> Unit) {
         if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
@@ -117,32 +113,16 @@ class InstallXapkActivity : ComponentActivity() {
 
                 PackageInstaller.STATUS_SUCCESS -> {
                     val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
-                    MaterialAlertDialogBuilder(this).setTitle(R.string.installation_result_dialog_success_title)
-                        .setMessage(
-                            getString(
-                                R.string.installation_result_dialog_success_message, packageName
-                            )
-                        ).setPositiveButton(R.string.installation_result_dialog_ok) { dialog, _ ->
-                            dialog.dismiss()
-                        }.setOnDismissListener { this.finish() }.show()
+                    result(ApkInstallationResultType.Success(packageName))
                 }
 
                 PackageInstaller.STATUS_FAILURE, PackageInstaller.STATUS_FAILURE_ABORTED, PackageInstaller.STATUS_FAILURE_BLOCKED, PackageInstaller.STATUS_FAILURE_CONFLICT, PackageInstaller.STATUS_FAILURE_INCOMPATIBLE, PackageInstaller.STATUS_FAILURE_INVALID, PackageInstaller.STATUS_FAILURE_STORAGE -> {
                     val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
                     val errorMessage = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
                         ?: "No Error message provided"
-                    MaterialAlertDialogBuilder(this).setTitle(R.string.installation_result_dialog_failed_title)
-                        .setMessage(
-                            getString(
-                                R.string.installation_result_dialog_failed_message,
-                                packageName,
-                                errorMessage
-                            )
-                        ).setPositiveButton(R.string.installation_result_dialog_ok) { dialog, _ ->
-                            dialog.dismiss()
-                        }.setOnDismissListener { this.finish() }.show()
+                    result(ApkInstallationResultType.Failure(packageName, errorMessage))
                 }
             }
-        } else super.onNewIntent(intent)
+        }
     }
 }

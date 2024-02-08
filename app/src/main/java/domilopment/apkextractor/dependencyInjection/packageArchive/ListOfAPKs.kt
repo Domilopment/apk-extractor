@@ -72,10 +72,10 @@ class ListOfAPKs private constructor(
 
                     val model = when {
                         mimeType == FileUtil.MIME_TYPE -> AppPackageArchiveModel(
-                            documentUri, displayName, lastModified, size
+                            documentUri, displayName, mimeType, lastModified, size
                         )
                         displayName.endsWith(".xapk") -> ZipPackageArchiveModel(
-                            documentUri, displayName, lastModified, size
+                            documentUri, displayName, mimeType, lastModified, size
                         )
                         else -> continue
                     }

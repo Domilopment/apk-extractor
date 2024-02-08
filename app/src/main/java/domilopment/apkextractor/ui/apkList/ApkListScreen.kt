@@ -17,13 +17,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import domilopment.apkextractor.InstallXapkActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
 import domilopment.apkextractor.ui.Screen
-import domilopment.apkextractor.installApk.PackageInstallerSessionCallback
 import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet
 import domilopment.apkextractor.ui.dialogs.ApkSortMenu
-import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
@@ -44,7 +43,6 @@ fun ApkListScreen(
 ) {
     val context = LocalContext.current
     val state by model.apkListFragmentState.collectAsState()
-    val progressDialogState by model.progressDialogState.collectAsState()
     val saveDir by model.saveDir.collectAsState()
     val sortOrder by model.sortOrder.collectAsState()
 
@@ -70,6 +68,7 @@ fun ApkListScreen(
                 FileUtil(context).getDocumentInfo(
                     apkUri,
                     DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                    DocumentsContract.Document.COLUMN_MIME_TYPE,
                     DocumentsContract.Document.COLUMN_LAST_MODIFIED,
                     DocumentsContract.Document.COLUMN_SIZE
                 )
@@ -77,6 +76,7 @@ fun ApkListScreen(
                 AppPackageArchiveModel(
                     documentFile.uri,
                     documentFile.displayName!!,
+                    documentFile.mimeType!!,
                     documentFile.lastModified!!,
                     documentFile.size!!
                 )
@@ -136,11 +136,11 @@ fun ApkListScreen(
                 }, context.getString(R.string.share_intent_title)))
             },
             onActionInstall = {
-                model.installApk(
-                    it.fileUri, PackageInstallerSessionCallback(
-                        context.packageManager.packageInstaller, model
-                    )
-                )
+                Intent(context, InstallXapkActivity::class.java).apply {
+                    setDataAndType(it.fileUri, it.fileType)
+                }.let { intent ->
+                    context.startActivity(intent)
+                }
             },
             onActionDelete = {
                 DocumentsContract.deleteDocument(
@@ -166,12 +166,6 @@ fun ApkListScreen(
             deletedDocumentFound = model::remove
         )
     }
-
-    if (progressDialogState.shouldBeShown) ProgressDialog(
-        state = progressDialogState,
-        onDismissRequest = model::resetProgress,
-        onCancel = model::resetProgress
-    )
 
     ApkListContent(
         apkList = state.appList,
