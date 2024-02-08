@@ -96,9 +96,6 @@ fun AppOptionsBottomSheet(
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    var isSharing: Boolean by remember {
-        mutableStateOf(false)
-    }
     val apkOptions = ApkActionsManager(context, app)
 
     SnackbarHostModalBottomSheet(
@@ -129,7 +126,6 @@ fun AppOptionsBottomSheet(
             })
         HorizontalDivider(modifier = Modifier.padding(4.dp))
         AppSheetActions(app = app,
-            isSharing = isSharing,
             onActionSave = {
                 apkOptions.actionSave(onActionSave, {
                     scope.launch(Dispatchers.Main) { snackbarHostState.showSnackbar(it) }
@@ -159,7 +155,6 @@ fun AppOptionsBottomSheet(
 @Composable
 private fun AppSheetActions(
     app: ApplicationModel,
-    isSharing: Boolean,
     onActionSave: () -> Unit,
     onActionShare: () -> Unit,
     onActionSaveImage: () -> Unit,
@@ -183,10 +178,8 @@ private fun AppSheetActions(
             })
         AssistChip(onClick = onActionShare,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_share)) },
-            enabled = !isSharing,
             leadingIcon = {
-                if (isSharing) CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                else Icon(
+             Icon(
                     imageVector = Icons.Default.Share, contentDescription = null
                 )
             })
