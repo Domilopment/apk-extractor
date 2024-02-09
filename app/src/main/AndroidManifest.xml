@@ -86,6 +86,7 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleInstance"
+            android:taskAffinity="domilopment.apkextractor.installer"
             android:theme="@style/InstallXapkActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
