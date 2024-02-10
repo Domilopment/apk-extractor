@@ -66,7 +66,7 @@ fun ApkOptionBottomSheet(
     onActionUninstall: () -> Unit,
     deletedDocumentFound: (PackageArchiveModel) -> Unit
 ) {
-    if (!FileUtil(LocalContext.current).doesDocumentExist(apk.fileUri)) {
+    if (!FileUtil.doesDocumentExist(LocalContext.current, apk.fileUri)) {
         deletedDocumentFound(apk)
         return
     }

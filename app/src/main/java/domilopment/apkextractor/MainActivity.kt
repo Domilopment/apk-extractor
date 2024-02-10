@@ -297,7 +297,7 @@ class MainActivity : AppCompatActivity() {
             Binder.getCallingPid(),
             Binder.getCallingUid(),
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        ) == PackageManager.PERMISSION_DENIED || !FileUtil(this).doesDocumentExist(saveDir)
+        ) == PackageManager.PERMISSION_DENIED || !FileUtil.doesDocumentExist(this, saveDir)
     }
 
     private fun checkForAppUpdates() {

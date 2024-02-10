@@ -5,13 +5,11 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
 import domilopment.apkextractor.BuildConfig
-import domilopment.apkextractor.data.appList.ApplicationModel
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-class FileUtil(private val context: Context) {
-
+object FileUtil {
     data class DocumentFile(
         val uri: Uri,
         val documentId: String?,
@@ -21,29 +19,90 @@ class FileUtil(private val context: Context) {
         val mimeType: String?
     )
 
-    companion object {
-        const val MIME_TYPE = "application/vnd.android.package-archive"
-        const val SUFFIX = ".apk"
+    enum class FileInfo(val mimeType: String, val suffix: String) {
+        APK("application/vnd.android.package-archive", "apk"), XAPK(
+            "application/octet-stream", "xapk"
+        )
     }
 
     fun createDocumentFile(
-        to: Uri, fileName: String, mimeType: String, suffix: String
+        context: Context, to: Uri, fileName: String, mimeType: String, suffix: String
     ): Uri? {
         // Create new APK file in destination folder
         return DocumentsContract.createDocument(
             context.contentResolver, DocumentsContract.buildDocumentUriUsingTree(
                 to, DocumentsContract.getTreeDocumentId(to)
-            ), mimeType, "$fileName$suffix"
+            ), mimeType, "$fileName.$suffix"
         )
     }
 
-    fun writeToZip(output: ZipOutputStream, file: String) {
-        FileInputStream(file).use { input ->
-            val entry = ZipEntry(file.substring(file.lastIndexOf("/") + 1))
-            output.putNextEntry(entry)
-            input.copyTo(output)
+    object ZipUtil {
+        fun createPersistentZip(
+            context: Context,
+            to: Uri,
+            fileName: String,
+            mimeType: String = "application/zip",
+            suffix: String = "zip"
+        ): Uri? {
+            return createDocumentFile(
+                context, to, fileName, mimeType = mimeType, suffix = suffix
+            )
+        }
+
+        fun copy(
+            context: Context,
+            files: Array<String>,
+            to: Uri,
+            fileName: String,
+            mimeType: String = "application/zip",
+            suffix: String = "zip"
+        ): Uri {
+            val copy: Uri
+            createDocumentFile(
+                context, to, fileName, mimeType = mimeType, suffix = suffix
+            ).let { outputFile ->
+                // Create Output Stream for target APK file
+                copy = outputFile!!
+                ZipOutputStream(
+                    BufferedOutputStream(
+                        context.contentResolver.openOutputStream(
+                            outputFile
+                        )
+                    )
+                )
+            }.use {
+                for (file in files) writeToZip(it, file)
+            }
+            return copy
+        }
+
+        fun createTempZip(context: Context, appName: String, suffix: String = "zip"): File {
+            return createTempFile(context, appName, suffix)
+        }
+
+        fun openZipOutputStream(file: File): ZipOutputStream {
+            return ZipOutputStream(BufferedOutputStream(file.outputStream()))
+        }
+
+        fun openZipOutputStream(context: Context, uri: Uri): ZipOutputStream {
+            return ZipOutputStream(
+                BufferedOutputStream(
+                    context.contentResolver.openOutputStream(
+                        uri
+                    )
+                )
+            )
+        }
+
+        fun writeToZip(output: ZipOutputStream, file: String) {
+            FileInputStream(file).use { input ->
+                val entry = ZipEntry(file.substring(file.lastIndexOf("/") + 1))
+                output.putNextEntry(entry)
+                input.copyTo(output)
+            }
         }
     }
+
 
     /**
      * Copy APK file from Source to Chosen Save Director with Name
@@ -57,71 +116,29 @@ class FileUtil(private val context: Context) {
      * ExtractionResult with Uri if copy was Successfully else Error Message
      */
     fun copy(
-        from: String, to: Uri, fileName: String
-    ): ExtractionResult {
-        return try {
-            val extractedApk: Uri
-            // Create Input Stream from APK source file
-            FileInputStream(from).use { input ->
-                // Create new APK file in destination folder
-                createDocumentFile(to, fileName, MIME_TYPE, SUFFIX).let { outputFile ->
-                    extractedApk = outputFile!!
-                    // Create Output Stream for target APK file
-                    context.contentResolver.openOutputStream(outputFile)
-                }.use { output ->
-                    // Copy from Input to Output Stream
-                    input.copyTo(output!!)
-                }
-            }
-            ExtractionResult.Success(extractedApk)
-        } catch (fnf_e: FileNotFoundException) {
-            fnf_e.printStackTrace()
-            ExtractionResult.Failure(fnf_e.message)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ExtractionResult.Failure(e.message)
-        }
-    }
-
-    /**
-     * Creates a Uri for Provider
-     * @param app Application for sharing
-     * @return Shareable Uri of Application APK
-     */
-    fun shareURI(app: ApplicationModel, appName: String): Uri {
-        val file = try {
-            File(app.appSourceDirectory).copyTo(
-                File(
-                    context.cacheDir, "$appName.apk"
-                ), true
-            )
-        } catch (e: FileAlreadyExistsException) {
-            File.createTempFile(appName, SUFFIX, context.cacheDir)
-        }
-        return FileProvider.getUriForFile(
-            context, "${BuildConfig.APPLICATION_ID}.provider", file
-        )
-    }
-
-    fun createZip(files: Array<String>, to: Uri, fileName: String): ExtractionResult {
-        return try {
-            val extractedApk: Uri
-            createDocumentFile(
-                to, fileName, "application/octet-stream", ".xapk"
-            ).let { outputFile ->
+        context: Context, from: String, to: Uri, fileName: String, mimeType: String, suffix: String
+    ): Uri {
+        val extractedApk: Uri
+        // Create Input Stream from APK source file
+        FileInputStream(from).use { input ->
+            // Create new APK file in destination folder
+            createDocumentFile(context, to, fileName, mimeType, suffix).let { outputFile ->
                 extractedApk = outputFile!!
                 // Create Output Stream for target APK file
-                ZipOutputStream(BufferedOutputStream(context.contentResolver.openOutputStream(outputFile)))
+                context.contentResolver.openOutputStream(outputFile)
             }.use { output ->
-                for (file in files) writeToZip(output, file)
+                // Copy from Input to Output Stream
+                input.copyTo(output!!)
             }
-            ExtractionResult.Success(extractedApk)
-        } catch (fnf_e: FileNotFoundException) {
-            fnf_e.printStackTrace()
-            ExtractionResult.Failure(fnf_e.message)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ExtractionResult.Failure(e.message)
+        }
+        return extractedApk
+    }
+
+    fun createTempFile(context: Context, appName: String, suffix: String): File {
+        return File(context.cacheDir, "$appName.$suffix").let {
+            if (it.createNewFile()) it else File.createTempFile(
+                appName, ".$suffix", context.cacheDir
+            )
         }
     }
 
@@ -130,26 +147,16 @@ class FileUtil(private val context: Context) {
      * @param app Application for sharing
      * @return Shareable Uri of Application APK
      */
-    fun shareZip(app: ApplicationModel, appName: String): Uri {
-        val files = arrayOf(app.appSourceDirectory, *app.appSplitSourceDirectories!!)
-
-        val outFile = File(context.cacheDir, "$appName.xapk").let {
-            if (it.createNewFile()) it else File.createTempFile(appName, ".xapk", context.cacheDir)
-        }
-        ZipOutputStream(BufferedOutputStream(outFile.outputStream())).use { output ->
-            for (file in files) writeToZip(output, file)
-        }
-        return FileProvider.getUriForFile(
-            context, "${BuildConfig.APPLICATION_ID}.provider", outFile
-        )
-    }
+    fun createShareUriForFile(context: Context, file: File): Uri = FileProvider.getUriForFile(
+        context, "${BuildConfig.APPLICATION_ID}.provider", file,
+    )
 
     /**
      * Takes uri from Document file, and checks if Document exists
      * @param uri Document uri
      * @return true if document exist else false
      */
-    fun doesDocumentExist(uri: Uri): Boolean {
+    fun doesDocumentExist(context: Context, uri: Uri): Boolean {
         val documentUri = if (DocumentsContract.isTreeUri(uri)) {
             val documentId = if (DocumentsContract.isDocumentUri(
                     context, uri
@@ -181,7 +188,7 @@ class FileUtil(private val context: Context) {
      * @return DocumentFile with requested information or null if failed
      */
     fun getDocumentInfo(
-        uri: Uri, vararg projection: String = arrayOf(
+        context: Context, uri: Uri, vararg projection: String = arrayOf(
             DocumentsContract.Document.COLUMN_DOCUMENT_ID,
             DocumentsContract.Document.COLUMN_DISPLAY_NAME,
             DocumentsContract.Document.COLUMN_LAST_MODIFIED,

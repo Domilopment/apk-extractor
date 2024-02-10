@@ -6,7 +6,6 @@ import android.provider.DocumentsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.data.apkList.ApkListScreenState
 import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
 import domilopment.apkextractor.data.apkList.PackageArchiveModel
@@ -50,9 +49,6 @@ class ApkListViewModel @Inject constructor(
     val apkListFragmentState: StateFlow<ApkListScreenState> = _apkListFragmentState.asStateFlow()
 
     private val _searchQuery: MutableStateFlow<String?> = MutableStateFlow(null)
-
-    private val _progressDialogState: MutableStateFlow<ProgressDialogUiState> =
-        MutableStateFlow(ProgressDialogUiState())
 
     val saveDir = preferenceRepository.saveDir.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
@@ -172,7 +168,8 @@ class ApkListViewModel @Inject constructor(
 
     private fun addPackageArchiveModel(uri: Uri) {
         viewModelScope.launch {
-            FileUtil(context).getDocumentInfo(
+            FileUtil.getDocumentInfo(
+                context,
                 uri,
                 DocumentsContract.Document.COLUMN_DISPLAY_NAME,
                 DocumentsContract.Document.COLUMN_MIME_TYPE,
@@ -200,7 +197,7 @@ class ApkListViewModel @Inject constructor(
     }
 
     fun remove(apk: PackageArchiveModel) {
-        if (FileUtil(context).doesDocumentExist(apk.fileUri)) return
+        if (FileUtil.doesDocumentExist(context, apk.fileUri)) return
 
         _apkListFragmentState.update { state ->
             state.copy(

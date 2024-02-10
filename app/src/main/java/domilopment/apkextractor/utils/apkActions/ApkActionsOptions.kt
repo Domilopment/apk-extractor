@@ -2,7 +2,6 @@ package domilopment.apkextractor.utils.apkActions
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
@@ -15,7 +14,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.appList.ApplicationModel
-import domilopment.apkextractor.utils.ExtractionResult
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 
@@ -24,18 +22,16 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            if (params.callbackFun == null || params.errorCallback == null || params.saveFunction == null) return
-            ApkActionsManager(context, app).actionSave(
-                params.saveFunction, params.callbackFun, params.errorCallback
-            )
+            if (params.saveFunction == null) return
+            ApkActionsManager(context, app).actionSave(params.saveFunction)
         }
     },
     SHARE("share_apk", R.string.action_bottom_sheet_share, Icons.Default.Share) {
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            if (params.shareFunction == null || params.shareResult == null) return
-            ApkActionsManager(context, app).actionShare(params.shareResult, params.shareFunction)
+            if (params.shareFunction == null) return
+            ApkActionsManager(context, app).actionShare(params.shareFunction)
         }
     },
     ICON("save_icon", R.string.action_bottom_sheet_save_image, Icons.Default.Image) {
@@ -99,22 +95,22 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
     }
 
     class ApkActionOptionParams private constructor(
-        val saveFunction: ((ApplicationModel, (String, ExtractionResult) -> Unit) -> Unit)?,
+        val saveFunction: ((List<ApplicationModel>) -> Unit)?,
         val callbackFun: ((MySnackbarVisuals) -> Unit)?,
         val errorCallback: ((String?, String?) -> Unit)?,
         val shareResult: ActivityResultLauncher<Intent>?,
-        val shareFunction: ((ApplicationModel, (Uri) -> Unit) -> Unit)?,
+        val shareFunction: ((List<ApplicationModel>) -> Unit)?,
         val deleteResult: ActivityResultLauncher<Intent>?
     ) {
         data class Builder(
-            private var saveFunction: ((ApplicationModel, (String, ExtractionResult) -> Unit) -> Unit)? = null,
+            private var saveFunction: ((List<ApplicationModel>) -> Unit)? = null,
             private var callbackFun: ((MySnackbarVisuals) -> Unit)? = null,
             private var errorCallback: ((String?, String?) -> Unit)? = null,
             private var shareResult: ActivityResultLauncher<Intent>? = null,
-            private var shareFunction: ((ApplicationModel, (Uri) -> Unit) -> Unit)? = null,
+            private var shareFunction: ((List<ApplicationModel>) -> Unit)? = null,
             private var deleteResult: ActivityResultLauncher<Intent>? = null
         ) {
-            fun saveFunction(saveFunction: (ApplicationModel, (String, ExtractionResult) -> Unit) -> Unit) =
+            fun saveFunction(saveFunction: (List<ApplicationModel>) -> Unit) =
                 apply { this.saveFunction = saveFunction }
 
             fun setCallbackFun(showSnackbar: (MySnackbarVisuals) -> Unit) =
@@ -126,7 +122,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
             fun setShareResult(activityResultLauncher: ActivityResultLauncher<Intent>) =
                 apply { this.shareResult = activityResultLauncher }
 
-            fun setShareFunction(shareFunction: ((ApplicationModel, (Uri) -> Unit) -> Unit)) =
+            fun setShareFunction(shareFunction: (List<ApplicationModel>) -> Unit) =
                 apply { this.shareFunction = shareFunction }
 
             fun setDeleteResult(activityResultLauncher: ActivityResultLauncher<Intent>) =

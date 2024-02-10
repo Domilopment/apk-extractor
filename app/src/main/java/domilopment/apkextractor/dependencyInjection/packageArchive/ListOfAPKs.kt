@@ -71,12 +71,14 @@ class ListOfAPKs private constructor(
                         DocumentsContract.buildDocumentUriUsingTree(childrenUri, documentId)
 
                     val model = when {
-                        mimeType == FileUtil.MIME_TYPE -> AppPackageArchiveModel(
+                        mimeType == FileUtil.FileInfo.APK.mimeType -> AppPackageArchiveModel(
                             documentUri, displayName, mimeType, lastModified, size
                         )
+
                         displayName.endsWith(".xapk") -> ZipPackageArchiveModel(
                             documentUri, displayName, mimeType, lastModified, size
                         )
+
                         else -> continue
                     }
 

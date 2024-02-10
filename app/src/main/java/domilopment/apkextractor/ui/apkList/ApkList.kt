@@ -34,7 +34,7 @@ fun ApkList(
 
     LazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
         items(items = apkList, key = { it.fileUri }) { apk ->
-            if (!FileUtil(LocalContext.current).doesDocumentExist(apk.fileUri)) {
+            if (!FileUtil.doesDocumentExist(LocalContext.current, apk.fileUri)) {
                 deletedDocumentFound(apk)
                 return@items
             }
@@ -85,6 +85,7 @@ private fun ApkListPreview() {
         mutableStateListOf(object : PackageArchiveModel {
             override val fileUri: Uri = Uri.parse("test")
             override val fileName: String = "test.apk"
+            override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
             override val fileSize: Float = 1024F
             override var appName: CharSequence? = "Test"
@@ -99,6 +100,7 @@ private fun ApkListPreview() {
         }, object : PackageArchiveModel {
             override val fileUri: Uri = Uri.parse("test2")
             override val fileName: String = "test2.apk"
+            override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
             override val fileSize: Float = 1024F
             override var appName: CharSequence? = "Test"
@@ -113,6 +115,7 @@ private fun ApkListPreview() {
         }, object : PackageArchiveModel {
             override val fileUri: Uri = Uri.parse("test (2)")
             override val fileName: String = "test (2).apk"
+            override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
             override val fileSize: Float = 1024F
             override var appName: CharSequence? = "Test"

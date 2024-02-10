@@ -97,16 +97,14 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                 this@InstallXapkActivityViewModel.session = session
                 sessionCallback.initialSessionId = sessionId
 
-                val fileUtil = FileUtil(context)
-
-                val mime = fileUtil.getDocumentInfo(
-                    fileUri, DocumentsContract.Document.COLUMN_MIME_TYPE
+                val mime = FileUtil.getDocumentInfo(
+                    context, fileUri, DocumentsContract.Document.COLUMN_MIME_TYPE
                 )?.mimeType
                 when (mime) {
-                    FileUtil.MIME_TYPE -> contentResolver.openInputStream(fileUri)
+                    FileUtil.FileInfo.APK.mimeType -> contentResolver.openInputStream(fileUri)
                         ?.use { apkStream ->
-                            val length = FileUtil(context).getDocumentInfo(
-                                fileUri, DocumentsContract.Document.COLUMN_SIZE
+                            val length = FileUtil.getDocumentInfo(
+                                context, fileUri, DocumentsContract.Document.COLUMN_SIZE
                             )?.size ?: -1
 
                             InstallationUtil.addFileToSession(

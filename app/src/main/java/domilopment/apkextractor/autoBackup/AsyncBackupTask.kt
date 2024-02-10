@@ -34,6 +34,7 @@ class AsyncBackupTask(
     private val context: Context,
     private val appName: Set<String>,
     private val saveDir: Uri,
+    private val extractXapk: Boolean,
     packageName: String
 ) : CoroutineScope by GlobalScope {
     companion object {
@@ -59,14 +60,22 @@ class AsyncBackupTask(
         }
     }
 
-    private fun doInBackground(): Uri? {
+    private suspend fun backup(): ExtractionResult {
+        val splits = arrayListOf(app.appSourceDirectory)
+        if (!app.appSplitSourceDirectories.isNullOrEmpty() && extractXapk) splits.addAll(app.appSplitSourceDirectories!!)
+
+        val name = ApplicationUtil.appName(app, appName)
+        return if (splits.size == 1) {
+            ApplicationUtil.saveApk(context, app.appSourceDirectory, saveDir, name)
+        } else {
+            ApplicationUtil.saveXapk(context, splits.toTypedArray(), saveDir, name) {}
+        }
+    }
+
+    private suspend fun doInBackground(): Uri? {
         // Try to Backup App
         return try {
-            when (val result = FileUtil(context).copy(
-                app.appSourceDirectory, saveDir, ApplicationUtil.appName(
-                    app, appName
-                )
-            )) {
+            when (val result = backup()) {
                 is ExtractionResult.Success -> result.uri
                 is ExtractionResult.Failure -> null
             }
@@ -76,7 +85,7 @@ class AsyncBackupTask(
         }
     }
 
-    private fun onPostExecute(result: Uri?) {
+    private suspend fun onPostExecute(result: Uri?) {
         // Let User know when App is or should be Updated
         createNotificationChannel()
         with(NotificationManagerCompat.from(context)) {
@@ -139,7 +148,7 @@ class AsyncBackupTask(
         // Share APK on Button Click
         val sharePendingIntent: PendingIntent = Intent.createChooser(
             Intent(Intent.ACTION_SEND).apply {
-                type = FileUtil.MIME_TYPE
+                type = FileUtil.FileInfo.APK.mimeType
                 putExtra(Intent.EXTRA_STREAM, fileUri)
             }, context.getString(R.string.share_intent_title)
         ).let {

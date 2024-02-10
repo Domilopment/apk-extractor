@@ -32,11 +32,15 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                 val saveDir = runBlocking {
                     preferenceRepository.saveDir.first()
                 }
+                val extractXapk = runBlocking {
+                    preferenceRepository.backupModeXapk.first()
+                }
                 // Check if Updated App is in Backup List
                 if (autoBackupList.contains(packageName) && saveDir != null) {
                     val pendingResult: PendingResult = goAsync()
-                    val asyncTask =
-                        AsyncBackupTask(pendingResult, context, appSaveName, saveDir, packageName)
+                    val asyncTask = AsyncBackupTask(
+                        pendingResult, context, appSaveName, saveDir, extractXapk, packageName
+                    )
                     asyncTask.execute()
                 }
             }

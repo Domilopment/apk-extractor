@@ -3,7 +3,6 @@ package domilopment.apkextractor.ui.dialogs
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
@@ -36,20 +35,18 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -65,11 +62,12 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
-import domilopment.apkextractor.utils.ExtractionResult
+import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -79,14 +77,13 @@ fun AppOptionsBottomSheet(
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     onFavoriteChanged: (Boolean) -> Unit,
-    onActionSave: (ApplicationModel, (String, ExtractionResult) -> Unit) -> Unit,
-    onSaveError: (String?, String?) -> Unit,
-    onActionShare: (ApplicationModel, (Uri) -> Unit) -> Unit,
-    onActionShareResult: ManagedActivityResultLauncher<Intent, ActivityResult>,
+    onActionSave: () -> Unit,
+    saveResult: SharedFlow<Triple<String?, ApplicationModel?, Int>>,
+    onActionShare: () -> Unit,
     onActionSaveImage: PermissionState,
     intentUninstallApp: ManagedActivityResultLauncher<Intent, ActivityResult>,
     onActionUninstall: () -> Unit,
-    uninstalledAppFound: (ApplicationModel) -> Unit
+    uninstalledAppFound: (ApplicationModel) -> Unit,
 ) {
     val context = LocalContext.current
     if (!Utils.isPackageInstalled(context.packageManager, app.appPackageName)) {
@@ -97,6 +94,20 @@ fun AppOptionsBottomSheet(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val apkOptions = ApkActionsManager(context, app)
+
+    LaunchedEffect(key1 = Unit) {
+        saveResult.collect { (errorMessage, app, _) ->
+            if (errorMessage == null) scope.launch(Dispatchers.Main) {
+                snackbarHostState.showSnackbar(
+                    MySnackbarVisuals(
+                        duration = SnackbarDuration.Short, message = context.getString(
+                            R.string.snackbar_successful_extracted, app?.appName
+                        )
+                    )
+                )
+            }
+        }
+    }
 
     SnackbarHostModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -126,14 +137,8 @@ fun AppOptionsBottomSheet(
             })
         HorizontalDivider(modifier = Modifier.padding(4.dp))
         AppSheetActions(app = app,
-            onActionSave = {
-                apkOptions.actionSave(onActionSave, {
-                    scope.launch(Dispatchers.Main) { snackbarHostState.showSnackbar(it) }
-                }, onSaveError)
-            },
-            onActionShare = {
-                apkOptions.actionShare(onActionShareResult, onActionShare)
-            },
+            onActionSave = onActionSave,
+            onActionShare = onActionShare,
             onActionSaveImage = label@{
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !onActionSaveImage.status.isGranted) {
                     onActionSaveImage.launchPermissionRequest()
@@ -179,7 +184,7 @@ private fun AppSheetActions(
         AssistChip(onClick = onActionShare,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_share)) },
             leadingIcon = {
-             Icon(
+                Icon(
                     imageVector = Icons.Default.Share, contentDescription = null
                 )
             })

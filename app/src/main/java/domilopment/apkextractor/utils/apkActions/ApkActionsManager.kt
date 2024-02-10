@@ -16,11 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.drawable.toBitmap
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.appList.ApplicationModel
-import domilopment.apkextractor.utils.ExtractionResult
-import domilopment.apkextractor.utils.eventHandler.Event
-import domilopment.apkextractor.utils.eventHandler.EventType
-import domilopment.apkextractor.utils.eventHandler.EventDispatcher
-import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import java.io.File
@@ -32,26 +27,9 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param anchorView Anchor View for Snackbar
      */
     fun actionSave(
-        saveFunction: (ApplicationModel, (String, ExtractionResult) -> Unit) -> Unit,
-        showSnackbar: (MySnackbarVisuals) -> Unit,
-        showErrorDialog: (String, String?) -> Unit
+        saveFunction: (List<ApplicationModel>) -> Unit,
     ) {
-        saveFunction(app) { _, result ->
-            when (result) {
-                is ExtractionResult.Success -> {
-                    EventDispatcher.emitEvent(Event(EventType.SAVED, result.uri))
-                    showSnackbar(
-                        MySnackbarVisuals(
-                            duration = SnackbarDuration.Short, message = context.getString(
-                                R.string.snackbar_successful_extracted, app.appName
-                            )
-                        )
-                    )
-                }
-
-                is ExtractionResult.Failure -> showErrorDialog(app.appName, result.errorMessage)
-            }
-        }
+        saveFunction(listOf(app))
     }
 
     /**
@@ -59,20 +37,9 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * @param shareApp ActivityResultLauncher to launch Intent
      */
     fun actionShare(
-        shareApp: ActivityResultLauncher<Intent>,
-        shareFunction: (ApplicationModel, (Uri) -> Unit) -> Unit,
+        shareFunction: (List<ApplicationModel>) -> Unit,
     ) {
-        shareFunction(app) { file ->
-            Intent(Intent.ACTION_SEND).apply {
-                setDataAndType(file, FileUtil.MIME_TYPE)
-                putExtra(Intent.EXTRA_STREAM, file)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }.let {
-                Intent.createChooser(it, context.getString(R.string.share_intent_title))
-            }.also {
-                shareApp.launch(it)
-            }
-        }
+        shareFunction(listOf(app))
     }
 
     /**

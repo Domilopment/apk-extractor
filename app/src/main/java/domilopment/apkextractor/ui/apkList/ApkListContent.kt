@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import domilopment.apkextractor.data.apkList.PackageArchiveModel
+import domilopment.apkextractor.utils.FileUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -66,6 +67,7 @@ private fun ApkListScreenPreview() {
         mutableStateListOf(object : PackageArchiveModel {
             override val fileUri: Uri = Uri.parse("test")
             override val fileName: String = "test.apk"
+            override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
             override val fileSize: Float = 1024F
             override var appName: CharSequence? = "Test"
@@ -80,6 +82,7 @@ private fun ApkListScreenPreview() {
         }, object : PackageArchiveModel {
             override val fileUri: Uri = Uri.parse("test2")
             override val fileName: String = "test2.apk"
+            override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
             override val fileSize: Float = 1024F
             override var appName: CharSequence? = "Test"
@@ -94,6 +97,7 @@ private fun ApkListScreenPreview() {
         }, object : PackageArchiveModel {
             override val fileUri: Uri = Uri.parse("test (2)")
             override val fileName: String = "test (2).apk"
+            override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
             override val fileSize: Float = 1024F
             override var appName: CharSequence? = "Test"
@@ -112,6 +116,7 @@ private fun ApkListScreenPreview() {
     val apkToAdd = object : PackageArchiveModel {
         override val fileUri: Uri = Uri.parse("test (3)")
         override val fileName: String = "test (3).apk"
+        override val fileType: String = FileUtil.FileInfo.APK.mimeType
         override val fileLastModified: Long = 0L
         override val fileSize: Float = 1024F
         override var appName: CharSequence? = "Test"

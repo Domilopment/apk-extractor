@@ -64,8 +64,6 @@ fun AppListScreen(
     val swipeActionThresholdMod by model.swipeActionThresholdMod.collectAsState()
 
     val progressDialogState by model.progressDialogState.collectAsState()
-    val extractionResult by model.extractionResult.collectAsState()
-    val shareResult by model.shareResult.collectAsState()
 
     var showFilter by rememberSaveable {
         mutableStateOf(false)
@@ -120,8 +118,8 @@ fun AppListScreen(
         }
     }
 
-    LaunchedEffect(key1 = extractionResult) {
-        extractionResult?.getContentIfNotHandled()?.let { (errorMessage, app, size) ->
+    LaunchedEffect(key1 = Unit) {
+        model.extractionResult.collect { (errorMessage, app, size) ->
             if (errorMessage != null) extractionError = Pair(app?.appName, errorMessage)
             else showSnackbar(
                 MySnackbarVisuals(
@@ -133,18 +131,16 @@ fun AppListScreen(
                     )
                 )
             )
-
-            model.resetProgress()
         }
     }
 
-    LaunchedEffect(key1 = shareResult) {
+    LaunchedEffect(key1 = Unit) {
         /**
          * Creates Intent for Apps to Share
          */
-        shareResult?.getContentIfNotHandled()?.let { files ->
+        model.shareResult.collect { files ->
             Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                type = FileUtil.MIME_TYPE
+                type = FileUtil.FileInfo.APK.mimeType
                 clipData = ClipData.newRawUri(null, files[0]).apply {
                     files.drop(1).forEach { addItem(ClipData.Item(it)) }
                 }
@@ -155,8 +151,6 @@ fun AppListScreen(
             }?.also {
                 shareApp.launch(it)
             }
-
-            model.resetProgress()
         }
     }
 
@@ -194,22 +188,21 @@ fun AppListScreen(
     }
 
     state.selectedApp?.let { selectedApp ->
-        AppOptionsBottomSheet(app = selectedApp,
+        AppOptionsBottomSheet(
+            app = selectedApp,
             onDismissRequest = { model.selectApplication(null) },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             onFavoriteChanged = { isChecked ->
                 model.editFavorites(selectedApp.appPackageName, isChecked)
             },
-            onActionSave = model::saveApp,
-            onSaveError = { appName, errorMessage ->
-                extractionError = Pair(appName, errorMessage)
-            },
-            onActionShare = model::createShareUrisForApp,
-            onActionShareResult = shareApp,
+            onActionSave = { model.saveApps(listOf(selectedApp)) },
+            saveResult = model.extractionResult,
+            onActionShare = { model.createShareUrisForApps(listOf(selectedApp)) },
             onActionSaveImage = saveImage,
             intentUninstallApp = uninstallApp,
             onActionUninstall = { appToUninstall = selectedApp },
-            uninstalledAppFound = { model.uninstallApps(it) })
+            uninstalledAppFound = model::uninstallApps
+        )
     }
 
     if (showFilter) AppFilterBottomSheet(
@@ -276,10 +269,10 @@ fun AppListScreen(
             apkAction.getAction(
                 context,
                 app,
-                ApkActionsOptions.ApkActionOptionParams.Builder().saveFunction(model::saveApp)
+                ApkActionsOptions.ApkActionOptionParams.Builder().saveFunction(model::saveApps)
                     .setCallbackFun(showSnackbar).setErrorCallBack { appName, errorMessage ->
                         extractionError = Pair(appName, errorMessage)
-                    }.setShareResult(shareApp).setShareFunction(model::createShareUrisForApp)
+                    }.setShareResult(shareApp).setShareFunction(model::createShareUrisForApps)
                     .setDeleteResult(uninstallApp).build()
             )
         },

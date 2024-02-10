@@ -65,7 +65,8 @@ fun ApkListScreen(
             }
         }) {
             it?.let { apkUri ->
-                FileUtil(context).getDocumentInfo(
+                FileUtil.getDocumentInfo(
+                    context,
                     apkUri,
                     DocumentsContract.Document.COLUMN_DISPLAY_NAME,
                     DocumentsContract.Document.COLUMN_MIME_TYPE,
@@ -106,7 +107,7 @@ fun ApkListScreen(
         Screen.ApkList.buttons.onEach { button ->
             when (button) {
                 Screen.ScreenActions.Sort -> sortDialog = true
-                Screen.ScreenActions.OpenExplorer -> selectApk.launch(arrayOf(FileUtil.MIME_TYPE))
+                Screen.ScreenActions.OpenExplorer -> selectApk.launch(arrayOf(FileUtil.FileInfo.APK.mimeType))
                 Screen.ScreenActions.Refresh -> model.updatePackageArchives()
                 Screen.ScreenActions.Settings -> onNavigate()
 
@@ -131,7 +132,7 @@ fun ApkListScreen(
             onRefresh = { model.forceRefresh(it) },
             onActionShare = {
                 context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-                    type = FileUtil.MIME_TYPE
+                    type = FileUtil.FileInfo.APK.mimeType
                     putExtra(Intent.EXTRA_STREAM, it.fileUri)
                 }, context.getString(R.string.share_intent_title)))
             },
