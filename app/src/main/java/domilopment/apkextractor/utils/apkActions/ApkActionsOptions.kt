@@ -97,16 +97,12 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
     class ApkActionOptionParams private constructor(
         val saveFunction: ((List<ApplicationModel>) -> Unit)?,
         val callbackFun: ((MySnackbarVisuals) -> Unit)?,
-        val errorCallback: ((String?, String?) -> Unit)?,
-        val shareResult: ActivityResultLauncher<Intent>?,
         val shareFunction: ((List<ApplicationModel>) -> Unit)?,
         val deleteResult: ActivityResultLauncher<Intent>?
     ) {
         data class Builder(
             private var saveFunction: ((List<ApplicationModel>) -> Unit)? = null,
             private var callbackFun: ((MySnackbarVisuals) -> Unit)? = null,
-            private var errorCallback: ((String?, String?) -> Unit)? = null,
-            private var shareResult: ActivityResultLauncher<Intent>? = null,
             private var shareFunction: ((List<ApplicationModel>) -> Unit)? = null,
             private var deleteResult: ActivityResultLauncher<Intent>? = null
         ) {
@@ -116,12 +112,6 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
             fun setCallbackFun(showSnackbar: (MySnackbarVisuals) -> Unit) =
                 apply { this.callbackFun = showSnackbar }
 
-            fun setErrorCallBack(errorDialogCallback: (String?, String?) -> Unit) =
-                apply { this.errorCallback = errorDialogCallback }
-
-            fun setShareResult(activityResultLauncher: ActivityResultLauncher<Intent>) =
-                apply { this.shareResult = activityResultLauncher }
-
             fun setShareFunction(shareFunction: (List<ApplicationModel>) -> Unit) =
                 apply { this.shareFunction = shareFunction }
 
@@ -129,7 +119,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
                 apply { this.deleteResult = activityResultLauncher }
 
             fun build() = ApkActionOptionParams(
-                saveFunction, callbackFun, errorCallback, shareResult, shareFunction, deleteResult
+                saveFunction, callbackFun, shareFunction, deleteResult
             )
         }
     }

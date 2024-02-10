@@ -270,9 +270,7 @@ fun AppListScreen(
                 context,
                 app,
                 ApkActionsOptions.ApkActionOptionParams.Builder().saveFunction(model::saveApps)
-                    .setCallbackFun(showSnackbar).setErrorCallBack { appName, errorMessage ->
-                        extractionError = Pair(appName, errorMessage)
-                    }.setShareResult(shareApp).setShareFunction(model::createShareUrisForApps)
+                    .setCallbackFun(showSnackbar).setShareFunction(model::createShareUrisForApps)
                     .setDeleteResult(uninstallApp).build()
             )
         },
