@@ -1,6 +1,7 @@
 package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
+import android.content.Context
 import android.content.pm.PackageInstaller
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -19,13 +20,15 @@ import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedInputStream
+import java.io.IOException
 import java.util.zip.ZipInputStream
 
 class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(application) {
-    val context get() = getApplication<Application>().applicationContext
+    val context: Context get() = getApplication<Application>().applicationContext
 
     var uiState by mutableStateOf(
         ProgressDialogUiState(
@@ -77,6 +80,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
     }
 
     private var session: PackageInstaller.Session? = null
+    private var task: Job? = null
 
     fun updateState(packageName: String?, progress: Float) {
         uiState = uiState.copy(process = packageName, progress = progress * 100)
@@ -87,7 +91,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
     }
 
     fun installXAPK(fileUri: Uri) {
-        viewModelScope.launch(Dispatchers.Main) {
+        task = viewModelScope.launch(Dispatchers.Main) {
             val packageInstaller = context.applicationContext.packageManager.packageInstaller
             val contentResolver = context.applicationContext.contentResolver
             packageInstaller.registerSessionCallback(sessionCallback)
@@ -100,40 +104,51 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                 val mime = FileUtil.getDocumentInfo(
                     context, fileUri, DocumentsContract.Document.COLUMN_MIME_TYPE
                 )?.mimeType
-                when (mime) {
-                    FileUtil.FileInfo.APK.mimeType -> contentResolver.openInputStream(fileUri)
-                        ?.use { apkStream ->
-                            val length = FileUtil.getDocumentInfo(
-                                context, fileUri, DocumentsContract.Document.COLUMN_SIZE
-                            )?.size ?: -1
+                try {
+                    when (mime) {
+                        FileUtil.FileInfo.APK.mimeType -> contentResolver.openInputStream(fileUri)
+                            ?.use { apkStream ->
+                                val length = FileUtil.getDocumentInfo(
+                                    context, fileUri, DocumentsContract.Document.COLUMN_SIZE
+                                )?.size ?: -1
 
-                            InstallationUtil.addFileToSession(
-                                session, apkStream, "base.apk", length
-                            )
-                        }
-
-                    "application/octet-stream" -> contentResolver.openInputStream(fileUri)
-                        ?.use { xApkStream ->
-                            ZipInputStream(BufferedInputStream(xApkStream)).use { input ->
-                                generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
-                                    .forEach { file ->
-                                        val bytes = input.readBytes()
-                                        InstallationUtil.addFileToSession(
-                                            session,
-                                            bytes.inputStream(),
-                                            file.name,
-                                            bytes.size.toLong()
-                                        )
-                                        input.closeEntry()
-                                    }
+                                InstallationUtil.addFileToSession(
+                                    session, apkStream, "base.apk", length
+                                )
                             }
-                        }
+
+                        "application/octet-stream" -> contentResolver.openInputStream(fileUri)
+                            ?.use { xApkStream ->
+                                ZipInputStream(BufferedInputStream(xApkStream)).use { input ->
+                                    generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
+                                        .forEach { entry ->
+                                            updateState("Read file: ${entry.name}", 0f)
+                                            if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.addFileToSession(
+                                                session, input, entry.name, entry.size
+                                            )
+                                            input.closeEntry()
+                                        }
+                                }
+                            }
+                    }
+                } catch (e: IOException) {
+                    // Thrown if Session is abandoned
                 }
 
-                InstallationUtil.finishSession(
+                updateState("installation", 0f)
+
+                if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.finishSession(
                     context, session, sessionId, InstallXapkActivity::class.java
                 )
             }
         }
+    }
+
+    fun cancel() {
+        task?.cancel()
+        task = null
+        val temp = session
+        session = null
+        temp?.abandon()
     }
 }

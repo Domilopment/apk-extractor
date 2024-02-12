@@ -40,20 +40,17 @@ data class ZipPackageArchiveModel(
         try {
             apkFile = File.createTempFile("temp", ".apk", context.cacheDir)
             ZipInputStream(BufferedInputStream(context.contentResolver.openInputStream(fileUri))).use { input ->
-                var baseApk: ByteArray? = null
                 var entry: ZipEntry?
                 while (run { entry = input.nextEntry; entry } != null) {
                     if (entry?.name == "base.apk") {
-                        baseApk = input.readBytes()
+                        input.copyTo(apkFile.outputStream())
                         input.closeEntry()
                         break
                     }
                     input.closeEntry()
                 }
 
-                if (baseApk != null && baseApk.inputStream()
-                        .copyTo(apkFile.outputStream()) == baseApk.size.toLong()
-                ) {
+                if (apkFile?.length() != 0L) {
                     val archiveInfo =
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) packageManager.getPackageArchiveInfo(
                             apkFile.path, PackageManager.PackageInfoFlags.of(0L)
@@ -75,8 +72,6 @@ data class ZipPackageArchiveModel(
             }
         } catch (e: IOException) {
             // No Space left on Device, ...
-        } catch (oom_e: OutOfMemoryError) {
-            // Prevent crash if memory run out
         } finally {
             isPackageArchiveInfoLoading = false
             if (apkFile != null && apkFile.exists()) apkFile.delete()

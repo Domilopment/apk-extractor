@@ -23,9 +23,6 @@ import domilopment.apkextractor.ui.dialogs.InstallationResultDialog
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.InstallXapkActivityViewModel
-import domilopment.apkextractor.utils.eventHandler.Event
-import domilopment.apkextractor.utils.eventHandler.EventDispatcher
-import domilopment.apkextractor.utils.eventHandler.EventType
 
 abstract class MySessionCallback : PackageInstaller.SessionCallback() {
     abstract var initialSessionId: Int
@@ -57,10 +54,15 @@ class InstallXapkActivity : ComponentActivity() {
             APKExtractorTheme(dynamicColor = true) {
                 Surface {
                     Box(contentAlignment = Alignment.Center) {
-                        if (uiState.shouldBeShown) ProgressDialog(
-                            state = uiState,
-                            onDismissRequest = { this@InstallXapkActivity.finish() },
-                            onCancel = { this@InstallXapkActivity.finish() },
+                        if (uiState.shouldBeShown) ProgressDialog(state = uiState,
+                            onDismissRequest = {
+                                model.cancel()
+                                this@InstallXapkActivity.finish()
+                            },
+                            onCancel = {
+                                model.cancel()
+                                this@InstallXapkActivity.finish()
+                            },
                             dismissOnBackPress = true,
                             dismissOnClickOutside = true
                         )

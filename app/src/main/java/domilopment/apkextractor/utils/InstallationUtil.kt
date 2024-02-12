@@ -20,17 +20,17 @@ object InstallationUtil {
     }
 
     fun addFileToSession(
-        session: Session, inputStream: InputStream?, fileName: String, filesSize: Long
+        session: Session, inputStream: InputStream, fileName: String, filesSize: Long
     ) {
-        inputStream?.use { apkStream ->
-            session.openWrite(fileName, 0, filesSize).use { outputStream ->
-                apkStream.copyTo(outputStream)
-                session.fsync(outputStream)
-            }
+        session.openWrite(fileName, 0, filesSize).use { outputStream ->
+            inputStream.copyTo(outputStream)
+            session.fsync(outputStream)
         }
     }
 
-    fun <T : Activity> finishSession(context: Context, session: Session, sessionId: Int, cls: Class<T>) {
+    fun <T : Activity> finishSession(
+        context: Context, session: Session, sessionId: Int, cls: Class<T>
+    ) {
         val pendingIntent = Intent(context, cls).apply {
             action = MainActivity.PACKAGE_INSTALLATION_ACTION
         }.let {
