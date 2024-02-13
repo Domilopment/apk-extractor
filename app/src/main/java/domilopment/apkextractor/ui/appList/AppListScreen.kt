@@ -139,12 +139,14 @@ fun AppListScreen(
          * Creates Intent for Apps to Share
          */
         model.shareResult.collect { files ->
-            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+            val action = if (files.size == 1) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE
+            Intent(action).apply {
                 type = FileUtil.FileInfo.APK.mimeType
                 clipData = ClipData.newRawUri(null, files[0]).apply {
                     files.drop(1).forEach { addItem(ClipData.Item(it)) }
                 }
-                putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
+                if (files.size == 1) putExtra(Intent.EXTRA_STREAM, files[0])
+                else putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }.let {
                 Intent.createChooser(it, context.getString(R.string.share_intent_title))
