@@ -108,11 +108,13 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                     when (mime) {
                         FileUtil.FileInfo.APK.mimeType -> contentResolver.openInputStream(fileUri)
                             ?.use { apkStream ->
+                                updateState("Read file: base.apk", 0.25f)
+
                                 val length = FileUtil.getDocumentInfo(
                                     context, fileUri, DocumentsContract.Document.COLUMN_SIZE
                                 )?.size ?: -1
 
-                                InstallationUtil.addFileToSession(
+                                if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.addFileToSession(
                                     session, apkStream, "base.apk", length
                                 )
                             }
@@ -120,9 +122,12 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                         "application/octet-stream" -> contentResolver.openInputStream(fileUri)
                             ?.use { xApkStream ->
                                 ZipInputStream(BufferedInputStream(xApkStream)).use { input ->
+                                    val maxProgress = 0.80f
+                                    var currentProgress = 0f
                                     generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
                                         .forEach { entry ->
-                                            updateState("Read file: ${entry.name}", 0f)
+                                            currentProgress += (maxProgress - currentProgress) * 0.25f
+                                            updateState("Read file: ${entry.name}", currentProgress)
                                             if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.addFileToSession(
                                                 session, input, entry.name, entry.size
                                             )
@@ -134,8 +139,6 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                 } catch (e: IOException) {
                     // Thrown if Session is abandoned
                 }
-
-                updateState("installation", 0f)
 
                 if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.finishSession(
                     context, session, sessionId, InstallXapkActivity::class.java
