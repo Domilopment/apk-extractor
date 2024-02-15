@@ -12,7 +12,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +36,7 @@ fun SeekBarPreference(
     max: Float = 100f,
     steps: Int = 1,
     showValue: Boolean = false,
-    state: State<Float>,
+    state: Float,
     onValueChanged: (Float) -> Unit
 ) {
     SeekBarPreference(
@@ -67,16 +66,16 @@ fun SeekBarPreference(
     max: Float = 100f,
     steps: Int = 1,
     showValue: Boolean = false,
-    state: State<Float>,
+    state: Float,
     onValueChanged: (Float) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     var value by remember {
-        mutableFloatStateOf(state.value)
+        mutableFloatStateOf(state)
     }
 
-    LaunchedEffect(state.value) {
-        value = state.value
+    LaunchedEffect(state) {
+        value = state
     }
 
     LaunchedEffect(interactionSource) {

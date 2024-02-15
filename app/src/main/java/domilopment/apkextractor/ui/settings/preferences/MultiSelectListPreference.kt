@@ -11,7 +11,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +34,7 @@ fun MultiSelectListPreference(
     @StringRes summary: Int? = null,
     @ArrayRes entries: Int,
     @ArrayRes entryValues: Int,
-    state: State<Set<String>>,
+    state: Set<String>,
     onClick: (Set<String>) -> Unit
 ) {
     MultiSelectListPreference(
@@ -62,7 +61,7 @@ fun MultiSelectListPreference(
     enabled: Boolean = true,
     entries: Array<String>,
     entryValues: Array<String>,
-    state: State<Set<String>>,
+    state: Set<String>,
     onClick: (Set<String>) -> Unit
 ) {
     val entriesMap = remember(entries, entryValues) { entries.zip(entryValues) }
@@ -76,7 +75,7 @@ fun MultiSelectListPreference(
         }
         stateList.toList()
     }, restore = { it.toMutableStateList() })) {
-        mutableStateListOf(*state.value.toTypedArray())
+        mutableStateListOf(*state.toTypedArray())
     }
 
     var dialog by rememberSaveable {
@@ -91,7 +90,7 @@ fun MultiSelectListPreference(
         onClick = {
             value.apply {
                 clear()
-                addAll(state.value)
+                addAll(state)
             }
             dialog = true
         })

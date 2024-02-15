@@ -1,19 +1,29 @@
 package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
+import android.net.Uri
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
+import domilopment.apkextractor.data.SettingsScreenState
 import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.settings.AppSortOptions
 import domilopment.apkextractor.utils.settings.ApplicationUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,71 +33,96 @@ class SettingsScreenViewModel @Inject constructor(
     appsRepository: ApplicationRepository,
     private val settings: PreferenceRepository
 ) : AndroidViewModel(application) {
-    val autoBackupAppsListState = appsRepository.apps.map { apps ->
-        ApplicationUtil.selectedAppTypes(
-            apps,
-            selectUpdatedSystemApps = true,
-            selectSystemApps = false,
-            selectUserApps = true,
-            emptySet()
-        ).let {
-            ApplicationUtil.sortAppData(
-                it,
-                sortMode = AppSortOptions.SORT_BY_NAME.ordinal,
-                sortFavorites = false,
-                sortAsc = true
-            )
-        }.let { list ->
-            SettingsScreenAppAutoBackUpListState(list)
-        }
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-        SettingsScreenAppAutoBackUpListState(emptyList())
-    )
+    private val _uiState: MutableStateFlow<SettingsScreenState> =
+        MutableStateFlow(SettingsScreenState())
+    val uiState: StateFlow<SettingsScreenState> = _uiState.asStateFlow()
 
-    val saveDir = settings.saveDir.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
-    )
-    val saveName = settings.appSaveName.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), setOf("0:name")
-    )
-    val autoBackupService = settings.autoBackupService.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
-    )
-    val autoBackupList = settings.autoBackupAppList.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), emptySet()
-    )
-    val nightMode = settings.nightMode.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-    )
-    val useMaterialYou = settings.useMaterialYou.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
-    )
-    val rightSwipeAction = settings.appRightSwipeAction.map { it.preferenceValue }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-        ApkActionsOptions.SAVE.preferenceValue
-    )
-    val leftSwipeAction = settings.appLeftSwipeAction.map { it.preferenceValue }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-        ApkActionsOptions.SHARE.preferenceValue
-    )
-    val swipeActionCustomThreshold = settings.appSwipeActionCustomThreshold.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
-    )
-    val swipeActionThresholdMod = settings.appSwipeActionThresholdMod.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), 32f
-    )
-    val checkUpdateOnStart = settings.checkUpdateOnStart.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
-    )
-    val backupModeXapk = settings.backupModeXapk.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
-    )
+    init {
+        viewModelScope.launch {
+            appsRepository.apps.map { apps ->
+                async(Dispatchers.IO) {
+                    ApplicationUtil.selectedAppTypes(
+                        apps,
+                        selectUpdatedSystemApps = true,
+                        selectSystemApps = false,
+                        selectUserApps = true,
+                        emptySet()
+                    ).let {
+                        ApplicationUtil.sortAppData(
+                            it,
+                            sortMode = AppSortOptions.SORT_BY_NAME.ordinal,
+                            sortFavorites = false,
+                            sortAsc = true
+                        )
+                    }.let { list ->
+                        SettingsScreenAppAutoBackUpListState(list)
+                    }
+                }
+            }.collect {
+                _uiState.update { state -> state.copy(autoBackupAppsListState = it.await()) }
+            }
+        }
+        viewModelScope.launch {
+            settings.saveDir.collect {
+                _uiState.update { state -> state.copy(saveDir = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.appSaveName.collect {
+                _uiState.update { state -> state.copy(saveName = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.autoBackupService.collect {
+                _uiState.update { state -> state.copy(autoBackupService = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.autoBackupAppList.collect {
+                _uiState.update { state -> state.copy(autoBackupList = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.nightMode.collect {
+                _uiState.update { state -> state.copy(nightMode = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.useMaterialYou.collect {
+                _uiState.update { state -> state.copy(useMaterialYou = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.appRightSwipeAction.collect {
+                _uiState.update { state -> state.copy(rightSwipeAction = it.preferenceValue) }
+            }
+        }
+        viewModelScope.launch {
+            settings.appLeftSwipeAction.collect {
+                _uiState.update { state -> state.copy(leftSwipeAction = it.preferenceValue) }
+            }
+        }
+        viewModelScope.launch {
+            settings.appSwipeActionCustomThreshold.collect {
+                _uiState.update { state -> state.copy(swipeActionCustomThreshold = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.appSwipeActionThresholdMod.collect {
+                _uiState.update { state -> state.copy(swipeActionThresholdMod = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.checkUpdateOnStart.collect {
+                _uiState.update { state -> state.copy(checkUpdateOnStart = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.backupModeXapk.collect {
+                _uiState.update { state -> state.copy(backupModeXapk = it) }
+            }
+        }
+    }
 
     fun setAppSaveName(set: Set<String>) {
         viewModelScope.launch { settings.setAppSaveName(set) }

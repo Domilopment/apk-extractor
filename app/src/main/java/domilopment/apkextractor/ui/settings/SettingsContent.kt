@@ -11,7 +11,6 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.ModeNight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
@@ -38,35 +37,35 @@ fun SettingsContent(
     isUpdateAvailable: Boolean,
     onUpdateAvailable: () -> Unit,
     onChooseSaveDir: () -> Unit,
-    appSaveName: State<Set<String>>,
+    appSaveName: Set<String>,
     onAppSaveName: (Set<String>) -> Unit,
-    isBackupModeXapk: State<Boolean>,
+    isBackupModeXapk: Boolean,
     onBackupModeXapk: (Boolean) -> Unit,
-    autoBackupService: State<Boolean>,
+    autoBackupService: Boolean,
     onAutoBackupService: (Boolean) -> Unit,
     isSelectAutoBackupApps: Boolean,
     autoBackupListApps: SettingsScreenAppAutoBackUpListState,
-    autoBackupList: State<Set<String>>,
+    autoBackupList: Set<String>,
     onAutoBackupList: (Set<String>) -> Unit,
-    nightMode: State<Int>,
+    nightMode: Int,
     onNightMode: (Int) -> Unit,
-    dynamicColors: State<Boolean>,
+    dynamicColors: Boolean,
     isDynamicColors: Boolean,
     onDynamicColors: (Boolean) -> Unit,
-    language: State<String>,
+    language: String,
     languageLocaleDisplayName: String,
     onLanguage: (String) -> Unit,
-    rightSwipeAction: State<String>,
+    rightSwipeAction: String,
     onRightSwipeAction: (String) -> Unit,
-    leftSwipeAction: State<String>,
+    leftSwipeAction: String,
     onLeftSwipeAction: (String) -> Unit,
-    swipeActionCustomThreshold: State<Boolean>,
+    swipeActionCustomThreshold: Boolean,
     onSwipeActionCustomThreshold: (Boolean) -> Unit,
-    swipeActionThresholdMod: State<Float>,
+    swipeActionThresholdMod: Float,
     onSwipeActionThresholdMod: (Float) -> Unit,
-    batteryOptimization: State<Boolean>,
+    batteryOptimization: Boolean,
     onBatteryOptimization: (Boolean) -> Unit,
-    checkUpdateOnStart: State<Boolean>,
+    checkUpdateOnStart: Boolean,
     onCheckUpdateOnStart: (Boolean) -> Unit,
     onClearCache: () -> Unit,
     onGitHub: () -> Unit,
@@ -113,7 +112,7 @@ fun SettingsContent(
             preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
                     name = R.string.backup_mode_xapk,
-                    summary = if (isBackupModeXapk.value) R.string.backup_mode_xapk_summary_active else R.string.backup_mode_xapk_summary_inactive,
+                    summary = if (isBackupModeXapk) R.string.backup_mode_xapk_summary_active else R.string.backup_mode_xapk_summary_inactive,
                     state = isBackupModeXapk,
                     onClick = onBackupModeXapk
                 )
@@ -205,7 +204,7 @@ fun SettingsContent(
             }
             preferenceCategoryItemBottom {
                 SeekBarPreference(
-                    enabled = swipeActionCustomThreshold.value,
+                    enabled = swipeActionCustomThreshold,
                     name = R.string.apk_swipe_action_threshold_title,
                     summary = R.string.apk_swipe_action_threshold_summary,
                     min = 0f,

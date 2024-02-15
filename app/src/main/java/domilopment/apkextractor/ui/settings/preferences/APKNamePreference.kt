@@ -20,7 +20,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -57,7 +56,7 @@ fun APKNamePreference(
     @StringRes summary: Int? = null,
     @ArrayRes entries: Int,
     @ArrayRes entryValues: Int,
-    state: State<Set<String>>,
+    state: Set<String>,
     onClick: (Set<String>) -> Unit
 ) {
     APKNamePreference(
@@ -84,7 +83,7 @@ fun APKNamePreference(
     enabled: Boolean = true,
     entries: Array<String>,
     entryValues: Array<String>,
-    state: State<Set<String>>,
+    state: Set<String>,
     onClick: (Set<String>) -> Unit
 ) {
     val context = LocalContext.current
@@ -99,7 +98,7 @@ fun APKNamePreference(
         }
         stateList.toList()
     }, restore = { it.toMutableStateList() })) {
-        mutableStateListOf(*sortedValues(state.value))
+        mutableStateListOf(*sortedValues(state))
     }
 
     val dragMap = rememberSaveable(saver = listSaver(save = { stateList ->
@@ -141,7 +140,7 @@ fun APKNamePreference(
         onClick = {
             value.apply {
                 clear()
-                addAll(sortedValues(state.value))
+                addAll(sortedValues(state))
             }
             dragMap.apply {
                 if (isNotEmpty()) clear()

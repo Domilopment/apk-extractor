@@ -64,10 +64,9 @@ fun SettingsScreen(
 ) {
     val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
 
-    val apps by model.autoBackupAppsListState.collectAsState()
-    val autoBackupService = model.autoBackupService.collectAsState()
-    val autoBackupList = model.autoBackupList.collectAsState()
-    val batteryOptimization = remember {
+    val uiState by model.uiState.collectAsState()
+
+    var batteryOptimization by remember {
         mutableStateOf(pm.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID))
     }
 
@@ -77,7 +76,7 @@ fun SettingsScreen(
 
     val isSelectAutoBackupApps by remember {
         derivedStateOf {
-            autoBackupService.value && apps.isNotEmpty()
+            uiState.autoBackupService && uiState.autoBackupAppsListState.isNotEmpty()
         }
     }
 
@@ -89,7 +88,7 @@ fun SettingsScreen(
         }
     }
 
-    val language = remember {
+    var language by remember {
         mutableStateOf(AppCompatDelegate.getApplicationLocales()[0]?.toLanguageTag() ?: "default")
     }
 
@@ -99,7 +98,7 @@ fun SettingsScreen(
                 (context.getSystemService(Context.POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(
                     BuildConfig.APPLICATION_ID
                 )
-            batteryOptimization.value = isIgnoringBatteryOptimization
+            batteryOptimization = isIgnoringBatteryOptimization
         }
 
     val allowNotifications = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -139,150 +138,127 @@ fun SettingsScreen(
 
     SettingsContent(appUpdateInfo = appUpdateInfo,
         isUpdateAvailable = isUpdateAvailable,
-        onUpdateAvailable = remember(appUpdateManager, appUpdateInfo, inAppUpdateResultLauncher) {
-            {
-                appUpdateManager.startUpdateFlowForResult(
-                    appUpdateInfo!!,
-                    inAppUpdateResultLauncher,
-                    AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
+        onUpdateAvailable = {
+            appUpdateManager.startUpdateFlowForResult(
+                appUpdateInfo!!,
+                inAppUpdateResultLauncher,
+                AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
+            )
+        },
+        onChooseSaveDir = {
+            val pickerInitialUri = uiState.saveDir?.let {
+                DocumentsContract.buildDocumentUriUsingTree(
+                    it, DocumentsContract.getTreeDocumentId(it)
                 )
             }
+            chooseSaveDir.launch(pickerInitialUri)
         },
-        onChooseSaveDir = remember(model.saveDir, chooseSaveDir) {
-            {
-                val pickerInitialUri = model.saveDir.value?.let {
-                    DocumentsContract.buildDocumentUriUsingTree(
-                        it, DocumentsContract.getTreeDocumentId(it)
-                    )
+        appSaveName = uiState.saveName,
+        onAppSaveName = model::setAppSaveName,
+        isBackupModeXapk = uiState.backupModeXapk,
+        onBackupModeXapk = model::setBackupModeXapk,
+        autoBackupService = uiState.autoBackupService,
+        onAutoBackupService = func@{
+            if (allowNotifications != null) {
+                if (it && !allowNotifications.status.isGranted) {
+                    allowNotifications.launchPermissionRequest()
+                    return@func
                 }
-                chooseSaveDir.launch(pickerInitialUri)
             }
-        },
-        appSaveName = model.saveName.collectAsState(),
-        onAppSaveName = remember { model::setAppSaveName },
-        isBackupModeXapk = model.backupModeXapk.collectAsState(),
-        onBackupModeXapk = remember { model::setBackupModeXapk },
-        autoBackupService = autoBackupService,
-        onAutoBackupService = remember(allowNotifications, context) {
-            func@{
-                if (allowNotifications != null) {
-                    if (it && !allowNotifications.status.isGranted) {
-                        allowNotifications.launchPermissionRequest()
-                        return@func
-                    }
-                }
 
-                val notificationManager =
-                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-                handleAutoBackupService(
-                    it && notificationManager.areNotificationsEnabled(), context
-                )
-                model.setAutoBackupService(it && notificationManager.areNotificationsEnabled())
-            }
+            handleAutoBackupService(
+                it && notificationManager.areNotificationsEnabled(), context
+            )
+            model.setAutoBackupService(it && notificationManager.areNotificationsEnabled())
         },
         isSelectAutoBackupApps = isSelectAutoBackupApps,
-        autoBackupListApps = apps,
-        autoBackupList = autoBackupList,
-        onAutoBackupList = remember { model::setAutoBackupList },
-        nightMode = model.nightMode.collectAsState(),
-        onNightMode = remember {
-            {
-                model.setNightMode(it)
-                SettingsManager.changeUIMode(it)
-            }
+        autoBackupListApps = uiState.autoBackupAppsListState,
+        autoBackupList = uiState.autoBackupList,
+        onAutoBackupList = model::setAutoBackupList,
+        nightMode = uiState.nightMode,
+        onNightMode = {
+            model.setNightMode(it)
+            SettingsManager.changeUIMode(it)
         },
-        dynamicColors = model.useMaterialYou.collectAsState(),
+        dynamicColors = uiState.useMaterialYou,
         isDynamicColors = remember { DynamicColors.isDynamicColorAvailable() },
-        onDynamicColors = remember { model::setUseMaterialYou },
+        onDynamicColors = model::setUseMaterialYou,
         language = language,
-        languageLocaleDisplayName = remember(language.value) {
-            when (language.value) {
-                "default" -> context.getString(R.string.locale_list_default)
-                Locale.ENGLISH.toLanguageTag() -> context.getString(R.string.locale_list_en)
-                Locale.GERMANY.toLanguageTag() -> context.getString(R.string.locale_list_de_de)
-                else -> context.getString(
-                    R.string.locale_list_not_supported,
-                    Locale.forLanguageTag(language.value).displayName
-                )
-            }
+        languageLocaleDisplayName = when (language) {
+            "default" -> context.getString(R.string.locale_list_default)
+            Locale.ENGLISH.toLanguageTag() -> context.getString(R.string.locale_list_en)
+            Locale.GERMANY.toLanguageTag() -> context.getString(R.string.locale_list_de_de)
+            else -> context.getString(
+                R.string.locale_list_not_supported, Locale.forLanguageTag(language).displayName
+            )
         },
-        onLanguage = remember(language) {
-            {
-                language.value = it
-                SettingsManager.setLocale(it)
-            }
+        onLanguage = {
+            language = it
+            SettingsManager.setLocale(it)
         },
-        rightSwipeAction = model.rightSwipeAction.collectAsState(),
-        onRightSwipeAction = remember { model::setRightSwipeAction },
-        leftSwipeAction = model.leftSwipeAction.collectAsState(),
-        onLeftSwipeAction = remember { model::setLeftSwipeAction },
-        swipeActionCustomThreshold = model.swipeActionCustomThreshold.collectAsState(),
-        onSwipeActionCustomThreshold = remember { model::setSwipeActionCustomThreshold },
-        swipeActionThresholdMod = model.swipeActionThresholdMod.collectAsState(),
-        onSwipeActionThresholdMod = remember { model::setSwipeActionThresholdMod },
+        rightSwipeAction = uiState.rightSwipeAction,
+        onRightSwipeAction = model::setRightSwipeAction,
+        leftSwipeAction = uiState.leftSwipeAction,
+        onLeftSwipeAction = model::setLeftSwipeAction,
+        swipeActionCustomThreshold = uiState.swipeActionCustomThreshold,
+        onSwipeActionCustomThreshold = model::setSwipeActionCustomThreshold,
+        swipeActionThresholdMod = uiState.swipeActionThresholdMod,
+        onSwipeActionThresholdMod = model::setSwipeActionThresholdMod,
         batteryOptimization = batteryOptimization,
-        onBatteryOptimization = remember(pm, ignoreBatteryOptimizationResult) {
-            {
-                val isIgnoringBatteryOptimization =
-                    pm.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
-                if ((!isIgnoringBatteryOptimization and it) or (isIgnoringBatteryOptimization and !it)) {
-                    ignoreBatteryOptimizationResult.launch(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-                }
+        onBatteryOptimization = {
+            val isIgnoringBatteryOptimization =
+                pm.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
+            if ((!isIgnoringBatteryOptimization and it) or (isIgnoringBatteryOptimization and !it)) {
+                ignoreBatteryOptimizationResult.launch(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
             }
         },
-        checkUpdateOnStart = model.checkUpdateOnStart.collectAsState(),
-        onCheckUpdateOnStart = remember { model::setCheckUpdateOnStart },
-        onClearCache = remember(context) {
-            {
-                if (context.cacheDir?.deleteRecursively() == true) Toast.makeText(
-                    context, context.getString(R.string.clear_cache_success), Toast.LENGTH_SHORT
-                ).show()
-                else Toast.makeText(
-                    context, context.getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT
-                ).show()
-            }
+        checkUpdateOnStart = uiState.checkUpdateOnStart,
+        onCheckUpdateOnStart = model::setCheckUpdateOnStart,
+        onClearCache = {
+            if (context.cacheDir?.deleteRecursively() == true) Toast.makeText(
+                context, context.getString(R.string.clear_cache_success), Toast.LENGTH_SHORT
+            ).show()
+            else Toast.makeText(
+                context, context.getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT
+            ).show()
         },
-        onGitHub = remember(context) {
-            {
-                CustomTabsIntent.Builder().build().launchUrl(
-                    context, Uri.parse("https://github.com/domilopment/apk-extractor")
-                )
-            }
+        onGitHub = {
+            CustomTabsIntent.Builder().build().launchUrl(
+                context, Uri.parse("https://github.com/domilopment/apk-extractor")
+            )
         },
-        onGooglePlay = remember(context) {
-            {
-                try {
-                    Intent(Intent.ACTION_VIEW).apply {
-                        try {
-                            val packageInfo = Utils.getPackageInfo(
-                                context.packageManager, "com.android.vending"
-                            )
-                            setPackage(packageInfo.packageName)
-                        } catch (e: PackageManager.NameNotFoundException) {
-                            // If Play Store is not installed
-                        }
-                        data =
-                            Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
-                    }.also {
-                        context.startActivity(it)
-                    }
-                } catch (e: ActivityNotFoundException) { // If Play Store is Installed, but deactivated
-                    context.startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+        onGooglePlay = {
+            try {
+                Intent(Intent.ACTION_VIEW).apply {
+                    try {
+                        val packageInfo = Utils.getPackageInfo(
+                            context.packageManager, "com.android.vending"
                         )
-                    )
+                        setPackage(packageInfo.packageName)
+                    } catch (e: PackageManager.NameNotFoundException) {
+                        // If Play Store is not installed
+                    }
+                    data =
+                        Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+                }.also {
+                    context.startActivity(it)
                 }
-            }
-        },
-        onPrivacyPolicy = remember(context) {
-            {
-                CustomTabsIntent.Builder().build().launchUrl(
-                    context, Uri.parse("https://sites.google.com/view/domilopment/privacy-policy")
+            } catch (e: ActivityNotFoundException) { // If Play Store is Installed, but deactivated
+                context.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+                    )
                 )
             }
+        },
+        onPrivacyPolicy = {
+            CustomTabsIntent.Builder().build().launchUrl(
+                context, Uri.parse("https://sites.google.com/view/domilopment/privacy-policy")
+            )
         })
 }
 

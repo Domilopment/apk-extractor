@@ -11,7 +11,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,7 +31,7 @@ fun <T> ListPreference(
     @StringRes summary: Int? = null,
     @ArrayRes entries: Int,
     @ArrayRes entryValues: Int,
-    state: State<T>,
+    state: T,
     onClick: (T) -> Unit
 ) {
     ListPreference(
@@ -57,13 +56,13 @@ fun <T> ListPreference(
     summary: String? = null,
     entries: Array<String>,
     entryValues: Array<String>,
-    state: State<T>,
+    state: T,
     onClick: (T) -> Unit
 ) {
     val entriesMap = remember(entries, entryValues) { entries.zip(entryValues) }
 
     var value by rememberSaveable {
-        mutableStateOf(state.value)
+        mutableStateOf(state)
     }
 
     var dialog by rememberSaveable {
@@ -76,7 +75,7 @@ fun <T> ListPreference(
         summary = summary,
         enabled = enabled,
         onClick = {
-            value = state.value
+            value = state
             dialog = true
         })
 
@@ -93,7 +92,7 @@ fun <T> ListPreference(
                 items(items = entriesMap, key = { it.second }) {
                     ListItem(headlineContent = { Text(text = it.first) },
                         modifier = Modifier.clickable {
-                            val newValue = when (state.value!!) {
+                            val newValue = when (state!!) {
                                 is Int -> it.second.toInt() as T
                                 is String -> it.second as T
                                 else -> error("Unknown Generic Type")
