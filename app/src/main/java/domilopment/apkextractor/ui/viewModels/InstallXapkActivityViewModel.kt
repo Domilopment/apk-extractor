@@ -127,7 +127,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                                     generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
                                         .forEach { entry ->
                                             val progress =
-                                                maxProgress * ((currentProgress) / (currentProgress + 2))
+                                                maxProgress * currentProgress / (currentProgress + 2)
                                             updateState("Read file: ${entry.name}", progress)
                                             if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.addFileToSession(
                                                 session, input, entry.name, entry.size
