@@ -1,9 +1,6 @@
 package domilopment.apkextractor.ui.viewModels
 
 import android.app.Application
-import android.net.Uri
-import android.util.Log
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,18 +8,14 @@ import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
 import domilopment.apkextractor.data.SettingsScreenState
 import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
-import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.settings.AppSortOptions
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
