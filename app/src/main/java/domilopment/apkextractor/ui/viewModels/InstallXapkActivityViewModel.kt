@@ -123,14 +123,16 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                             ?.use { xApkStream ->
                                 ZipInputStream(BufferedInputStream(xApkStream)).use { input ->
                                     val maxProgress = 0.80f
-                                    var currentProgress = 0f
+                                    var currentProgress = 1
                                     generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
                                         .forEach { entry ->
-                                            currentProgress += (maxProgress - currentProgress) * 0.25f
-                                            updateState("Read file: ${entry.name}", currentProgress)
+                                            val progress =
+                                                maxProgress * ((currentProgress) / (currentProgress + 2))
+                                            updateState("Read file: ${entry.name}", progress)
                                             if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.addFileToSession(
                                                 session, input, entry.name, entry.size
                                             )
+                                            currentProgress += 1
                                             input.closeEntry()
                                         }
                                 }
