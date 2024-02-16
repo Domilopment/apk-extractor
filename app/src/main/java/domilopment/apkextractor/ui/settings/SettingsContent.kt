@@ -81,9 +81,11 @@ fun SettingsContent(
         item {
             if (appUpdateInfo != null) Preference(
                 name = R.string.update_available_title,
-                modifier = Modifier.background(
-                    MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)
-                ),
+                modifier = Modifier
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)
+                    )
+                    .padding(top = 8.dp),
                 summary = R.string.update_available_summary,
                 isPreferenceVisible = isUpdateAvailable,
                 onClick = onUpdateAvailable
