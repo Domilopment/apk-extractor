@@ -30,7 +30,7 @@
 
     <string name="backup_mode_xapk">Backup geteilte Ressourcen APKs</string>
     <string name="backup_mode_xapk_summary_active">Backup base.apk + geteilte apks als XAPK file.</string>
-    <string name="backup_mode_xapk_summary_inactive">Speichere nur base.apk (Warnung: Eine App nur von einer from base.apk zu installieren könnte zum crash dieser führen, aufgrund fehlender Ressourcen).</string>
+    <string name="backup_mode_xapk_summary_inactive">Speichere nur base.apk (Warnung: Eine App nur von einer base.apk zu installieren könnte zum crash dieser führen, aufgrund fehlender Ressourcen).</string>
 
     <!-- Preferences Apps -->
     <string name="app_type_system">System</string>
