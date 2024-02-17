@@ -8,6 +8,8 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.*
 import domilopment.apkextractor.data.appList.AppListScreenState
 import domilopment.apkextractor.data.appList.ApplicationModel
+import domilopment.apkextractor.data.appList.ExtractionResult
+import domilopment.apkextractor.data.appList.ShareResult
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
 import domilopment.apkextractor.utils.SaveApkResult
@@ -55,13 +57,11 @@ class AppListViewModel @Inject constructor(
     override val progressDialogState: StateFlow<ProgressDialogUiState> =
         _progressDialogState.asStateFlow()
 
-    private val _extractionResult: MutableSharedFlow<Triple<String?, ApplicationModel?, Int>> =
-        MutableSharedFlow()
-    val extractionResult: SharedFlow<Triple<String?, ApplicationModel?, Int>> =
-        _extractionResult.asSharedFlow()
+    private val _extractionResult: MutableSharedFlow<ExtractionResult> = MutableSharedFlow()
+    val extractionResult: SharedFlow<ExtractionResult> = _extractionResult.asSharedFlow()
 
-    private val _shareResult: MutableSharedFlow<ArrayList<Uri>> = MutableSharedFlow()
-    val shareResult: SharedFlow<ArrayList<Uri>> = _shareResult.asSharedFlow()
+    private val _shareResult: MutableSharedFlow<ShareResult> = MutableSharedFlow()
+    val shareResult: SharedFlow<ShareResult> = _shareResult.asSharedFlow()
 
     private val appListFavorites = preferenceRepository.appListFavorites
     private val saveDir = preferenceRepository.saveDir
@@ -319,6 +319,8 @@ class AppListViewModel @Inject constructor(
      * @param list of apps user wants to save
      */
     fun saveApps(list: List<ApplicationModel>) {
+        if (list.isEmpty()) return
+
         runningTask = viewModelScope.launch {
             val backupMode = backupXapk.first()
             var application: ApplicationModel? = null
@@ -376,12 +378,18 @@ class AppListViewModel @Inject constructor(
                         )
                     }
                     if (errorMessage != null) {
+                        _extractionResult.emit(
+                            ExtractionResult.Failure(
+                                application!!, errorMessage!!
+                            )
+                        )
                         this@extract.cancel()
                     }
                 }
             }
             job.join()
-            _extractionResult.emit(Triple(errorMessage, application, list.size))
+            if (list.size == 1) _extractionResult.emit(ExtractionResult.SuccessSingle(application!!))
+            else _extractionResult.emit(ExtractionResult.SuccessMultiple(application!!, list.size))
             resetProgress()
         }
     }
@@ -391,6 +399,8 @@ class AppListViewModel @Inject constructor(
      * @param list list of all apps
      */
     fun createShareUrisForApps(list: List<ApplicationModel>) {
+        if (list.isEmpty()) return
+
         runningTask = viewModelScope.launch {
             val files = ArrayList<Uri>()
             val jobList = ArrayList<Deferred<Any?>>()
@@ -433,7 +443,8 @@ class AppListViewModel @Inject constructor(
                 })
             }
             jobList.awaitAll()
-            _shareResult.emit(files)
+            if (files.size == 1) _shareResult.emit(ShareResult.SuccessSingle(files[0]))
+            else _shareResult.emit(ShareResult.SuccessMultiple(files))
             resetProgress()
         }
     }

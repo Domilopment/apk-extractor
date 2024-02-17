@@ -60,6 +60,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.appList.ApplicationModel
+import domilopment.apkextractor.data.appList.ExtractionResult
 import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.MySnackbarVisuals
@@ -78,7 +79,7 @@ fun AppOptionsBottomSheet(
     sheetState: SheetState,
     onFavoriteChanged: (Boolean) -> Unit,
     onActionSave: () -> Unit,
-    saveResult: SharedFlow<Triple<String?, ApplicationModel?, Int>>,
+    saveResult: SharedFlow<ExtractionResult>,
     onActionShare: () -> Unit,
     onActionSaveImage: PermissionState,
     intentUninstallApp: ManagedActivityResultLauncher<Intent, ActivityResult>,
@@ -96,15 +97,17 @@ fun AppOptionsBottomSheet(
     val apkOptions = ApkActionsManager(context, app)
 
     LaunchedEffect(key1 = Unit) {
-        saveResult.collect { (errorMessage, app, _) ->
-            if (errorMessage == null) scope.launch(Dispatchers.Main) {
-                snackbarHostState.showSnackbar(
+        saveResult.collect { extractionResult ->
+            when (extractionResult) {
+                is ExtractionResult.SuccessSingle -> snackbarHostState.showSnackbar(
                     MySnackbarVisuals(
                         duration = SnackbarDuration.Short, message = context.getString(
-                            R.string.snackbar_successful_extracted, app?.appName
+                            R.string.snackbar_successful_extracted, extractionResult.app.appName
                         )
                     )
                 )
+
+                else -> Unit
             }
         }
     }

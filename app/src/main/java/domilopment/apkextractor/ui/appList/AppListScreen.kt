@@ -23,6 +23,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.data.appList.ApplicationModel
+import domilopment.apkextractor.data.appList.ExtractionResult
+import domilopment.apkextractor.data.appList.ShareResult
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
 import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
 import domilopment.apkextractor.ui.dialogs.ExtractionResultDialog
@@ -119,18 +121,27 @@ fun AppListScreen(
     }
 
     LaunchedEffect(key1 = Unit) {
-        model.extractionResult.collect { (errorMessage, app, size) ->
-            if (errorMessage != null) extractionError = Pair(app?.appName, errorMessage)
-            else showSnackbar(
-                MySnackbarVisuals(
-                    duration = SnackbarDuration.Long, message = context.resources.getQuantityString(
-                        R.plurals.snackbar_successful_extracted_multiple,
-                        size,
-                        app?.appName,
-                        size - 1
+        model.extractionResult.collect { extractionResult ->
+            when (extractionResult) {
+                is ExtractionResult.SuccessSingle, is ExtractionResult.SuccessMultiple -> {
+                    val backupsCount =
+                        if (extractionResult is ExtractionResult.SuccessMultiple) extractionResult.backupsCount else 1
+                    showSnackbar(
+                        MySnackbarVisuals(
+                            duration = SnackbarDuration.Long,
+                            message = context.resources.getQuantityString(
+                                R.plurals.snackbar_successful_extracted_multiple,
+                                backupsCount,
+                                extractionResult.app.appName,
+                                backupsCount - 1
+                            )
+                        )
                     )
-                )
-            )
+                }
+
+                is ExtractionResult.Failure -> extractionError =
+                    Pair(extractionResult.app.appName, extractionResult.errorMessage)
+            }
         }
     }
 
@@ -138,15 +149,20 @@ fun AppListScreen(
         /**
          * Creates Intent for Apps to Share
          */
-        model.shareResult.collect { files ->
-            val action = if (files.size == 1) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE
+        model.shareResult.collect { shareResult ->
+            val action = if (shareResult is ShareResult.SuccessSingle) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE
             Intent(action).apply {
                 type = FileUtil.FileInfo.APK.mimeType
-                clipData = ClipData.newRawUri(null, files[0]).apply {
-                    files.drop(1).forEach { addItem(ClipData.Item(it)) }
+                when(shareResult) {
+                    is ShareResult.SuccessMultiple -> {
+                        clipData = ClipData.newRawUri(null, shareResult.uris[0]).apply {
+                            shareResult.uris.drop(1).forEach { addItem(ClipData.Item(it)) }
+                        }
+                        putParcelableArrayListExtra(Intent.EXTRA_STREAM, shareResult.uris)
+                    }
+
+                    is ShareResult.SuccessSingle -> putExtra(Intent.EXTRA_STREAM, shareResult.uri)
                 }
-                if (files.size == 1) putExtra(Intent.EXTRA_STREAM, files[0])
-                else putParcelableArrayListExtra(Intent.EXTRA_STREAM, files)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }.let {
                 Intent.createChooser(it, context.getString(R.string.share_intent_title))
