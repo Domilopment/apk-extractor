@@ -71,7 +71,7 @@ fun AppListScreen(
         mutableStateOf(false)
     }
 
-    var extractionError: Pair<String?, String?>? by remember {
+    var extractionError: ExtractionResult.Failure? by remember {
         mutableStateOf(null)
     }
 
@@ -143,8 +143,7 @@ fun AppListScreen(
                     )
                 }
 
-                is ExtractionResult.Failure -> extractionError =
-                    Pair(extractionResult.app.appName, extractionResult.errorMessage)
+                is ExtractionResult.Failure -> extractionError = extractionResult
             }
         }
     }
@@ -240,10 +239,10 @@ fun AppListScreen(
         onCancel = model::resetProgress
     )
 
-    extractionError?.let { (appName, errorMessage) ->
+    extractionError?.let { (app, errorMessage) ->
         ExtractionResultDialog(
             onDismissRequest = { extractionError = null },
-            appName = appName,
+            appName = app.appName,
             errorMessage = errorMessage
         )
     }
