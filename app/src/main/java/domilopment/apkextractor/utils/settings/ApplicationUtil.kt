@@ -3,7 +3,7 @@ package domilopment.apkextractor.utils.settings
 import android.content.Context
 import android.net.Uri
 import domilopment.apkextractor.data.appList.ApplicationModel
-import domilopment.apkextractor.utils.ExtractionResult
+import domilopment.apkextractor.utils.SaveApkResult
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
@@ -124,7 +124,7 @@ object ApplicationUtil {
 
     suspend fun saveApk(
         context: Context, from: String, to: Uri, fileName: String
-    ): ExtractionResult = withContext(Dispatchers.IO) {
+    ): SaveApkResult = withContext(Dispatchers.IO) {
         return@withContext try {
             val extractedApk = FileUtil.copy(
                 context,
@@ -134,13 +134,13 @@ object ApplicationUtil {
                 FileUtil.FileInfo.APK.mimeType,
                 FileUtil.FileInfo.APK.suffix
             )
-            ExtractionResult.Success(extractedApk)
+            SaveApkResult.Success(extractedApk)
         } catch (fnf_e: FileNotFoundException) {
             fnf_e.printStackTrace()
-            ExtractionResult.Failure(fnf_e.message)
+            SaveApkResult.Failure(fnf_e.message)
         } catch (e: Exception) {
             e.printStackTrace()
-            ExtractionResult.Failure(e.message)
+            SaveApkResult.Failure(e.message)
         }
     }
 
@@ -150,7 +150,7 @@ object ApplicationUtil {
         to: Uri,
         fileName: String,
         callback: (String) -> Unit
-    ): ExtractionResult = withContext(Dispatchers.IO) {
+    ): SaveApkResult = withContext(Dispatchers.IO) {
         return@withContext try {
             val extractedApk: Uri = FileUtil.ZipUtil.createPersistentZip(
                 context,
@@ -167,13 +167,13 @@ object ApplicationUtil {
                     }
                 }
             }
-            ExtractionResult.Success(extractedApk)
+            SaveApkResult.Success(extractedApk)
         } catch (fnf_e: FileNotFoundException) {
             fnf_e.printStackTrace()
-            ExtractionResult.Failure(fnf_e.message)
+            SaveApkResult.Failure(fnf_e.message)
         } catch (e: Exception) {
             e.printStackTrace()
-            ExtractionResult.Failure(e.message)
+            SaveApkResult.Failure(e.message)
         }
     }
 

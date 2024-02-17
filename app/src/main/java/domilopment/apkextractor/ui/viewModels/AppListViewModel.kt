@@ -10,7 +10,7 @@ import domilopment.apkextractor.data.appList.AppListScreenState
 import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
-import domilopment.apkextractor.utils.ExtractionResult
+import domilopment.apkextractor.utils.SaveApkResult
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
@@ -368,8 +368,8 @@ class AppListViewModel @Inject constructor(
                         }
                     }
                     when (newFile) {
-                        is ExtractionResult.Failure -> errorMessage = newFile.errorMessage
-                        is ExtractionResult.Success -> EventDispatcher.emitEvent(
+                        is SaveApkResult.Failure -> errorMessage = newFile.errorMessage
+                        is SaveApkResult.Success -> EventDispatcher.emitEvent(
                             Event(
                                 EventType.SAVED, newFile.uri
                             )

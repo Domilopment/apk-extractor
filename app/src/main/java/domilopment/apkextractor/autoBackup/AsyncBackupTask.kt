@@ -18,7 +18,7 @@ import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.utils.settings.ApplicationUtil
-import domilopment.apkextractor.utils.ExtractionResult
+import domilopment.apkextractor.utils.SaveApkResult
 import domilopment.apkextractor.utils.FileUtil
 import kotlinx.coroutines.*
 import java.io.FileNotFoundException
@@ -60,7 +60,7 @@ class AsyncBackupTask(
         }
     }
 
-    private suspend fun backup(): ExtractionResult {
+    private suspend fun backup(): SaveApkResult {
         val splits = arrayListOf(app.appSourceDirectory)
         if (!app.appSplitSourceDirectories.isNullOrEmpty() && extractXapk) splits.addAll(app.appSplitSourceDirectories!!)
 
@@ -76,8 +76,8 @@ class AsyncBackupTask(
         // Try to Backup App
         return try {
             when (val result = backup()) {
-                is ExtractionResult.Success -> result.uri
-                is ExtractionResult.Failure -> null
+                is SaveApkResult.Success -> result.uri
+                is SaveApkResult.Failure -> null
             }
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
