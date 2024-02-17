@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import domilopment.apkextractor.utils.Utils
+import domilopment.apkextractor.utils.settings.PackageArchiveUtils
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.IOException
@@ -51,23 +51,19 @@ data class ZipPackageArchiveModel(
                 }
 
                 if (apkFile?.length() != 0L) {
-                    val archiveInfo =
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) packageManager.getPackageArchiveInfo(
-                            apkFile.path, PackageManager.PackageInfoFlags.of(0L)
-                        ) else packageManager.getPackageArchiveInfo(apkFile.path, 0)
-                    returnApp = archiveInfo?.let {
-                        it.applicationInfo.sourceDir = apkFile.path
-                        it.applicationInfo.publicSourceDir = apkFile.path
-                        copy(
-                            appName = it.applicationInfo.loadLabel(packageManager),
-                            appPackageName = it.applicationInfo.packageName,
-                            appIcon = it.applicationInfo.loadIcon(packageManager),
-                            appVersionName = it.versionName,
-                            appVersionCode = Utils.versionCode(it),
-                            isPackageArchiveInfoLoading = false,
-                            isPackageArchiveInfoLoaded = true
-                        )
-                    } ?: returnApp
+                    returnApp =
+                        PackageArchiveUtils.getPackageInfoFromApkFile(packageManager, apkFile)
+                            ?.let {
+                                copy(
+                                    appName = it.applicationInfo.loadLabel(packageManager),
+                                    appPackageName = it.applicationInfo.packageName,
+                                    appIcon = it.applicationInfo.loadIcon(packageManager),
+                                    appVersionName = it.versionName,
+                                    appVersionCode = Utils.versionCode(it),
+                                    isPackageArchiveInfoLoading = false,
+                                    isPackageArchiveInfoLoaded = true
+                                )
+                            } ?: returnApp
                 }
             }
         } catch (e: IOException) {
