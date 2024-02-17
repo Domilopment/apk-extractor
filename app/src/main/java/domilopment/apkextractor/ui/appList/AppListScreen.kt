@@ -123,6 +123,10 @@ fun AppListScreen(
     LaunchedEffect(key1 = Unit) {
         model.extractionResult.collect { extractionResult ->
             when (extractionResult) {
+                ExtractionResult.None -> Toast.makeText(
+                    context, R.string.toast_save_apps, Toast.LENGTH_SHORT
+                ).show()
+
                 is ExtractionResult.SuccessSingle, is ExtractionResult.SuccessMultiple -> {
                     val backupsCount =
                         if (extractionResult is ExtractionResult.SuccessMultiple) extractionResult.backupsCount else 1
@@ -132,7 +136,7 @@ fun AppListScreen(
                             message = context.resources.getQuantityString(
                                 R.plurals.snackbar_successful_extracted_multiple,
                                 backupsCount,
-                                extractionResult.app.appName,
+                                extractionResult.app!!.appName,
                                 backupsCount - 1
                             )
                         )
@@ -150,10 +154,15 @@ fun AppListScreen(
          * Creates Intent for Apps to Share
          */
         model.shareResult.collect { shareResult ->
-            val action = if (shareResult is ShareResult.SuccessSingle) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE
+            val action =
+                if (shareResult is ShareResult.SuccessSingle) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE
             Intent(action).apply {
                 type = FileUtil.FileInfo.APK.mimeType
-                when(shareResult) {
+                when (shareResult) {
+                    ShareResult.None -> Toast.makeText(
+                        context, R.string.toast_share_app, Toast.LENGTH_SHORT
+                    ).show()
+
                     is ShareResult.SuccessMultiple -> {
                         clipData = ClipData.newRawUri(null, shareResult.uris[0]).apply {
                             shareResult.uris.drop(1).forEach { addItem(ClipData.Item(it)) }
@@ -178,27 +187,8 @@ fun AppListScreen(
                 Screen.ScreenActions.FilterList -> showFilter = true
                 Screen.ScreenActions.Refresh -> model.updateApps()
                 Screen.ScreenActions.Settings -> onNavigate()
-                Screen.ScreenActions.Save -> {
-                    state.appList.filter {
-                        it.isChecked
-                    }.also { list ->
-                        if (list.isEmpty()) Toast.makeText(
-                            context, R.string.toast_save_apps, Toast.LENGTH_SHORT
-                        ).show()
-                        else model.saveApps(list)
-                    }
-                }
-
-                Screen.ScreenActions.Share -> {
-                    state.appList.filter {
-                        it.isChecked
-                    }.also {
-                        if (it.isEmpty()) Toast.makeText(
-                            context, R.string.toast_share_app, Toast.LENGTH_SHORT
-                        ).show()
-                        else model.createShareUrisForApps(it)
-                    }
-                }
+                Screen.ScreenActions.Save -> model.saveSelectedApps()
+                Screen.ScreenActions.Share -> model.createShareUrisForSelectedApps()
 
                 else -> Unit
             }
@@ -213,9 +203,9 @@ fun AppListScreen(
             onFavoriteChanged = { isChecked ->
                 model.editFavorites(selectedApp.appPackageName, isChecked)
             },
-            onActionSave = { model.saveApps(listOf(selectedApp)) },
+            onActionSave = { model.saveApp(selectedApp) },
             saveResult = model.extractionResult,
-            onActionShare = { model.createShareUrisForApps(listOf(selectedApp)) },
+            onActionShare = { model.createShareUrisForApp(selectedApp) },
             onActionSaveImage = saveImage,
             intentUninstallApp = uninstallApp,
             onActionUninstall = { appToUninstall = selectedApp },
@@ -287,8 +277,8 @@ fun AppListScreen(
             apkAction.getAction(
                 context,
                 app,
-                ApkActionsOptions.ApkActionOptionParams.Builder().saveFunction(model::saveApps)
-                    .setCallbackFun(showSnackbar).setShareFunction(model::createShareUrisForApps)
+                ApkActionsOptions.ApkActionOptionParams.Builder().saveFunction(model::saveApp)
+                    .setCallbackFun(showSnackbar).setShareFunction(model::createShareUrisForApp)
                     .setDeleteResult(uninstallApp).build()
             )
         },

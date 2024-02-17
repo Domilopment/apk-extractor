@@ -23,23 +23,22 @@ import java.io.File
 class ApkActionsManager(private val context: Context, private val app: ApplicationModel) {
     /**
      * Saves selected apk to public storage dir (previously selected by user)
-     * @param view reference for Snackbar view
-     * @param anchorView Anchor View for Snackbar
+     * @param saveFunction the function with implementation to save single apk
      */
     fun actionSave(
-        saveFunction: (List<ApplicationModel>) -> Unit,
+        saveFunction: (ApplicationModel) -> Unit,
     ) {
-        saveFunction(listOf(app))
+        saveFunction(app)
     }
 
     /**
      * Creates an share Intent for apk source file of selected app
-     * @param shareApp ActivityResultLauncher to launch Intent
+     * @param shareFunction the Function with implementation to share apk
      */
     fun actionShare(
-        shareFunction: (List<ApplicationModel>) -> Unit,
+        shareFunction: (ApplicationModel) -> Unit,
     ) {
-        shareFunction(listOf(app))
+        shareFunction(app)
     }
 
     /**
@@ -75,8 +74,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
 
     /**
      * Saves app icon as Bitmap to Gallery
-     * @param view reference for Snackbar view
-     * @param anchorView Anchor View for Snackbar
+     * @param showSnackbar function triggering a snackbar host to show a message
      */
     fun actionSaveImage(showSnackbar: (MySnackbarVisuals) -> Unit) {
         val resolver = context.contentResolver
@@ -115,8 +113,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * if it could not be launched, creates Snackbar with error message
      * Supports Google Play Store, Samsung Galaxy Store and Amazon Appstore for now
      * other installation Sources just call market uri
-     * @param view reference for Snackbar view
-     * @param anchorView Anchor View for Snackbar
+     * @param showSnackbar function triggering a snackbar host to show a message
      */
     fun actionOpenShop(showSnackbar: (MySnackbarVisuals) -> Unit) {
         app.installationSource?.also {

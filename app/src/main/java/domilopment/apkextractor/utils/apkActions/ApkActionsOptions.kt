@@ -22,16 +22,19 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            if (params.saveFunction == null) return
-            ApkActionsManager(context, app).actionSave(params.saveFunction)
+            params.saveFunction?.let {
+                ApkActionsManager(context, app).actionSave(it)
+            }
         }
     },
     SHARE("share_apk", R.string.action_bottom_sheet_share, Icons.Default.Share) {
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            if (params.shareFunction == null) return
-            ApkActionsManager(context, app).actionShare(params.shareFunction)
+            params.shareFunction?.let {
+                ApkActionsManager(context, app).actionShare(it)
+            }
+
         }
     },
     ICON("save_icon", R.string.action_bottom_sheet_save_image, Icons.Default.Image) {
@@ -95,24 +98,24 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
     }
 
     class ApkActionOptionParams private constructor(
-        val saveFunction: ((List<ApplicationModel>) -> Unit)?,
+        val saveFunction: ((ApplicationModel) -> Unit)?,
         val callbackFun: ((MySnackbarVisuals) -> Unit)?,
-        val shareFunction: ((List<ApplicationModel>) -> Unit)?,
+        val shareFunction: ((ApplicationModel) -> Unit)?,
         val deleteResult: ActivityResultLauncher<Intent>?
     ) {
         data class Builder(
-            private var saveFunction: ((List<ApplicationModel>) -> Unit)? = null,
+            private var saveFunction: ((ApplicationModel) -> Unit)? = null,
             private var callbackFun: ((MySnackbarVisuals) -> Unit)? = null,
-            private var shareFunction: ((List<ApplicationModel>) -> Unit)? = null,
+            private var shareFunction: ((ApplicationModel) -> Unit)? = null,
             private var deleteResult: ActivityResultLauncher<Intent>? = null
         ) {
-            fun saveFunction(saveFunction: (List<ApplicationModel>) -> Unit) =
+            fun saveFunction(saveFunction: (ApplicationModel) -> Unit) =
                 apply { this.saveFunction = saveFunction }
 
             fun setCallbackFun(showSnackbar: (MySnackbarVisuals) -> Unit) =
                 apply { this.callbackFun = showSnackbar }
 
-            fun setShareFunction(shareFunction: (List<ApplicationModel>) -> Unit) =
+            fun setShareFunction(shareFunction: (ApplicationModel) -> Unit) =
                 apply { this.shareFunction = shareFunction }
 
             fun setDeleteResult(activityResultLauncher: ActivityResultLauncher<Intent>) =
