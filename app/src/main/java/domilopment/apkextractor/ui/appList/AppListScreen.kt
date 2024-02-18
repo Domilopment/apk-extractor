@@ -153,15 +153,18 @@ fun AppListScreen(
          * Creates Intent for Apps to Share
          */
         model.shareResult.collect { shareResult ->
+            if (shareResult == ShareResult.None) {
+                Toast.makeText(
+                    context, R.string.toast_share_app, Toast.LENGTH_SHORT
+                ).show()
+                return@collect
+            }
+
             val action =
                 if (shareResult is ShareResult.SuccessSingle) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE
             Intent(action).apply {
                 type = FileUtil.FileInfo.APK.mimeType
                 when (shareResult) {
-                    ShareResult.None -> Toast.makeText(
-                        context, R.string.toast_share_app, Toast.LENGTH_SHORT
-                    ).show()
-
                     is ShareResult.SuccessMultiple -> {
                         clipData = ClipData.newRawUri(null, shareResult.uris[0]).apply {
                             shareResult.uris.drop(1).forEach { addItem(ClipData.Item(it)) }
@@ -169,7 +172,11 @@ fun AppListScreen(
                         putParcelableArrayListExtra(Intent.EXTRA_STREAM, shareResult.uris)
                     }
 
-                    is ShareResult.SuccessSingle -> putExtra(Intent.EXTRA_STREAM, shareResult.uri)
+                    is ShareResult.SuccessSingle -> putExtra(
+                        Intent.EXTRA_STREAM, shareResult.uri
+                    )
+
+                    else -> Unit
                 }
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }.let {
