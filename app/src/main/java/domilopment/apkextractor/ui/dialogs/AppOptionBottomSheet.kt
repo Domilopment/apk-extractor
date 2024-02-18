@@ -307,7 +307,7 @@ private fun AppSheetInfo(
                             )
                         ), contentDescription = null, modifier = Modifier.size(24.dp)
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = packageManager.getApplicationLabel(applicationInfo).toString()
                     )
@@ -349,13 +349,13 @@ private fun AppSheetHeader(
         Image(
             painter = rememberDrawablePainter(drawable = appIcon),
             contentDescription = stringResource(id = R.string.list_item_Image_description),
-            modifier = Modifier.width(72.dp)
+            modifier = Modifier.width(64.dp)
         )
     }, trailingContent = {
         IconToggleButton(
             checked = isFavorite,
             onCheckedChange = onFavoriteChanged,
-            modifier = Modifier.width(72.dp)
+            modifier = Modifier.width(64.dp)
         ) {
             Icon(
                 imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,

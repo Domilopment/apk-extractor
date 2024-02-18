@@ -244,10 +244,10 @@ fun ApkSheetHeader(
                 )
             ),
             contentDescription = stringResource(id = R.string.list_item_Image_description),
-            modifier = Modifier.width(72.dp)
+            modifier = Modifier.width(64.dp)
         )
     }, trailingContent = {
-        Box(modifier = Modifier.width(72.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.width(64.dp), contentAlignment = Alignment.Center) {
             if (isRefreshing) CircularProgressIndicator(
                 color = MaterialTheme.colorScheme.secondary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
