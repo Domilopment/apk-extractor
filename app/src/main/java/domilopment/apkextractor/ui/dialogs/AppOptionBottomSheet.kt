@@ -8,6 +8,7 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.IconToggleButton
@@ -39,6 +41,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -125,9 +128,12 @@ fun AppOptionsBottomSheet(
         )
         HorizontalDivider(modifier = Modifier.padding(4.dp))
         AppSheetInfo(sourceDirectory = app.appSourceDirectory,
+            splitDirectories = app.appSplitSourceDirectories,
             apkSize = app.apkSize,
             versionName = app.appVersionName,
             versionNumber = app.appVersionCode,
+            minSdk = app.minSdkVersion,
+            targetSdk = app.targetSdkVersion,
             appCategory = app.appCategory,
             installTime = app.appInstallTime,
             updateTime = app.appUpdateTime,
@@ -225,9 +231,12 @@ private fun AppSheetActions(
 @Composable
 private fun AppSheetInfo(
     sourceDirectory: String,
+    splitDirectories: Array<String>?,
     apkSize: Float,
     versionName: String?,
     versionNumber: Long,
+    minSdk: Int,
+    targetSdk: Int,
     appCategory: Int,
     installTime: Long,
     updateTime: Long,
@@ -246,6 +255,15 @@ private fun AppSheetInfo(
                 id = R.string.info_bottom_sheet_source_directory, sourceDirectory
             ), maxLines = 1, overflow = TextOverflow.Ellipsis
         )
+        if (splitDirectories != null) Text(
+            text = stringResource(id = R.string.info_bottom_sheet_split_sources),
+            modifier = Modifier
+                .background(
+                    MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(16.dp)
+                )
+                .padding(horizontal = 8.dp)
+                .align(Alignment.End)
+        )
         Text(
             text = stringResource(id = R.string.info_bottom_sheet_apk_size, apkSize),
             maxLines = 1,
@@ -260,6 +278,18 @@ private fun AppSheetInfo(
             text = stringResource(id = R.string.info_bottom_sheet_version_number, versionNumber),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = stringResource(
+                id = R.string.info_bottom_sheet_min_sdk, minSdk, Utils.androidApiLevel[minSdk] ?: ""
+            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = stringResource(
+                id = R.string.info_bottom_sheet_target_sdk,
+                targetSdk,
+                Utils.androidApiLevel[targetSdk] ?: ""
+            ), maxLines = 1, overflow = TextOverflow.Ellipsis
         )
         Text(
             text = stringResource(

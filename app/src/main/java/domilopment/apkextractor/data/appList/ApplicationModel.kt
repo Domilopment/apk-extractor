@@ -31,6 +31,8 @@ data class ApplicationModel(
     val appIcon: Drawable get() = packageManager.getApplicationIcon(packageInfo.applicationInfo)
     val appVersionName: String? get() = packageInfo.versionName
     val appVersionCode: Long get() = Utils.versionCode(packageInfo)
+    val minSdkVersion: Int get() = packageInfo.applicationInfo.minSdkVersion
+    val targetSdkVersion: Int get() = packageInfo.applicationInfo.targetSdkVersion
     val appFlags: Int get() = packageInfo.applicationInfo.flags
     val appCategory: Int get() = packageInfo.applicationInfo.category
     val appInstallTime: Long get() = packageInfo.firstInstallTime
