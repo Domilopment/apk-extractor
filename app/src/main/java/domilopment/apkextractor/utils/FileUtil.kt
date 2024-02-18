@@ -94,12 +94,19 @@ object FileUtil {
             )
         }
 
-        fun writeToZip(output: ZipOutputStream, file: String) {
+        fun writeToZip(output: ZipOutputStream, file: File) {
             FileInputStream(file).use { input ->
-                val entry = ZipEntry(file.substring(file.lastIndexOf("/") + 1))
+                val entry = ZipEntry(file.name).apply {
+                    size = file.length()
+                }
                 output.putNextEntry(entry)
                 input.copyTo(output)
+                output.closeEntry()
             }
+        }
+
+        fun writeToZip(output: ZipOutputStream, filePath: String) {
+            writeToZip(output, File(filePath))
         }
     }
 
