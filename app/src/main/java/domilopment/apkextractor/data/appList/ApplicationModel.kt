@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
 import java.io.File
 
@@ -34,7 +35,11 @@ data class ApplicationModel(
     val appCategory: Int get() = packageInfo.applicationInfo.category
     val appInstallTime: Long get() = packageInfo.firstInstallTime
     val appUpdateTime: Long get() = packageInfo.lastUpdateTime
-    val apkSize: Float get() = File(packageInfo.applicationInfo.sourceDir).length() / (1000.0F * 1000.0F) // Calculate MB Size
+    val apkSize: Float
+        get() = FileUtil.getBytesSizeInMB(listOf(
+            packageInfo.applicationInfo.sourceDir,
+            *(packageInfo.applicationInfo.splitSourceDirs ?: emptyArray())
+        ).sumOf { File(it).length() })
     val launchIntent: Intent? get() = packageManager.getLaunchIntentForPackage(appPackageName)
     val installationSource: String?
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) packageManager.getInstallSourceInfo(

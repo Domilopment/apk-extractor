@@ -25,10 +25,23 @@ object FileUtil {
         )
     }
 
+    /**
+     * Create a new Document file
+     * @param context
+     * App Context
+     * @param to
+     * Uri of location file should be created in
+     * @param fileName
+     * Name of newly created file
+     * @param mimeType
+     * MIME type for file
+     * @param suffix
+     * suffix for file type (without '.')
+     */
     fun createDocumentFile(
         context: Context, to: Uri, fileName: String, mimeType: String, suffix: String
     ): Uri? {
-        // Create new APK file in destination folder
+        // Create new file in destination folder
         return DocumentsContract.createDocument(
             context.contentResolver, DocumentsContract.buildDocumentUriUsingTree(
                 to, DocumentsContract.getTreeDocumentId(to)
@@ -36,7 +49,21 @@ object FileUtil {
         )
     }
 
+    /**
+     * Provider for utility functions to hande different zip file related operations
+     */
     object ZipUtil {
+        /**
+         * Creates a new file of type zip in Persistent Storage
+         * @param context
+         * App Context
+         * @param fileName
+         * The name for the file
+         * @param mimeType
+         * MIME type of new file, default will be 'application/zip'
+         * @param suffix
+         * suffix for file (without '.'), default will be 'zip'
+         */
         fun createPersistentZip(
             context: Context,
             to: Uri,
@@ -49,6 +76,23 @@ object FileUtil {
             )
         }
 
+        /**
+         * Copies a collection of files to public storage and packs them into a zip file
+         * @param context
+         * App context
+         * @param files
+         * List of sources of existing files
+         * @param to
+         * Destination Folder for file
+         * @param fileName
+         * Name for newly Saved File
+         * @param mimeType
+         * MIME type for the new File
+         * @param suffix
+         * suffix for file type (without '.'), if MIME type is unknown and suffix can't be inferred
+         * @return
+         * Uri of newly created file
+         */
         fun copy(
             context: Context,
             files: Array<String>,
@@ -61,7 +105,7 @@ object FileUtil {
             createDocumentFile(
                 context, to, fileName, mimeType = mimeType, suffix = suffix
             ).let { outputFile ->
-                // Create Output Stream for target APK file
+                // Create Output Stream for target file
                 copy = outputFile!!
                 ZipOutputStream(
                     BufferedOutputStream(
@@ -76,14 +120,39 @@ object FileUtil {
             return copy
         }
 
-        fun createTempZip(context: Context, appName: String, suffix: String = "zip"): File {
-            return createTempFile(context, appName, suffix)
+        /**
+         * Creates a new Temp file of type zip
+         * @param context
+         * App Context
+         * @param fileName
+         * The name for the file
+         * @param suffix
+         * suffix for file (without '.'), default will be 'zip'
+         */
+        fun createTempZip(context: Context, fileName: String, suffix: String = "zip"): File {
+            return createTempFile(context, fileName, suffix)
         }
 
+        /**
+         * Open OutputStream to existing Zip file
+         * @param file
+         * File to location of Zip file
+         * @return
+         * ZipOutputStream
+         */
         fun openZipOutputStream(file: File): ZipOutputStream {
             return ZipOutputStream(BufferedOutputStream(file.outputStream()))
         }
 
+        /**
+         * Open OutputStream to existing Zip file
+         * @param context
+         * App Context
+         * @param uri
+         * Uri location of Zip file
+         * @return
+         * ZipOutputStream
+         */
         fun openZipOutputStream(context: Context, uri: Uri): ZipOutputStream {
             return ZipOutputStream(
                 BufferedOutputStream(
@@ -94,6 +163,13 @@ object FileUtil {
             )
         }
 
+        /**
+         * Function for writing File to an existing Zip
+         * @param output
+         * OutputStream for writing to Zip file
+         * @param file
+         * file that should be written to Zip
+         */
         fun writeToZip(output: ZipOutputStream, file: File) {
             FileInputStream(file).use { input ->
                 val entry = ZipEntry(file.name).apply {
@@ -105,6 +181,13 @@ object FileUtil {
             }
         }
 
+        /**
+         * Function for writing File to an existing Zip
+         * @param output
+         * OutputStream for writing to Zip file
+         * @param filePath
+         * path of existing file that should be written to Zip
+         */
         fun writeToZip(output: ZipOutputStream, filePath: String) {
             writeToZip(output, File(filePath))
         }
@@ -112,47 +195,67 @@ object FileUtil {
 
 
     /**
-     * Copy APK file from Source to Chosen Save Director with Name
+     * Copy file from Source to Chosen Save Director with Name
+     * @param context
+     * App context
      * @param from
-     * Source of existing APK from App
+     * Source of existing file
      * @param to
-     * Destination Folder for APK
+     * Destination Folder for file
      * @param fileName
-     * Name for Saved APK File
+     * Name for newly Saved File
+     * @param mimeType
+     * MIME type for the new File
+     * @param suffix
+     * suffix for file type (without '.'), if MIME type is unknown and suffix can't be inferred
      * @return
-     * ExtractionResult with Uri if copy was Successfully else Error Message
+     * Uri of newly created file
      */
     fun copy(
         context: Context, from: String, to: Uri, fileName: String, mimeType: String, suffix: String
     ): Uri {
-        val extractedApk: Uri
-        // Create Input Stream from APK source file
+        val fileUri: Uri
+        // Create Input Stream from source file
         FileInputStream(from).use { input ->
-            // Create new APK file in destination folder
+            // Create new file in destination folder
             createDocumentFile(context, to, fileName, mimeType, suffix).let { outputFile ->
-                extractedApk = outputFile!!
-                // Create Output Stream for target APK file
+                fileUri = outputFile!!
+                // Create Output Stream for target file
                 context.contentResolver.openOutputStream(outputFile)
             }.use { output ->
                 // Copy from Input to Output Stream
                 input.copyTo(output!!)
             }
         }
-        return extractedApk
+        return fileUri
     }
 
-    fun createTempFile(context: Context, appName: String, suffix: String): File {
-        return File(context.cacheDir, "$appName.$suffix").let {
+    /**
+     * creates a new Temp file in app cache, tries to apply the name for new file, if file exist create new Temp File instead
+     * @param context app context
+     * @param fileName Name for the temp file
+     * @param suffix suffix for file type (without '.')
+     */
+    fun createTempFile(context: Context, fileName: String, suffix: String): File {
+        return File(context.cacheDir, "$fileName.$suffix").let {
             if (it.createNewFile()) it else File.createTempFile(
-                appName, ".$suffix", context.cacheDir
+                fileName, ".$suffix", context.cacheDir
             )
         }
     }
 
     /**
+     * Takes in File size in Bytes and returns size in MB
+     * @param length File size as Long
+     */
+    fun getBytesSizeInMB(length: Long): Float {
+        return length / (1000.0F * 1000.0F) // Calculate MB Size
+    }
+
+    /**
      * Creates a Uri for Provider
-     * @param app Application for sharing
-     * @return Shareable Uri of Application APK
+     * @param file File for sharing
+     * @return Shareable Uri of file
      */
     fun createShareUriForFile(context: Context, file: File): Uri = FileProvider.getUriForFile(
         context, "${BuildConfig.APPLICATION_ID}.provider", file,
