@@ -82,7 +82,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
     private var session: PackageInstaller.Session? = null
     private var task: Job? = null
 
-    fun updateState(packageName: String?, progress: Float) {
+    fun updateState(packageName: String? = uiState.process, progress: Float = uiState.progress) {
         uiState = uiState.copy(process = packageName, progress = progress * 100)
     }
 
@@ -91,7 +91,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
     }
 
     fun installXAPK(fileUri: Uri) {
-        task = viewModelScope.launch(Dispatchers.Main) {
+        task = viewModelScope.launch {
             val packageInstaller = context.applicationContext.packageManager.packageInstaller
             val contentResolver = context.applicationContext.contentResolver
             packageInstaller.registerSessionCallback(sessionCallback)
@@ -108,7 +108,9 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                     when (mime) {
                         FileUtil.FileInfo.APK.mimeType -> contentResolver.openInputStream(fileUri)
                             ?.use { apkStream ->
-                                updateState("Read file: base.apk", 0.25f)
+                                withContext(Dispatchers.Main) {
+                                    updateState("Read file: base.apk")
+                                }
 
                                 val length = FileUtil.getDocumentInfo(
                                     context, fileUri, DocumentsContract.Document.COLUMN_SIZE
@@ -128,10 +130,15 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                                         .forEach { entry ->
                                             val progress =
                                                 maxProgress * currentProgress / (currentProgress + 2)
-                                            updateState("Read file: ${entry.name}", progress)
+                                            withContext(Dispatchers.Main) {
+                                                updateState("Read file: ${entry.name}")
+                                            }
                                             if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.addFileToSession(
                                                 session, input, entry.name, entry.size
                                             )
+                                            withContext(Dispatchers.Main) {
+                                                updateState(progress = progress)
+                                            }
                                             currentProgress += 1
                                             input.closeEntry()
                                         }

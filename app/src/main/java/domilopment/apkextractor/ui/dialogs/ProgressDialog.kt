@@ -35,10 +35,9 @@ fun ProgressDialog(
         Column(
             verticalArrangement = Arrangement.Center,
         ) {
-            LinearProgressIndicator(
-                progress = { state.progress / state.tasks },
-                modifier = Modifier.fillMaxWidth(),
-                trackColor = Color.LightGray
+            if (state.progress == 0f) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            else LinearProgressIndicator(
+                progress = { state.progress / state.tasks }, modifier = Modifier.fillMaxWidth()
             )
             Text(text = state.process ?: "", maxLines = 1, overflow = TextOverflow.Ellipsis)
             Row(
