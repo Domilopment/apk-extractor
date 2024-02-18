@@ -67,23 +67,29 @@ fun AppListScreen(
 
     val progressDialogState by model.progressDialogState.collectAsState()
 
+    // does user has selected the filter option dialog
     var showFilter by rememberSaveable {
         mutableStateOf(false)
     }
 
+    // information of error if last extraction has failed, to show inside a dialog
     var extractionError: ExtractionResult.Failure? by remember {
         mutableStateOf(null)
     }
 
+    // when user performs action on an app and app should be uninstalled in the process, we have to know what app is selected
     var appToUninstall by remember {
         mutableStateOf<ApplicationModel?>(null)
     }
 
+    // After finish share apk file, clear the temp folder so the temp.apk files is deleted as well
     val shareApp = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
         context.cacheDir.deleteRecursively()
     }
+
+    // hande the remove of selected app from all data structures
     val uninstallApp =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
             appToUninstall?.let {
@@ -91,6 +97,8 @@ fun AppListScreen(
                 appToUninstall = null
             }
         }
+
+    // check if we have permission to save the app icon to storage
     val saveImage =
         rememberPermissionState(permission = Manifest.permission.WRITE_EXTERNAL_STORAGE) { isPermissionGranted ->
             if (isPermissionGranted) state.selectedApp?.let {
@@ -106,6 +114,9 @@ fun AppListScreen(
         }
 
     LaunchedEffect(key1 = searchString) {
+        /**
+         * Set and update Search query in viewmodel
+         */
         model.searchQuery(searchString)
     }
 
@@ -121,6 +132,9 @@ fun AppListScreen(
     }
 
     LaunchedEffect(key1 = Unit) {
+        /**
+         * Handles Information about apk save process result
+         */
         model.extractionResult.collect { extractionResult ->
             when (extractionResult) {
                 ExtractionResult.None -> Toast.makeText(
@@ -188,6 +202,7 @@ fun AppListScreen(
     }
 
     LaunchedEffect(key1 = Unit) {
+        // all actions inside Appbar or Bottombar the user can trigger in this screen
         Screen.AppList.buttons.onEach { button ->
             when (button) {
                 Screen.ScreenActions.FilterList -> showFilter = true
