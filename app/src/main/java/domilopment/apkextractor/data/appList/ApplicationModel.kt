@@ -8,6 +8,13 @@ import android.os.Build
 import domilopment.apkextractor.utils.Utils
 import java.io.File
 
+/**
+ * Class holding information for a specific Application installed on device
+ * @param packageManager a packageManager instance to request further information of an app if needed
+ * @param appPackageName the package name of an app, we want to access information about
+ * @param isChecked to save and hande a selection made by user about multiple app instances
+ * @param isFavorite to save and handle if the app is of higher priority to the user to perform action on or retrieve Information
+ */
 data class ApplicationModel(
     private val packageManager: PackageManager,
     val appPackageName: String,
