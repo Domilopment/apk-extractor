@@ -15,6 +15,8 @@ interface PackageArchiveModel {
     var appIcon: Drawable?
     var appVersionName: String?
     var appVersionCode: Long?
+    var appMinSdkVersion: Int?
+    var appTargetSdkVersion: Int?
     var isPackageArchiveInfoLoading: Boolean
     var isPackageArchiveInfoLoaded: Boolean
     fun packageArchiveInfo(context: Context): PackageArchiveModel

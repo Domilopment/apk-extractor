@@ -93,6 +93,8 @@ fun ApkOptionBottomSheet(
             apkFileName = apk.fileName,
             apkSize = apk.fileSize,
             apkCreated = apk.fileLastModified,
+            minSdk = apk.appMinSdkVersion,
+            targetSdk = apk.appTargetSdkVersion,
             versionName = apk.appVersionName,
             versionNumber = apk.appVersionCode,
         )
@@ -162,6 +164,8 @@ fun ApkSheetInfo(
     apkFileName: String,
     apkSize: Float,
     apkCreated: Long,
+    minSdk: Int?,
+    targetSdk: Int?,
     versionName: String?,
     versionNumber: Long?
 ) {
@@ -190,6 +194,20 @@ fun ApkSheetInfo(
         Text(
             text = stringResource(
                 id = R.string.apk_bottom_sheet_last_modified, Utils.getAsFormattedDate(apkCreated)
+            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = stringResource(
+                id = R.string.info_bottom_sheet_min_sdk,
+                minSdk ?: -1,
+                Utils.androidApiLevel[minSdk] ?: ""
+            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = stringResource(
+                id = R.string.info_bottom_sheet_target_sdk,
+                targetSdk ?: -1,
+                Utils.androidApiLevel[targetSdk] ?: ""
             ), maxLines = 1, overflow = TextOverflow.Ellipsis
         )
         Text(

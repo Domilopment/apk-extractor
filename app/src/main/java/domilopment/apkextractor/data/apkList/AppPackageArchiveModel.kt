@@ -20,8 +20,10 @@ data class AppPackageArchiveModel(
     override var appIcon: Drawable? = null,
     override var appVersionName: String? = null,
     override var appVersionCode: Long? = null,
+    override var appMinSdkVersion: Int? = null,
+    override var appTargetSdkVersion: Int? = null,
     override var isPackageArchiveInfoLoading: Boolean = false,
-    override var isPackageArchiveInfoLoaded: Boolean = false
+    override var isPackageArchiveInfoLoaded: Boolean = false,
 ) : PackageArchiveModel {
     override val fileSize: Float = fileSizeLong / (1000.0F * 1000.0F)
 
@@ -47,6 +49,8 @@ data class AppPackageArchiveModel(
                                     appIcon = it.applicationInfo.loadIcon(packageManager),
                                     appVersionName = it.versionName,
                                     appVersionCode = Utils.versionCode(it),
+                                    appMinSdkVersion = it.applicationInfo.minSdkVersion,
+                                    appTargetSdkVersion = it.applicationInfo.targetSdkVersion,
                                     isPackageArchiveInfoLoading = false,
                                     isPackageArchiveInfoLoaded = true
                                 )
