@@ -30,7 +30,7 @@
     <string name="auto_backup_app_list_summary">Select Apps from which to create an automatic backup after update </string>
 
     <string name="backup_mode_xapk">Backup split Source APKs</string>
-    <string name="backup_mode_xapk_summary_active">Backup base.apk + split apks as XAPK file.</string>
+    <string name="backup_mode_xapk_summary_active">Backup base.apk + split apks as XAPK file (can be renamed to \'.zip\' and used as such).</string>
     <string name="backup_mode_xapk_summary_inactive">Only backup base.apk (warning: Install an App only from base.apk may lead to crash on launch due to missing resources).</string>
 
     <!-- Preferences Apps -->
