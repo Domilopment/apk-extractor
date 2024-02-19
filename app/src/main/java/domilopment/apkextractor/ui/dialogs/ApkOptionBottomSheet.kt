@@ -89,6 +89,7 @@ fun ApkOptionBottomSheet(
         )
         HorizontalDivider(modifier = Modifier.padding(4.dp))
         ApkSheetInfo(
+            modifier = Modifier.weight(1f, fill = false),
             sourceDirectory = apk.fileUri,
             apkFileName = apk.fileName,
             apkSize = apk.fileSize,
@@ -160,6 +161,7 @@ fun ApkSheetActions(
 
 @Composable
 fun ApkSheetInfo(
+    modifier: Modifier = Modifier,
     sourceDirectory: Uri,
     apkFileName: String,
     apkSize: Float,
@@ -171,9 +173,9 @@ fun ApkSheetInfo(
 ) {
     val scrollState = rememberScrollState()
     Column(
-        modifier = Modifier
+        modifier = modifier
             .verticalScroll(scrollState)
-            .padding(8.dp, 0.dp),
+            .padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         ExpandableText(

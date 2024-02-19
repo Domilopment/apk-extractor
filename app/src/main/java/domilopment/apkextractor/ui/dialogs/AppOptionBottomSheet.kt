@@ -8,7 +8,6 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.IconToggleButton
@@ -41,7 +39,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -127,7 +124,8 @@ fun AppOptionsBottomSheet(
             onFavoriteChanged = onFavoriteChanged
         )
         HorizontalDivider(modifier = Modifier.padding(4.dp))
-        AppSheetInfo(sourceDirectory = app.appSourceDirectory,
+        AppSheetInfo(modifier = Modifier.weight(1f, fill = false),
+            sourceDirectory = app.appSourceDirectory,
             splitDirectories = app.appSplitSourceDirectories,
             apkSize = app.apkSize,
             versionName = app.appVersionName,
@@ -230,6 +228,7 @@ private fun AppSheetActions(
 
 @Composable
 private fun AppSheetInfo(
+    modifier: Modifier = Modifier,
     sourceDirectory: String,
     splitDirectories: Array<String>?,
     apkSize: Float,
@@ -245,24 +244,15 @@ private fun AppSheetInfo(
 ) {
     val scrollState = rememberScrollState()
     Column(
-        modifier = Modifier
+        modifier = modifier
             .verticalScroll(scrollState)
-            .padding(8.dp, 0.dp),
+            .padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         ExpandableText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_source_directory, sourceDirectory
             ), maxLines = 1, overflow = TextOverflow.Ellipsis
-        )
-        if (splitDirectories != null) Text(
-            text = stringResource(id = R.string.info_bottom_sheet_split_sources),
-            modifier = Modifier
-                .background(
-                    MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(16.dp)
-                )
-                .padding(horizontal = 8.dp)
-                .align(Alignment.End)
         )
         Text(
             text = stringResource(id = R.string.info_bottom_sheet_apk_size, apkSize),
