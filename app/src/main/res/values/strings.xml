@@ -198,8 +198,8 @@
     <string name="auto_backup_broadcast_receiver_notification_title">Auto Backup</string>
 
     <!-- App Options Bottom Sheet -->
-    <string name="info_bottom_sheet_source_directory">APK source dir: %s</string>
-    <string name="info_bottom_sheet_split_sources">has splits</string>
+    <string name="info_bottom_sheet_source_directory">Source APK</string>
+    <string name="info_bottom_sheet_split_sources">splits</string>
     <string name="info_bottom_sheet_apk_size">APK size: %.2f MB</string>
     <string name="info_bottom_sheet_version_name">Version name: %s</string>
     <string name="info_bottom_sheet_version_number">Version number: %d</string>

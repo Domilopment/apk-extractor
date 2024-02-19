@@ -61,7 +61,7 @@ import com.google.accompanist.permissions.isGranted
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.data.appList.ExtractionResult
-import domilopment.apkextractor.ui.components.ExpandableText
+import domilopment.apkextractor.ui.components.ExpandableColumn
 import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
@@ -249,10 +249,10 @@ private fun AppSheetInfo(
             .padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        ExpandableText(
-            text = stringResource(
-                id = R.string.info_bottom_sheet_source_directory, sourceDirectory
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+        ExpandableColumn(
+            title = stringResource(id = R.string.info_bottom_sheet_source_directory),
+            hatMultipleItemsNotificationTitle = stringResource(id = R.string.info_bottom_sheet_split_sources),
+            items = arrayOf(sourceDirectory).plus(splitDirectories ?: emptyArray())
         )
         Text(
             text = stringResource(id = R.string.info_bottom_sheet_apk_size, apkSize),
