@@ -103,7 +103,7 @@ fun ExpandableColumn(
                             imageVector = Icons.Default.Circle,
                             contentDescription = null,
                             modifier = Modifier
-                                .padding(top = 8.dp)
+                                .padding(vertical = 8.dp)
                                 .size(8.dp)
                         )
                         Text(text = it)

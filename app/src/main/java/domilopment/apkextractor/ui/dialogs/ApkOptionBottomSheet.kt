@@ -40,6 +40,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -181,46 +184,55 @@ fun ApkSheetInfo(
         ExpandableText(
             text = stringResource(
                 id = R.string.apk_bottom_sheet_source_uri, sourceDirectory
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            ).let {
+                AnnotatedString(
+                    it, listOf(
+                        AnnotatedString.Range(
+                            SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            ), 0, it.indexOf(':') + 1
+                        )
+                    )
+                )
+            }, maxLines = 1, overflow = TextOverflow.Ellipsis
         )
-        Text(
+        InfoText(
             text = stringResource(id = R.string.apk_bottom_sheet_file_name, apkFileName),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_apk_size, apkSize
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.apk_bottom_sheet_last_modified, Utils.getAsFormattedDate(apkCreated)
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_min_sdk,
                 minSdk ?: -1,
                 Utils.androidApiLevel[minSdk] ?: ""
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_target_sdk,
                 targetSdk ?: -1,
                 Utils.androidApiLevel[targetSdk] ?: ""
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_version_name, versionName.toString()
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_version_number, versionNumber ?: 0
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
     }
 }
@@ -276,4 +288,19 @@ fun ApkSheetHeader(
             }
         }
     })
+}
+
+@Composable
+private fun InfoText(text: String) {
+    Text(
+        text = AnnotatedString(
+            text, listOf(
+                AnnotatedString.Range(
+                    SpanStyle(
+                        color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold
+                    ), 0, text.indexOf(':') + 1
+                )
+            )
+        ), maxLines = 1, overflow = TextOverflow.Ellipsis
+    )
 }

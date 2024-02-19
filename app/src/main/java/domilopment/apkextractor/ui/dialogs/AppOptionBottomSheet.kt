@@ -39,6 +39,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -51,6 +52,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -254,50 +258,50 @@ private fun AppSheetInfo(
             hatMultipleItemsNotificationTitle = stringResource(id = R.string.info_bottom_sheet_split_sources),
             items = arrayOf(sourceDirectory).plus(splitDirectories ?: emptyArray())
         )
-        Text(
-            text = stringResource(id = R.string.info_bottom_sheet_apk_size, apkSize),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+        InfoText(
+            text = stringResource(
+                id = R.string.info_bottom_sheet_apk_size, apkSize
+            )
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_version_name, versionName.toString()
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
-        Text(
-            text = stringResource(id = R.string.info_bottom_sheet_version_number, versionNumber),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+        InfoText(
+            text = stringResource(
+                id = R.string.info_bottom_sheet_version_number, versionNumber
+            )
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_min_sdk, minSdk, Utils.androidApiLevel[minSdk] ?: ""
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_target_sdk,
                 targetSdk,
                 Utils.androidApiLevel[targetSdk] ?: ""
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_category,
                 AppFilterCategories.getByCategory(appCategory)?.getTitleString(
                     LocalContext.current
                 ) ?: ""
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_install_time, Utils.getAsFormattedDate(installTime)
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
-        Text(
+        InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_update_time, Utils.getAsFormattedDate(updateTime)
-            ), maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             val packageManager = LocalContext.current.packageManager
@@ -308,7 +312,7 @@ private fun AppSheetInfo(
                 val sourceName = if (isKnownStore) "" else packageManager.getApplicationLabel(
                     applicationInfo
                 )
-                Text(
+                InfoText(
                     text = stringResource(
                         id = R.string.info_bottom_sheet_installation_source, sourceName
                     )
@@ -383,4 +387,19 @@ private fun AppSheetHeader(
             )
         }
     })
+}
+
+@Composable
+private fun InfoText(text: String) {
+    Text(
+        text = AnnotatedString(
+            text, listOf(
+                AnnotatedString.Range(
+                    SpanStyle(
+                        color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold
+                    ), 0, text.indexOf(':') + 1
+                )
+            )
+        ), maxLines = 1, overflow = TextOverflow.Ellipsis
+    )
 }
