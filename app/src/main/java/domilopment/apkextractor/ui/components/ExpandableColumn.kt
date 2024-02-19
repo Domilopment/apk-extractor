@@ -104,7 +104,9 @@ fun ExpandableColumn(
                             contentDescription = null,
                             modifier = Modifier
                                 .padding(vertical = 8.dp)
-                                .size(8.dp)
+                                .padding(end = 4.dp)
+                                .size(8.dp),
+                            tint = MaterialTheme.colorScheme.primary
                         )
                         Text(text = it)
                     }
