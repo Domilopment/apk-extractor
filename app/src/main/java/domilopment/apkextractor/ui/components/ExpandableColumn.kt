@@ -76,7 +76,8 @@ fun ExpandableColumn(
                 )
             }
             Row(
-                modifier = Modifier.size(32.dp), verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.size(height = 32.dp, width = 42.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 VerticalDivider(
                     modifier = Modifier.padding(horizontal = 8.dp),
