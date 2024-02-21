@@ -82,7 +82,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
     private var session: PackageInstaller.Session? = null
     private var task: Job? = null
 
-    fun updateState(packageName: String? = uiState.process, progress: Float = uiState.progress) {
+    fun updateState(packageName: String? = uiState.process, progress: Float = uiState.progress / 100) {
         uiState = uiState.copy(process = packageName, progress = progress * 100)
     }
 
