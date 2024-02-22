@@ -14,7 +14,7 @@ data class AppPackageArchiveModel(
     override val fileName: String,
     override val fileType: String,
     override val fileLastModified: Long,
-    private val fileSizeLong: Long,
+    override val fileSize: Long,
     override var appName: CharSequence? = null,
     override var appPackageName: String? = null,
     override var appIcon: Drawable? = null,
@@ -25,8 +25,6 @@ data class AppPackageArchiveModel(
     override var isPackageArchiveInfoLoading: Boolean = false,
     override var isPackageArchiveInfoLoaded: Boolean = false,
 ) : PackageArchiveModel {
-    override val fileSize: Float = fileSizeLong / (1000.0F * 1000.0F)
-
     override fun packageArchiveInfo(context: Context): AppPackageArchiveModel {
         if (isPackageArchiveInfoLoading || isPackageArchiveInfoLoaded) return this
         isPackageArchiveInfoLoading = true
@@ -39,7 +37,7 @@ data class AppPackageArchiveModel(
         try {
             apkFile = File.createTempFile("temp", ".apk", context.cacheDir)
             context.contentResolver.openInputStream(fileUri).use { input ->
-                if (input?.copyTo(apkFile.outputStream()) == fileSizeLong) {
+                if (input?.copyTo(apkFile.outputStream()) == fileSize) {
                     returnApp =
                         PackageArchiveUtils.getPackageInfoFromApkFile(packageManager, apkFile)
                             ?.let {
@@ -76,7 +74,7 @@ data class AppPackageArchiveModel(
         var result = fileUri.hashCode()
         result = 31 * result + fileName.hashCode()
         result = 31 * result + fileLastModified.hashCode()
-        result = 31 * result + fileSizeLong.hashCode()
+        result = 31 * result + fileSize.hashCode()
         result = 31 * result + (appName?.hashCode() ?: 0)
         result = 31 * result + (appPackageName?.hashCode() ?: 0)
         result = 31 * result + (appIcon?.hashCode() ?: 0)
@@ -97,7 +95,7 @@ data class AppPackageArchiveModel(
         if (fileUri != other.fileUri) return false
         if (fileName != other.fileName) return false
         if (fileLastModified != other.fileLastModified) return false
-        if (fileSizeLong != other.fileSizeLong) return false
+        if (fileSize != other.fileSize) return false
         if (appName != other.appName) return false
         if (appPackageName != other.appPackageName) return false
         if (appIcon != other.appIcon) return false

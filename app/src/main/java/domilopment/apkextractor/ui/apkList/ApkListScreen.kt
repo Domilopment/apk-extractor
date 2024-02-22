@@ -3,6 +3,7 @@ package domilopment.apkextractor.ui.apkList
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Environment
 import android.provider.DocumentsContract
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -12,6 +13,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +50,16 @@ fun ApkListScreen(
 
     var sortDialog by remember {
         mutableStateOf(false)
+    }
+
+    val takenSpace by remember {
+        derivedStateOf {
+            state.appList.sumOf { it.fileSize }
+        }
+    }
+
+    val totalSpace = remember {
+        Environment.getExternalStorageDirectory().totalSpace
     }
 
     val selectApk =
@@ -170,6 +182,8 @@ fun ApkListScreen(
 
     ApkListContent(
         apkList = state.appList,
+        totalSpace = totalSpace,
+        takenSpace = takenSpace,
         searchString = searchString,
         refreshing = state.isRefreshing,
         isPullToRefresh = true,

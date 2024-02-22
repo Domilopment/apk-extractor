@@ -233,6 +233,8 @@
 
     <!-- Apk List Adapter -->
     <string name="apk_holder_version">Version: %s (%d)</string>
+    <string name="apk_list_sum_backup_size_title">Von Backups genutzter Speicher:</string>
+    <string name="apk_list_sum_backup_size_percentage">%.2f %%</string>
 
     <!-- App List Item -->
     <string name="list_item_Image_description">App Icon</string>

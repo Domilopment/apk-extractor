@@ -3,20 +3,31 @@ package domilopment.apkextractor.ui.apkList
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.text.format.Formatter
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.apkList.PackageArchiveModel
 import domilopment.apkextractor.ui.attrColorResource
@@ -26,6 +37,8 @@ import domilopment.apkextractor.utils.Utils
 @Composable
 fun ApkList(
     apkList: List<PackageArchiveModel>,
+    totalSpace: Long,
+    takenSpace: Long,
     searchString: String?,
     onClick: (PackageArchiveModel) -> Unit,
     deletedDocumentFound: (PackageArchiveModel) -> Unit,
@@ -33,6 +46,10 @@ fun ApkList(
     val highlightColor = attrColorResource(attrId = android.R.attr.textColorHighlight)
 
     LazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
+        item {
+            StorageInfo(totalSpace, takenSpace)
+        }
+
         items(items = apkList, key = { it.fileUri }) { apk ->
             if (!FileUtil.doesDocumentExist(LocalContext.current, apk.fileUri)) {
                 deletedDocumentFound(apk)
@@ -78,6 +95,55 @@ fun ApkList(
     }
 }
 
+@Composable
+private fun StorageInfo(totalSpace: Long, takenSpace: Long) {
+    val context = LocalContext.current
+
+    val formatTotalSpace = remember(totalSpace) {
+        Formatter.formatFileSize(context, totalSpace)
+    }
+
+    val formatTakenSpace = remember(takenSpace) {
+        Formatter.formatFileSize(context, takenSpace)
+    }
+
+    Surface(
+        modifier = Modifier.padding(4.dp),
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant
+    ) {
+        Column(
+            modifier = Modifier.padding(4.dp),
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = stringResource(id = R.string.apk_list_sum_backup_size_title),
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
+            LinearProgressIndicator(
+                progress = { takenSpace.toFloat() / totalSpace },
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                trackColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(
+                        id = R.string.apk_list_sum_backup_size_percentage, takenSpace * 100F / totalSpace
+                    )
+                )
+                Text(text = "${formatTakenSpace}/${formatTotalSpace}")
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun ApkListPreview() {
@@ -87,12 +153,14 @@ private fun ApkListPreview() {
             override val fileName: String = "test.apk"
             override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
-            override val fileSize: Float = 1024F
+            override val fileSize: Long = 1024 * 1024
             override var appName: CharSequence? = "Test"
             override var appPackageName: String? = "com.example.test"
             override var appIcon: Drawable? = null
             override var appVersionName: String? = "v0"
             override var appVersionCode: Long? = 0L
+            override var appMinSdkVersion: Int? = 28
+            override var appTargetSdkVersion: Int? = 33
             override var isPackageArchiveInfoLoading: Boolean = false
             override var isPackageArchiveInfoLoaded: Boolean = false
             override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
@@ -102,12 +170,14 @@ private fun ApkListPreview() {
             override val fileName: String = "test2.apk"
             override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
-            override val fileSize: Float = 1024F
+            override val fileSize: Long = 1024 * 1024
             override var appName: CharSequence? = "Test"
             override var appPackageName: String? = "com.example.test2"
             override var appIcon: Drawable? = null
             override var appVersionName: String? = "v0"
             override var appVersionCode: Long? = 0L
+            override var appMinSdkVersion: Int? = 28
+            override var appTargetSdkVersion: Int? = 33
             override var isPackageArchiveInfoLoading: Boolean = false
             override var isPackageArchiveInfoLoaded: Boolean = false
             override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
@@ -117,21 +187,30 @@ private fun ApkListPreview() {
             override val fileName: String = "test (2).apk"
             override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
-            override val fileSize: Float = 1024F
+            override val fileSize: Long = 1024 * 1024
             override var appName: CharSequence? = "Test"
             override var appPackageName: String? = "com.example.test"
             override var appIcon: Drawable? = null
             override var appVersionName: String? = "v1.0.1"
             override var appVersionCode: Long? = 2L
+            override var appMinSdkVersion: Int? = 28
+            override var appTargetSdkVersion: Int? = 33
             override var isPackageArchiveInfoLoading: Boolean = false
             override var isPackageArchiveInfoLoaded: Boolean = false
             override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
             override fun forceRefresh(context: Context): PackageArchiveModel = this
         })
     }
+
+    val space = remember(apks) {
+        apks.sumOf { it.fileSize }
+    }
+
     MaterialTheme {
         Column {
             ApkList(apkList = apks,
+                totalSpace = 6L * 1000 * 1000 * 1000,
+                takenSpace = space,
                 searchString = "",
                 onClick = { apk -> Log.e(apk.fileName, apk.appPackageName.toString()) },
                 deletedDocumentFound = { _ -> })

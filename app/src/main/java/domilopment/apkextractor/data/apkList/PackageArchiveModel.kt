@@ -9,7 +9,7 @@ interface PackageArchiveModel {
     val fileName: String
     val fileType: String
     val fileLastModified: Long
-    val fileSize: Float
+    val fileSize: Long
     var appName: CharSequence?
     var appPackageName: String?
     var appIcon: Drawable?

@@ -167,7 +167,7 @@ fun ApkSheetInfo(
     modifier: Modifier = Modifier,
     sourceDirectory: Uri,
     apkFileName: String,
-    apkSize: Float,
+    apkSize: Long,
     apkCreated: Long,
     minSdk: Int?,
     targetSdk: Int?,
@@ -202,7 +202,7 @@ fun ApkSheetInfo(
         )
         InfoText(
             text = stringResource(
-                id = R.string.info_bottom_sheet_apk_size, apkSize
+                id = R.string.info_bottom_sheet_apk_size, apkSize / (1000F * 1000F)
             )
         )
         InfoText(

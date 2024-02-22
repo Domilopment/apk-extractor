@@ -11,6 +11,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +31,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ApkListContent(
     apkList: List<PackageArchiveModel>,
+    totalSpace: Long,
+    takenSpace: Long,
     searchString: String?,
     refreshing: Boolean,
     isPullToRefresh: Boolean,
@@ -51,6 +54,8 @@ fun ApkListContent(
     Box(Modifier.nestedScroll(state.nestedScrollConnection)) {
         ApkList(
             apkList = apkList,
+            totalSpace = totalSpace,
+            takenSpace = takenSpace,
             searchString = searchString,
             onClick = onClick,
             deletedDocumentFound = deletedDocumentFound
@@ -69,12 +74,14 @@ private fun ApkListScreenPreview() {
             override val fileName: String = "test.apk"
             override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
-            override val fileSize: Float = 1024F
+            override val fileSize: Long = 1024 * 1024
             override var appName: CharSequence? = "Test"
             override var appPackageName: String? = "com.example.test"
             override var appIcon: Drawable? = null
             override var appVersionName: String? = "v0"
             override var appVersionCode: Long? = 0L
+            override var appMinSdkVersion: Int? = 28
+            override var appTargetSdkVersion: Int? = 33
             override var isPackageArchiveInfoLoading: Boolean = false
             override var isPackageArchiveInfoLoaded: Boolean = false
             override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
@@ -84,12 +91,14 @@ private fun ApkListScreenPreview() {
             override val fileName: String = "test2.apk"
             override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
-            override val fileSize: Float = 1024F
+            override val fileSize: Long = 1024 * 1024
             override var appName: CharSequence? = "Test"
             override var appPackageName: String? = "com.example.test2"
             override var appIcon: Drawable? = null
             override var appVersionName: String? = "v0"
             override var appVersionCode: Long? = 0L
+            override var appMinSdkVersion: Int? = 28
+            override var appTargetSdkVersion: Int? = 33
             override var isPackageArchiveInfoLoading: Boolean = false
             override var isPackageArchiveInfoLoaded: Boolean = false
             override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
@@ -99,12 +108,14 @@ private fun ApkListScreenPreview() {
             override val fileName: String = "test (2).apk"
             override val fileType: String = FileUtil.FileInfo.APK.mimeType
             override val fileLastModified: Long = 0L
-            override val fileSize: Float = 1024F
+            override val fileSize: Long = 1024 * 1024
             override var appName: CharSequence? = "Test"
             override var appPackageName: String? = "com.example.test"
             override var appIcon: Drawable? = null
             override var appVersionName: String? = "v1.0.1"
             override var appVersionCode: Long? = 2L
+            override var appMinSdkVersion: Int? = 28
+            override var appTargetSdkVersion: Int? = 33
             override var isPackageArchiveInfoLoading: Boolean = false
             override var isPackageArchiveInfoLoaded: Boolean = false
             override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
@@ -118,21 +129,31 @@ private fun ApkListScreenPreview() {
         override val fileName: String = "test (3).apk"
         override val fileType: String = FileUtil.FileInfo.APK.mimeType
         override val fileLastModified: Long = 0L
-        override val fileSize: Float = 1024F
+        override val fileSize: Long = 1024 * 1024
         override var appName: CharSequence? = "Test"
         override var appPackageName: String? = "com.example.test"
         override var appIcon: Drawable? = null
         override var appVersionName: String? = "v1.1.0"
         override var appVersionCode: Long? = 3L
+        override var appMinSdkVersion: Int? = 28
+        override var appTargetSdkVersion: Int? = 33
         override var isPackageArchiveInfoLoading: Boolean = false
         override var isPackageArchiveInfoLoaded: Boolean = false
         override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
         override fun forceRefresh(context: Context): PackageArchiveModel = this
     }
 
+    val space by remember {
+        derivedStateOf {
+            apks.sumOf { it.fileSize }
+        }
+    }
+
     MaterialTheme {
         Column {
             ApkListContent(apkList = apks,
+                totalSpace = 6L * 1000 * 1000 * 1000,
+                takenSpace = space,
                 searchString = "",
                 refreshing = refreshing,
                 isPullToRefresh = true,

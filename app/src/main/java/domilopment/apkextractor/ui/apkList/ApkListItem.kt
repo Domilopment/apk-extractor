@@ -115,12 +115,14 @@ private fun ApkListItemPreview() {
                 override val fileName: String = "test.apk"
                 override val fileType: String = FileUtil.FileInfo.APK.mimeType
                 override val fileLastModified: Long = 0L
-                override val fileSize: Float = 1024F
+                override val fileSize: Long = 1024
                 override var appName: CharSequence? = "Test"
                 override var appPackageName: String? = "com.example.test"
                 override var appIcon: Drawable? = null
                 override var appVersionName: String? = "v1.0"
                 override var appVersionCode: Long? = 2L
+                override var appMinSdkVersion: Int? = 28
+                override var appTargetSdkVersion: Int? = 33
                 override var isPackageArchiveInfoLoading: Boolean = false
                 override var isPackageArchiveInfoLoaded: Boolean = false
                 override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
