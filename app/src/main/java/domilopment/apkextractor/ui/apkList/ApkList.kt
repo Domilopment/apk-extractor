@@ -130,8 +130,8 @@ private fun StorageInfo(
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
-            val color = MaterialTheme.colorScheme.inversePrimary
-            val nonFree = MaterialTheme.colorScheme.primary
+            val color = MaterialTheme.colorScheme.primary
+            val nonFree = MaterialTheme.colorScheme.inversePrimary
             val trackColor = MaterialTheme.colorScheme.onSurfaceVariant
             Canvas(
                 Modifier
