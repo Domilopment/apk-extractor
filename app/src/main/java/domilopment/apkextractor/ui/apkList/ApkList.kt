@@ -5,17 +5,19 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.format.Formatter
 import android.util.Log
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,6 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,15 +43,17 @@ fun ApkList(
     apkList: List<PackageArchiveModel>,
     totalSpace: Long,
     takenSpace: Long,
+    freeSpace: Long,
     searchString: String?,
     onClick: (PackageArchiveModel) -> Unit,
     deletedDocumentFound: (PackageArchiveModel) -> Unit,
+    onStorageInfoClick: () -> Unit
 ) {
     val highlightColor = attrColorResource(attrId = android.R.attr.textColorHighlight)
 
     LazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
         item {
-            StorageInfo(totalSpace, takenSpace)
+            StorageInfo(totalSpace, takenSpace, freeSpace, onStorageInfoClick)
         }
 
         items(items = apkList, key = { it.fileUri }) { apk ->
@@ -83,20 +89,21 @@ fun ApkList(
                 Utils.getAnnotatedString(versionName, searchString, highlightColor)
             }
 
-            ApkListItem(
-                apkFileName = fileName!!,
+            ApkListItem(apkFileName = fileName!!,
                 appName = appName,
                 appPackageName = packageName,
                 appIcon = apk.appIcon,
                 apkVersionInfo = versionInfo,
-                isLoading = apk.isPackageArchiveInfoLoading
-            ) { onClick(apk) }
+                isLoading = apk.isPackageArchiveInfoLoading,
+                onClick = { onClick(apk) })
         }
     }
 }
 
 @Composable
-private fun StorageInfo(totalSpace: Long, takenSpace: Long) {
+private fun StorageInfo(
+    totalSpace: Long, takenSpace: Long, freeSpace: Long, onStorageInfoClick: () -> Unit
+) {
     val context = LocalContext.current
 
     val formatTotalSpace = remember(totalSpace) {
@@ -108,12 +115,14 @@ private fun StorageInfo(totalSpace: Long, takenSpace: Long) {
     }
 
     Surface(
-        modifier = Modifier.padding(4.dp),
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable(onClick = onStorageInfoClick),
         shape = RoundedCornerShape(8.dp),
         color = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Column(
-            modifier = Modifier.padding(4.dp),
+            modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
@@ -121,21 +130,51 @@ private fun StorageInfo(totalSpace: Long, takenSpace: Long) {
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
-            LinearProgressIndicator(
-                progress = { takenSpace.toFloat() / totalSpace },
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.inversePrimary,
-                trackColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            val color = MaterialTheme.colorScheme.inversePrimary
+            val nonFree = MaterialTheme.colorScheme.primary
+            val trackColor = MaterialTheme.colorScheme.onSurfaceVariant
+            Canvas(
+                Modifier
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .fillMaxWidth()
+                    .height(4.dp)
+            ) {
+                val width = size.width
+                val backupsOffset = width * (takenSpace.toFloat() / totalSpace)
+                val nonFreeOffset = width * ((totalSpace - freeSpace).toFloat() / totalSpace)
+                val strokeWidth = size.height
+                drawLine(
+                    trackColor,
+                    Offset(nonFreeOffset, 0f),
+                    Offset(width, 0f),
+                    strokeWidth,
+                    StrokeCap.Round,
+                )
+                drawLine(
+                    nonFree,
+                    Offset(backupsOffset, 0f),
+                    Offset(nonFreeOffset, 0f),
+                    strokeWidth,
+                    StrokeCap.Round
+                )
+                drawLine(
+                    color,
+                    Offset(0f, 0f),
+                    Offset(backupsOffset, 0f),
+                    strokeWidth,
+                    StrokeCap.Round,
+                )
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    .padding(start = 16.dp, end = 16.dp, top = 2.dp, bottom = 2.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = stringResource(
-                        id = R.string.apk_list_sum_backup_size_percentage, takenSpace * 100F / totalSpace
+                        id = R.string.apk_list_sum_backup_size_percentage,
+                        takenSpace * 100F / totalSpace
                     )
                 )
                 Text(text = "${formatTakenSpace}/${formatTotalSpace}")
@@ -211,9 +250,11 @@ private fun ApkListPreview() {
             ApkList(apkList = apks,
                 totalSpace = 6L * 1000 * 1000 * 1000,
                 takenSpace = space,
+                freeSpace = 4L * 1000 * 1000 * 1000,
                 searchString = "",
                 onClick = { apk -> Log.e(apk.fileName, apk.appPackageName.toString()) },
-                deletedDocumentFound = { _ -> })
+                deletedDocumentFound = { _ -> },
+                onStorageInfoClick = { })
         }
     }
 }

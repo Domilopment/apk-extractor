@@ -58,8 +58,10 @@ fun ApkListScreen(
         }
     }
 
-    val totalSpace = remember {
-        Environment.getExternalStorageDirectory().totalSpace
+    val (totalSpace, freeSpace) = remember(state.appList) {
+        Environment.getExternalStorageDirectory().let {
+            Pair(it.totalSpace, it.freeSpace)
+        }
     }
 
     val selectApk =
@@ -180,15 +182,19 @@ fun ApkListScreen(
         )
     }
 
-    ApkListContent(
-        apkList = state.appList,
+    ApkListContent(apkList = state.appList,
         totalSpace = totalSpace,
         takenSpace = takenSpace,
+        freeSpace = freeSpace,
         searchString = searchString,
         refreshing = state.isRefreshing,
         isPullToRefresh = true,
         onRefresh = model::updatePackageArchives,
         onClick = model::selectPackageArchive,
-        deletedDocumentFound = model::remove
-    )
+        deletedDocumentFound = model::remove,
+        onStorageInfoClick = {
+            Intent(android.provider.Settings.ACTION_INTERNAL_STORAGE_SETTINGS).let {
+                context.startActivity(it)
+            }
+        })
 }

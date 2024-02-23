@@ -33,12 +33,14 @@ fun ApkListContent(
     apkList: List<PackageArchiveModel>,
     totalSpace: Long,
     takenSpace: Long,
+    freeSpace: Long,
     searchString: String?,
     refreshing: Boolean,
     isPullToRefresh: Boolean,
     onRefresh: () -> Unit,
     onClick: (PackageArchiveModel) -> Unit,
-    deletedDocumentFound: (PackageArchiveModel) -> Unit
+    deletedDocumentFound: (PackageArchiveModel) -> Unit,
+    onStorageInfoClick: () -> Unit
 ) {
     val state = rememberPullToRefreshState(enabled = { isPullToRefresh })
     if (state.isRefreshing) {
@@ -56,9 +58,11 @@ fun ApkListContent(
             apkList = apkList,
             totalSpace = totalSpace,
             takenSpace = takenSpace,
+            freeSpace = freeSpace,
             searchString = searchString,
             onClick = onClick,
-            deletedDocumentFound = deletedDocumentFound
+            deletedDocumentFound = deletedDocumentFound,
+            onStorageInfoClick = onStorageInfoClick
         )
 
         PullToRefreshContainer(state = state, modifier = Modifier.align(Alignment.TopCenter))
@@ -154,6 +158,7 @@ private fun ApkListScreenPreview() {
             ApkListContent(apkList = apks,
                 totalSpace = 6L * 1000 * 1000 * 1000,
                 takenSpace = space,
+                freeSpace = 4L * 1000 * 1000 * 1000,
                 searchString = "",
                 refreshing = refreshing,
                 isPullToRefresh = true,
@@ -166,7 +171,9 @@ private fun ApkListScreenPreview() {
                     }
                 },
                 onClick = { _ -> },
-                deletedDocumentFound = { _ -> })
+                deletedDocumentFound = { _ -> },
+                onStorageInfoClick = {}
+            )
         }
     }
 }
