@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.zIndex
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.components.ItemListDragAndDropState
 import domilopment.apkextractor.ui.components.move
@@ -207,7 +208,8 @@ fun APKNamePreference(
                             )
                             dragMap.sortBy { it.second !in value }
                         }
-                        .graphicsLayer { translationY = displacementOffset ?: 0f },
+                        .graphicsLayer { translationY = displacementOffset ?: 0f }
+                        .zIndex(if (displacementOffset != null) 1f else 0f),
                     leadingContent = {
                         Checkbox(
                             checked = value.contains(item.second), onCheckedChange = null

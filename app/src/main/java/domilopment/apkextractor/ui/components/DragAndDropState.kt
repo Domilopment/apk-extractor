@@ -87,7 +87,6 @@ class ItemListDragAndDropState(
         if (hoveredElement != null) {
             val delta = startOffset - hoveredElement.offset
             val isDeltaPositive = delta > 0
-            val isEndOffsetGreater = endOffset > hoveredElement.offsetEnd
 
             val validItems = lazyListState.layoutInfo.visibleItemsInfo.filter { item ->
                 !(item.offsetEnd < startOffset || item.offset > endOffset || hoveredElement.index == item.index)
@@ -95,7 +94,7 @@ class ItemListDragAndDropState(
 
             val targetItem = validItems.firstOrNull {
                 when {
-                    isDeltaPositive -> isEndOffsetGreater
+                    isDeltaPositive -> endOffset > it.offsetEnd
                     else -> startOffset < it.offset
                 }
             }
