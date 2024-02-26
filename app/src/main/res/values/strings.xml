@@ -238,9 +238,9 @@
     <string name="apk_holder_version">Version: %s (%d)</string>
     <string name="apk_list_sum_backup_size_title">Space taken by Backups:</string>
     <string name="apk_list_sum_backup_size_percentage">%.2f %%</string>
-    <string name="apk_list_sum_backup_size_info_backups">• Extracted Backups</string>
-    <string name="apk_list_sum_backup_size_info_used">• Used Space on device total</string>
-    <string name="apk_list_sum_backup_size_info_total">• Device Space total</string>
+    <string name="apk_list_sum_backup_size_info_backups">Extracted Backups</string>
+    <string name="apk_list_sum_backup_size_info_used">Used Space on device total</string>
+    <string name="apk_list_sum_backup_size_info_total">Device Space total</string>
 
     <!-- App List Item -->
     <string name="list_item_Image_description">App Icon</string>

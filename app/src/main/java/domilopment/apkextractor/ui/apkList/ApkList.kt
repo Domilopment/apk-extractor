@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
@@ -204,19 +206,43 @@ private fun StorageInfo(
                 )
             }
             AnimatedVisibility(visible = expanded) {
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.apk_list_sum_backup_size_info_backups),
-                        color = color
-                    )
-                    Text(
-                        text = stringResource(id = R.string.apk_list_sum_backup_size_info_used),
-                        color = nonFree
-                    )
-                    Text(
-                        text = stringResource(id = R.string.apk_list_sum_backup_size_info_total),
-                        color = trackColor
-                    )
+                Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Circle,
+                            contentDescription = null,
+                            modifier = Modifier.height(12.dp),
+                            tint = color
+                        )
+                        Text(text = stringResource(id = R.string.apk_list_sum_backup_size_info_backups))
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Circle,
+                            contentDescription = null,
+                            modifier = Modifier.height(12.dp),
+                            tint = nonFree
+                        )
+                        Text(text = stringResource(id = R.string.apk_list_sum_backup_size_info_used))
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Circle,
+                            contentDescription = null,
+                            modifier = Modifier.height(12.dp),
+                            tint = trackColor
+                        )
+                        Text(text = stringResource(id = R.string.apk_list_sum_backup_size_info_total))
+                    }
                 }
             }
         }
