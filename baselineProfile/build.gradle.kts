@@ -3,12 +3,12 @@ import com.android.build.api.dsl.ManagedVirtualDevice
 plugins {
     alias(libs.plugins.androidTest)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.androidXbaselineprofile)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
-    namespace 'domilopment.baselineprofile'
-    compileSdk 34
+    namespace = "domilopment.baselineprofile"
+    compileSdk = 34
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -20,16 +20,16 @@ android {
     }
 
     defaultConfig {
-        minSdk 28
-        targetSdk 34
+        minSdk = 28
+        targetSdk = 34
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     targetProjectPath = ":app"
 
     testOptions.managedDevices.devices {
-        pixel6Api34(ManagedVirtualDevice) {
+        create<ManagedVirtualDevice>("pixel6Api34") {
             device = "Pixel 6"
             apiLevel = 34
             systemImageSource = "google"
@@ -45,8 +45,8 @@ baselineProfile {
 }
 
 dependencies {
-    implementation libs.androidx.junit
-    implementation libs.androidx.espresso.core
-    implementation libs.androidx.uiautomator
-    implementation libs.androidx.benchmark.macro.junit4
+    implementation(libs.androidx.junit)
+    implementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.uiautomator)
+    implementation(libs.androidx.benchmark.macro.junit4)
 }
