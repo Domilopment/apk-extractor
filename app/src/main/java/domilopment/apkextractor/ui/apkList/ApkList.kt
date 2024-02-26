@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.format.Formatter
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,12 +19,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
@@ -106,6 +114,10 @@ private fun StorageInfo(
 ) {
     val context = LocalContext.current
 
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
     val formatTotalSpace = remember(totalSpace) {
         Formatter.formatFileSize(context, totalSpace)
     }
@@ -137,30 +149,31 @@ private fun StorageInfo(
                 Modifier
                     .padding(horizontal = 12.dp, vertical = 8.dp)
                     .fillMaxWidth()
-                    .height(4.dp)
+                    .height(8.dp)
             ) {
+                val y = size.height / 2
                 val width = size.width
                 val backupsOffset = width * (takenSpace.toFloat() / totalSpace)
                 val nonFreeOffset = width * ((totalSpace - freeSpace).toFloat() / totalSpace)
                 val strokeWidth = size.height
                 drawLine(
                     trackColor,
-                    Offset(nonFreeOffset, 0f),
-                    Offset(width, 0f),
+                    Offset(0f, y),
+                    Offset(width, y),
                     strokeWidth,
                     StrokeCap.Round,
                 )
                 drawLine(
                     nonFree,
-                    Offset(backupsOffset, 0f),
-                    Offset(nonFreeOffset, 0f),
+                    Offset(backupsOffset, y),
+                    Offset(nonFreeOffset, y),
                     strokeWidth,
                     StrokeCap.Round
                 )
                 drawLine(
                     color,
-                    Offset(0f, 0f),
-                    Offset(backupsOffset, 0f),
+                    Offset(0f, y),
+                    Offset(backupsOffset, y),
                     strokeWidth,
                     StrokeCap.Round,
                 )
@@ -178,6 +191,33 @@ private fun StorageInfo(
                     )
                 )
                 Text(text = "${formatTakenSpace}/${formatTotalSpace}")
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = !expanded },
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null
+                )
+            }
+            AnimatedVisibility(visible = expanded) {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.apk_list_sum_backup_size_info_backups),
+                        color = color
+                    )
+                    Text(
+                        text = stringResource(id = R.string.apk_list_sum_backup_size_info_used),
+                        color = nonFree
+                    )
+                    Text(
+                        text = stringResource(id = R.string.apk_list_sum_backup_size_info_total),
+                        color = trackColor
+                    )
+                }
             }
         }
     }
