@@ -191,6 +191,9 @@ fun ApkListScreen(
         isPullToRefresh = true,
         onRefresh = model::updatePackageArchives,
         onClick = model::selectPackageArchive,
+        isApkFileDeleted = { apk ->
+            !FileUtil.doesDocumentExist(context, apk.fileUri)
+        },
         deletedDocumentFound = model::remove,
         onStorageInfoClick = {
             Intent(android.provider.Settings.ACTION_INTERNAL_STORAGE_SETTINGS).let {

@@ -56,6 +56,7 @@ fun ApkList(
     freeSpace: Long,
     searchString: String?,
     onClick: (PackageArchiveModel) -> Unit,
+    isApkFileDeleted: (PackageArchiveModel) -> Boolean,
     deletedDocumentFound: (PackageArchiveModel) -> Unit,
     onStorageInfoClick: () -> Unit
 ) {
@@ -67,7 +68,7 @@ fun ApkList(
         }
 
         items(items = apkList, key = { it.fileUri }) { apk ->
-            if (!FileUtil.doesDocumentExist(LocalContext.current, apk.fileUri)) {
+            if (isApkFileDeleted(apk)) {
                 deletedDocumentFound(apk)
                 return@items
             }
@@ -319,6 +320,7 @@ private fun ApkListPreview() {
                 freeSpace = 4L * 1000 * 1000 * 1000,
                 searchString = "",
                 onClick = { apk -> Log.e(apk.fileName, apk.appPackageName.toString()) },
+                isApkFileDeleted = { _ -> false },
                 deletedDocumentFound = { _ -> },
                 onStorageInfoClick = { })
         }
