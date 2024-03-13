@@ -75,7 +75,7 @@ class ListOfAPKs private constructor(
                             documentUri, displayName, mimeType, lastModified, size
                         )
 
-                        displayName.endsWith(".xapk") -> ZipPackageArchiveModel(
+                        displayName.endsWith(".xapk") || displayName.endsWith(".apks") -> ZipPackageArchiveModel(
                             documentUri, displayName, mimeType, lastModified, size
                         )
 
