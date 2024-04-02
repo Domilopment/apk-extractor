@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import domilopment.apkextractor.R
 
 @Composable
-fun <T> ListPreference(
+inline fun <reified T> ListPreference(
     icon: ImageVector? = null,
     enabled: Boolean = true,
     @StringRes iconDesc: Int? = null,
@@ -32,7 +32,7 @@ fun <T> ListPreference(
     @ArrayRes entries: Int,
     @ArrayRes entryValues: Int,
     state: T,
-    onClick: (T) -> Unit
+    crossinline onClick: (T) -> Unit
 ) {
     ListPreference(
         icon = icon,
@@ -48,7 +48,7 @@ fun <T> ListPreference(
 }
 
 @Composable
-fun <T> ListPreference(
+inline fun <reified T> ListPreference(
     icon: ImageVector? = null,
     enabled: Boolean = true,
     iconDesc: String? = null,
@@ -57,7 +57,7 @@ fun <T> ListPreference(
     entries: Array<String>,
     entryValues: Array<String>,
     state: T,
-    onClick: (T) -> Unit
+    crossinline onClick: (T) -> Unit
 ) {
     val entriesMap = remember(entries, entryValues) { entries.zip(entryValues) }
 
@@ -92,9 +92,9 @@ fun <T> ListPreference(
                 items(items = entriesMap, key = { it.second }) {
                     ListItem(headlineContent = { Text(text = it.first) },
                         modifier = Modifier.clickable {
-                            val newValue = when (state!!) {
-                                is Int -> it.second.toInt() as T
-                                is String -> it.second as T
+                            val newValue = when (T::class) {
+                                Int::class -> it.second.toInt() as T
+                                String::class -> it.second as T
                                 else -> error("Unknown Generic Type")
                             }
                             onClick(newValue)
