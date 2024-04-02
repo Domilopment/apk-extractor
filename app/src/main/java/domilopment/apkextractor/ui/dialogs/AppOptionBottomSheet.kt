@@ -58,6 +58,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -98,6 +100,13 @@ fun AppOptionsBottomSheet(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val apkOptions = ApkActionsManager(context, app)
+
+    LifecycleEventEffect(event = Lifecycle.Event.ON_START) {
+        if (!Utils.isPackageInstalled(context.packageManager, app.appPackageName)) {
+            uninstalledAppFound(app)
+            onDismissRequest()
+        }
+    }
 
     LaunchedEffect(key1 = Unit) {
         saveResult.collect { extractionResult ->

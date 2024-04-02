@@ -48,6 +48,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.apkList.PackageArchiveModel
@@ -69,13 +71,21 @@ fun ApkOptionBottomSheet(
     onActionUninstall: () -> Unit,
     deletedDocumentFound: (PackageArchiveModel) -> Unit
 ) {
-    if (!FileUtil.doesDocumentExist(LocalContext.current, apk.fileUri)) {
+    val context = LocalContext.current
+    if (!FileUtil.doesDocumentExist(context, apk.fileUri)) {
         deletedDocumentFound(apk)
         return
     }
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LifecycleEventEffect(event = Lifecycle.Event.ON_START) {
+        if (!FileUtil.doesDocumentExist(context, apk.fileUri)) {
+            deletedDocumentFound(apk)
+            onDismissRequest()
+        }
+    }
 
     SnackbarHostModalBottomSheet(
         onDismissRequest = onDismissRequest,
