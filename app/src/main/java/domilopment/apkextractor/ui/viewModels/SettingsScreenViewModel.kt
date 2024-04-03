@@ -8,6 +8,7 @@ import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
 import domilopment.apkextractor.data.SettingsScreenState
 import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.AppSortOptions
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,8 @@ class SettingsScreenViewModel @Inject constructor(
         MutableStateFlow(SettingsScreenState())
     val uiState: StateFlow<SettingsScreenState> = _uiState.asStateFlow()
 
+    private val context get() = getApplication<Application>().applicationContext
+
     init {
         viewModelScope.launch {
             appsRepository.apps.map { apps ->
@@ -40,7 +43,11 @@ class SettingsScreenViewModel @Inject constructor(
                         selectSystemApps = false,
                         selectUserApps = true,
                         emptySet()
-                    ).let {
+                    ).filter { app ->
+                        Utils.isPackageInstalled(
+                            context.packageManager, app.appPackageName
+                        )
+                    }.let {
                         ApplicationUtil.sortAppData(
                             it,
                             sortMode = AppSortOptions.SORT_BY_NAME.ordinal,

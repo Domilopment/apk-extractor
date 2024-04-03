@@ -127,7 +127,11 @@ class AppListViewModel @Inject constructor(
             ) { appList, updatedSysApps, sysApps, userApps, favorites ->
                 ApplicationUtil.selectedAppTypes(
                     appList, updatedSysApps, sysApps, userApps, favorites
-                )
+                ).filter { app ->
+                    Utils.isPackageInstalled(
+                        context.packageManager, app.appPackageName
+                    )
+                }
             }.let {
                 combine(
                     it, filterInstaller, filterCategory, filterOthers

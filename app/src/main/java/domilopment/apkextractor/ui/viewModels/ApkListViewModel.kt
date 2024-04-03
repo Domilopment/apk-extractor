@@ -67,6 +67,7 @@ class ApkListViewModel @Inject constructor(
         viewModelScope.launch {
             apksRepository.apks.combine(sortOrder) { apkList, sortOrder ->
                 PackageArchiveUtils.sortApkData(apkList, sortOrder)
+                    .filter { apk -> FileUtil.doesDocumentExist(context, apk.fileUri) }
             }.let {
                 _searchQuery.debounce(500).combine(it) { searchQuery, apkList ->
                     val searchString = searchQuery?.trim()
