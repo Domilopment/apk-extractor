@@ -342,7 +342,9 @@ private fun AppSheetInfo(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = packageManager.getApplicationLabel(applicationInfo).toString()
+                        text = packageManager.getApplicationLabel(applicationInfo).toString(),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
                     )
                 }
             }
