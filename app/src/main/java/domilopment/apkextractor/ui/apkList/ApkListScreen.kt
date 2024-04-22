@@ -158,9 +158,7 @@ fun ApkListScreen(
                 }
             },
             onActionDelete = {
-                DocumentsContract.deleteDocument(
-                    context.contentResolver, it.fileUri
-                ).let { deleted ->
+                FileUtil.deleteDocument(context, it.fileUri).let { deleted ->
                     Toast.makeText(
                         context, context.getString(
                             if (deleted) {

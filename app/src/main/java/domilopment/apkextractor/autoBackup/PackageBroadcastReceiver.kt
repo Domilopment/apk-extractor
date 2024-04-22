@@ -3,11 +3,11 @@ package domilopment.apkextractor.autoBackup
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.provider.DocumentsContract
 import androidx.core.app.NotificationManagerCompat
 import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.autoBackup.AsyncBackupTask.Companion.ACTION_DELETE_APK
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -70,9 +70,7 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
             // Delete Backup APK file
             ACTION_DELETE_APK -> {
                 intent.data?.let {
-                    val deleted = DocumentsContract.deleteDocument(
-                        context.contentResolver, it
-                    )
+                    val deleted = FileUtil.deleteDocument(context, it)
                     if (deleted) with(NotificationManagerCompat.from(context)) {
                         val id = intent.getIntExtra("ID", -1)
                         if (id > 1) cancel(id)
