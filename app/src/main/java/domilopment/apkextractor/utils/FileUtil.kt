@@ -1,5 +1,6 @@
 package domilopment.apkextractor.utils
 
+import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -47,6 +48,18 @@ object FileUtil {
                 to, DocumentsContract.getTreeDocumentId(to)
             ), mimeType, "$fileName.$suffix"
         )
+    }
+
+    /**
+     * Delete the given document.
+     * @param contentResolver
+     * @param uri
+     * Uri of document that shall be deleted
+     * @return
+     * If document was deleted or not
+     */
+    fun deleteDocument(context: Context, uri: Uri): Boolean {
+        return DocumentsContract.deleteDocument(context.contentResolver, uri)
     }
 
     /**

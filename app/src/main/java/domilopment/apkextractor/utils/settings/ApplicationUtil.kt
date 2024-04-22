@@ -9,7 +9,9 @@ import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterInstaller
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterOthers
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -151,8 +153,9 @@ object ApplicationUtil {
         fileName: String,
         callback: (String) -> Unit
     ): SaveApkResult = withContext(Dispatchers.IO) {
+        var extractedApk: Uri? = null
         return@withContext try {
-            val extractedApk: Uri = FileUtil.ZipUtil.createPersistentZip(
+            extractedApk = FileUtil.ZipUtil.createPersistentZip(
                 context,
                 to,
                 fileName,
@@ -161,6 +164,7 @@ object ApplicationUtil {
             )!!
             FileUtil.ZipUtil.openZipOutputStream(context, extractedApk).use { output ->
                 for (file in files) {
+                    ensureActive()
                     FileUtil.ZipUtil.writeToZip(output, file)
                     withContext(Dispatchers.Main) {
                         callback(file)
@@ -171,6 +175,11 @@ object ApplicationUtil {
         } catch (fnf_e: FileNotFoundException) {
             fnf_e.printStackTrace()
             SaveApkResult.Failure(fnf_e.message)
+        } catch (e: CancellationException) {
+            extractedApk?.let {
+                FileUtil.deleteDocument(context, extractedApk)
+            }
+            SaveApkResult.Failure(e.message)
         } catch (e: Exception) {
             e.printStackTrace()
             SaveApkResult.Failure(e.message)
