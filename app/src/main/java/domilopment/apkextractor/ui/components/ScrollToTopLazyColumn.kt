@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -27,14 +28,18 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
 @Composable
-private fun ScrollToTopButton(visible: Boolean, modifier: Modifier = Modifier, onScrollToTop: () -> Unit) {
+private fun ScrollToTopButton(
+    visible: Boolean, modifier: Modifier = Modifier, onScrollToTop: () -> Unit
+) {
     AnimatedVisibility(
         visible = visible, modifier = modifier, enter = fadeIn(), exit = fadeOut()
     ) {
         IconButton(
-            onClick = onScrollToTop, colors = IconButtonDefaults.iconButtonColors().copy(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            onClick = onScrollToTop,
+            modifier = Modifier.padding(8.dp),
+            colors = IconButtonDefaults.iconButtonColors().copy(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
             )
         ) {
             Icon(
@@ -62,7 +67,7 @@ fun ScrollToTopLazyColumn(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = state,
-            contentPadding = PaddingValues(bottom = 46.dp)
+            contentPadding = PaddingValues(bottom = 54.dp)
         ) {
             content()
         }
