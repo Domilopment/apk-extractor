@@ -1,6 +1,5 @@
 package domilopment.apkextractor.utils
 
-import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -52,7 +51,7 @@ object FileUtil {
 
     /**
      * Delete the given document.
-     * @param contentResolver
+     * @param context
      * @param uri
      * Uri of document that shall be deleted
      * @return
