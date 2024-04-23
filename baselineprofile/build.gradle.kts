@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "domilopment.baselineprofile"
+    namespace = "domilopment.apkextractor.baselineprofile"
     compileSdk = 34
 
     compileOptions {

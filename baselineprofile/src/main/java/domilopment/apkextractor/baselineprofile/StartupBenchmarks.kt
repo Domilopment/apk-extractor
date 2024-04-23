@@ -1,4 +1,4 @@
-package domilopment.baselineprofile
+package domilopment.apkextractor.baselineprofile
 
 import androidx.benchmark.macro.BaselineProfileMode
 import androidx.benchmark.macro.CompilationMode
