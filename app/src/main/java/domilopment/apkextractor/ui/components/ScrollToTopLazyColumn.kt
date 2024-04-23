@@ -69,7 +69,7 @@ fun ScrollToTopLazyColumn(
             state = state,
             contentPadding = PaddingValues(bottom = 54.dp)
         ) {
-            content()
+            content(this)
         }
 
         ScrollToTopButton(
