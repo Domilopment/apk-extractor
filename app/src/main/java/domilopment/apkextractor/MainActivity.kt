@@ -26,7 +26,6 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +40,7 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.rememberNavController
@@ -105,8 +105,8 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val mainScreenState = model.mainScreenState
             val actionModeState = model.actionModeState
-            val saveDir by model.saveDir.collectAsState()
-            val dynamicColors by model.materialYou.collectAsState()
+            val saveDir by model.saveDir.collectAsStateWithLifecycle()
+            val dynamicColors by model.materialYou.collectAsStateWithLifecycle()
             val navController = rememberNavController()
             val appBarState = rememberAppBarState(navController = navController)
             val scope = rememberCoroutineScope()

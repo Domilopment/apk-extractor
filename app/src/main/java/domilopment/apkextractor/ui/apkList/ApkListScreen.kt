@@ -12,13 +12,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import domilopment.apkextractor.InstallXapkActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
@@ -44,9 +44,9 @@ fun ApkListScreen(
     showSnackbar: (MySnackbarVisuals) -> Unit
 ) {
     val context = LocalContext.current
-    val state by model.apkListFragmentState.collectAsState()
-    val saveDir by model.saveDir.collectAsState()
-    val sortOrder by model.sortOrder.collectAsState()
+    val state by model.apkListFragmentState.collectAsStateWithLifecycle()
+    val saveDir by model.saveDir.collectAsStateWithLifecycle()
+    val sortOrder by model.sortOrder.collectAsStateWithLifecycle()
 
     var sortDialog by remember {
         mutableStateOf(false)

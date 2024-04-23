@@ -11,13 +11,13 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import domilopment.apkextractor.R
@@ -50,22 +50,22 @@ fun AppListScreen(
     onAppSelection: (Boolean, Int) -> Unit
 ) {
     val context = LocalContext.current
-    val state by model.mainFragmentState.collectAsState()
-    val updatedSysApps by model.updatedSystemApps.collectAsState()
-    val systemApps by model.systemApps.collectAsState()
-    val userApps by model.userApps.collectAsState()
-    val sortAsc by model.appSortAsc.collectAsState()
-    val sort by model.appSortOrder.collectAsState()
-    val sortFavorites by model.appSortFavorites.collectAsState()
-    val installationSource by model.filterInstaller.collectAsState()
-    val category by model.filterCategory.collectAsState()
-    val otherFilter by model.filterOthers.collectAsState()
-    val rightSwipeAction by model.rightSwipeAction.collectAsState()
-    val leftSwipeAction by model.leftSwipeAction.collectAsState()
-    val swipeActionCustomThreshold by model.swipeActionCustomThreshold.collectAsState()
-    val swipeActionThresholdMod by model.swipeActionThresholdMod.collectAsState()
+    val state by model.mainFragmentState.collectAsStateWithLifecycle()
+    val updatedSysApps by model.updatedSystemApps.collectAsStateWithLifecycle()
+    val systemApps by model.systemApps.collectAsStateWithLifecycle()
+    val userApps by model.userApps.collectAsStateWithLifecycle()
+    val sortAsc by model.appSortAsc.collectAsStateWithLifecycle()
+    val sort by model.appSortOrder.collectAsStateWithLifecycle()
+    val sortFavorites by model.appSortFavorites.collectAsStateWithLifecycle()
+    val installationSource by model.filterInstaller.collectAsStateWithLifecycle()
+    val category by model.filterCategory.collectAsStateWithLifecycle()
+    val otherFilter by model.filterOthers.collectAsStateWithLifecycle()
+    val rightSwipeAction by model.rightSwipeAction.collectAsStateWithLifecycle()
+    val leftSwipeAction by model.leftSwipeAction.collectAsStateWithLifecycle()
+    val swipeActionCustomThreshold by model.swipeActionCustomThreshold.collectAsStateWithLifecycle()
+    val swipeActionThresholdMod by model.swipeActionThresholdMod.collectAsStateWithLifecycle()
 
-    val progressDialogState by model.progressDialogState.collectAsState()
+    val progressDialogState by model.progressDialogState.collectAsStateWithLifecycle()
 
     // does user has selected the filter option dialog
     var showFilter by rememberSaveable {
