@@ -2,9 +2,12 @@ package domilopment.apkextractor.autoBackup
 
 import android.app.*
 import android.content.*
+import android.content.pm.ServiceInfo
+import android.os.Build
 import android.os.IBinder
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.R
@@ -32,7 +35,8 @@ class AutoBackupService : Service() {
 
     private lateinit var br: BroadcastReceiver
 
-    @Inject lateinit var settings: PreferenceRepository
+    @Inject
+    lateinit var settings: PreferenceRepository
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -46,7 +50,16 @@ class AutoBackupService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Start Foreground Service with Notification
-        startForeground(1, createNotification())
+        ServiceCompat.startForeground(
+            this,
+            1,
+            createNotification(),
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            } else {
+                0
+            }
+        )
 
         // Set Filter for Broadcast
         val filter = IntentFilter().apply {
@@ -69,7 +82,7 @@ class AutoBackupService : Service() {
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
         }
-        stopForeground(STOP_FOREGROUND_REMOVE)
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         // Restart Service if kill isn't called by user
         runBlocking {
             if (settings.autoBackupService.first()) restartService()
@@ -84,9 +97,7 @@ class AutoBackupService : Service() {
     private fun createNotification(): Notification {
         // Create Notification Channel
         val channel = NotificationChannel(
-            CHANNEL_ID,
-            "App Update Watching Service",
-            NotificationManager.IMPORTANCE_MIN
+            CHANNEL_ID, "App Update Watching Service", NotificationManager.IMPORTANCE_MIN
         ).apply {
             lockscreenVisibility = Notification.VISIBILITY_PRIVATE
         }
@@ -115,15 +126,12 @@ class AutoBackupService : Service() {
             .setContentTitle(getString(R.string.auto_backup_notification_title))
             .setContentText(getString(R.string.auto_backup_notification_content_text))
             .setSmallIcon(R.drawable.ic_small_notification_icon_24)
-            .setColor(getColor(R.color.notificationColor))
-            .setContentIntent(pendingIntent)
+            .setColor(getColor(R.color.notificationColor)).setContentIntent(pendingIntent)
             .addAction(
                 R.drawable.ic_small_notification_icon_24,
                 getString(R.string.auto_backup_notification_action_stop),
                 stopPendingIntent
-            )
-            .setOngoing(true)
-            .build()
+            ).setOngoing(true).build()
     }
 
     /**
@@ -132,8 +140,7 @@ class AutoBackupService : Service() {
     private fun restartService() {
         // restart Pending Intent
         val restartServicePendingIntent: PendingIntent = Intent(
-            this,
-            PackageBroadcastReceiver::class.java
+            this, PackageBroadcastReceiver::class.java
         ).apply {
             action = ACTION_RESTART_SERVICE
         }.let { restartIntent ->
