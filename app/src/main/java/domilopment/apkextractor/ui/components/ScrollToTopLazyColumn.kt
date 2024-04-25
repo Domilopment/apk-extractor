@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -17,7 +18,9 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -26,7 +29,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -58,9 +63,9 @@ private fun ScrollToTopButton(
 fun ScrollToTopLazyColumn(
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState(),
+    scope: CoroutineScope = rememberCoroutineScope(),
     content: LazyListScope.() -> Unit
 ) {
-    val scope = rememberCoroutineScope()
     val scrollToTop by remember {
         derivedStateOf {
             state.firstVisibleItemIndex > 0
@@ -80,6 +85,17 @@ fun ScrollToTopLazyColumn(
             visible = scrollToTop, modifier = Modifier.align(Alignment.BottomCenter),
         ) {
             scope.launch { state.scrollToItem(0) }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ScrollToTopLazyColumnPreview() {
+    val list = (1..20).toList()
+    ScrollToTopLazyColumn {
+        items(list) {
+            ListItem(headlineContent = { Text(text = "Item $it") })
         }
     }
 }
