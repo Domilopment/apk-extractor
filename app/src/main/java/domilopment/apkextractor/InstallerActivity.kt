@@ -29,7 +29,7 @@ abstract class MySessionCallback : PackageInstaller.SessionCallback() {
     abstract var initialSessionId: Int
 }
 
-class InstallXapkActivity : ComponentActivity() {
+class InstallerActivity : ComponentActivity() {
     private val model by viewModels<InstallXapkActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,11 +58,11 @@ class InstallXapkActivity : ComponentActivity() {
                         if (uiState.shouldBeShown) ProgressDialog(state = uiState,
                             onDismissRequest = {
                                 model.cancel()
-                                this@InstallXapkActivity.finish()
+                                this@InstallerActivity.finish()
                             },
                             onCancel = {
                                 model.cancel()
-                                this@InstallXapkActivity.finish()
+                                this@InstallerActivity.finish()
                             },
                             dismissOnBackPress = true,
                             dismissOnClickOutside = true
@@ -72,7 +72,7 @@ class InstallXapkActivity : ComponentActivity() {
                             InstallationResultDialog(
                                 onDismissRequest = {
                                     installationResult = null
-                                    this@InstallXapkActivity.finish()
+                                    this@InstallerActivity.finish()
                                 },
                                 result = it.result,
                             )
@@ -98,7 +98,7 @@ class InstallXapkActivity : ComponentActivity() {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                     val sanitizer = IntentSanitizer.Builder().allowComponent(
-                        ComponentName(this.applicationContext, InstallXapkActivity::class.java)
+                        ComponentName(this.applicationContext, InstallerActivity::class.java)
                     ).allowReceiverFlags().allowHistoryStackFlags()
                         .allowAction(MainActivity.PACKAGE_INSTALLATION_ACTION)
                         .allowExtra(PackageInstaller.EXTRA_STATUS, Integer::class.java)

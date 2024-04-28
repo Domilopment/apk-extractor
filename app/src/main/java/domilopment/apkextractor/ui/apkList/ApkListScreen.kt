@@ -19,7 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import domilopment.apkextractor.InstallXapkActivity
+import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
 import domilopment.apkextractor.ui.Screen
@@ -151,8 +151,9 @@ fun ApkListScreen(
                 }, context.getString(R.string.share_intent_title)))
             },
             onActionInstall = {
-                Intent(context, InstallXapkActivity::class.java).apply {
+                Intent(context, InstallerActivity::class.java).apply {
                     setDataAndType(it.fileUri, it.fileType)
+                    setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK)
                 }.let { intent ->
                     context.startActivity(intent)
                 }

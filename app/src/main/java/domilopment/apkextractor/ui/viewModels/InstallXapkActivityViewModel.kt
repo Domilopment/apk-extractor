@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import domilopment.apkextractor.InstallXapkActivity
+import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.MySessionCallback
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ProgressDialogUiState
@@ -150,7 +150,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                 }
 
                 if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.finishSession(
-                    context, session, sessionId, InstallXapkActivity::class.java
+                    context, session, sessionId, InstallerActivity::class.java
                 )
             }
         }

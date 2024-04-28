@@ -81,12 +81,12 @@
         </activity>
 
         <activity
-            android:name=".InstallXapkActivity"
+            android:name=".InstallerActivity"
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleInstance"
             android:taskAffinity="domilopment.apkextractor.installer"
-            android:theme="@style/InstallXapkActivityTheme">
+            android:theme="@style/InstallerActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

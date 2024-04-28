@@ -4,7 +4,7 @@
 
     <style name="ActivityTheme" parent="Theme.Material3.DayNight.NoActionBar" />
 
-    <style name="InstallXapkActivityTheme" parent="Theme.Material3.DynamicColors.DayNight">
+    <style name="InstallerActivityTheme" parent="Theme.Material3.DynamicColors.DayNight">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
