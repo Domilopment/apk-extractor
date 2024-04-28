@@ -23,14 +23,14 @@ import domilopment.apkextractor.data.ApkInstallationResultType
 import domilopment.apkextractor.ui.dialogs.InstallationResultDialog
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
-import domilopment.apkextractor.ui.viewModels.InstallXapkActivityViewModel
+import domilopment.apkextractor.ui.viewModels.InstallerActivityViewModel
 
 abstract class MySessionCallback : PackageInstaller.SessionCallback() {
     abstract var initialSessionId: Int
 }
 
 class InstallerActivity : ComponentActivity() {
-    private val model by viewModels<InstallXapkActivityViewModel>()
+    private val model by viewModels<InstallerActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

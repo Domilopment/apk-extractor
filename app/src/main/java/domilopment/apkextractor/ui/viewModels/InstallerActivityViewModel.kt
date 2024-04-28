@@ -27,7 +27,7 @@ import java.io.BufferedInputStream
 import java.io.IOException
 import java.util.zip.ZipInputStream
 
-class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(application) {
+class InstallerActivityViewModel(application: Application) : AndroidViewModel(application) {
     val context: Context get() = getApplication<Application>().applicationContext
 
     var uiState by mutableStateOf(
@@ -98,7 +98,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
 
             withContext(Dispatchers.IO) {
                 val (session, sessionId) = InstallationUtil.createSession(context)
-                this@InstallXapkActivityViewModel.session = session
+                this@InstallerActivityViewModel.session = session
                 sessionCallback.initialSessionId = sessionId
 
                 val mime = FileUtil.getDocumentInfo(
@@ -116,7 +116,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                                     context, fileUri, DocumentsContract.Document.COLUMN_SIZE
                                 )?.size ?: -1
 
-                                if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.addFileToSession(
+                                if (this@InstallerActivityViewModel.session != null) InstallationUtil.addFileToSession(
                                     session, apkStream, "base.apk", length
                                 )
                             }
@@ -133,7 +133,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                                             withContext(Dispatchers.Main) {
                                                 updateState("Read file: ${entry.name}")
                                             }
-                                            if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.addFileToSession(
+                                            if (this@InstallerActivityViewModel.session != null) InstallationUtil.addFileToSession(
                                                 session, input, entry.name, entry.size
                                             )
                                             withContext(Dispatchers.Main) {
@@ -149,7 +149,7 @@ class InstallXapkActivityViewModel(application: Application) : AndroidViewModel(
                     // Thrown if Session is abandoned
                 }
 
-                if (this@InstallXapkActivityViewModel.session != null) InstallationUtil.finishSession(
+                if (this@InstallerActivityViewModel.session != null) InstallationUtil.finishSession(
                     context, session, sessionId, InstallerActivity::class.java
                 )
             }
