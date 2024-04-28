@@ -65,7 +65,7 @@ private fun PullToRefreshBoxPreview() {
         scope.launch {
             isRefreshing = true
             delay(1000)
-            for (i in list.size + 1..list.size + 10) list.add(i)
+            list.addAll(list.size + 1..list.size + 10)
             isRefreshing = false
         }
     }) {
