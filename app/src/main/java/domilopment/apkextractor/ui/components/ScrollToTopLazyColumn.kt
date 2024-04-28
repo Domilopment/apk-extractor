@@ -78,7 +78,7 @@ fun ScrollToTopLazyColumn(
             state = state,
             contentPadding = PaddingValues(bottom = 54.dp)
         ) {
-            content(this)
+            this.content()
         }
 
         ScrollToTopButton(
@@ -92,7 +92,7 @@ fun ScrollToTopLazyColumn(
 @Preview
 @Composable
 private fun ScrollToTopLazyColumnPreview() {
-    val list = (1..20).toList()
+    val list = remember { (1..20).toList() }
     ScrollToTopLazyColumn {
         items(list) {
             ListItem(headlineContent = { Text(text = "Item $it") })
