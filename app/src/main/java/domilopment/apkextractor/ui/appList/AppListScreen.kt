@@ -288,7 +288,7 @@ fun AppListScreen(
                 model.updateApp(it.copy(isChecked = true))
             }
         },
-        refreshing = state.isRefreshing,
+        isRefreshing = state.isRefreshing,
         isPullToRefresh = !isActionMode,
         onRefresh = model::updateApps,
         rightSwipeAction = rightSwipeAction,

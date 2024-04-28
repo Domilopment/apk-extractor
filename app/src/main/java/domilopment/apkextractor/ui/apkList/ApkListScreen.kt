@@ -186,7 +186,7 @@ fun ApkListScreen(
         takenSpace = takenSpace,
         freeSpace = freeSpace,
         searchString = searchString,
-        refreshing = state.isRefreshing,
+        isRefreshing = state.isRefreshing,
         isPullToRefresh = true,
         onRefresh = model::updatePackageArchives,
         onClick = model::selectPackageArchive,
