@@ -143,7 +143,7 @@ fun ApkListScreen(
             apk = it,
             onDismissRequest = { model.selectPackageArchive(null) },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            onRefresh = { model.forceRefresh(it) },
+            onRefresh = { model.loadPackageArchiveInfo(it) },
             onActionShare = {
                 context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                     type = FileUtil.FileInfo.APK.mimeType
@@ -190,6 +190,7 @@ fun ApkListScreen(
         isPullToRefresh = true,
         onRefresh = model::updatePackageArchives,
         onClick = model::selectPackageArchive,
+        onLoadingPackageArchiveInfo = model::loadPackageArchiveInfo,
         isApkFileDeleted = { apk ->
             !FileUtil.doesDocumentExist(context, apk.fileUri)
         },

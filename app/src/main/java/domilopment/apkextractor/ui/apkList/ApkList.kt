@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +57,7 @@ fun ApkList(
     freeSpace: Long,
     searchString: String?,
     onClick: (PackageArchiveModel) -> Unit,
+    onLoadPackageArchiveInfo: (PackageArchiveModel) -> Unit,
     isApkFileDeleted: (PackageArchiveModel) -> Boolean,
     deletedDocumentFound: (PackageArchiveModel) -> Unit,
     onStorageInfoClick: () -> Unit
@@ -107,6 +109,12 @@ fun ApkList(
                 apkVersionInfo = versionInfo,
                 isLoading = apk.isPackageArchiveInfoLoading,
                 onClick = { onClick(apk) })
+
+            if (!apk.isPackageArchiveInfoLoaded) {
+                LaunchedEffect(key1 = Unit) {
+                    onLoadPackageArchiveInfo(apk)
+                }
+            }
         }
     }
 }
@@ -320,6 +328,7 @@ private fun ApkListPreview() {
                 freeSpace = 4L * 1000 * 1000 * 1000,
                 searchString = "",
                 onClick = { apk -> Log.e(apk.fileName, apk.appPackageName.toString()) },
+                onLoadPackageArchiveInfo = { },
                 isApkFileDeleted = { _ -> false },
                 deletedDocumentFound = { _ -> },
                 onStorageInfoClick = { })

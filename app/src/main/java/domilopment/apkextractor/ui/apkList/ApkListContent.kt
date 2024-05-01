@@ -31,6 +31,7 @@ fun ApkListContent(
     isPullToRefresh: Boolean,
     onRefresh: () -> Unit,
     onClick: (PackageArchiveModel) -> Unit,
+    onLoadingPackageArchiveInfo: (PackageArchiveModel) -> Unit,
     isApkFileDeleted: (PackageArchiveModel) -> Boolean,
     deletedDocumentFound: (PackageArchiveModel) -> Unit,
     onStorageInfoClick: () -> Unit
@@ -45,6 +46,7 @@ fun ApkListContent(
             freeSpace = freeSpace,
             searchString = searchString,
             onClick = onClick,
+            onLoadPackageArchiveInfo = onLoadingPackageArchiveInfo,
             isApkFileDeleted = isApkFileDeleted,
             deletedDocumentFound = deletedDocumentFound,
             onStorageInfoClick = onStorageInfoClick
@@ -154,6 +156,7 @@ private fun ApkListScreenPreview() {
                     }
                 },
                 onClick = { _ -> },
+                onLoadingPackageArchiveInfo = { },
                 isApkFileDeleted = { _ -> false },
                 deletedDocumentFound = { _ -> },
                 onStorageInfoClick = {})

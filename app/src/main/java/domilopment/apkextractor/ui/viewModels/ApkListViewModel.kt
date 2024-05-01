@@ -18,7 +18,6 @@ import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.dependencyInjection.packageArchive.PackageArchiveRepository
 import domilopment.apkextractor.utils.settings.PackageArchiveUtils
 import domilopment.apkextractor.utils.settings.ApkSortOptions
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.concurrent.CancellationException
 import domilopment.apkextractor.utils.eventHandler.Observer
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
@@ -61,8 +59,6 @@ class ApkListViewModel @Inject constructor(
 
     private val context get() = getApplication<Application>().applicationContext
 
-    private var loadArchiveInfoJob: Deferred<Unit>? = null
-
     init {
         viewModelScope.launch {
             apksRepository.apks.combine(sortOrder) { apkList, sortOrder ->
@@ -90,20 +86,10 @@ class ApkListViewModel @Inject constructor(
                         }
                     }
                 }.collect { apks ->
-                    loadArchiveInfoJob?.cancel(CancellationException("New Data arrived"))
                     _apkListFragmentState.update { state ->
                         state.copy(
                             appList = apks, isRefreshing = false
                         )
-                    }
-                    loadArchiveInfoJob = viewModelScope.async(Dispatchers.IO) {
-                        apks.forEach { model ->
-                            val newApk = model.packageArchiveInfo(context)
-                            _apkListFragmentState.update { state ->
-                                state.copy(appList = state.appList.toMutableList()
-                                    .map { if (it.fileUri == model.fileUri) newApk else it })
-                            }
-                        }
                     }
                 }
             }
@@ -162,8 +148,8 @@ class ApkListViewModel @Inject constructor(
         _apkListFragmentState.update {
             it.copy(isRefreshing = true)
         }
-        viewModelScope.launch {
-            async { apksRepository.updateApps() }
+        viewModelScope.launch(Dispatchers.IO) {
+            apksRepository.updateApps()
         }
     }
 
@@ -211,8 +197,8 @@ class ApkListViewModel @Inject constructor(
         }
     }
 
-    fun forceRefresh(apk: PackageArchiveModel) {
-        viewModelScope.async(Dispatchers.IO) {
+    fun loadPackageArchiveInfo(apk: PackageArchiveModel) {
+        viewModelScope.launch(Dispatchers.IO) {
             val newApk = apk.forceRefresh(context)
             _apkListFragmentState.update { state ->
                 state.copy(appList = state.appList.toMutableList()
@@ -223,8 +209,6 @@ class ApkListViewModel @Inject constructor(
     }
 
     fun sort(sortPreferenceId: ApkSortOptions) {
-        loadArchiveInfoJob?.cancel(CancellationException("New sort order"))
-
         _apkListFragmentState.update { state ->
             state.copy(isRefreshing = true)
         }
