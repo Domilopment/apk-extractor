@@ -105,8 +105,8 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val mainScreenState = model.mainScreenState
             val actionModeState = model.actionModeState
-            val saveDir by model.saveDir.collectAsStateWithLifecycle()
-            val dynamicColors by model.materialYou.collectAsStateWithLifecycle()
+            val saveDir by model.saveDir.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
+            val dynamicColors by model.materialYou.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
             val navController = rememberNavController()
             val appBarState = rememberAppBarState(navController = navController)
             val scope = rememberCoroutineScope()
@@ -159,10 +159,6 @@ class MainActivity : AppCompatActivity() {
                 onDispose {
                     lifecycle.removeObserver(observer)
                 }
-            }
-
-            LaunchedEffect(key1 = Unit) {
-                model.hideSplashScreen()
             }
 
             APKExtractorTheme(dynamicColor = dynamicColors) {
@@ -240,6 +236,10 @@ class MainActivity : AppCompatActivity() {
                         if (showAskForSaveDir) AskForSaveDirDialog(chooseSaveDir = chooseSaveDir)
                     }
                 }
+            }
+
+            LaunchedEffect(key1 = Unit) {
+                model.hideSplashScreen()
             }
         }
 
