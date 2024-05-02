@@ -28,13 +28,16 @@ class ApkExtractorApplication : Application() {
 
         // Create Notification Channel
         val channel = NotificationChannel(
-            AutoBackupService.CHANNEL_ID, "App Update Watching Service", NotificationManager.IMPORTANCE_MIN
+            AutoBackupService.CHANNEL_ID,
+            "App Update Watching Service",
+            NotificationManager.IMPORTANCE_LOW
         ).apply {
             lockscreenVisibility = Notification.VISIBILITY_PRIVATE
         }
 
         // Open Channel with Notification Service
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
     }
 

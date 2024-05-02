@@ -30,7 +30,8 @@ class AutoBackupService : Service() {
         fun getNewNotificationID() = c.incrementAndGet()
     }
 
-    private lateinit var br: BroadcastReceiver
+    // Create Broadcast Receiver for App Updates
+    private val br: BroadcastReceiver = PackageBroadcastReceiver()
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -38,8 +39,13 @@ class AutoBackupService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        // Create Broadcast Receiver for App Updates
-        br = PackageBroadcastReceiver()
+        // Set Filter for Broadcast
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_REPLACED)
+            addDataScheme("package")
+        }
+        // Start Broadcast Receiver
+        registerReceiver(br, filter)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -55,6 +61,11 @@ class AutoBackupService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        try {
+            unregisterReceiver(br)
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+        }
         if (isRunning) restartService()
     }
 
@@ -72,22 +83,9 @@ class AutoBackupService : Service() {
                 0
             }
         )
-
-        // Set Filter for Broadcast
-        val filter = IntentFilter().apply {
-            addAction(Intent.ACTION_PACKAGE_REPLACED)
-            addDataScheme("package")
-        }
-        // Start Broadcast Receiver
-        registerReceiver(br, filter)
     }
 
     private fun stopService() {
-        try {
-            unregisterReceiver(br)
-        } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
-        }
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         stopSelf()
         isRunning = false
@@ -104,7 +102,7 @@ class AutoBackupService : Service() {
             action = Actions.START.name
             setPackage(packageName)
         }.let { restartIntent ->
-            PendingIntent.getService(
+            PendingIntent.getForegroundService(
                 this, 1, restartIntent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
             )
         }
@@ -140,13 +138,21 @@ class AutoBackupService : Service() {
                 PendingIntent.getBroadcast(this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
             }
 
+        // Relaunch Service Notification
+        val restartPendingIntent: PendingIntent =
+            Intent(this, AutoBackupService::class.java).apply {
+                action = Actions.START.name
+            }.let { restartIntent ->
+                PendingIntent.getService(this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE)
+            }
+
         // Build and return Notification
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.auto_backup_notification_title))
             .setContentText(getString(R.string.auto_backup_notification_content_text))
             .setSmallIcon(R.drawable.ic_small_notification_icon_24)
             .setColor(getColor(R.color.notificationColor)).setContentIntent(pendingIntent)
-            .addAction(
+            .setDeleteIntent(restartPendingIntent).addAction(
                 R.drawable.ic_small_notification_icon_24,
                 getString(R.string.auto_backup_notification_action_stop),
                 stopPendingIntent
