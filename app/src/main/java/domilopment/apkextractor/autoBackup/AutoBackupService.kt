@@ -59,7 +59,6 @@ class AutoBackupService : Service() {
     }
 
     private fun startService() {
-        if (isRunning) return
         isRunning = true
 
         // Start Foreground Service with Notification
@@ -102,6 +101,7 @@ class AutoBackupService : Service() {
         val restartServicePendingIntent: PendingIntent = Intent(
             applicationContext, AutoBackupService::class.java
         ).apply {
+            action = Actions.START.name
             setPackage(packageName)
         }.let { restartIntent ->
             PendingIntent.getService(
