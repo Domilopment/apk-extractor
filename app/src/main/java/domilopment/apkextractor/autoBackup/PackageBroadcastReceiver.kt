@@ -48,7 +48,9 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
             // Foreground Notification Button Call
             AutoBackupService.ACTION_STOP_SERVICE -> {
                 runBlocking { preferenceRepository.setAutoBackupService(false) }
-                context.stopService(Intent(context, AutoBackupService::class.java))
+                context.startService(Intent(context, AutoBackupService::class.java).apply {
+                    action = AutoBackupService.Actions.STOP.name
+                })
             }
 
             // Restart Service on Device Boot
@@ -58,13 +60,10 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                 }
 
                 if (SettingsManager.shouldStartService(isBackupService)) {
-                    context.startForegroundService(Intent(context, AutoBackupService::class.java))
+                    context.startForegroundService(Intent(context, AutoBackupService::class.java).apply {
+                        action = AutoBackupService.Actions.START.name
+                    })
                 }
-            }
-
-            // Restart Service if it is killed
-            AutoBackupService.ACTION_RESTART_SERVICE -> {
-                context.startForegroundService(Intent(context, AutoBackupService::class.java))
             }
 
             // Delete Backup APK file

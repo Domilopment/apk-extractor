@@ -261,7 +261,9 @@ class MainActivity : AppCompatActivity() {
             if (model.autoBackup.first()) startForegroundService(
                 Intent(
                     this@MainActivity, AutoBackupService::class.java
-                )
+                ).apply {
+                    action = AutoBackupService.Actions.START.name
+                }
             )
         }
     }

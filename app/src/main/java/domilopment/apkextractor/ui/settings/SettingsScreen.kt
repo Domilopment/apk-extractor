@@ -270,9 +270,13 @@ fun SettingsScreen(
  */
 private fun handleAutoBackupService(newValue: Boolean, context: Context) {
     if (newValue and !AutoBackupService.isRunning) context.startForegroundService(
-        Intent(context, AutoBackupService::class.java)
+        Intent(context, AutoBackupService::class.java).apply {
+            action = AutoBackupService.Actions.START.name
+        }
     )
-    else if (!newValue and AutoBackupService.isRunning) context.stopService(
-        Intent(context, AutoBackupService::class.java)
+    else if (!newValue and AutoBackupService.isRunning) context.startService(
+        Intent(context, AutoBackupService::class.java).apply {
+            action = AutoBackupService.Actions.STOP.name
+        }
     )
 }
