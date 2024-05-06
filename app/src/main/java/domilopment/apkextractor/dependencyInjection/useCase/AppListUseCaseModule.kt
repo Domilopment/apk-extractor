@@ -14,6 +14,8 @@ import domilopment.apkextractor.domain.usecase.appList.AddAppUseCase
 import domilopment.apkextractor.domain.usecase.appList.AddAppUseCaseImpl
 import domilopment.apkextractor.domain.usecase.appList.GetAppListUseCase
 import domilopment.apkextractor.domain.usecase.appList.GetAppListUseCaseImpl
+import domilopment.apkextractor.domain.usecase.appList.IsAppInstalledUseCase
+import domilopment.apkextractor.domain.usecase.appList.IsAppInstalledUseCaseImpl
 import domilopment.apkextractor.domain.usecase.appList.SaveAppsUseCase
 import domilopment.apkextractor.domain.usecase.appList.SaveAppsUseCaseImpl
 import domilopment.apkextractor.domain.usecase.appList.ShareAppsUseCase
@@ -37,11 +39,19 @@ object AppListUseCaseModule {
     @Provides
     @Reusable
     fun getGetAppListUseCase(
-        @ApplicationContext context: Context,
+        isAppInstalledUseCase: IsAppInstalledUseCase,
         appsRepository: ApplicationRepository,
         settings: PreferenceRepository
     ): GetAppListUseCase {
-        return GetAppListUseCaseImpl(context, appsRepository, settings)
+        return GetAppListUseCaseImpl(isAppInstalledUseCase, appsRepository, settings)
+    }
+
+    @Provides
+    @Reusable
+    fun getIsAppInstalledUseCase(
+        @ApplicationContext context: Context
+    ): IsAppInstalledUseCase {
+        return IsAppInstalledUseCaseImpl(context)
     }
 
     @Provides

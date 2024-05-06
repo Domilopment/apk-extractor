@@ -1,14 +1,13 @@
 package domilopment.apkextractor.ui.viewModels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
 import domilopment.apkextractor.data.SettingsScreenState
 import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
-import domilopment.apkextractor.utils.Utils
+import domilopment.apkextractor.domain.usecase.appList.IsAppInstalledUseCase
 import domilopment.apkextractor.utils.settings.AppSortOptions
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
@@ -23,15 +22,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
-    application: Application,
     appsRepository: ApplicationRepository,
-    private val settings: PreferenceRepository
-) : AndroidViewModel(application) {
+    private val settings: PreferenceRepository,
+    private val isAppInstalled: IsAppInstalledUseCase,
+) : ViewModel() {
     private val _uiState: MutableStateFlow<SettingsScreenState> =
         MutableStateFlow(SettingsScreenState())
     val uiState: StateFlow<SettingsScreenState> = _uiState.asStateFlow()
-
-    private val context get() = getApplication<Application>().applicationContext
 
     init {
         viewModelScope.launch {
@@ -44,9 +41,7 @@ class SettingsScreenViewModel @Inject constructor(
                         selectUserApps = true,
                         emptySet()
                     ).filter { app ->
-                        Utils.isPackageInstalled(
-                            context.packageManager, app.appPackageName
-                        )
+                        isAppInstalled(app.appPackageName)
                     }.let {
                         ApplicationUtil.sortAppData(
                             it,

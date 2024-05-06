@@ -1,10 +1,8 @@
 package domilopment.apkextractor.domain.usecase.appList
 
-import android.content.Context
 import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
-import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +16,7 @@ interface GetAppListUseCase {
 }
 
 class GetAppListUseCaseImpl @Inject constructor(
-    private val context: Context,
+    private val isAppInstalled: IsAppInstalledUseCase,
     private val appsRepository: ApplicationRepository,
     private val settings: PreferenceRepository
 ): GetAppListUseCase {
@@ -32,9 +30,7 @@ class GetAppListUseCaseImpl @Inject constructor(
         ApplicationUtil.selectedAppTypes(
             appList, updatedSysApps, sysApps, userApps, favorites
         ).filter { app ->
-            Utils.isPackageInstalled(
-                context.packageManager, app.appPackageName
-            )
+            isAppInstalled(app.appPackageName)
         }
     }.let {
         combine(
