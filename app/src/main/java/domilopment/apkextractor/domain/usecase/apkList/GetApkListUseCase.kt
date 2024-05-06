@@ -6,9 +6,11 @@ import domilopment.apkextractor.dependencyInjection.packageArchive.PackageArchiv
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.PackageArchiveUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flowOn
 
 interface GetApkListUseCase {
     operator fun invoke(searchQuery: Flow<String?>): Flow<List<PackageArchiveModel>>
@@ -45,5 +47,5 @@ class GetApkListUseCaseImpl(
                     }
                 }
             }
-        }
+        }.flowOn(Dispatchers.IO)
 }
