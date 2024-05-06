@@ -1,22 +1,18 @@
 package domilopment.apkextractor.ui.viewModels
 
-import android.app.Application
-import android.net.Uri
-import android.provider.DocumentsContract
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.apkList.ApkListScreenState
-import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
 import domilopment.apkextractor.data.apkList.PackageArchiveModel
-import domilopment.apkextractor.data.apkList.ZipPackageArchiveModel
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.domain.usecase.apkList.DeleteApkUseCase
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
-import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.dependencyInjection.packageArchive.PackageArchiveRepository
-import domilopment.apkextractor.utils.settings.PackageArchiveUtils
+import domilopment.apkextractor.domain.usecase.apkList.GetApkListUseCase
+import domilopment.apkextractor.domain.usecase.apkList.LoadApkInfoUseCase
+import domilopment.apkextractor.domain.usecase.apkList.UpdateApksUseCase
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -26,20 +22,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import domilopment.apkextractor.utils.eventHandler.Observer
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-@OptIn(FlowPreview::class)
 class ApkListViewModel @Inject constructor(
-    application: Application,
     private val preferenceRepository: PreferenceRepository,
-    private val apksRepository: PackageArchiveRepository
-) : AndroidViewModel(application), Observer {
+    private val deleteApk: DeleteApkUseCase,
+    private val apkList: GetApkListUseCase,
+    private val loadApkInfo: LoadApkInfoUseCase,
+    private val updateApks: UpdateApksUseCase,
+) : ViewModel(), Observer {
     override val key: String = "ApkListViewModel"
 
     private val _apkListFragmentState: MutableStateFlow<ApkListScreenState> =
@@ -57,40 +51,13 @@ class ApkListViewModel @Inject constructor(
         ApkSortOptions.SORT_BY_FILE_SIZE_DESC
     )
 
-    private val context get() = getApplication<Application>().applicationContext
-
     init {
         viewModelScope.launch {
-            apksRepository.apks.combine(sortOrder) { apkList, sortOrder ->
-                PackageArchiveUtils.sortApkData(apkList, sortOrder)
-                    .filter { apk -> FileUtil.doesDocumentExist(context, apk.fileUri) }
-            }.let {
-                _searchQuery.debounce(500).combine(it) { searchQuery, apkList ->
-                    val searchString = searchQuery?.trim()
-
-                    return@combine if (searchString.isNullOrBlank()) {
-                        apkList
-                    } else {
-                        apkList.filter {
-                            it.fileName.contains(
-                                searchString, ignoreCase = true
-                            ) || it.appName?.contains(
-                                searchString, ignoreCase = true
-                            ) ?: false || it.appPackageName?.contains(
-                                searchString, ignoreCase = true
-                            ) ?: false || it.appVersionName?.contains(
-                                searchString, ignoreCase = true
-                            ) ?: false || it.appVersionCode?.toString()?.contains(
-                                searchString, ignoreCase = true
-                            ) ?: false
-                        }
-                    }
-                }.collect { apks ->
-                    _apkListFragmentState.update { state ->
-                        state.copy(
-                            appList = apks, isRefreshing = false
-                        )
-                    }
+            apkList(_searchQuery).collect { apks ->
+                _apkListFragmentState.update { state ->
+                    state.copy(
+                        appList = apks, isRefreshing = false, selectedPackageArchiveModel = null
+                    )
                 }
             }
         }
@@ -123,7 +90,7 @@ class ApkListViewModel @Inject constructor(
         }
         if (app?.isPackageArchiveInfoLoaded == false) viewModelScope.launch {
             val update = async(Dispatchers.IO) {
-                app.packageArchiveInfo(context)
+                loadApkInfo(app)
             }
             _apkListFragmentState.update { state ->
                 state.copy(selectedPackageArchiveModel = update.await()
@@ -148,31 +115,23 @@ class ApkListViewModel @Inject constructor(
             it.copy(isRefreshing = true)
         }
         viewModelScope.launch(Dispatchers.IO) {
-            apksRepository.updateApps()
+            updateApks()
         }
     }
 
     fun remove(apk: PackageArchiveModel) {
-        if (FileUtil.doesDocumentExist(context, apk.fileUri)) return
-
-        _apkListFragmentState.update { state ->
-            state.copy(
-                appList = state.appList.filter { it.fileUri != apk.fileUri },
-                selectedPackageArchiveModel = if (state.selectedPackageArchiveModel?.fileUri == apk.fileUri) null else state.selectedPackageArchiveModel
-            )
-        }
         viewModelScope.launch {
-            apksRepository.removeApk(apk)
+            deleteApk(apk)
         }
     }
 
     fun loadPackageArchiveInfo(apk: PackageArchiveModel) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val newApk = apk.forceRefresh(context)
+        viewModelScope.launch {
+            val newApk = loadApkInfo(apk, forceRefresh = true)
             _apkListFragmentState.update { state ->
                 state.copy(appList = state.appList.toMutableList()
                     .map { if (it.fileUri == apk.fileUri) newApk else it },
-                    selectedPackageArchiveModel = state.selectedPackageArchiveModel.let { if (it?.fileUri == apk.fileUri) apk else it })
+                    selectedPackageArchiveModel = state.selectedPackageArchiveModel.let { if (it?.fileUri == apk.fileUri) newApk else it })
             }
         }
     }

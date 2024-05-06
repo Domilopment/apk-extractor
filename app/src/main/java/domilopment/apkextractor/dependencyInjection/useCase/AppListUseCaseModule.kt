@@ -64,7 +64,7 @@ object AppListUseCaseModule {
 
     @Provides
     @Reusable
-    fun UninstallAppUseCase(
+    fun getUninstallAppUseCase(
         @ApplicationContext context: Context, appsRepository: ApplicationRepository
     ): UninstallAppUseCase {
         return UninstallAppUseCaseImpl(context, appsRepository)
@@ -72,7 +72,7 @@ object AppListUseCaseModule {
 
     @Provides
     @Reusable
-    fun GetUpdateAppsUseCase(appsRepository: ApplicationRepository): UpdateAppsUseCase {
+    fun getUpdateAppsUseCase(appsRepository: ApplicationRepository): UpdateAppsUseCase {
         return UpdateAppsUseCaseImpl(appsRepository)
     }
 }
