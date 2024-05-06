@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.core.content.IntentSanitizer
 import androidx.core.util.Consumer
+import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.data.ApkInstallationResult
 import domilopment.apkextractor.data.ApkInstallationResultType
 import domilopment.apkextractor.ui.dialogs.InstallationResultDialog
@@ -25,10 +26,7 @@ import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.InstallerActivityViewModel
 
-abstract class MySessionCallback : PackageInstaller.SessionCallback() {
-    abstract var initialSessionId: Int
-}
-
+@AndroidEntryPoint
 class InstallerActivity : ComponentActivity() {
     private val model by viewModels<InstallerActivityViewModel>()
 

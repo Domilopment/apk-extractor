@@ -1,36 +1,26 @@
 package domilopment.apkextractor.ui.viewModels
 
-import android.app.Application
-import android.content.Context
 import android.content.pm.PackageInstaller
 import android.net.Uri
-import android.provider.DocumentsContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import domilopment.apkextractor.InstallerActivity
-import domilopment.apkextractor.MySessionCallback
+import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.data.UiText
-import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.InstallationUtil
-import domilopment.apkextractor.utils.eventHandler.Event
-import domilopment.apkextractor.utils.eventHandler.EventDispatcher
-import domilopment.apkextractor.utils.eventHandler.EventType
-import kotlinx.coroutines.Dispatchers
+import domilopment.apkextractor.domain.usecase.installer.InstallUseCase
+import domilopment.apkextractor.utils.InstallApkResult
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.BufferedInputStream
-import java.io.IOException
-import java.util.zip.ZipInputStream
+import javax.inject.Inject
 
-class InstallerActivityViewModel(application: Application) : AndroidViewModel(application) {
-    private val context: Context get() = getApplication<Application>().applicationContext
-
+@HiltViewModel
+class InstallerActivityViewModel @Inject constructor(
+    private val installUseCase: InstallUseCase,
+) : ViewModel() {
     var uiState by mutableStateOf(
         ProgressDialogUiState(
             title = UiText(R.string.progress_dialog_title_install, "XAPK"),
@@ -42,48 +32,12 @@ class InstallerActivityViewModel(application: Application) : AndroidViewModel(ap
     )
         private set
 
-    private val sessionCallback = object : MySessionCallback() {
-        val packageInstaller = context.packageManager.packageInstaller
-        private var packageName: String? = null
-        override var initialSessionId: Int = -1
-
-        override fun onCreated(sessionId: Int) {
-            if (sessionId != initialSessionId) return
-            packageName = packageInstaller.getSessionInfo(sessionId)?.appPackageName
-
-            updateState(packageName, 0F)
-        }
-
-        override fun onBadgingChanged(sessionId: Int) {
-            // Not used
-        }
-
-        override fun onActiveChanged(sessionId: Int, active: Boolean) {
-            // Not used
-        }
-
-        override fun onProgressChanged(sessionId: Int, progress: Float) {
-            if (sessionId != initialSessionId) return
-
-            packageName = packageInstaller.getSessionInfo(sessionId)?.appPackageName
-            updateState(packageName, progress)
-        }
-
-        override fun onFinished(sessionId: Int, success: Boolean) {
-            if (sessionId != initialSessionId) return
-
-            packageInstaller.unregisterSessionCallback(this)
-            setProgressDialogActive(false)
-            if (success && packageName != null) EventDispatcher.emitEvent(
-                Event(EventType.INSTALLED, packageName)
-            )
-        }
-    }
-
     private var session: PackageInstaller.Session? = null
     private var task: Job? = null
 
-    fun updateState(packageName: String? = uiState.process, progress: Float = uiState.progress / 100) {
+    fun updateState(
+        packageName: String? = uiState.process, progress: Float = uiState.progress / 100
+    ) {
         uiState = uiState.copy(process = packageName, progress = progress * 100)
     }
 
@@ -93,66 +47,21 @@ class InstallerActivityViewModel(application: Application) : AndroidViewModel(ap
 
     fun installXAPK(fileUri: Uri) {
         task = viewModelScope.launch {
-            val packageInstaller = context.applicationContext.packageManager.packageInstaller
-            val contentResolver = context.applicationContext.contentResolver
-            packageInstaller.registerSessionCallback(sessionCallback)
-
-            withContext(Dispatchers.IO) {
-                val (session, sessionId) = InstallationUtil.createSession(context)
-                this@InstallerActivityViewModel.session = session
-                sessionCallback.initialSessionId = sessionId
-
-                val mime = FileUtil.getDocumentInfo(
-                    context, fileUri, DocumentsContract.Document.COLUMN_MIME_TYPE
-                )?.mimeType
-                try {
-                    when (mime) {
-                        FileUtil.FileInfo.APK.mimeType -> contentResolver.openInputStream(fileUri)
-                            ?.use { apkStream ->
-                                withContext(Dispatchers.Main) {
-                                    updateState("Read file: base.apk")
-                                }
-
-                                val length = FileUtil.getDocumentInfo(
-                                    context, fileUri, DocumentsContract.Document.COLUMN_SIZE
-                                )?.size ?: -1
-
-                                if (this@InstallerActivityViewModel.session != null) InstallationUtil.addFileToSession(
-                                    session, apkStream, "base.apk", length
-                                )
-                            }
-
-                        "application/octet-stream" -> contentResolver.openInputStream(fileUri)
-                            ?.use { xApkStream ->
-                                ZipInputStream(BufferedInputStream(xApkStream)).use { input ->
-                                    val maxProgress = 0.80f
-                                    var currentProgress = 1
-                                    generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
-                                        .forEach { entry ->
-                                            val progress =
-                                                maxProgress * currentProgress / (currentProgress + 2)
-                                            withContext(Dispatchers.Main) {
-                                                updateState("Read file: ${entry.name}")
-                                            }
-                                            if (this@InstallerActivityViewModel.session != null) InstallationUtil.addFileToSession(
-                                                session, input, entry.name, entry.size
-                                            )
-                                            withContext(Dispatchers.Main) {
-                                                updateState(progress = progress)
-                                            }
-                                            currentProgress += 1
-                                            input.closeEntry()
-                                        }
-                                }
-                            }
+            installUseCase(fileUri).collect {
+                when (it) {
+                    is InstallApkResult.OnPrepare -> {
+                        session = it.session
+                        updateState(packageName = it.packageName, 0F)
                     }
-                } catch (e: IOException) {
-                    // Thrown if Session is abandoned
-                }
 
-                if (this@InstallerActivityViewModel.session != null) InstallationUtil.finishSession(
-                    context, session, sessionId, InstallerActivity::class.java
-                )
+                    is InstallApkResult.OnProgress -> updateState(
+                        packageName = it.packageName, progress = it.progress
+                    )
+
+                    is InstallApkResult.OnSuccess, is InstallApkResult.OnFail -> setProgressDialogActive(
+                        false
+                    )
+                }
             }
         }
     }
