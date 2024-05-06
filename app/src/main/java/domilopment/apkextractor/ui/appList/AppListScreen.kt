@@ -158,6 +158,7 @@ fun AppListScreen(
                 }
 
                 is ExtractionResult.Failure -> extractionError = extractionResult
+                else -> Unit
             }
         }
     }

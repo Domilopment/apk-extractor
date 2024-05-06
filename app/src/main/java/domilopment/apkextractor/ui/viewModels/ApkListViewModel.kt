@@ -105,7 +105,6 @@ class ApkListViewModel @Inject constructor(
 
     override fun onEventReceived(event: Event<*>) {
         when (event.eventType) {
-            EventType.SAVED -> addPackageArchiveModel(event.data as Uri)
             EventType.DELETED -> remove(event.data as PackageArchiveModel)
             else -> return
         }
@@ -150,36 +149,6 @@ class ApkListViewModel @Inject constructor(
         }
         viewModelScope.launch(Dispatchers.IO) {
             apksRepository.updateApps()
-        }
-    }
-
-    private fun addPackageArchiveModel(uri: Uri) {
-        viewModelScope.launch {
-            FileUtil.getDocumentInfo(
-                context,
-                uri,
-                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                DocumentsContract.Document.COLUMN_MIME_TYPE,
-                DocumentsContract.Document.COLUMN_LAST_MODIFIED,
-                DocumentsContract.Document.COLUMN_SIZE
-            )?.let {
-                when {
-                    it.displayName!!.endsWith(".apk") -> AppPackageArchiveModel(
-                        it.uri, it.displayName, it.mimeType!!, it.lastModified!!, it.size!!
-                    )
-
-                    it.displayName.endsWith(".xapk") -> ZipPackageArchiveModel(
-                        it.uri, it.displayName, it.mimeType!!, it.lastModified!!, it.size!!
-                    )
-
-                    else -> null
-                }
-            }?.also {
-                _apkListFragmentState.update { state ->
-                    state.copy(appList = state.appList.toMutableList().apply { add(it) })
-                }
-                apksRepository.addApk(it)
-            }
         }
     }
 

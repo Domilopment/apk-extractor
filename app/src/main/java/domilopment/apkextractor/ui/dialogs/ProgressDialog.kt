@@ -61,7 +61,10 @@ fun ProgressDialog(
         }
     }, title = {
         Text(
-            text = state.title ?: stringResource(id = R.string.progress_dialog_title_placeholder)
+            text = stringResource(
+                id = state.title?.id ?: R.string.progress_dialog_title_placeholder,
+                formatArgs = state.title?.args ?: emptyArray()
+            )
         )
     }, properties = DialogProperties(
         dismissOnBackPress = dismissOnBackPress, dismissOnClickOutside = dismissOnClickOutside

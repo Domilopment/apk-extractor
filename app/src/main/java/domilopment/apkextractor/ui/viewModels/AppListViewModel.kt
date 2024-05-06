@@ -1,7 +1,5 @@
 package domilopment.apkextractor.ui.viewModels
 
-import android.app.Application
-import android.net.Uri
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.R
@@ -11,14 +9,17 @@ import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.data.appList.ExtractionResult
 import domilopment.apkextractor.data.appList.ShareResult
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
-import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
-import domilopment.apkextractor.utils.SaveApkResult
+import domilopment.apkextractor.domain.usecase.appList.AddAppUseCase
+import domilopment.apkextractor.domain.usecase.appList.GetAppListUseCase
+import domilopment.apkextractor.domain.usecase.appList.SaveAppsUseCase
+import domilopment.apkextractor.domain.usecase.appList.ShareAppsUseCase
+import domilopment.apkextractor.domain.usecase.appList.UninstallAppUseCase
+import domilopment.apkextractor.domain.usecase.appList.UpdateAppsUseCase
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.eventHandler.Event
 import domilopment.apkextractor.utils.eventHandler.EventDispatcher
 import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.utils.eventHandler.Observer
-import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.settings.AppSortOptions
 import kotlinx.coroutines.*
@@ -29,8 +30,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -38,12 +37,15 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-@OptIn(FlowPreview::class)
 class AppListViewModel @Inject constructor(
-    application: Application,
     private val preferenceRepository: PreferenceRepository,
-    private val appsRepository: ApplicationRepository
-) : AndroidViewModel(application), Observer, ProgressDialogViewModel {
+    private val addApp: AddAppUseCase,
+    private val appList: GetAppListUseCase,
+    private val saveApp: SaveAppsUseCase,
+    private val shareApps: ShareAppsUseCase,
+    private val uninstallApp: UninstallAppUseCase,
+    private val updateApps: UpdateAppsUseCase,
+) : ViewModel(), Observer, ProgressDialogViewModel {
     override val key: String = "AppListViewModel"
 
     private val _mainFragmentState: MutableStateFlow<AppListScreenState> =
@@ -64,9 +66,7 @@ class AppListViewModel @Inject constructor(
     val shareResult: SharedFlow<ShareResult> = _shareResult.asSharedFlow()
 
     private val appListFavorites = preferenceRepository.appListFavorites
-    private val saveDir = preferenceRepository.saveDir
     private val backupXapk = preferenceRepository.backupModeXapk
-    private val appName = preferenceRepository.appSaveName
     val appSortOrder = preferenceRepository.appSortOrder.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
@@ -114,53 +114,13 @@ class AppListViewModel @Inject constructor(
             viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), 0.32f
         )
 
-    private val context get() = getApplication<Application>().applicationContext
-
     // Task for ProgressDialog to Cancel
     private var runningTask: Job? = null
 
     init {
         // Set applications in view once they are loaded
         viewModelScope.launch {
-            combine(
-                appsRepository.apps, updatedSystemApps, systemApps, userApps, appListFavorites
-            ) { appList, updatedSysApps, sysApps, userApps, favorites ->
-                ApplicationUtil.selectedAppTypes(
-                    appList, updatedSysApps, sysApps, userApps, favorites
-                ).filter { app ->
-                    Utils.isPackageInstalled(
-                        context.packageManager, app.appPackageName
-                    )
-                }
-            }.let {
-                combine(
-                    it, filterInstaller, filterCategory, filterOthers
-                ) { appList, installer, category, others ->
-                    ApplicationUtil.filterApps(appList, installer, category, others)
-                }
-            }.let {
-                combine(
-                    it, appSortOrder, appSortFavorites, appSortAsc
-                ) { appList, sortMode, sortFavorites, sortAsc ->
-                    ApplicationUtil.sortAppData(appList, sortMode.ordinal, sortFavorites, sortAsc)
-                }
-            }.let {
-                _searchQuery.debounce(500L).combine(it) { searchQuery, appList ->
-                    val searchString = searchQuery?.trim()
-
-                    return@combine if (searchString.isNullOrBlank()) {
-                        appList
-                    } else {
-                        appList.filter {
-                            it.appName.contains(
-                                searchString, ignoreCase = true
-                            ) || it.appPackageName.contains(
-                                searchString, ignoreCase = true
-                            )
-                        }
-                    }
-                }
-            }.collect { appList ->
+            appList(_searchQuery).collect { appList ->
                 _mainFragmentState.update { state ->
                     state.copy(appList = appList,
                         isRefreshing = false,
@@ -184,10 +144,6 @@ class AppListViewModel @Inject constructor(
     override fun onEventReceived(event: Event<*>) {
         when (event.eventType) {
             EventType.INSTALLED -> addApps(event.data as String)
-            EventType.UNINSTALLED -> if (!Utils.isPackageInstalled(
-                    context.packageManager, event.data as String
-                )
-            ) uninstallApps(event.data)
 
             else -> return
         }
@@ -220,34 +176,19 @@ class AppListViewModel @Inject constructor(
             it.copy(isRefreshing = true)
         }
         viewModelScope.launch {
-            async { appsRepository.updateApps() }
+            updateApps.invoke()
         }
     }
 
     fun addApps(packageName: String) {
         viewModelScope.launch {
-            async { appsRepository.addApp(ApplicationModel(context.packageManager, packageName)) }
+            addApp(packageName)
         }
     }
 
     fun uninstallApps(app: ApplicationModel) {
-        if (Utils.isPackageInstalled(context.packageManager, app.appPackageName)) return
-
-        _mainFragmentState.update { state ->
-            state.copy(
-                isRefreshing = true,
-                appList = state.appList.filter { it.appPackageName != app.appPackageName },
-                selectedApp = if (state.selectedApp?.appPackageName == app.appPackageName) null else state.selectedApp
-            )
-        }
         viewModelScope.launch {
-            async { appsRepository.removeApp(app) }
-        }
-    }
-
-    private fun uninstallApps(packageName: String) {
-        _mainFragmentState.value.appList.find { it.appPackageName == packageName }?.let {
-            uninstallApps(it)
+            uninstallApp(app)
         }
     }
 
@@ -333,83 +274,33 @@ class AppListViewModel @Inject constructor(
      * @param list of apps user wants to save
      */
     private suspend fun saveApps(list: List<ApplicationModel>) = coroutineScope {
-        if (list.isEmpty()) {
-            _extractionResult.emit(ExtractionResult.None)
-            return@coroutineScope
-        }
-
         val backupMode = backupXapk.first()
-        var application: ApplicationModel? = null
-        var errorMessage: String? = null
-
         _progressDialogState.update {
             val taskSize = if (backupMode) list.fold(0) { acc, applicationModel ->
                 acc + (applicationModel.appSplitSourceDirectories?.size ?: 0) + 1
             } else list.size
             it.copy(
-                title = this@AppListViewModel.context.getString(
+                title = UiText(
                     R.string.progress_dialog_title_save, if (backupMode) "XAPK" else "APK"
                 ), tasks = taskSize, shouldBeShown = true
             )
         }
-
-        val job = launch extract@{
-            list.forEach { app ->
-                application = app
-                val splits = arrayListOf(app.appSourceDirectory)
-                if (!app.appSplitSourceDirectories.isNullOrEmpty() && backupMode) splits.addAll(
-                    app.appSplitSourceDirectories!!
-                )
-                val appName = ApplicationUtil.appName(app, appName.first())
-
-                _progressDialogState.update { state ->
-                    state.copy(process = app.appPackageName)
-                }
-
-                val newFile = if (splits.size == 1) {
-                    val savedApk = ApplicationUtil.saveApk(
-                        this@AppListViewModel.context,
-                        app.appSourceDirectory,
-                        saveDir.first()!!,
-                        appName
-                    )
-                    _progressDialogState.update { state ->
-                        state.copy(
-                            process = app.appPackageName, progress = state.progress + 1
-                        )
-                    }
-                    savedApk
-                } else ApplicationUtil.saveXapk(
-                    this@AppListViewModel.context, splits.toTypedArray(), saveDir.first()!!, appName
-                ) {
-                    _progressDialogState.update { state ->
-                        state.copy(
-                            process = app.appPackageName, progress = state.progress + 1
-                        )
-                    }
-                }
-                when (newFile) {
-                    is SaveApkResult.Failure -> errorMessage = newFile.errorMessage
-                    is SaveApkResult.Success -> EventDispatcher.emitEvent(
-                        Event(
-                            EventType.SAVED, newFile.uri
-                        )
+        saveApp.invoke(list).collect {
+            when (it) {
+                ExtractionResult.None -> resetProgress()
+                is ExtractionResult.Progress -> _progressDialogState.update { state ->
+                    state.copy(
+                        process = it.app.appPackageName,
+                        progress = state.progress + it.progressIncrement
                     )
                 }
-                if (errorMessage != null) {
-                    _extractionResult.emit(
-                        ExtractionResult.Failure(
-                            application!!, errorMessage!!
-                        )
-                    )
-                    this@extract.cancel()
+
+                is ExtractionResult.SuccessMultiple, is ExtractionResult.SuccessSingle, is ExtractionResult.Failure -> {
+                    _extractionResult.emit(it)
+                    resetProgress()
                 }
             }
         }
-        job.join()
-        if (list.size == 1) _extractionResult.emit(ExtractionResult.SuccessSingle(application!!))
-        else _extractionResult.emit(ExtractionResult.SuccessMultiple(application!!, list.size))
-        resetProgress()
     }
 
     fun createShareUrisForSelectedApps() {
@@ -426,55 +317,29 @@ class AppListViewModel @Inject constructor(
      * @param list list of all apps
      */
     private suspend fun createShareUrisForApps(list: List<ApplicationModel>) = coroutineScope {
-        if (list.isEmpty()) {
-            _shareResult.emit(ShareResult.None)
-            return@coroutineScope
-        }
-
-        val files = ArrayList<Uri>()
-        val jobList = ArrayList<Deferred<Any?>>()
         val backupMode = backupXapk.first()
-
         _progressDialogState.update {
-            it.copy(title = context.getString(R.string.progress_dialog_title_share),
+            it.copy(title = UiText(R.string.progress_dialog_title_share),
                 tasks = if (backupMode) list.fold(0) { acc, applicationModel ->
                     acc + (applicationModel.appSplitSourceDirectories?.size ?: 0) + 1
                 } else list.size,
                 shouldBeShown = true)
         }
-
-        list.forEach { app ->
-            jobList.add(async {
-                val splits = arrayListOf(app.appSourceDirectory)
-                if (!app.appSplitSourceDirectories.isNullOrEmpty() && backupMode) splits.addAll(
-                    app.appSplitSourceDirectories!!
-                )
-                val name = ApplicationUtil.appName(app, appName.first())
-
-                val uri = if (splits.size == 1) {
-                    val shareUri = ApplicationUtil.shareApk(context, app, name)
-                    _progressDialogState.update { state ->
-                        state.copy(
-                            progress = state.progress + 1
-                        )
-                    }
-                    shareUri
-                } else ApplicationUtil.shareXapk(
-                    context, app, name
-                ) {
-                    _progressDialogState.update { state ->
-                        state.copy(
-                            progress = state.progress + 1
-                        )
-                    }
+        shareApps.invoke(list).collect {
+            when (it) {
+                ShareResult.None -> resetProgress()
+                ShareResult.Progress -> _progressDialogState.update { state ->
+                    state.copy(
+                        progress = state.progress + 1
+                    )
                 }
-                files.add(uri)
-            })
+
+                is ShareResult.SuccessSingle, is ShareResult.SuccessMultiple -> {
+                    _shareResult.emit(it)
+                    resetProgress()
+                }
+            }
         }
-        jobList.awaitAll()
-        if (files.size == 1) _shareResult.emit(ShareResult.SuccessSingle(files[0]))
-        else _shareResult.emit(ShareResult.SuccessMultiple(files))
-        resetProgress()
     }
 
     override fun resetProgress() {

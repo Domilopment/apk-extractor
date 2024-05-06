@@ -14,6 +14,7 @@ import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.MySessionCallback
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ProgressDialogUiState
+import domilopment.apkextractor.data.UiText
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.InstallationUtil
 import domilopment.apkextractor.utils.eventHandler.Event
@@ -28,11 +29,11 @@ import java.io.IOException
 import java.util.zip.ZipInputStream
 
 class InstallerActivityViewModel(application: Application) : AndroidViewModel(application) {
-    val context: Context get() = getApplication<Application>().applicationContext
+    private val context: Context get() = getApplication<Application>().applicationContext
 
     var uiState by mutableStateOf(
         ProgressDialogUiState(
-            title = context.getString(R.string.progress_dialog_title_install, "XAPK"),
+            title = UiText(R.string.progress_dialog_title_install, "XAPK"),
             process = null,
             progress = 0F,
             tasks = 100,

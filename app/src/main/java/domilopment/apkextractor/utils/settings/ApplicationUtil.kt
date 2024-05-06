@@ -12,12 +12,14 @@ import domilopment.apkextractor.utils.appFilterOptions.AppFilterOthers
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
+import kotlin.coroutines.CoroutineContext
 
 object ApplicationUtil {
     /**
@@ -151,7 +153,7 @@ object ApplicationUtil {
         files: Array<String>,
         to: Uri,
         fileName: String,
-        callback: (String) -> Unit
+        callback: suspend (String) -> Unit
     ): SaveApkResult = withContext(Dispatchers.IO) {
         var extractedApk: Uri? = null
         return@withContext try {
@@ -166,9 +168,7 @@ object ApplicationUtil {
                 for (file in files) {
                     ensureActive()
                     FileUtil.ZipUtil.writeToZip(output, file)
-                    withContext(Dispatchers.Main) {
-                        callback(file)
-                    }
+                    callback(file)
                 }
             }
             SaveApkResult.Success(extractedApk)
@@ -198,8 +198,8 @@ object ApplicationUtil {
             return@withContext FileUtil.createShareUriForFile(context, outFile)
         }
 
-    suspend fun shareXapk(
-        context: Context, app: ApplicationModel, appName: String, callback: (String) -> Unit
+    suspend fun shareXapk (
+        context: Context, app: ApplicationModel, appName: String, callback: suspend (String) -> Unit
     ): Uri = withContext(Dispatchers.IO) {
         val splits =
             arrayOf(app.appSourceDirectory, *(app.appSplitSourceDirectories ?: emptyArray()))
@@ -209,9 +209,7 @@ object ApplicationUtil {
         FileUtil.ZipUtil.openZipOutputStream(outFile).use { output ->
             for (file in splits) {
                 FileUtil.ZipUtil.writeToZip(output, file)
-                withContext(Dispatchers.Main) {
-                    callback(file)
-                }
+                callback(file)
             }
         }
         return@withContext FileUtil.createShareUriForFile(context, outFile)
