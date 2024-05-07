@@ -7,12 +7,10 @@ import domilopment.apkextractor.data.apkList.ApkListScreenState
 import domilopment.apkextractor.data.apkList.PackageArchiveModel
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.domain.usecase.apkList.DeleteApkUseCase
-import domilopment.apkextractor.utils.eventHandler.Event
-import domilopment.apkextractor.utils.eventHandler.EventDispatcher
-import domilopment.apkextractor.utils.eventHandler.EventType
 import domilopment.apkextractor.domain.usecase.apkList.GetApkListUseCase
 import domilopment.apkextractor.domain.usecase.apkList.LoadApkInfoUseCase
 import domilopment.apkextractor.domain.usecase.apkList.UpdateApksUseCase
+import domilopment.apkextractor.domain.usecase.appList.UninstallAppUseCase
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -21,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import domilopment.apkextractor.utils.eventHandler.Observer
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
@@ -33,9 +30,8 @@ class ApkListViewModel @Inject constructor(
     private val apkList: GetApkListUseCase,
     private val loadApkInfo: LoadApkInfoUseCase,
     private val updateApks: UpdateApksUseCase,
-) : ViewModel(), Observer {
-    override val key: String = "ApkListViewModel"
-
+    private val uninstallApp: UninstallAppUseCase,
+) : ViewModel() {
     private val _apkListFragmentState: MutableStateFlow<ApkListScreenState> =
         MutableStateFlow(ApkListScreenState())
     val apkListFragmentState: StateFlow<ApkListScreenState> = _apkListFragmentState.asStateFlow()
@@ -60,20 +56,6 @@ class ApkListViewModel @Inject constructor(
                     )
                 }
             }
-        }
-        // Set applications in view once they are loaded
-        EventDispatcher.registerObserver(this, EventType.SAVED, EventType.DELETED)
-    }
-
-    override fun onCleared() {
-        EventDispatcher.unregisterObserver(this, EventType.ANY)
-        super.onCleared()
-    }
-
-    override fun onEventReceived(event: Event<*>) {
-        when (event.eventType) {
-            EventType.DELETED -> remove(event.data as PackageArchiveModel)
-            else -> return
         }
     }
 
@@ -143,5 +125,12 @@ class ApkListViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceRepository.setApkSortOrder(sortPreferenceId.name)
         }
+    }
+
+    fun uninstallApp(packageName: String) {
+        viewModelScope.launch {
+            uninstallApp.invoke(packageName)
+        }
+
     }
 }

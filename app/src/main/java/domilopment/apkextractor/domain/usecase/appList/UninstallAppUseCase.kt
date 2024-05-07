@@ -7,16 +7,16 @@ import domilopment.apkextractor.utils.Utils
 import javax.inject.Inject
 
 interface UninstallAppUseCase {
-    suspend operator fun invoke(app: ApplicationModel)
+    suspend operator fun invoke(packageName: String)
 }
 
 class UninstallAppUseCaseImpl @Inject constructor(
     private val context: Context,
     private val appsRepository: ApplicationRepository
 ): UninstallAppUseCase {
-    override suspend operator fun invoke(app: ApplicationModel) {
-        if (Utils.isPackageInstalled(context.packageManager, app.appPackageName)) return
+    override suspend operator fun invoke(packageName: String) {
+        if (Utils.isPackageInstalled(context.packageManager, packageName)) return
 
-        appsRepository.removeApp(app)
+        appsRepository.removeApp(ApplicationModel(context.packageManager, packageName))
     }
 }

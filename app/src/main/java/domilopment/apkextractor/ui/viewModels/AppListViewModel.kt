@@ -16,10 +16,6 @@ import domilopment.apkextractor.domain.usecase.appList.ShareAppsUseCase
 import domilopment.apkextractor.domain.usecase.appList.UninstallAppUseCase
 import domilopment.apkextractor.domain.usecase.appList.UpdateAppsUseCase
 import domilopment.apkextractor.utils.settings.ApplicationUtil
-import domilopment.apkextractor.utils.eventHandler.Event
-import domilopment.apkextractor.utils.eventHandler.EventDispatcher
-import domilopment.apkextractor.utils.eventHandler.EventType
-import domilopment.apkextractor.utils.eventHandler.Observer
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.settings.AppSortOptions
 import kotlinx.coroutines.*
@@ -45,8 +41,7 @@ class AppListViewModel @Inject constructor(
     private val shareApps: ShareAppsUseCase,
     private val uninstallApp: UninstallAppUseCase,
     private val updateApps: UpdateAppsUseCase,
-) : ViewModel(), Observer, ProgressDialogViewModel {
-    override val key: String = "AppListViewModel"
+) : ViewModel(), ProgressDialogViewModel {
 
     private val _mainFragmentState: MutableStateFlow<AppListScreenState> =
         MutableStateFlow(AppListScreenState())
@@ -132,21 +127,6 @@ class AppListViewModel @Inject constructor(
                 }
             }
         }
-
-        EventDispatcher.registerObserver(this, EventType.INSTALLED, EventType.UNINSTALLED)
-    }
-
-    override fun onCleared() {
-        EventDispatcher.unregisterObserver(this, EventType.ANY)
-        super.onCleared()
-    }
-
-    override fun onEventReceived(event: Event<*>) {
-        when (event.eventType) {
-            EventType.INSTALLED -> addApps(event.data as String)
-
-            else -> return
-        }
     }
 
     /**
@@ -188,7 +168,7 @@ class AppListViewModel @Inject constructor(
 
     fun uninstallApps(app: ApplicationModel) {
         viewModelScope.launch {
-            uninstallApp(app)
+            uninstallApp(app.appPackageName)
         }
     }
 

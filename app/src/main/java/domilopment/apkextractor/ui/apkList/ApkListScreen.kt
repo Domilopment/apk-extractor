@@ -29,9 +29,6 @@ import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
-import domilopment.apkextractor.utils.eventHandler.Event
-import domilopment.apkextractor.utils.eventHandler.EventDispatcher
-import domilopment.apkextractor.utils.eventHandler.EventType
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -109,7 +106,7 @@ fun ApkListScreen(
 
             val isAppUninstalled = !Utils.isPackageInstalled(context.packageManager, packageName!!)
             if (isAppUninstalled) {
-                EventDispatcher.emitEvent(Event(EventType.UNINSTALLED, packageName))
+                model.uninstallApp(packageName)
             }
         }
 
