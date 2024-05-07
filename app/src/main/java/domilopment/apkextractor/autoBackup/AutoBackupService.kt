@@ -61,11 +61,7 @@ class AutoBackupService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        try {
-            unregisterReceiver(br)
-        } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
-        }
+        unregisterReceiver(br)
         if (isRunning) restartService()
     }
 
@@ -138,21 +134,13 @@ class AutoBackupService : Service() {
                 PendingIntent.getBroadcast(this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
             }
 
-        // Relaunch Service Notification
-        val restartPendingIntent: PendingIntent =
-            Intent(this, AutoBackupService::class.java).apply {
-                action = Actions.START.name
-            }.let { restartIntent ->
-                PendingIntent.getService(this, 0, restartIntent, PendingIntent.FLAG_IMMUTABLE)
-            }
-
         // Build and return Notification
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.auto_backup_notification_title))
             .setContentText(getString(R.string.auto_backup_notification_content_text))
             .setSmallIcon(R.drawable.ic_small_notification_icon_24)
             .setColor(getColor(R.color.notificationColor)).setContentIntent(pendingIntent)
-            .setDeleteIntent(restartPendingIntent).addAction(
+            .addAction(
                 R.drawable.ic_small_notification_icon_24,
                 getString(R.string.auto_backup_notification_action_stop),
                 stopPendingIntent
