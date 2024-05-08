@@ -5,6 +5,7 @@ import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepo
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -20,6 +21,7 @@ class GetAppListUseCaseImpl @Inject constructor(
     private val appsRepository: ApplicationRepository,
     private val settings: PreferenceRepository
 ): GetAppListUseCase {
+    @OptIn(FlowPreview::class)
     override operator fun invoke(searchQuery: Flow<String?>): Flow<List<ApplicationModel>> = combine(
         appsRepository.apps,
         settings.updatedSysApps,

@@ -7,6 +7,7 @@ import domilopment.apkextractor.dependencyInjection.preferenceDataStore.Preferen
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.PackageArchiveUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -21,6 +22,7 @@ class GetApkListUseCaseImpl(
     private val apksRepository: PackageArchiveRepository,
     private val settings: PreferenceRepository
 ) : GetApkListUseCase {
+    @OptIn(FlowPreview::class)
     override fun invoke(searchQuery: Flow<String?>) =
         apksRepository.apks.combine(settings.apkSortOrder) { apkList, sortOrder ->
             PackageArchiveUtils.sortApkData(apkList, sortOrder)
