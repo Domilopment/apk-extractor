@@ -8,6 +8,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,11 +30,9 @@ fun PullToRefreshBox(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
-    isPullToRefreshEnabled: Boolean = true,
+    state: PullToRefreshState = rememberPullToRefreshState(),
     content: @Composable() (BoxScope.() -> Unit)
 ) {
-    val state = rememberPullToRefreshState(enabled = { isPullToRefreshEnabled })
-
     Box(modifier = modifier.nestedScroll(state.nestedScrollConnection)) {
         this.content()
 
@@ -52,6 +51,7 @@ fun PullToRefreshBox(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun PullToRefreshBoxPreview() {

@@ -4,7 +4,9 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -20,6 +22,7 @@ import domilopment.apkextractor.utils.FileUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ApkListContent(
     apkList: List<PackageArchiveModel>,
@@ -37,7 +40,9 @@ fun ApkListContent(
     onStorageInfoClick: () -> Unit
 ) {
     PullToRefreshBox(
-        isRefreshing = isRefreshing, onRefresh = onRefresh, isPullToRefreshEnabled = isPullToRefresh
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        state = rememberPullToRefreshState(enabled = { isPullToRefresh })
     ) {
         ApkList(
             apkList = apkList,

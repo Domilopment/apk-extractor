@@ -2,8 +2,10 @@ package domilopment.apkextractor.ui.appList
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -20,6 +22,7 @@ import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppListContent(
     appList: List<ApplicationModel>,
@@ -38,7 +41,9 @@ fun AppListContent(
     uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
     PullToRefreshBox(
-        isRefreshing = isRefreshing, onRefresh = onRefresh, isPullToRefreshEnabled = isPullToRefresh
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        state = rememberPullToRefreshState(enabled = { isPullToRefresh })
     ) {
         AppList(
             appList = appList,
