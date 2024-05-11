@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -20,7 +21,7 @@ import androidx.core.content.IntentSanitizer
 import androidx.core.util.Consumer
 import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.data.ApkInstallationResult
-import domilopment.apkextractor.data.ApkInstallationResultType
+import domilopment.apkextractor.data.InstallationResultType
 import domilopment.apkextractor.ui.dialogs.InstallationResultDialog
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
@@ -78,34 +79,35 @@ class InstallerActivity : ComponentActivity() {
                     }
                 }
             }
-
         }
         this.setFinishOnTouchOutside(true)
 
-        intent.data?.let { xApkUri ->
-            model.installXAPK(xApkUri)
+        intent.data?.let { uri ->
+            when (uri.scheme) {
+                "content", "file" -> model.installXAPK(uri)
+                "package" -> model.uninstallApp(uri)
+                else -> super.finish()
+            }
         } ?: super.finish()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    private fun onNewIntent(intent: Intent, result: (ApkInstallationResultType) -> Unit) {
-        if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
+    private fun onNewIntent(intent: Intent, result: (InstallationResultType) -> Unit) {
+        if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION || intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                     val sanitizer = IntentSanitizer.Builder().allowComponent(
                         ComponentName(this.applicationContext, InstallerActivity::class.java)
                     ).allowReceiverFlags().allowHistoryStackFlags()
                         .allowAction(MainActivity.PACKAGE_INSTALLATION_ACTION)
+                        .allowAction(MainActivity.PACKAGE_UNINSTALLATION_ACTION)
                         .allowExtra(PackageInstaller.EXTRA_STATUS, Integer::class.java)
                         .allowExtra(PackageInstaller.EXTRA_SESSION_ID, Integer::class.java)
                         .allowExtra(Intent.EXTRA_INTENT, Intent::class.java).apply {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) allowExtra(
                                 PackageInstaller.EXTRA_PRE_APPROVAL, java.lang.Boolean::class.java
                             )
-                        }.build()
+                        }.allowExtra(PackageInstaller.EXTRA_PACKAGE_NAME, String::class.java)
+                        .build()
                     val activityIntent = sanitizer.sanitize(intent) {
                         this.finish()
                     }.let {
@@ -117,9 +119,12 @@ class InstallerActivity : ComponentActivity() {
                     }?.let {
                         IntentSanitizer.Builder().allowAnyComponent()
                             .allowAction("android.content.pm.action.CONFIRM_INSTALL")
+                            .allowAction("android.intent.action.UNINSTALL_PACKAGE")
                             .allowPackage("com.google.android.packageinstaller").allowExtra(
                                 "android.content.pm.extra.SESSION_ID", Integer::class.java
-                            ).build().sanitize(it) {
+                            )
+                            .allowExtra("android.content.pm.extra.CALLBACK", Parcelable::class.java)
+                            .allowData { it.scheme == "package" }.build().sanitize(it) {
                                 this.finish()
                             }
                     }
@@ -128,14 +133,25 @@ class InstallerActivity : ComponentActivity() {
 
                 PackageInstaller.STATUS_SUCCESS -> {
                     val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
-                    result(ApkInstallationResultType.Success(packageName))
+
+                    if (intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
+                        packageName?.let { model.removeApp(packageName) }
+                        result(InstallationResultType.Success.Uninstalled(packageName))
+                    } else if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
+                        result(InstallationResultType.Success.Installed(packageName))
+                    }
                 }
 
                 PackageInstaller.STATUS_FAILURE, PackageInstaller.STATUS_FAILURE_ABORTED, PackageInstaller.STATUS_FAILURE_BLOCKED, PackageInstaller.STATUS_FAILURE_CONFLICT, PackageInstaller.STATUS_FAILURE_INCOMPATIBLE, PackageInstaller.STATUS_FAILURE_INVALID, PackageInstaller.STATUS_FAILURE_STORAGE -> {
                     val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
                     val errorMessage = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
                         ?: "No Error message provided"
-                    result(ApkInstallationResultType.Failure(packageName, errorMessage))
+
+                    if (intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
+                        result(InstallationResultType.Failure.Uninstall(packageName, errorMessage))
+                    } else if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
+                        result(InstallationResultType.Failure.Install(packageName, errorMessage))
+                    }
                 }
             }
         }

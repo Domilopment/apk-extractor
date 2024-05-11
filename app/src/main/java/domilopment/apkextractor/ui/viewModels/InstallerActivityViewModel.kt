@@ -8,10 +8,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.data.UiText
+import domilopment.apkextractor.domain.usecase.appList.RemoveAppUseCase
 import domilopment.apkextractor.domain.usecase.installer.InstallUseCase
+import domilopment.apkextractor.domain.usecase.installer.UninstallUseCase
 import domilopment.apkextractor.utils.InstallApkResult
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -20,6 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class InstallerActivityViewModel @Inject constructor(
     private val installUseCase: InstallUseCase,
+    private val uninstallUseCase: UninstallUseCase,
+    private val removeAppUseCase: RemoveAppUseCase,
 ) : ViewModel() {
     var uiState by mutableStateOf(
         ProgressDialogUiState(
@@ -47,7 +52,7 @@ class InstallerActivityViewModel @Inject constructor(
 
     fun installXAPK(fileUri: Uri) {
         task = viewModelScope.launch {
-            installUseCase(fileUri).collect {
+            installUseCase(fileUri, InstallerActivity::class.java).collect {
                 when (it) {
                     is InstallApkResult.OnPrepare -> {
                         session = it.session
@@ -72,5 +77,19 @@ class InstallerActivityViewModel @Inject constructor(
         val temp = session
         session = null
         temp?.abandon()
+    }
+
+    fun uninstallApp(packageUri: Uri) {
+        setProgressDialogActive(false)
+        val packageName = packageUri.schemeSpecificPart
+        viewModelScope.launch {
+            uninstallUseCase(packageName, InstallerActivity::class.java)
+        }
+    }
+
+    fun removeApp(packageName: String) {
+        viewModelScope.launch {
+            removeAppUseCase(packageName)
+        }
     }
 }
