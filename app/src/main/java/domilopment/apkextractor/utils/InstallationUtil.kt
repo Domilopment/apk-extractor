@@ -42,4 +42,16 @@ object InstallationUtil {
         session.commit(pendingIntent.intentSender)
         session.close()
     }
+
+    fun <T : Activity> uninstallApp(context: Context, packageName: String, cls: Class<T>) {
+        val pendingIntent = Intent(context, cls).apply {
+            action = MainActivity.PACKAGE_UNINSTALLATION_ACTION
+        }.let {
+            PendingIntent.getActivity(
+                context, 0, it, PendingIntent.FLAG_MUTABLE
+            )
+        }
+
+        context.packageManager.packageInstaller.uninstall(packageName, pendingIntent.intentSender)
+    }
 }
