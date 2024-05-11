@@ -20,15 +20,11 @@ class MyApplicationRepository @Inject constructor(
         applicationService.apps
 
     override suspend fun updateApps() {
-        withContext(Dispatchers.IO) {
-            applicationService.updateData()
-        }
+        applicationService.updateData()
     }
 
     override suspend fun addApp(app: ApplicationModel) {
-        withContext(Dispatchers.IO) {
-            applicationService.add(app)
-        }
+        applicationService.add(app)
     }
 
     override suspend fun removeApp(app: ApplicationModel) {

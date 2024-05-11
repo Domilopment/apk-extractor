@@ -9,10 +9,13 @@ import domilopment.apkextractor.dependencyInjection.preferenceDataStore.Preferen
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.NonComparingMutableStateFlow
 import domilopment.apkextractor.dependencyInjection.applications.ListOfApps
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class ListOfAPKs private constructor(
     context: Context, private val preferences: PreferenceRepository
@@ -89,16 +92,20 @@ class ListOfAPKs private constructor(
         _apks.value = packageArchiveModels
     }
 
-    suspend fun add(apk: PackageArchiveModel) {
-        val apks = _apks.value.toMutableList()
-        apks.add(apk)
-        _apks.value = apks
+    suspend fun add(apk: PackageArchiveModel) = withContext(Dispatchers.IO) {
+        _apks.update { apks ->
+            apks.toMutableList().apply {
+                add(apk)
+            }
+        }
     }
 
-    suspend fun remove(apk: PackageArchiveModel) {
-        val apks = _apks.value.toMutableList()
-        apks.removeIf { it.fileUri == apk.fileUri }
-        _apks.value = apks
+    suspend fun remove(apk: PackageArchiveModel) = withContext(Dispatchers.IO) {
+        _apks.update { apks ->
+            apks.toMutableList().apply {
+                removeIf { it.fileUri == apk.fileUri }
+            }
+        }
     }
 
     companion object {

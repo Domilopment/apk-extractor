@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.drawable.toBitmap
+import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
@@ -62,14 +63,14 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
 
     /**
      * Creates an Intent to delete selected app
-     * @param uninstallApp ActivityResultLauncher to start Intent from
      */
-    fun actionUninstall(uninstallApp: ActivityResultLauncher<Intent>) {
-        uninstallApp.launch(
-            Intent(
-                Intent.ACTION_DELETE, Uri.fromParts("package", app.appPackageName, null)
-            )
-        )
+    fun actionUninstall(receiverCls: Class<*>) {
+        Intent(context, receiverCls).apply {
+            data = Uri.fromParts("package", app.appPackageName, null)
+            setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK)
+        }.let { intent ->
+            context.startActivity(intent)
+        }
     }
 
     /**

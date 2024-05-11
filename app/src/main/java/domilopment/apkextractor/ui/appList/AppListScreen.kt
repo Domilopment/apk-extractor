@@ -20,9 +20,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.Screen
-import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.data.appList.ExtractionResult
 import domilopment.apkextractor.data.appList.ShareResult
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
@@ -77,26 +77,12 @@ fun AppListScreen(
         mutableStateOf(null)
     }
 
-    // when user performs action on an app and app should be uninstalled in the process, we have to know what app is selected
-    var appToUninstall by remember {
-        mutableStateOf<ApplicationModel?>(null)
-    }
-
     // After finish share apk file, clear the temp folder so the temp.apk files is deleted as well
     val shareApp = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
         context.cacheDir.deleteRecursively()
     }
-
-    // hande the remove of selected app from all data structures
-    val uninstallApp =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
-            appToUninstall?.let {
-                model.uninstallApps(it)
-                appToUninstall = null
-            }
-        }
 
     // check if we have permission to save the app icon to storage
     val saveImage =
@@ -229,8 +215,6 @@ fun AppListScreen(
             saveResult = model.extractionResult,
             onActionShare = { model.createShareUrisForApp(selectedApp) },
             onActionSaveImage = saveImage,
-            intentUninstallApp = uninstallApp,
-            onActionUninstall = { appToUninstall = selectedApp },
             uninstalledAppFound = model::uninstallApps
         )
     }
@@ -295,13 +279,12 @@ fun AppListScreen(
         rightSwipeAction = rightSwipeAction,
         leftSwipeAction = leftSwipeAction,
         swipeActionCallback = { app, apkAction ->
-            appToUninstall = app
             apkAction.getAction(
                 context,
                 app,
                 ApkActionsOptions.ApkActionOptionParams.Builder().saveFunction(model::saveApp)
                     .setCallbackFun(showSnackbar).setShareFunction(model::createShareUrisForApp)
-                    .setDeleteResult(uninstallApp).build()
+                    .setDeleteResult(InstallerActivity::class.java).build()
             )
         },
         isSwipeActionCustomThreshold = swipeActionCustomThreshold,

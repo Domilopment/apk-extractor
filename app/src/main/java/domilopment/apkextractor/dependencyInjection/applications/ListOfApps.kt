@@ -6,9 +6,12 @@ import android.content.pm.PackageManager
 import android.os.Build
 import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.utils.NonComparingMutableStateFlow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class ListOfApps private constructor(context: Context) {
     private val packageManager = context.packageManager
@@ -67,38 +70,40 @@ class ListOfApps private constructor(context: Context) {
         _apps.value = Triple(newUpdatedSystemApps, newSystemApps, newUserApps)
     }
 
-    suspend fun add(app: ApplicationModel) {
-        val apps = _apps.value.copy()
-        val updatedSysApps = apps.first.toMutableList()
-        val sysApps = apps.second.toMutableList()
-        val userApps = apps.third.toMutableList()
+    suspend fun add(app: ApplicationModel) = withContext(Dispatchers.IO) {
+        _apps.update { apps ->
+            val updatedSysApps = apps.first.toMutableList()
+            val sysApps = apps.second.toMutableList()
+            val userApps = apps.third.toMutableList()
 
-        when (ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) {
-            (app.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) -> {
-                if (updatedSysApps.find { it.appPackageName == app.appPackageName } == null) updatedSysApps.add(
+            when (ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) {
+                (app.appFlags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) -> {
+                    if (updatedSysApps.find { it.appPackageName == app.appPackageName } == null) updatedSysApps.add(
+                        app
+                    )
+                    sysApps.removeIf { it.appPackageName == app.appPackageName }
+                }
+
+                else -> if (userApps.find { it.appPackageName == app.appPackageName } == null) userApps.add(
                     app
                 )
-                sysApps.removeIf { it.appPackageName == app.appPackageName }
             }
 
-            else -> if (userApps.find { it.appPackageName == app.appPackageName } == null) userApps.add(
-                app
-            )
+            Triple(updatedSysApps, sysApps, userApps)
         }
-
-        _apps.value = Triple(updatedSysApps, sysApps, userApps)
     }
 
-    suspend fun remove(app: ApplicationModel) {
-        val apps = _apps.value.copy()
-        val updatedSysApps = apps.first.toMutableList()
-        val sysApps = apps.second.toMutableList()
-        val userApps = apps.third.toMutableList()
+    suspend fun remove(app: ApplicationModel) = withContext(Dispatchers.IO) {
+        _apps.update { apps ->
+            val updatedSysApps = apps.first.toMutableList()
+            val sysApps = apps.second.toMutableList()
+            val userApps = apps.third.toMutableList()
 
-        if (updatedSysApps.removeIf { it.appPackageName == app.appPackageName }) sysApps.add(app)
-        else userApps.removeIf { it.appPackageName == app.appPackageName }
+            if (updatedSysApps.removeIf { it.appPackageName == app.appPackageName }) sysApps.add(app)
+            else userApps.removeIf { it.appPackageName == app.appPackageName }
 
-        _apps.value = Triple(updatedSysApps, sysApps, userApps)
+            Triple(updatedSysApps, sysApps, userApps)
+        }
     }
 
     companion object {

@@ -1,11 +1,8 @@
 package domilopment.apkextractor.ui.dialogs
 
-import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
 import android.os.Build
-import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.basicMarquee
@@ -64,6 +61,7 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
+import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.appList.ApplicationModel
 import domilopment.apkextractor.data.appList.ExtractionResult
@@ -87,8 +85,6 @@ fun AppOptionsBottomSheet(
     saveResult: SharedFlow<ExtractionResult>,
     onActionShare: () -> Unit,
     onActionSaveImage: PermissionState,
-    intentUninstallApp: ManagedActivityResultLauncher<Intent, ActivityResult>,
-    onActionUninstall: () -> Unit,
     uninstalledAppFound: (ApplicationModel) -> Unit,
 ) {
     val context = LocalContext.current
@@ -170,8 +166,7 @@ fun AppOptionsBottomSheet(
             onActionOpenApp = apkOptions::actionOpenApp,
             onActionOpenSettings = apkOptions::actionShowSettings,
             onActionUninstall = {
-                onActionUninstall()
-                apkOptions.actionUninstall(intentUninstallApp)
+                apkOptions.actionUninstall(InstallerActivity::class.java)
             })
     }
 }

@@ -10,7 +10,6 @@ import domilopment.apkextractor.domain.usecase.apkList.DeleteApkUseCase
 import domilopment.apkextractor.domain.usecase.apkList.GetApkListUseCase
 import domilopment.apkextractor.domain.usecase.apkList.LoadApkInfoUseCase
 import domilopment.apkextractor.domain.usecase.apkList.UpdateApksUseCase
-import domilopment.apkextractor.domain.usecase.appList.UninstallAppUseCase
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,7 +29,6 @@ class ApkListViewModel @Inject constructor(
     private val apkList: GetApkListUseCase,
     private val loadApkInfo: LoadApkInfoUseCase,
     private val updateApks: UpdateApksUseCase,
-    private val uninstallApp: UninstallAppUseCase,
 ) : ViewModel() {
     private val _apkListFragmentState: MutableStateFlow<ApkListScreenState> =
         MutableStateFlow(ApkListScreenState())
@@ -125,12 +123,5 @@ class ApkListViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceRepository.setApkSortOrder(sortPreferenceId.name)
         }
-    }
-
-    fun uninstallApp(packageName: String) {
-        viewModelScope.launch {
-            uninstallApp.invoke(packageName)
-        }
-
     }
 }

@@ -1,9 +1,7 @@
 package domilopment.apkextractor.dependencyInjection.packageArchive
 
 import domilopment.apkextractor.data.apkList.PackageArchiveModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface PackageArchiveRepository {
@@ -19,20 +17,14 @@ class MyPackageArchiveRepository @Inject constructor(
     override val apks: Flow<List<PackageArchiveModel>> = packageArchiveService.apks
 
     override suspend fun updateApps() {
-        withContext(Dispatchers.IO) {
-            packageArchiveService.updateData()
-        }
+        packageArchiveService.updateData()
     }
 
     override suspend fun addApk(apk: PackageArchiveModel) {
-        withContext(Dispatchers.IO) {
-            packageArchiveService.add(apk)
-        }
+        packageArchiveService.add(apk)
     }
 
     override suspend fun removeApk(apk: PackageArchiveModel) {
-        withContext(Dispatchers.IO) {
-            packageArchiveService.remove(apk)
-        }
+        packageArchiveService.remove(apk)
     }
 }

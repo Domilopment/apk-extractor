@@ -1,8 +1,6 @@
 package domilopment.apkextractor.utils.apkActions
 
 import android.content.Context
-import android.content.Intent
-import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Delete
@@ -70,7 +68,7 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         override fun getAction(
             context: Context, app: ApplicationModel, params: ApkActionOptionParams
         ) {
-            params.deleteResult?.let { ApkActionsManager(context, app).actionUninstall(it) }
+            params.deleteResultCls?.let { ApkActionsManager(context, app).actionUninstall(it) }
         }
     },
     NONE(
@@ -101,13 +99,13 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
         val saveFunction: ((ApplicationModel) -> Unit)?,
         val callbackFun: ((MySnackbarVisuals) -> Unit)?,
         val shareFunction: ((ApplicationModel) -> Unit)?,
-        val deleteResult: ActivityResultLauncher<Intent>?
+        val deleteResultCls: Class<*>?
     ) {
         data class Builder(
             private var saveFunction: ((ApplicationModel) -> Unit)? = null,
             private var callbackFun: ((MySnackbarVisuals) -> Unit)? = null,
             private var shareFunction: ((ApplicationModel) -> Unit)? = null,
-            private var deleteResult: ActivityResultLauncher<Intent>? = null
+            private var deleteResultCls: Class<*>? = null
         ) {
             fun saveFunction(saveFunction: (ApplicationModel) -> Unit) =
                 apply { this.saveFunction = saveFunction }
@@ -118,11 +116,11 @@ enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val ic
             fun setShareFunction(shareFunction: (ApplicationModel) -> Unit) =
                 apply { this.shareFunction = shareFunction }
 
-            fun setDeleteResult(activityResultLauncher: ActivityResultLauncher<Intent>) =
-                apply { this.deleteResult = activityResultLauncher }
+            fun setDeleteResult(deleteResultCls: Class<*>) =
+                apply { this.deleteResultCls = deleteResultCls }
 
             fun build() = ApkActionOptionParams(
-                saveFunction, callbackFun, shareFunction, deleteResult
+                saveFunction, callbackFun, shareFunction, deleteResultCls
             )
         }
     }

@@ -28,7 +28,6 @@ import domilopment.apkextractor.ui.dialogs.ApkSortMenu
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
-import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -99,17 +98,6 @@ fun ApkListScreen(
             ).show()
         }
 
-    val uninstallApp =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val packageName = state.selectedPackageArchiveModel?.appPackageName
-            if (state.selectedPackageArchiveModel?.appPackageName.isNullOrBlank()) return@rememberLauncherForActivityResult
-
-            val isAppUninstalled = !Utils.isPackageInstalled(context.packageManager, packageName!!)
-            if (isAppUninstalled) {
-                model.uninstallApp(packageName)
-            }
-        }
-
     LaunchedEffect(key1 = searchString) {
         model.searchQuery(searchString)
     }
@@ -168,11 +156,12 @@ fun ApkListScreen(
                 }.show()
             },
             onActionUninstall = {
-                uninstallApp.launch(
-                    Intent(
-                        Intent.ACTION_DELETE, Uri.fromParts("package", it.appPackageName, null)
-                    )
-                )
+                Intent(context, InstallerActivity::class.java).apply {
+                    data = Uri.fromParts("package", it.appPackageName, null)
+                    setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK)
+                }.let { intent ->
+                    context.startActivity(intent)
+                }
             },
             deletedDocumentFound = model::remove
         )

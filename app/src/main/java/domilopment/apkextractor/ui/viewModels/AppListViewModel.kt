@@ -13,7 +13,7 @@ import domilopment.apkextractor.domain.usecase.appList.AddAppUseCase
 import domilopment.apkextractor.domain.usecase.appList.GetAppListUseCase
 import domilopment.apkextractor.domain.usecase.appList.SaveAppsUseCase
 import domilopment.apkextractor.domain.usecase.appList.ShareAppsUseCase
-import domilopment.apkextractor.domain.usecase.appList.UninstallAppUseCase
+import domilopment.apkextractor.domain.usecase.appList.RemoveAppUseCase
 import domilopment.apkextractor.domain.usecase.appList.UpdateAppsUseCase
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
@@ -39,7 +39,7 @@ class AppListViewModel @Inject constructor(
     private val appList: GetAppListUseCase,
     private val saveApp: SaveAppsUseCase,
     private val shareApps: ShareAppsUseCase,
-    private val uninstallApp: UninstallAppUseCase,
+    private val uninstallApp: RemoveAppUseCase,
     private val updateApps: UpdateAppsUseCase,
 ) : ViewModel(), ProgressDialogViewModel {
 
