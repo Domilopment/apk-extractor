@@ -261,6 +261,10 @@
     <string name="installation_result_dialog_success_message">Installation of %s succeeded</string>
     <string name="installation_result_dialog_failed_title">Installation Failed!</string>
     <string name="installation_result_dialog_failed_message">Installation of %s failed, with message:\n%s\n\nTry to uninstall current installed version and run it again.</string>
+    <string name="uninstallation_result_dialog_success_title">Successfully uninstalled!</string>
+    <string name="uninstallation_result_dialog_success_message">Uninstalling of %s succeeded</string>
+    <string name="uninstallation_result_dialog_failed_title">Uninstall Failed!</string>
+    <string name="uninstallation_result_dialog_failed_message">Uninstall of %s failed, with message:\n%s</string>
     <string name="installation_result_dialog_ok">OK</string>
 
     <!-- Action Mode -->

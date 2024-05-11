@@ -7,22 +7,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.ApkInstallationResultType
+import domilopment.apkextractor.data.InstallationResultType
 
 @Composable
 fun InstallationResultDialog(
-    onDismissRequest: () -> Unit, result: ApkInstallationResultType
+    onDismissRequest: () -> Unit, result: InstallationResultType
 ) {
     val title = remember(result) {
         when (result) {
-            is ApkInstallationResultType.Failure -> R.string.installation_result_dialog_failed_title
-            is ApkInstallationResultType.Success -> R.string.installation_result_dialog_success_title
+            // Installation Results
+            is InstallationResultType.Failure.Install -> R.string.installation_result_dialog_failed_title
+            is InstallationResultType.Success.Installed -> R.string.installation_result_dialog_success_title
+
+            // Uninstallation Results
+            is InstallationResultType.Failure.Uninstall -> R.string.uninstallation_result_dialog_failed_title
+            is InstallationResultType.Success.Uninstalled -> R.string.uninstallation_result_dialog_success_title
         }
     }
     val message = remember(result) {
         when (result) {
-            is ApkInstallationResultType.Failure -> R.string.installation_result_dialog_failed_message
-            is ApkInstallationResultType.Success -> R.string.installation_result_dialog_success_message
+            // Installation Results
+            is InstallationResultType.Failure.Install -> R.string.installation_result_dialog_failed_message
+            is InstallationResultType.Success.Installed -> R.string.installation_result_dialog_success_message
+
+            // Uninstallation Results
+            is InstallationResultType.Failure.Uninstall -> R.string.uninstallation_result_dialog_failed_message
+            is InstallationResultType.Success.Uninstalled -> R.string.uninstallation_result_dialog_success_message
         }
     }
     AlertDialog(onDismissRequest = onDismissRequest, confirmButton = {
@@ -36,7 +46,7 @@ fun InstallationResultDialog(
             text = stringResource(
                 id = message,
                 result.packageName.toString(),
-                if (result is ApkInstallationResultType.Failure) result.errorMessage ?: "" else ""
+                if (result is InstallationResultType.Failure) result.errorMessage ?: "" else ""
             )
         )
     })
