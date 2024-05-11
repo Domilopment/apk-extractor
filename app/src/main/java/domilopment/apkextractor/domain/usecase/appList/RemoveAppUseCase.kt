@@ -6,14 +6,14 @@ import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepo
 import domilopment.apkextractor.utils.Utils
 import javax.inject.Inject
 
-interface UninstallAppUseCase {
+interface RemoveAppUseCase {
     suspend operator fun invoke(packageName: String)
 }
 
-class UninstallAppUseCaseImpl @Inject constructor(
+class RemoveAppUseCaseImpl @Inject constructor(
     private val context: Context,
     private val appsRepository: ApplicationRepository
-): UninstallAppUseCase {
+): RemoveAppUseCase {
     override suspend operator fun invoke(packageName: String) {
         if (Utils.isPackageInstalled(context.packageManager, packageName)) return
 

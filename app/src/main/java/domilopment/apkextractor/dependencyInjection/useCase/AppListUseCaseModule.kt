@@ -20,8 +20,8 @@ import domilopment.apkextractor.domain.usecase.appList.SaveAppsUseCase
 import domilopment.apkextractor.domain.usecase.appList.SaveAppsUseCaseImpl
 import domilopment.apkextractor.domain.usecase.appList.ShareAppsUseCase
 import domilopment.apkextractor.domain.usecase.appList.ShareAppsUseCaseImpl
-import domilopment.apkextractor.domain.usecase.appList.UninstallAppUseCase
-import domilopment.apkextractor.domain.usecase.appList.UninstallAppUseCaseImpl
+import domilopment.apkextractor.domain.usecase.appList.RemoveAppUseCase
+import domilopment.apkextractor.domain.usecase.appList.RemoveAppUseCaseImpl
 import domilopment.apkextractor.domain.usecase.appList.UpdateAppsUseCase
 import domilopment.apkextractor.domain.usecase.appList.UpdateAppsUseCaseImpl
 
@@ -76,8 +76,8 @@ object AppListUseCaseModule {
     @Reusable
     fun getUninstallAppUseCase(
         @ApplicationContext context: Context, appsRepository: ApplicationRepository
-    ): UninstallAppUseCase {
-        return UninstallAppUseCaseImpl(context, appsRepository)
+    ): RemoveAppUseCase {
+        return RemoveAppUseCaseImpl(context, appsRepository)
     }
 
     @Provides
