@@ -1,6 +1,5 @@
 package domilopment.apkextractor
 
-import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.os.Build
@@ -95,40 +94,27 @@ class InstallerActivity : ComponentActivity() {
         if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION || intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
-                    val sanitizer = IntentSanitizer.Builder().allowComponent(
-                        ComponentName(this.applicationContext, InstallerActivity::class.java)
-                    ).allowReceiverFlags().allowHistoryStackFlags()
-                        .allowAction(MainActivity.PACKAGE_INSTALLATION_ACTION)
-                        .allowAction(MainActivity.PACKAGE_UNINSTALLATION_ACTION)
-                        .allowExtra(PackageInstaller.EXTRA_STATUS, Integer::class.java)
-                        .allowExtra(PackageInstaller.EXTRA_SESSION_ID, Integer::class.java)
-                        .allowExtra(Intent.EXTRA_INTENT, Intent::class.java).apply {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) allowExtra(
-                                PackageInstaller.EXTRA_PRE_APPROVAL, java.lang.Boolean::class.java
-                            )
-                        }.allowExtra(PackageInstaller.EXTRA_PACKAGE_NAME, String::class.java)
-                        .build()
-                    val activityIntent = sanitizer.sanitize(intent) {
-                        this.finish()
-                    }.let {
+                    val activityIntent = intent.let {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             it.getParcelableExtra(Intent.EXTRA_INTENT, Intent::class.java)
                         } else {
                             it.getParcelableExtra(Intent.EXTRA_INTENT)
                         }
-                    }?.let {
-                        IntentSanitizer.Builder().allowAnyComponent()
+                    }?.let { userActionIntent ->
+                        val sanitizer = IntentSanitizer.Builder().allowAnyComponent()
                             .allowAction("android.content.pm.action.CONFIRM_INSTALL")
                             .allowAction("android.intent.action.UNINSTALL_PACKAGE")
                             .allowPackage("com.google.android.packageinstaller").allowExtra(
                                 "android.content.pm.extra.SESSION_ID", Integer::class.java
                             )
                             .allowExtra("android.content.pm.extra.CALLBACK", Parcelable::class.java)
-                            .allowData { it.scheme == "package" }.build().sanitize(it) {
-                                this.finish()
-                            }
+                            .allowData { it.scheme == "package" }.build()
+                        sanitizer.sanitize(userActionIntent) {
+                            this.finish()
+                        }
                     }
-                    startActivity(activityIntent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    activityIntent?.let { startActivity(activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+                        ?: this.finish()
                 }
 
                 PackageInstaller.STATUS_SUCCESS -> {
