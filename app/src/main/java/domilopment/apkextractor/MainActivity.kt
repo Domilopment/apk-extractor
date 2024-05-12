@@ -1,21 +1,16 @@
 package domilopment.apkextractor
 
 import android.content.Intent
-import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Binder
-import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -290,42 +285,6 @@ class MainActivity : AppCompatActivity() {
         appUpdateManager.unregisterListener(installStateUpdatedListener)
         cacheDir.deleteRecursively()
         super.onDestroy()
-    }
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    override fun onNewIntent(intent: Intent) {
-        Log.e("TAG", "onNewIntent: ${intent.extras?.keySet()?.joinToString { "$it, " }}")
-        if (intent.action == PACKAGE_UNINSTALLATION_ACTION) {
-            when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
-                PackageInstaller.STATUS_PENDING_USER_ACTION -> {
-                    intent.let {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            it.getParcelableExtra(Intent.EXTRA_INTENT, Intent::class.java)
-                        } else {
-                            it.getParcelableExtra(Intent.EXTRA_INTENT)
-                        }
-                    }?.let {
-                        Log.e("TAG", "onNewIntent: $it, extras: ${it.extras?.getParcelable("android.content.pm.extra.CALLBACK", Parcelable::class.java).toString()}")
-                        startActivity(it!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                    }
-                }
-
-                PackageInstaller.STATUS_SUCCESS -> {
-                    val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
-                    val errorMessage = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
-                        ?: "No Error message provided"
-                    Log.e("TAG", "success: $packageName, error: $errorMessage")
-                }
-
-                PackageInstaller.STATUS_FAILURE, PackageInstaller.STATUS_FAILURE_ABORTED, PackageInstaller.STATUS_FAILURE_BLOCKED, PackageInstaller.STATUS_FAILURE_CONFLICT, PackageInstaller.STATUS_FAILURE_INCOMPATIBLE, PackageInstaller.STATUS_FAILURE_INVALID, PackageInstaller.STATUS_FAILURE_STORAGE -> {
-                    val packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME)
-                    val errorMessage = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
-                        ?: "No Error message provided"
-                    Log.e("TAG", "failure: $packageName, $errorMessage")
-                }
-            }
-
-        } else super.onNewIntent(intent)
     }
 
     /**
