@@ -53,7 +53,8 @@ class InstallerActivity : ComponentActivity() {
             APKExtractorTheme(dynamicColor = true) {
                 Surface {
                     Box(contentAlignment = Alignment.Center) {
-                        if (uiState.shouldBeShown) ProgressDialog(state = uiState,
+                        if (uiState.shouldBeShown) ProgressDialog(
+                            state = uiState,
                             onDismissRequest = {
                                 model.cancel()
                                 this@InstallerActivity.finish()
@@ -114,8 +115,11 @@ class InstallerActivity : ComponentActivity() {
                                 )
                             }
                         }.build()
-                        sanitizer.sanitize(userActionIntent) {
-                            this.finish()
+
+                        return@let try {
+                            sanitizer.sanitizeByThrowing(userActionIntent)
+                        } catch (e: SecurityException) {
+                            null
                         }
                     }
                     activityIntent?.let { startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
