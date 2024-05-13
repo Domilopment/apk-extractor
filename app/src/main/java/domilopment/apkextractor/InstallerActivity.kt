@@ -101,14 +101,19 @@ class InstallerActivity : ComponentActivity() {
                             it.getParcelableExtra(Intent.EXTRA_INTENT)
                         }
                     }?.let { userActionIntent ->
-                        val sanitizer = IntentSanitizer.Builder().allowAnyComponent()
-                            .allowAction("android.content.pm.action.CONFIRM_INSTALL")
-                            .allowAction("android.intent.action.UNINSTALL_PACKAGE")
-                            .allowPackage("com.google.android.packageinstaller").allowExtra(
-                                "android.content.pm.extra.SESSION_ID", Integer::class.java
-                            )
-                            .allowExtra("android.content.pm.extra.CALLBACK", Parcelable::class.java)
-                            .allowData { it.scheme == "package" }.build()
+                        val sanitizer = IntentSanitizer.Builder().allowAnyComponent().apply {
+                            if (intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
+                                allowAction("android.intent.action.UNINSTALL_PACKAGE").allowExtra(
+                                    "android.content.pm.extra.CALLBACK", Parcelable::class.java
+                                ).allowData { it.scheme == "package" }
+                            } else if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
+                                allowAction("android.content.pm.action.CONFIRM_INSTALL").allowPackage(
+                                    "com.google.android.packageinstaller"
+                                ).allowExtra(
+                                    "android.content.pm.extra.SESSION_ID", Integer::class.java
+                                )
+                            }
+                        }.build()
                         sanitizer.sanitize(userActionIntent) {
                             this.finish()
                         }
