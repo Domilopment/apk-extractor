@@ -12,6 +12,7 @@ import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.data.UiText
+import domilopment.apkextractor.domain.usecase.appList.AddAppUseCase
 import domilopment.apkextractor.domain.usecase.appList.RemoveAppUseCase
 import domilopment.apkextractor.domain.usecase.installer.InstallUseCase
 import domilopment.apkextractor.domain.usecase.installer.UninstallUseCase
@@ -23,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class InstallerActivityViewModel @Inject constructor(
     private val installUseCase: InstallUseCase,
+    private val addAppUseCase: AddAppUseCase,
     private val uninstallUseCase: UninstallUseCase,
     private val removeAppUseCase: RemoveAppUseCase,
 ) : ViewModel() {
@@ -90,6 +92,12 @@ class InstallerActivityViewModel @Inject constructor(
     fun removeApp(packageName: String) {
         viewModelScope.launch {
             removeAppUseCase(packageName)
+        }
+    }
+
+    fun addApp(packageName: String) {
+        viewModelScope.launch {
+            addAppUseCase(packageName)
         }
     }
 }

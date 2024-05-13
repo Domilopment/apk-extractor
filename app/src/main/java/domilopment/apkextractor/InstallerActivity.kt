@@ -113,7 +113,7 @@ class InstallerActivity : ComponentActivity() {
                             this.finish()
                         }
                     }
-                    activityIntent?.let { startActivity(activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+                    activityIntent?.let { startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
                         ?: this.finish()
                 }
 
@@ -124,6 +124,7 @@ class InstallerActivity : ComponentActivity() {
                         packageName?.let { model.removeApp(packageName) }
                         result(InstallationResultType.Success.Uninstalled(packageName))
                     } else if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
+                        packageName?.let { model.addApp(packageName) }
                         result(InstallationResultType.Success.Installed(packageName))
                     }
                 }
