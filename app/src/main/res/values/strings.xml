@@ -265,6 +265,8 @@
     <string name="uninstallation_result_dialog_success_message">Uninstalling of %s succeeded</string>
     <string name="uninstallation_result_dialog_failed_title">Uninstall Failed!</string>
     <string name="uninstallation_result_dialog_failed_message">Uninstall of %s failed, with message:\n%s</string>
+    <string name="pending_user_action_security_exception_dialog_title">Security Exception!</string>
+    <string name="pending_user_action_security_exception_dialog_message">Process could not be continued, message:\n\n%2$s\n\nContact the developer.</string>
     <string name="installation_result_dialog_ok">OK</string>
 
     <!-- Action Mode -->

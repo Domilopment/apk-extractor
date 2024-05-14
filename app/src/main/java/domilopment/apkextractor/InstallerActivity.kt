@@ -119,11 +119,11 @@ class InstallerActivity : ComponentActivity() {
                         return@let try {
                             sanitizer.sanitizeByThrowing(userActionIntent)
                         } catch (e: SecurityException) {
+                            result(InstallationResultType.Failure.Security(e.message))
                             null
                         }
                     }
                     activityIntent?.let { startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
-                        ?: this.finish()
                 }
 
                 PackageInstaller.STATUS_SUCCESS -> {

@@ -14,6 +14,8 @@ sealed class InstallationResultType(open val packageName: String?) {
         data class Uninstall(
             override val packageName: String?, override val errorMessage: String?
         ) : Failure(packageName, errorMessage)
+
+        data class Security(override val errorMessage: String?) : Failure(null, errorMessage)
     }
 }
 

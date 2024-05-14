@@ -22,6 +22,9 @@ fun InstallationResultDialog(
             // Uninstallation Results
             is InstallationResultType.Failure.Uninstall -> R.string.uninstallation_result_dialog_failed_title
             is InstallationResultType.Success.Uninstalled -> R.string.uninstallation_result_dialog_success_title
+
+            // Security
+            is InstallationResultType.Failure.Security -> R.string.pending_user_action_security_exception_dialog_title
         }
     }
     val message = remember(result) {
@@ -33,6 +36,9 @@ fun InstallationResultDialog(
             // Uninstallation Results
             is InstallationResultType.Failure.Uninstall -> R.string.uninstallation_result_dialog_failed_message
             is InstallationResultType.Success.Uninstalled -> R.string.uninstallation_result_dialog_success_message
+
+            // Security
+            is InstallationResultType.Failure.Security -> R.string.pending_user_action_security_exception_dialog_message
         }
     }
     AlertDialog(onDismissRequest = onDismissRequest, confirmButton = {
