@@ -250,19 +250,24 @@ class MainActivity : AppCompatActivity() {
         appUpdateManager.registerListener(installStateUpdatedListener)
 
         lifecycleScope.launch {
-            if (model.updateOnStart.first()) checkForAppUpdates()
+            lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                model.updateOnStart.collect {
+                    if (it) checkForAppUpdates()
+                }
+            }
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
         // Checks if Service isn't running but should be
         lifecycleScope.launch {
-            if (model.autoBackup.first()) startForegroundService(Intent(
-                this@MainActivity, AutoBackupService::class.java
-            ).apply {
-                action = AutoBackupService.Actions.START.name
-            })
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.autoBackup.collect {
+                    if (it) startForegroundService(Intent(
+                        this@MainActivity, AutoBackupService::class.java
+                    ).apply {
+                        action = AutoBackupService.Actions.START.name
+                    })
+                }
+            }
         }
     }
 
