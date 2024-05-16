@@ -47,8 +47,8 @@ private fun ScrollToTopButton(
                 .padding(8.dp)
                 .shadow(elevation = 16.dp, shape = CircleShape),
             colors = IconButtonDefaults.iconButtonColors().copy(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                contentColor = MaterialTheme.colorScheme.onSurface
             )
         ) {
             Icon(
