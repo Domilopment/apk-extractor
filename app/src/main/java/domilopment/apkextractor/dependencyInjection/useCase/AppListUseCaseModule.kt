@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
+import domilopment.apkextractor.dependencyInjection.files.FilesRepository
 import domilopment.apkextractor.dependencyInjection.packageArchive.PackageArchiveRepository
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.domain.usecase.appList.AddAppUseCase
@@ -57,11 +58,11 @@ object AppListUseCaseModule {
     @Provides
     @Reusable
     fun getSaveAppsUseCase(
-        @ApplicationContext context: Context,
+        filesRepository: FilesRepository,
         apkRepository: PackageArchiveRepository,
         settings: PreferenceRepository
     ): SaveAppsUseCase {
-        return SaveAppsUseCaseImpl(context, apkRepository, settings)
+        return SaveAppsUseCaseImpl(filesRepository, apkRepository, settings)
     }
 
     @Provides

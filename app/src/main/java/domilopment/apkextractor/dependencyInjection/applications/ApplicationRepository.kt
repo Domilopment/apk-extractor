@@ -28,8 +28,6 @@ class MyApplicationRepository @Inject constructor(
     }
 
     override suspend fun removeApp(app: ApplicationModel) {
-        withContext(Dispatchers.IO) {
-            applicationService.remove(app)
-        }
+        applicationService.remove(app)
     }
 }
