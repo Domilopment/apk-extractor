@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.devtoolsKsp)
     alias(libs.plugins.hiltAndroid)
     alias(libs.plugins.baselineprofile)
@@ -44,8 +45,8 @@ android {
         compose = true
         buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
+    composeCompiler {
+        enableStrongSkippingMode = true
     }
     packaging {
         resources {
@@ -56,12 +57,6 @@ android {
         language {
             enableSplit = false
         }
-    }
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>() {
-        compilerOptions.freeCompilerArgs.addAll(
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:strongSkipping=true",
-        )
     }
 }
 
