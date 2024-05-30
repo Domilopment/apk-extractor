@@ -1,7 +1,7 @@
 [versions]
 accompanistDrawablepainter = "0.34.0"
 agp = "8.4.1"
-appcompat = "1.6.1"
+appcompat = "1.7.0"
 appUpdate = "2.1.0"
 baselineprofile = "1.2.4"
 benchmarkMacroJunit4 = "1.2.4"
