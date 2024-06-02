@@ -10,7 +10,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AutoBackupTileService : TileService() {
-    @Inject lateinit var settings: PreferenceRepository
+    @Inject
+    lateinit var settings: PreferenceRepository
 
     // Called when the user adds your tile.
     override fun onTileAdded() {
@@ -36,11 +37,19 @@ class AutoBackupTileService : TileService() {
         super.onClick()
         if (AutoBackupService.isRunning) {
             updateAutoBackupPreference(false)
-            stopService(Intent(this, AutoBackupService::class.java))
+            Intent(this, AutoBackupService::class.java).apply {
+                action = AutoBackupService.Actions.STOP.name
+            }.also {
+                startService(it)
+            }
             qsTile.state = Tile.STATE_INACTIVE
         } else {
             updateAutoBackupPreference(true)
-            startForegroundService(Intent(this, AutoBackupService::class.java))
+            Intent(this, AutoBackupService::class.java).apply {
+                action = AutoBackupService.Actions.START.name
+            }.also {
+                startForegroundService(it)
+            }
             qsTile.state = Tile.STATE_ACTIVE
         }
         qsTile.updateTile()
