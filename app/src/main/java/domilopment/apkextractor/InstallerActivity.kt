@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -53,8 +54,7 @@ class InstallerActivity : ComponentActivity() {
             APKExtractorTheme(dynamicColor = true) {
                 Surface {
                     Box(contentAlignment = Alignment.Center) {
-                        if (uiState.shouldBeShown) ProgressDialog(
-                            state = uiState,
+                        if (uiState.shouldBeShown) ProgressDialog(state = uiState,
                             onDismissRequest = {
                                 model.cancel()
                                 this@InstallerActivity.finish()
@@ -106,9 +106,13 @@ class InstallerActivity : ComponentActivity() {
                             if (intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
                                 allowAction("android.intent.action.UNINSTALL_PACKAGE").allowExtra(
                                     "android.content.pm.extra.CALLBACK", Parcelable::class.java
+                                ).allowExtra(
+                                    "android.content.pm.extra.CALLBACK", IBinder::class.java
                                 ).allowData { it.scheme == "package" }
                             } else if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
-                                allowAction("android.content.pm.action.CONFIRM_INSTALL").allowPackage(
+                                allowAction("android.content.pm.action.CONFIRM_INSTALL").allowAction(
+                                    "android.content.pm.action.CONFIRM_PERMISSIONS"
+                                ).allowPackage(
                                     "com.google.android.packageinstaller"
                                 ).allowExtra(
                                     "android.content.pm.extra.SESSION_ID", Integer::class.java
@@ -118,6 +122,17 @@ class InstallerActivity : ComponentActivity() {
 
                         return@let try {
                             sanitizer.sanitizeByThrowing(userActionIntent)
+                        } catch (e: IllegalArgumentException) {
+                            // On android versions lower than API 34 uninstall action returns an BinderProxy extra.
+                            // Intent Sanitizer can't handle Binder extras yet, so we have to use a workaround.
+                            val isAction =
+                                userActionIntent.action == "android.intent.action.UNINSTALL_PACKAGE"
+                            val isExtra =
+                                userActionIntent.hasExtra("android.content.pm.extra.CALLBACK") && userActionIntent.extras!!.size() == 1
+                            val isScheme = userActionIntent.scheme == "package"
+
+                            if (!isAction || !isExtra || !isScheme) null
+                            else userActionIntent
                         } catch (e: SecurityException) {
                             result(InstallationResultType.Failure.Security(e.message))
                             null
