@@ -119,17 +119,19 @@ class InstallerActivity : ComponentActivity() {
                         }
 
                         return@let try {
-                            sanitizer.allowExtra(
-                                "android.content.pm.extra.CALLBACK", IBinder::class.java
-                            ).build().sanitizeByThrowing(userActionIntent)
-                        } catch (e: IllegalArgumentException) {
-                            // On android versions lower than API 34 uninstall action returns an BinderProxy extra.
-                            // Intent Sanitizer can't handle Binder extras yet, so we have to use a workaround.
-                            val testIntent = (userActionIntent.clone() as Intent).apply {
-                                removeExtra("android.content.pm.extra.CALLBACK")
+                            try {
+                                sanitizer.allowExtra(
+                                    "android.content.pm.extra.CALLBACK", IBinder::class.java
+                                ).build().sanitizeByThrowing(userActionIntent)
+                            } catch (e: IllegalArgumentException) {
+                                // On android versions lower than API 34 uninstall action returns an BinderProxy extra.
+                                // Intent Sanitizer can't handle Binder extras yet, so we have to use a workaround.
+                                val testIntent = (userActionIntent.clone() as Intent).apply {
+                                    removeExtra("android.content.pm.extra.CALLBACK")
+                                }
+                                sanitizer.build().sanitizeByThrowing(testIntent)
+                                userActionIntent
                             }
-                            sanitizer.build().sanitizeByThrowing(testIntent)
-                            userActionIntent
                         } catch (e: SecurityException) {
                             result(InstallationResultType.Failure.Security(e.message))
                             null
