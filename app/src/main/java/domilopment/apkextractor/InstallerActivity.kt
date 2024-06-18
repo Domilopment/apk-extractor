@@ -106,8 +106,6 @@ class InstallerActivity : ComponentActivity() {
                             if (intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
                                 allowAction("android.intent.action.UNINSTALL_PACKAGE").allowExtra(
                                     "android.content.pm.extra.CALLBACK", Parcelable::class.java
-                                ).allowExtra(
-                                    "android.content.pm.extra.CALLBACK", IBinder::class.java
                                 ).allowData { it.scheme == "package" }
                             } else if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
                                 allowAction("android.content.pm.action.CONFIRM_INSTALL").allowAction(
@@ -118,21 +116,20 @@ class InstallerActivity : ComponentActivity() {
                                     "android.content.pm.extra.SESSION_ID", Integer::class.java
                                 )
                             }
-                        }.build()
+                        }
 
                         return@let try {
-                            sanitizer.sanitizeByThrowing(userActionIntent)
+                            sanitizer.allowExtra(
+                                "android.content.pm.extra.CALLBACK", IBinder::class.java
+                            ).build().sanitizeByThrowing(userActionIntent)
                         } catch (e: IllegalArgumentException) {
                             // On android versions lower than API 34 uninstall action returns an BinderProxy extra.
                             // Intent Sanitizer can't handle Binder extras yet, so we have to use a workaround.
-                            val isAction =
-                                userActionIntent.action == "android.intent.action.UNINSTALL_PACKAGE"
-                            val isExtra =
-                                userActionIntent.hasExtra("android.content.pm.extra.CALLBACK") && userActionIntent.extras!!.size() == 1
-                            val isScheme = userActionIntent.scheme == "package"
-
-                            if (!isAction || !isExtra || !isScheme) null
-                            else userActionIntent
+                            val testIntent = (userActionIntent.clone() as Intent).apply {
+                                removeExtra("android.content.pm.extra.CALLBACK")
+                            }
+                            sanitizer.build().sanitizeByThrowing(testIntent)
+                            userActionIntent
                         } catch (e: SecurityException) {
                             result(InstallationResultType.Failure.Security(e.message))
                             null
