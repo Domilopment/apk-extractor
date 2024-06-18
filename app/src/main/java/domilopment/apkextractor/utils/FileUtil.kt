@@ -119,13 +119,7 @@ object FileUtil {
             ).let { outputFile ->
                 // Create Output Stream for target file
                 copy = outputFile!!
-                ZipOutputStream(
-                    BufferedOutputStream(
-                        context.contentResolver.openOutputStream(
-                            outputFile
-                        )
-                    )
-                )
+                ZipOutputStream(context.contentResolver.openOutputStream(outputFile)?.buffered())
             }.use {
                 for (file in files) writeToZip(it, file)
             }
@@ -153,7 +147,7 @@ object FileUtil {
          * ZipOutputStream
          */
         fun openZipOutputStream(file: File): ZipOutputStream {
-            return ZipOutputStream(BufferedOutputStream(file.outputStream()))
+            return ZipOutputStream(file.outputStream().buffered())
         }
 
         /**
@@ -166,13 +160,7 @@ object FileUtil {
          * ZipOutputStream
          */
         fun openZipOutputStream(context: Context, uri: Uri): ZipOutputStream {
-            return ZipOutputStream(
-                BufferedOutputStream(
-                    context.contentResolver.openOutputStream(
-                        uri
-                    )
-                )
-            )
+            return ZipOutputStream(context.contentResolver.openOutputStream(uri)?.buffered())
         }
 
         /**
@@ -183,12 +171,14 @@ object FileUtil {
          * file that should be written to Zip
          */
         fun writeToZip(output: ZipOutputStream, file: File) {
-            FileInputStream(file).use { input ->
+            FileInputStream(file).buffered().use { input ->
                 val entry = ZipEntry(file.name).apply {
                     size = file.length()
                 }
                 output.putNextEntry(entry)
-                input.copyTo(output)
+                val bufferedOutputStream = output.buffered()
+                input.copyTo(bufferedOutputStream)
+                bufferedOutputStream.flush()
                 output.closeEntry()
             }
         }

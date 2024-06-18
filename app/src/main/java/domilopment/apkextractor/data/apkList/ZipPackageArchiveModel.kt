@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.PackageArchiveUtils
-import java.io.BufferedInputStream
 import java.io.File
 import java.io.IOException
 import java.util.zip.ZipEntry
@@ -39,11 +38,16 @@ data class ZipPackageArchiveModel(
         var apkFile: File? = null
         try {
             apkFile = File.createTempFile("temp", ".apk", context.cacheDir)
-            ZipInputStream(BufferedInputStream(context.contentResolver.openInputStream(fileUri))).use { input ->
+            ZipInputStream(
+                context.contentResolver.openInputStream(fileUri)?.buffered()
+            ).use { input ->
                 var entry: ZipEntry?
                 while (run { entry = input.nextEntry; entry } != null) {
                     if (entry?.name == "base.apk") {
-                        input.copyTo(apkFile.outputStream())
+                        apkFile.outputStream().buffered().use {
+                            input.copyTo(it)
+                            it.flush()
+                        }
                         input.closeEntry()
                         break
                     }

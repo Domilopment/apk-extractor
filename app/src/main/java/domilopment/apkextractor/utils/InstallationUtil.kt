@@ -22,9 +22,11 @@ object InstallationUtil {
     fun addFileToSession(
         session: Session, inputStream: InputStream, fileName: String, filesSize: Long
     ) {
-        session.openWrite(fileName, 0, filesSize).use { outputStream ->
-            inputStream.copyTo(outputStream)
-            session.fsync(outputStream)
+        val sessionStream = session.openWrite(fileName, 0, filesSize)
+        sessionStream.buffered().use { bufferedOutputStream ->
+            inputStream.buffered().copyTo(bufferedOutputStream)
+            bufferedOutputStream.flush()
+            session.fsync(sessionStream)
         }
     }
 

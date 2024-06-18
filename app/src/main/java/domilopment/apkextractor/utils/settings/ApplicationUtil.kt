@@ -12,14 +12,12 @@ import domilopment.apkextractor.utils.appFilterOptions.AppFilterOthers
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
-import kotlin.coroutines.CoroutineContext
 
 object ApplicationUtil {
     /**
@@ -198,7 +196,7 @@ object ApplicationUtil {
             return@withContext FileUtil.createShareUriForFile(context, outFile)
         }
 
-    suspend fun shareXapk (
+    suspend fun shareXapk(
         context: Context, app: ApplicationModel, appName: String, callback: suspend (String) -> Unit
     ): Uri = withContext(Dispatchers.IO) {
         val splits =

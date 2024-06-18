@@ -37,22 +37,26 @@ data class AppPackageArchiveModel(
         try {
             apkFile = File.createTempFile("temp", ".apk", context.cacheDir)
             context.contentResolver.openInputStream(fileUri).use { input ->
-                if (input?.copyTo(apkFile.outputStream()) == fileSize) {
-                    returnApp =
-                        PackageArchiveUtils.getPackageInfoFromApkFile(packageManager, apkFile)
-                            ?.let {
-                                copy(
-                                    appName = it.applicationInfo.loadLabel(packageManager),
-                                    appPackageName = it.applicationInfo.packageName,
-                                    appIcon = it.applicationInfo.loadIcon(packageManager),
-                                    appVersionName = it.versionName,
-                                    appVersionCode = Utils.versionCode(it),
-                                    appMinSdkVersion = it.applicationInfo.minSdkVersion,
-                                    appTargetSdkVersion = it.applicationInfo.targetSdkVersion,
-                                    isPackageArchiveInfoLoading = false,
-                                    isPackageArchiveInfoLoaded = true
-                                )
-                            } ?: returnApp
+                apkFile.outputStream().buffered().use {
+                    val size = input?.copyTo(it)
+                    it.flush()
+                    if (size == fileSize) {
+                        returnApp =
+                            PackageArchiveUtils.getPackageInfoFromApkFile(packageManager, apkFile)
+                                ?.let {
+                                    copy(
+                                        appName = it.applicationInfo.loadLabel(packageManager),
+                                        appPackageName = it.applicationInfo.packageName,
+                                        appIcon = it.applicationInfo.loadIcon(packageManager),
+                                        appVersionName = it.versionName,
+                                        appVersionCode = Utils.versionCode(it),
+                                        appMinSdkVersion = it.applicationInfo.minSdkVersion,
+                                        appTargetSdkVersion = it.applicationInfo.targetSdkVersion,
+                                        isPackageArchiveInfoLoading = false,
+                                        isPackageArchiveInfoLoaded = true
+                                    )
+                                } ?: returnApp
+                    }
                 }
             }
             return returnApp
