@@ -21,8 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.model.apkList.AppPackageArchiveFile
-import domilopment.apkextractor.domain.mapper.PackageArchiveModelToPackageArchiveEntityMapper
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet
 import domilopment.apkextractor.ui.dialogs.ApkSortMenu
@@ -75,29 +73,8 @@ fun ApkListScreen(
                 }
             }
         }) {
-            it?.let { apkUri ->
-                FileUtil.getDocumentInfo(
-                    context,
-                    apkUri,
-                    DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                    DocumentsContract.Document.COLUMN_MIME_TYPE,
-                    DocumentsContract.Document.COLUMN_LAST_MODIFIED,
-                    DocumentsContract.Document.COLUMN_SIZE
-                )
-            }?.let { documentFile ->
-                AppPackageArchiveFile(
-                    documentFile.uri,
-                    documentFile.displayName!!,
-                    documentFile.mimeType!!,
-                    documentFile.lastModified!!,
-                    documentFile.size!!,
-                    context.cacheDir,
-                    context.contentResolver
-                )
-            }?.let {
-                PackageArchiveModelToPackageArchiveEntityMapper(context.packageManager).map(it)
-            }?.also { apk ->
-                model.selectPackageArchive(apk)
+            it?.also { uri ->
+                model.loadFromUri(uri)
             } ?: Toast.makeText(
                 context, context.getString(R.string.alert_apk_selected_failed), Toast.LENGTH_LONG
             ).show()

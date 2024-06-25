@@ -3,9 +3,9 @@ package domilopment.apkextractor.data.repository.files
 import android.content.Context
 import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
+import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveDetailLoader
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.data.sources.FilesService
-import domilopment.apkextractor.domain.mapper.PackageArchiveModelToPackageArchiveEntityMapper
 import domilopment.apkextractor.utils.SaveApkResult
 import javax.inject.Inject
 
@@ -35,6 +35,6 @@ class FilesRepositoryImpl @Inject constructor(
 
     override suspend fun fileInfo(file: Uri, vararg projection: String): PackageArchiveEntity? {
         return filesService.fileInfo(file, *projection)
-            ?.let { PackageArchiveModelToPackageArchiveEntityMapper(context.packageManager).map(it) }
+            ?.let { PackageArchiveDetailLoader.load(context, it) }
     }
 }

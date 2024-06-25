@@ -2,10 +2,8 @@ package domilopment.apkextractor.data.sources
 
 import android.content.Context
 import android.provider.DocumentsContract
-import domilopment.apkextractor.data.model.apkList.AppPackageArchiveFile
-import domilopment.apkextractor.data.model.apkList.PackageArchiveFile
-import domilopment.apkextractor.data.model.apkList.ZipPackageArchiveFile
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
+import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.utils.FileUtil
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -13,11 +11,10 @@ import kotlinx.coroutines.flow.flow
 class ListOfAPKs private constructor(
     context: Context, private val preferences: PreferenceRepository
 ) {
-    private val cacheDir = context.cacheDir
     private val contentResolver = context.contentResolver
 
     val apks = flow {
-        val packageArchiveFiles = mutableListOf<PackageArchiveFile>()
+        val packageArchiveFiles = mutableListOf<PackageArchiveEntity>()
 
         preferences.saveDir.first()?.let { uri ->
             DocumentsContract.getTreeDocumentId(uri)?.let { documentId ->
@@ -56,24 +53,14 @@ class ListOfAPKs private constructor(
                         DocumentsContract.buildDocumentUriUsingTree(childrenUri, documentId)
 
                     val model = when {
-                        mimeType == FileUtil.FileInfo.APK.mimeType -> AppPackageArchiveFile(
-                            documentUri,
-                            displayName,
-                            mimeType,
-                            lastModified,
-                            size,
-                            cacheDir,
-                            contentResolver,
-                        )
-
-                        displayName.endsWith(".xapk") || displayName.endsWith(".apks") -> ZipPackageArchiveFile(
-                            documentUri,
-                            displayName,
-                            mimeType,
-                            lastModified,
-                            size,
-                            cacheDir,
-                            contentResolver,
+                        mimeType == FileUtil.FileInfo.APK.mimeType || displayName.endsWith(".xapk") || displayName.endsWith(
+                            ".apks"
+                        ) -> PackageArchiveEntity(
+                            fileUri = documentUri,
+                            fileName = displayName,
+                            fileType = mimeType,
+                            fileLastModified = lastModified,
+                            fileSize = size
                         )
 
                         else -> continue

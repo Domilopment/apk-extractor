@@ -7,8 +7,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import domilopment.apkextractor.data.room.dao.ApkDao
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.data.sources.ListOfAPKs
-import domilopment.apkextractor.domain.mapper.PackageArchiveModelToPackageArchiveEntityMapper
-import domilopment.apkextractor.domain.mapper.mapAll
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.PackageArchiveUtils
 import kotlinx.coroutines.Dispatchers
@@ -43,39 +41,13 @@ class MyPackageArchiveRepository @Inject constructor(
         val inDb = apkDao.getApks().first()
 
         val mustAdd = onDisk.filter { it.fileUri !in inDb.map { it.fileUri } }.also {
-            apkDao.upsertApks(it.map {
-                PackageArchiveEntity(
-                    fileUri = it.fileUri,
-                    fileName = it.fileName,
-                    fileType = it.fileType,
-                    fileLastModified = it.fileLastModified,
-                    fileSize = it.fileSize
-                )
-            })
+            apkDao.upsertApks(it)
         }.let {
-            PackageArchiveModelToPackageArchiveEntityMapper(context.packageManager).mapAll(it)
+            it.map { PackageArchiveDetailLoader.load(context, it) }
         }
         val mustDelete = inDb.filter { it.fileUri !in onDisk.map { it.fileUri } }
-        val mustLoad = inDb.filter { !it.loaded && it !in mustDelete }.mapNotNull { apk ->
-            PackageArchiveUtils.getApkFileFromDocument(context, apk.fileUri, apk.fileType)?.let { file ->
-                val apk = PackageArchiveUtils.getPackageInfoFromApkFile(context.packageManager, file)
-                    ?.let { packageInfo ->
-                        apk.copy(
-                            appName = packageInfo.applicationInfo.loadLabel(context.packageManager)
-                                .toString(),
-                            appPackageName = packageInfo.applicationInfo.packageName,
-                            appIcon = packageInfo.applicationInfo.loadIcon(context.packageManager)
-                                ?.toBitmap()?.asImageBitmap(),
-                            appVersionName = packageInfo.versionName,
-                            appVersionCode = Utils.versionCode(packageInfo),
-                            appMinSdkVersion = packageInfo.applicationInfo.minSdkVersion,
-                            appTargetSdkVersion = packageInfo.applicationInfo.targetSdkVersion,
-                            loaded = true
-                        )
-                    }
-                file.delete()
-                apk
-            }
+        val mustLoad = inDb.filter { !it.loaded && it !in mustDelete }.map { apk ->
+            PackageArchiveDetailLoader.load(context, apk)
         }
 
         val add = (mustAdd + mustLoad).toSet().toList()

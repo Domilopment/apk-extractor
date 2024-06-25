@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.viewModels
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -7,12 +8,14 @@ import domilopment.apkextractor.data.model.apkList.ApkListScreenState
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.domain.usecase.apkList.DeleteApkUseCase
+import domilopment.apkextractor.domain.usecase.apkList.GetApkInfoFromDocumentUseCase
 import domilopment.apkextractor.domain.usecase.apkList.GetApkListUseCase
 import domilopment.apkextractor.domain.usecase.apkList.LoadApkInfoUseCase
 import domilopment.apkextractor.domain.usecase.apkList.UpdateApksUseCase
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +32,7 @@ class ApkListViewModel @Inject constructor(
     private val apkList: GetApkListUseCase,
     private val loadApkInfo: LoadApkInfoUseCase,
     private val updateApks: UpdateApksUseCase,
+    private val loadApkInfoFromDocument: GetApkInfoFromDocumentUseCase
 ) : ViewModel() {
     private val _apkListFragmentState: MutableStateFlow<ApkListScreenState> =
         MutableStateFlow(ApkListScreenState())
@@ -120,6 +124,17 @@ class ApkListViewModel @Inject constructor(
     fun dismissError() {
         _apkListFragmentState.update { state ->
             state.copy(errorMessage = null)
+        }
+    }
+
+    fun loadFromUri(uri: Uri) {
+        viewModelScope.launch {
+            val select = async(Dispatchers.IO) {
+                loadApkInfoFromDocument(uri)
+            }
+            _apkListFragmentState.update { state ->
+                state.copy(selectedPackageArchiveModel = select.await())
+            }
         }
     }
 }
