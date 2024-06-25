@@ -20,8 +20,7 @@ interface FilesRepository {
 }
 
 class FilesRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val filesService: FilesService
+    @ApplicationContext private val context: Context, private val filesService: FilesService
 ) : FilesRepository {
     override suspend fun save(
         data: List<String>, saveDir: Uri, saveName: String, progressCallback: (String) -> Unit
