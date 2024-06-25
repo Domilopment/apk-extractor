@@ -1,7 +1,5 @@
 package domilopment.apkextractor.ui.apkList
 
-import android.content.Context
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import domilopment.apkextractor.data.apkList.PackageArchiveModel
+import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.ui.components.PullToRefreshBox
 import domilopment.apkextractor.utils.FileUtil
 import kotlinx.coroutines.delay
@@ -25,7 +23,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ApkListContent(
-    apkList: List<PackageArchiveModel>,
+    apkList: List<PackageArchiveEntity>,
     totalSpace: Long,
     takenSpace: Long,
     freeSpace: Long,
@@ -33,10 +31,9 @@ fun ApkListContent(
     isRefreshing: Boolean,
     isPullToRefresh: Boolean,
     onRefresh: () -> Unit,
-    onClick: (PackageArchiveModel) -> Unit,
-    onLoadingPackageArchiveInfo: (PackageArchiveModel) -> Unit,
-    isApkFileDeleted: (PackageArchiveModel) -> Boolean,
-    deletedDocumentFound: (PackageArchiveModel) -> Unit,
+    onClick: (PackageArchiveEntity) -> Unit,
+    isApkFileDeleted: (PackageArchiveEntity) -> Boolean,
+    deletedDocumentFound: (PackageArchiveEntity) -> Unit,
     onStorageInfoClick: () -> Unit
 ) {
     PullToRefreshBox(
@@ -51,7 +48,6 @@ fun ApkListContent(
             freeSpace = freeSpace,
             searchString = searchString,
             onClick = onClick,
-            onLoadPackageArchiveInfo = onLoadingPackageArchiveInfo,
             isApkFileDeleted = isApkFileDeleted,
             deletedDocumentFound = deletedDocumentFound,
             onStorageInfoClick = onStorageInfoClick
@@ -63,80 +59,65 @@ fun ApkListContent(
 @Composable
 private fun ApkListScreenPreview() {
     val apks = remember {
-        mutableStateListOf(object : PackageArchiveModel {
-            override val fileUri: Uri = Uri.parse("test")
-            override val fileName: String = "test.apk"
-            override val fileType: String = FileUtil.FileInfo.APK.mimeType
-            override val fileLastModified: Long = 0L
-            override val fileSize: Long = 1024 * 1024
-            override var appName: CharSequence? = "Test"
-            override var appPackageName: String? = "com.example.test"
-            override var appIcon: Drawable? = null
-            override var appVersionName: String? = "v0"
-            override var appVersionCode: Long? = 0L
-            override var appMinSdkVersion: Int? = 28
-            override var appTargetSdkVersion: Int? = 33
-            override var isPackageArchiveInfoLoading: Boolean = false
-            override var isPackageArchiveInfoLoaded: Boolean = false
-            override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
-            override fun forceRefresh(context: Context): PackageArchiveModel = this
-        }, object : PackageArchiveModel {
-            override val fileUri: Uri = Uri.parse("test2")
-            override val fileName: String = "test2.apk"
-            override val fileType: String = FileUtil.FileInfo.APK.mimeType
-            override val fileLastModified: Long = 0L
-            override val fileSize: Long = 1024 * 1024
-            override var appName: CharSequence? = "Test"
-            override var appPackageName: String? = "com.example.test2"
-            override var appIcon: Drawable? = null
-            override var appVersionName: String? = "v0"
-            override var appVersionCode: Long? = 0L
-            override var appMinSdkVersion: Int? = 28
-            override var appTargetSdkVersion: Int? = 33
-            override var isPackageArchiveInfoLoading: Boolean = false
-            override var isPackageArchiveInfoLoaded: Boolean = false
-            override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
-            override fun forceRefresh(context: Context): PackageArchiveModel = this
-        }, object : PackageArchiveModel {
-            override val fileUri: Uri = Uri.parse("test (2)")
-            override val fileName: String = "test (2).apk"
-            override val fileType: String = FileUtil.FileInfo.APK.mimeType
-            override val fileLastModified: Long = 0L
-            override val fileSize: Long = 1024 * 1024
-            override var appName: CharSequence? = "Test"
-            override var appPackageName: String? = "com.example.test"
-            override var appIcon: Drawable? = null
-            override var appVersionName: String? = "v1.0.1"
-            override var appVersionCode: Long? = 2L
-            override var appMinSdkVersion: Int? = 28
-            override var appTargetSdkVersion: Int? = 33
-            override var isPackageArchiveInfoLoading: Boolean = false
-            override var isPackageArchiveInfoLoaded: Boolean = false
-            override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
-            override fun forceRefresh(context: Context): PackageArchiveModel = this
-        })
+        mutableStateListOf(
+            PackageArchiveEntity(
+                fileUri = Uri.parse("test"),
+                fileName = "test.apk",
+                fileType = FileUtil.FileInfo.APK.mimeType,
+                fileLastModified = 0L,
+                fileSize = 1024 * 1024,
+                appName = "Test",
+                appPackageName = "com.example.test",
+                appIcon = null,
+                appVersionName = "v0",
+                appVersionCode = 0L,
+                appMinSdkVersion = 28,
+                appTargetSdkVersion = 33,
+            ), PackageArchiveEntity(
+                fileUri = Uri.parse("test2"),
+                fileName = "test2.apk",
+                fileType = FileUtil.FileInfo.APK.mimeType,
+                fileLastModified = 0L,
+                fileSize = 1024 * 1024,
+                appName = "Test",
+                appPackageName = "com.example.test2",
+                appIcon = null,
+                appVersionName = "v0",
+                appVersionCode = 0L,
+                appMinSdkVersion = 28,
+                appTargetSdkVersion = 33,
+            ), PackageArchiveEntity(
+                fileUri = Uri.parse("test (2)"),
+                fileName = "test (2).apk",
+                fileType = FileUtil.FileInfo.APK.mimeType,
+                fileLastModified = 0L,
+                fileSize = 1024 * 1024,
+                appName = "Test",
+                appPackageName = "com.example.test",
+                appIcon = null,
+                appVersionName = "v1.0.1",
+                appVersionCode = 2L,
+                appMinSdkVersion = 28,
+                appTargetSdkVersion = 33,
+            )
+        )
     }
     val refreshScope = rememberCoroutineScope()
     var refreshing by remember { mutableStateOf(false) }
-    val apkToAdd = object : PackageArchiveModel {
-        override val fileUri: Uri = Uri.parse("test (3)")
-        override val fileName: String = "test (3).apk"
-        override val fileType: String = FileUtil.FileInfo.APK.mimeType
-        override val fileLastModified: Long = 0L
-        override val fileSize: Long = 1024 * 1024
-        override var appName: CharSequence? = "Test"
-        override var appPackageName: String? = "com.example.test"
-        override var appIcon: Drawable? = null
-        override var appVersionName: String? = "v1.1.0"
-        override var appVersionCode: Long? = 3L
-        override var appMinSdkVersion: Int? = 28
-        override var appTargetSdkVersion: Int? = 33
-        override var isPackageArchiveInfoLoading: Boolean = false
-        override var isPackageArchiveInfoLoaded: Boolean = false
-        override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
-        override fun forceRefresh(context: Context): PackageArchiveModel = this
-    }
-
+    val apkToAdd = PackageArchiveEntity(
+        fileUri = Uri.parse("test (3)"),
+        fileName = "test (3).apk",
+        fileType = FileUtil.FileInfo.APK.mimeType,
+        fileLastModified = 0L,
+        fileSize = 1024 * 1024,
+        appName = "Test",
+        appPackageName = "com.example.test",
+        appIcon = null,
+        appVersionName = "v1.1.0",
+        appVersionCode = 3L,
+        appMinSdkVersion = 28,
+        appTargetSdkVersion = 33,
+    )
     val space by remember {
         derivedStateOf {
             apks.sumOf { it.fileSize }
@@ -161,7 +142,6 @@ private fun ApkListScreenPreview() {
                     }
                 },
                 onClick = { _ -> },
-                onLoadingPackageArchiveInfo = { },
                 isApkFileDeleted = { _ -> false },
                 deletedDocumentFound = { _ -> },
                 onStorageInfoClick = {})

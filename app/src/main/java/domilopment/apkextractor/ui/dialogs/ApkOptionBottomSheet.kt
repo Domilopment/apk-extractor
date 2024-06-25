@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.dialogs
 
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -38,6 +37,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -48,11 +49,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.apkList.PackageArchiveModel
+import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.FileUtil
@@ -61,7 +62,7 @@ import domilopment.apkextractor.utils.Utils
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ApkOptionBottomSheet(
-    apk: PackageArchiveModel,
+    apk: PackageArchiveEntity,
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     onRefresh: () -> Unit,
@@ -69,7 +70,7 @@ fun ApkOptionBottomSheet(
     onActionInstall: () -> Unit,
     onActionDelete: () -> Unit,
     onActionUninstall: () -> Unit,
-    deletedDocumentFound: (PackageArchiveModel) -> Unit
+    deletedDocumentFound: (PackageArchiveEntity) -> Unit
 ) {
     val context = LocalContext.current
     if (!FileUtil.doesDocumentExist(context, apk.fileUri)) {
@@ -97,7 +98,7 @@ fun ApkOptionBottomSheet(
             fileName = apk.fileName,
             packageName = apk.appPackageName,
             appIcon = apk.appIcon,
-            isRefreshing = apk.isPackageArchiveInfoLoading,
+            isRefreshing = false,
             onRefresh = onRefresh
         )
         HorizontalDivider(modifier = Modifier.padding(4.dp))
@@ -253,7 +254,7 @@ fun ApkSheetHeader(
     apkName: CharSequence?,
     fileName: String,
     packageName: String?,
-    appIcon: Drawable?,
+    appIcon: ImageBitmap?,
     isRefreshing: Boolean,
     onRefresh: () -> Unit
 ) {
@@ -280,11 +281,9 @@ fun ApkSheetHeader(
     }, leadingContent = {
         val context = LocalContext.current
         Image(
-            painter = rememberDrawablePainter(
-                drawable = appIcon ?: ResourcesCompat.getDrawable(
-                    context.resources, android.R.drawable.sym_def_app_icon, context.theme
-                )
-            ),
+            bitmap = appIcon ?: ResourcesCompat.getDrawable(
+                context.resources, android.R.drawable.sym_def_app_icon, context.theme
+            )!!.toBitmap().asImageBitmap(),
             contentDescription = stringResource(id = R.string.list_item_Image_description),
             modifier = Modifier.width(64.dp)
         )

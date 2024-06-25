@@ -21,7 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
+import domilopment.apkextractor.data.apkList.AppPackageArchiveFile
+import domilopment.apkextractor.domain.mapper.PackageArchiveModelToPackageArchiveEntityMapper
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet
 import domilopment.apkextractor.ui.dialogs.ApkSortMenu
@@ -84,13 +85,17 @@ fun ApkListScreen(
                     DocumentsContract.Document.COLUMN_SIZE
                 )
             }?.let { documentFile ->
-                AppPackageArchiveModel(
+                AppPackageArchiveFile(
                     documentFile.uri,
                     documentFile.displayName!!,
                     documentFile.mimeType!!,
                     documentFile.lastModified!!,
-                    documentFile.size!!
+                    documentFile.size!!,
+                    context.cacheDir,
+                    context.contentResolver
                 )
+            }?.let {
+                PackageArchiveModelToPackageArchiveEntityMapper(context.packageManager).map(it)
             }?.also { apk ->
                 model.selectPackageArchive(apk)
             } ?: Toast.makeText(
@@ -176,7 +181,6 @@ fun ApkListScreen(
         isPullToRefresh = true,
         onRefresh = model::updatePackageArchives,
         onClick = model::selectPackageArchive,
-        onLoadingPackageArchiveInfo = model::loadPackageArchiveInfo,
         isApkFileDeleted = { apk ->
             !FileUtil.doesDocumentExist(context, apk.fileUri)
         },

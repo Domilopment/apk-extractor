@@ -2,40 +2,23 @@ package domilopment.apkextractor.dependencyInjection.packageArchive
 
 import android.content.Context
 import android.provider.DocumentsContract
-import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
-import domilopment.apkextractor.data.apkList.PackageArchiveModel
-import domilopment.apkextractor.data.apkList.ZipPackageArchiveModel
+import domilopment.apkextractor.data.apkList.AppPackageArchiveFile
+import domilopment.apkextractor.data.apkList.PackageArchiveFile
+import domilopment.apkextractor.data.apkList.ZipPackageArchiveFile
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.NonComparingMutableStateFlow
 import domilopment.apkextractor.dependencyInjection.applications.ListOfApps
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.flow
 
 class ListOfAPKs private constructor(
     context: Context, private val preferences: PreferenceRepository
 ) {
+    private val cacheDir = context.cacheDir
     private val contentResolver = context.contentResolver
 
-    private val _apks =
-        NonComparingMutableStateFlow<MutableList<PackageArchiveModel>>(mutableListOf())
-
-    val apks: Flow<List<PackageArchiveModel>> = _apks.asStateFlow()
-
-    init {
-        runBlocking { updateData() }
-    }
-
-    /**
-     * Update Installed APK lists
-     */
-    suspend fun updateData() {
-        val packageArchiveModels = mutableListOf<PackageArchiveModel>()
+    val apks = flow {
+        val packageArchiveFiles = mutableListOf<PackageArchiveFile>()
 
         preferences.saveDir.first()?.let { uri ->
             DocumentsContract.getTreeDocumentId(uri)?.let { documentId ->
@@ -74,39 +57,37 @@ class ListOfAPKs private constructor(
                         DocumentsContract.buildDocumentUriUsingTree(childrenUri, documentId)
 
                     val model = when {
-                        mimeType == FileUtil.FileInfo.APK.mimeType -> AppPackageArchiveModel(
-                            documentUri, displayName, mimeType, lastModified, size
+                        mimeType == FileUtil.FileInfo.APK.mimeType -> AppPackageArchiveFile(
+                            documentUri,
+                            displayName,
+                            mimeType,
+                            lastModified,
+                            size,
+                            cacheDir,
+                            contentResolver,
                         )
 
-                        displayName.endsWith(".xapk") || displayName.endsWith(".apks") -> ZipPackageArchiveModel(
-                            documentUri, displayName, mimeType, lastModified, size
+                        displayName.endsWith(".xapk") || displayName.endsWith(".apks") -> ZipPackageArchiveFile(
+                            documentUri,
+                            displayName,
+                            mimeType,
+                            lastModified,
+                            size,
+                            cacheDir,
+                            contentResolver,
                         )
 
                         else -> continue
                     }
 
-                    packageArchiveModels.add(model)
+                    packageArchiveFiles.add(model)
                 }
             }
         }
-        _apks.value = packageArchiveModels
+
+        emit(packageArchiveFiles)
     }
 
-    suspend fun add(apk: PackageArchiveModel) = withContext(Dispatchers.IO) {
-        _apks.update { apks ->
-            apks.toMutableList().apply {
-                add(apk)
-            }
-        }
-    }
-
-    suspend fun remove(apk: PackageArchiveModel) = withContext(Dispatchers.IO) {
-        _apks.update { apks ->
-            apks.toMutableList().apply {
-                removeIf { it.fileUri == apk.fileUri }
-            }
-        }
-    }
 
     companion object {
         private lateinit var INSTANCE: ListOfAPKs

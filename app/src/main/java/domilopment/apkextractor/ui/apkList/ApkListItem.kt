@@ -1,7 +1,5 @@
 package domilopment.apkextractor.ui.apkList
 
-import android.content.Context
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -11,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +19,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
@@ -29,8 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
-import domilopment.apkextractor.data.apkList.PackageArchiveModel
+import androidx.core.graphics.drawable.toBitmap
+import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.utils.FileUtil
 
 @Composable
@@ -38,9 +37,8 @@ fun ApkListItem(
     apkFileName: AnnotatedString,
     appName: AnnotatedString?,
     appPackageName: AnnotatedString?,
-    appIcon: Drawable?,
+    appIcon: ImageBitmap?,
     apkVersionInfo: AnnotatedString?,
-    isLoading: Boolean,
     onClick: () -> Unit
 ) {
     Box {
@@ -73,13 +71,7 @@ fun ApkListItem(
                     overflow = TextOverflow.Ellipsis
                 )
             },
-            leadingContent = { ApkListItemAvatar(appIcon = appIcon) },
-            trailingContent = {
-                if (isLoading) CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.secondary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                )
-            })
+            leadingContent = { ApkListItemAvatar(appIcon = appIcon) })
         Text(
             text = apkFileName,
             modifier = Modifier.padding(16.dp, 0.dp),
@@ -92,14 +84,14 @@ fun ApkListItem(
 }
 
 @Composable
-private fun ApkListItemAvatar(appIcon: Drawable?) {
+private fun ApkListItemAvatar(appIcon: ImageBitmap?) {
     val context = LocalContext.current
     Image(
-        painter = rememberDrawablePainter(
-            drawable = appIcon ?: ResourcesCompat.getDrawable(
-                context.resources, android.R.drawable.sym_def_app_icon, context.theme
-            )
-        ), contentDescription = null, modifier = Modifier
+        bitmap = appIcon ?: ResourcesCompat.getDrawable(
+            context.resources, android.R.drawable.sym_def_app_icon, context.theme
+        )!!.toBitmap().asImageBitmap(),
+        contentDescription = null,
+        modifier = Modifier
             .padding(0.dp, 6.dp)
             .size(50.dp)
     )
@@ -110,24 +102,20 @@ private fun ApkListItemAvatar(appIcon: Drawable?) {
 private fun ApkListItemPreview() {
     val apk by remember {
         mutableStateOf(
-            object : PackageArchiveModel {
-                override val fileUri: Uri = Uri.parse("test")
-                override val fileName: String = "test.apk"
-                override val fileType: String = FileUtil.FileInfo.APK.mimeType
-                override val fileLastModified: Long = 0L
-                override val fileSize: Long = 1024
-                override var appName: CharSequence? = "Test"
-                override var appPackageName: String? = "com.example.test"
-                override var appIcon: Drawable? = null
-                override var appVersionName: String? = "v1.0"
-                override var appVersionCode: Long? = 2L
-                override var appMinSdkVersion: Int? = 28
-                override var appTargetSdkVersion: Int? = 33
-                override var isPackageArchiveInfoLoading: Boolean = false
-                override var isPackageArchiveInfoLoaded: Boolean = false
-                override fun packageArchiveInfo(context: Context): PackageArchiveModel = this
-                override fun forceRefresh(context: Context): PackageArchiveModel = this
-            }
+            PackageArchiveEntity(
+                fileUri = Uri.parse("test"),
+                fileName = "test.apk",
+                fileType = FileUtil.FileInfo.APK.mimeType,
+                fileLastModified = 0L,
+                fileSize = 1024,
+                appName = "Test",
+                appPackageName = "com.example.test",
+                appIcon = null,
+                appVersionName = "v1.0",
+                appVersionCode = 2L,
+                appMinSdkVersion = 28,
+                appTargetSdkVersion = 33,
+            )
         )
     }
     MaterialTheme {
@@ -138,7 +126,6 @@ private fun ApkListItemPreview() {
                 appPackageName = AnnotatedString(apk.appPackageName.toString()),
                 appIcon = apk.appIcon,
                 apkVersionInfo = AnnotatedString("Version: ${apk.appVersionName} (${apk.appVersionCode})"),
-                isLoading = apk.isPackageArchiveInfoLoading
             ) { }
         }
     }

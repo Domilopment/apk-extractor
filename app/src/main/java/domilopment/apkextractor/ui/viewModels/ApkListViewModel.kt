@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.apkList.ApkListScreenState
-import domilopment.apkextractor.data.apkList.PackageArchiveModel
+import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.domain.usecase.apkList.DeleteApkUseCase
 import domilopment.apkextractor.domain.usecase.apkList.GetApkListUseCase
@@ -12,7 +12,7 @@ import domilopment.apkextractor.domain.usecase.apkList.LoadApkInfoUseCase
 import domilopment.apkextractor.domain.usecase.apkList.UpdateApksUseCase
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,6 +36,8 @@ class ApkListViewModel @Inject constructor(
 
     private val _searchQuery: MutableStateFlow<String?> = MutableStateFlow(null)
 
+    private var updateJob: Job? = null
+
     val saveDir = preferenceRepository.saveDir.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), null
     )
@@ -49,9 +51,9 @@ class ApkListViewModel @Inject constructor(
         viewModelScope.launch {
             apkList(_searchQuery).collect { apks ->
                 _apkListFragmentState.update { state ->
-                    state.copy(
-                        appList = apks, isRefreshing = false, selectedPackageArchiveModel = null
-                    )
+                    state.copy(appList = apks,
+                        isRefreshing = false,
+                        selectedPackageArchiveModel = state.selectedPackageArchiveModel?.let { selected -> apks.find { it.fileUri == selected.fileUri } })
                 }
             }
         }
@@ -62,20 +64,14 @@ class ApkListViewModel @Inject constructor(
      * and set it in BottomSheet state
      * @param app selected application
      */
-    fun selectPackageArchive(app: PackageArchiveModel?) {
+    fun selectPackageArchive(app: PackageArchiveEntity?) {
         _apkListFragmentState.update { state ->
             state.copy(
                 selectedPackageArchiveModel = app
             )
         }
-        if (app?.isPackageArchiveInfoLoaded == false) viewModelScope.launch {
-            val update = async(Dispatchers.IO) {
-                loadApkInfo(app)
-            }
-            _apkListFragmentState.update { state ->
-                state.copy(selectedPackageArchiveModel = update.await()
-                    .let { newInfo -> state.selectedPackageArchiveModel.let { if (it?.fileUri == newInfo.fileUri) newInfo else it } })
-            }
+        if (app?.loaded == false) viewModelScope.launch(Dispatchers.IO) {
+            loadApkInfo(app)
         }
     }
 
@@ -91,28 +87,24 @@ class ApkListViewModel @Inject constructor(
      * Update App list
      */
     fun updatePackageArchives() {
+        updateJob?.cancel()
         _apkListFragmentState.update {
             it.copy(isRefreshing = true)
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        updateJob = viewModelScope.launch(Dispatchers.IO) {
             updateApks()
         }
     }
 
-    fun remove(apk: PackageArchiveModel) {
+    fun remove(apk: PackageArchiveEntity) {
         viewModelScope.launch {
             deleteApk(apk)
         }
     }
 
-    fun loadPackageArchiveInfo(apk: PackageArchiveModel) {
+    fun loadPackageArchiveInfo(apk: PackageArchiveEntity) {
         viewModelScope.launch {
-            val newApk = loadApkInfo(apk, forceRefresh = true)
-            _apkListFragmentState.update { state ->
-                state.copy(appList = state.appList.toMutableList()
-                    .map { if (it.fileUri == apk.fileUri) newApk else it },
-                    selectedPackageArchiveModel = state.selectedPackageArchiveModel.let { if (it?.fileUri == apk.fileUri) newApk else it })
-            }
+            loadApkInfo(apk)
         }
     }
 
@@ -122,6 +114,12 @@ class ApkListViewModel @Inject constructor(
         }
         viewModelScope.launch {
             preferenceRepository.setApkSortOrder(sortPreferenceId.name)
+        }
+    }
+
+    fun dismissError() {
+        _apkListFragmentState.update { state ->
+            state.copy(errorMessage = null)
         }
     }
 }

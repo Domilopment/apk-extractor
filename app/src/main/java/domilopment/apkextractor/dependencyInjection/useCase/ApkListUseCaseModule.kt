@@ -41,8 +41,8 @@ object ApkListUseCaseModule {
 
     @Provides
     @Reusable
-    fun getLoadApkInfoUseCase(@ApplicationContext context: Context): LoadApkInfoUseCase {
-        return LoadApkInfoUseCaseImpl(context)
+    fun getLoadApkInfoUseCase(apksRepository: PackageArchiveRepository): LoadApkInfoUseCase {
+        return LoadApkInfoUseCaseImpl(apksRepository)
     }
 
     @Provides

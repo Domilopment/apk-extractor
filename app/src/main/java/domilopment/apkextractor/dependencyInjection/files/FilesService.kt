@@ -2,9 +2,9 @@ package domilopment.apkextractor.dependencyInjection.files
 
 import android.content.Context
 import android.net.Uri
-import domilopment.apkextractor.data.apkList.AppPackageArchiveModel
-import domilopment.apkextractor.data.apkList.PackageArchiveModel
-import domilopment.apkextractor.data.apkList.ZipPackageArchiveModel
+import domilopment.apkextractor.data.apkList.AppPackageArchiveFile
+import domilopment.apkextractor.data.apkList.PackageArchiveFile
+import domilopment.apkextractor.data.apkList.ZipPackageArchiveFile
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.SaveApkResult
 import domilopment.apkextractor.utils.settings.ApplicationUtil
@@ -34,15 +34,27 @@ class FilesService(private val context: Context) {
         return FileUtil.deleteDocument(context, data)
     }
 
-    suspend fun fileInfo(file: Uri, vararg projection: String): PackageArchiveModel? {
+    suspend fun fileInfo(file: Uri, vararg projection: String): PackageArchiveFile? {
         return FileUtil.getDocumentInfo(context, file, *projection)?.let {
             when {
-                it.displayName!!.endsWith(".apk") -> AppPackageArchiveModel(
-                    it.uri, it.displayName, it.mimeType!!, it.lastModified!!, it.size!!
+                it.displayName!!.endsWith(".apk") -> AppPackageArchiveFile(
+                    it.uri,
+                    it.displayName,
+                    it.mimeType!!,
+                    it.lastModified!!,
+                    it.size!!,
+                    context.cacheDir,
+                    context.contentResolver
                 )
 
-                it.displayName.endsWith(".xapk") || it.displayName.endsWith(".apks") -> ZipPackageArchiveModel(
-                    it.uri, it.displayName, it.mimeType!!, it.lastModified!!, it.size!!
+                it.displayName.endsWith(".xapk") || it.displayName.endsWith(".apks") -> ZipPackageArchiveFile(
+                    it.uri,
+                    it.displayName,
+                    it.mimeType!!,
+                    it.lastModified!!,
+                    it.size!!,
+                    context.cacheDir,
+                    context.contentResolver
                 )
 
                 else -> null

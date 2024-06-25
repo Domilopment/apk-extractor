@@ -1,7 +1,7 @@
 package domilopment.apkextractor.domain.usecase.apkList
 
 import android.content.Context
-import domilopment.apkextractor.data.apkList.PackageArchiveModel
+import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.dependencyInjection.packageArchive.PackageArchiveRepository
 import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
 import domilopment.apkextractor.utils.FileUtil
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 
 interface GetApkListUseCase {
-    operator fun invoke(searchQuery: Flow<String?>): Flow<List<PackageArchiveModel>>
+    operator fun invoke(searchQuery: Flow<String?>): Flow<List<PackageArchiveEntity>>
 }
 
 class GetApkListUseCaseImpl(

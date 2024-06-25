@@ -1,22 +1,14 @@
 package domilopment.apkextractor.domain.usecase.apkList
 
-import android.content.Context
-import domilopment.apkextractor.data.apkList.PackageArchiveModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
+import domilopment.apkextractor.dependencyInjection.packageArchive.PackageArchiveRepository
 
 interface LoadApkInfoUseCase {
-    suspend operator fun invoke(
-        apk: PackageArchiveModel, forceRefresh: Boolean = false
-    ): PackageArchiveModel
+    suspend operator fun invoke(apk: PackageArchiveEntity)
 }
 
-class LoadApkInfoUseCaseImpl(private val context: Context) : LoadApkInfoUseCase {
-    override suspend operator fun invoke(
-        apk: PackageArchiveModel, forceRefresh: Boolean
-    ): PackageArchiveModel {
-        return withContext(Dispatchers.IO) {
-            if (forceRefresh) apk.forceRefresh(context) else apk.packageArchiveInfo(context)
-        }
+class LoadApkInfoUseCaseImpl(private val apkRepository: PackageArchiveRepository) : LoadApkInfoUseCase {
+    override suspend operator fun invoke(apk: PackageArchiveEntity) {
+        return apkRepository.updateApp(apk)
     }
 }
