@@ -40,19 +40,21 @@ class MyPackageArchiveRepository @Inject constructor(
         val onDisk = packageArchiveService.apks.first()
         val inDb = apkDao.getApks().first()
 
-        val mustAdd = onDisk.filter { it.fileUri !in inDb.map { it.fileUri } }.also {
-            apkDao.upsertApks(it)
-        }.let {
-            it.map { PackageArchiveDetailLoader.load(context, it) }
-        }
-        val mustDelete = inDb.filter { it.fileUri !in onDisk.map { it.fileUri } }
+        val mustAdd = onDisk.filter { disk -> disk.fileUri !in inDb.map { db -> db.fileUri } }
+        val mustDelete = inDb.filter { db -> db.fileUri !in onDisk.map { disk -> disk.fileUri } }
+
+        apkDao.update(mustAdd, mustDelete)
+
         val mustLoad = inDb.filter { !it.loaded && it !in mustDelete }.map { apk ->
             PackageArchiveDetailLoader.load(context, apk)
         }
 
-        val add = (mustAdd + mustLoad).toSet().toList()
+        val load = (mustAdd + mustLoad).toSet().toList()
+        load.forEach {
+            val loaded = PackageArchiveDetailLoader.load(context, it)
+            apkDao.upsertApk(loaded)
+        }
 
-        apkDao.update(add, mustDelete)
         updateTrigger.update { state -> !state }
     }
 
