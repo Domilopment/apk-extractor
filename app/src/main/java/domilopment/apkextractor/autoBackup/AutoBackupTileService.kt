@@ -1,8 +1,11 @@
 package domilopment.apkextractor.autoBackup
 
+import android.app.ForegroundServiceStartNotAllowedException
 import android.content.Intent
+import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import android.widget.Toast
 import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import kotlinx.coroutines.runBlocking
@@ -45,12 +48,22 @@ class AutoBackupTileService : TileService() {
             qsTile.state = Tile.STATE_INACTIVE
         } else {
             updateAutoBackupPreference(true)
+
             Intent(this, AutoBackupService::class.java).apply {
                 action = AutoBackupService.Actions.START.name
             }.also {
-                startForegroundService(it)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    try {
+                        startForegroundService(it)
+                        qsTile.state = Tile.STATE_ACTIVE
+                    } catch (e: ForegroundServiceStartNotAllowedException) {
+                        Toast.makeText(applicationContext, e.message, Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    startForegroundService(it)
+                    qsTile.state = Tile.STATE_ACTIVE
+                }
             }
-            qsTile.state = Tile.STATE_ACTIVE
         }
         qsTile.updateTile()
     }
