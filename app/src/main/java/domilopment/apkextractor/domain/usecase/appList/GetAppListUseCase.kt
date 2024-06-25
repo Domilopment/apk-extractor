@@ -1,8 +1,8 @@
 package domilopment.apkextractor.domain.usecase.appList
 
-import domilopment.apkextractor.data.appList.ApplicationModel
-import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
-import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.data.model.appList.ApplicationModel
+import domilopment.apkextractor.data.repository.applications.ApplicationRepository
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview

@@ -3,7 +3,7 @@ package domilopment.apkextractor.domain.mapper
 import android.content.pm.PackageManager
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.drawable.toBitmap
-import domilopment.apkextractor.data.apkList.PackageArchiveFile
+import domilopment.apkextractor.data.model.apkList.PackageArchiveFile
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.PackageArchiveUtils

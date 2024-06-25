@@ -2,7 +2,7 @@ package domilopment.apkextractor.utils.settings
 
 import android.content.Context
 import android.net.Uri
-import domilopment.apkextractor.data.appList.ApplicationModel
+import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.utils.SaveApkResult
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter

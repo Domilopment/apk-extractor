@@ -23,8 +23,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.Screen
-import domilopment.apkextractor.data.appList.ExtractionResult
-import domilopment.apkextractor.data.appList.ShareResult
+import domilopment.apkextractor.data.model.appList.ExtractionResult
+import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
 import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
 import domilopment.apkextractor.ui.dialogs.ExtractionResultDialog

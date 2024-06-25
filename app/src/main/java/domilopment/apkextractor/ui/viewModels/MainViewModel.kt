@@ -10,7 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.ActionModeState
 import domilopment.apkextractor.data.MainScreenState
 import domilopment.apkextractor.data.UiMode
-import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow

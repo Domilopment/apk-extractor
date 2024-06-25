@@ -2,8 +2,8 @@ package domilopment.apkextractor.domain.usecase.apkList
 
 import android.content.Context
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
-import domilopment.apkextractor.dependencyInjection.packageArchive.PackageArchiveRepository
-import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveRepository
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.PackageArchiveUtils
 import kotlinx.coroutines.Dispatchers

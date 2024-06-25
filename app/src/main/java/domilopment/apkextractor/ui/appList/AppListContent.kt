@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import domilopment.apkextractor.BuildConfig
-import domilopment.apkextractor.data.appList.ApplicationModel
+import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.ui.components.PullToRefreshBox
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import kotlinx.coroutines.delay

@@ -2,7 +2,7 @@ package domilopment.apkextractor.utils.appFilterOptions
 
 import android.content.Context
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.appList.ApplicationModel
+import domilopment.apkextractor.data.model.appList.ApplicationModel
 
 enum class AppFilterOthers : AppFilter {
     FAVORITES {

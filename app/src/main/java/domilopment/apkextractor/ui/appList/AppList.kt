@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domilopment.apkextractor.BuildConfig
-import domilopment.apkextractor.data.appList.ApplicationModel
+import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.ui.attrColorResource
 import domilopment.apkextractor.ui.components.ScrollToTopLazyColumn
 import domilopment.apkextractor.utils.Utils

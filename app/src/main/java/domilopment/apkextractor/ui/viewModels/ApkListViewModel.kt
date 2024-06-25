@@ -3,9 +3,9 @@ package domilopment.apkextractor.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import domilopment.apkextractor.data.apkList.ApkListScreenState
+import domilopment.apkextractor.data.model.apkList.ApkListScreenState
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
-import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.domain.usecase.apkList.DeleteApkUseCase
 import domilopment.apkextractor.domain.usecase.apkList.GetApkListUseCase
 import domilopment.apkextractor.domain.usecase.apkList.LoadApkInfoUseCase

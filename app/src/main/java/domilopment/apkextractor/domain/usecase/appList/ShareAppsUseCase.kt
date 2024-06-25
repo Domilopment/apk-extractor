@@ -2,9 +2,9 @@ package domilopment.apkextractor.domain.usecase.appList
 
 import android.content.Context
 import android.net.Uri
-import domilopment.apkextractor.data.appList.ApplicationModel
-import domilopment.apkextractor.data.appList.ShareResult
-import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.data.model.appList.ApplicationModel
+import domilopment.apkextractor.data.model.appList.ShareResult
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

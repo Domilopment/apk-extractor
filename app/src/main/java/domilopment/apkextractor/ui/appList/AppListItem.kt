@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.appList.ApplicationModel
+import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.ui.attrColorResource
 import domilopment.apkextractor.utils.Utils
 

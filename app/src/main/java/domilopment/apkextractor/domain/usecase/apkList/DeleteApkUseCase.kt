@@ -2,7 +2,7 @@ package domilopment.apkextractor.domain.usecase.apkList
 
 import android.content.Context
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
-import domilopment.apkextractor.dependencyInjection.packageArchive.PackageArchiveRepository
+import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveRepository
 import domilopment.apkextractor.utils.FileUtil
 
 interface DeleteApkUseCase {

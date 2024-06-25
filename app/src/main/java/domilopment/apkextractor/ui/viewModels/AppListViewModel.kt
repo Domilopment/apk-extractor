@@ -4,11 +4,11 @@ import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.*
-import domilopment.apkextractor.data.appList.AppListScreenState
-import domilopment.apkextractor.data.appList.ApplicationModel
-import domilopment.apkextractor.data.appList.ExtractionResult
-import domilopment.apkextractor.data.appList.ShareResult
-import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.data.model.appList.AppListScreenState
+import domilopment.apkextractor.data.model.appList.ApplicationModel
+import domilopment.apkextractor.data.model.appList.ExtractionResult
+import domilopment.apkextractor.data.model.appList.ShareResult
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.domain.usecase.appList.AddAppUseCase
 import domilopment.apkextractor.domain.usecase.appList.GetAppListUseCase
 import domilopment.apkextractor.domain.usecase.appList.SaveAppsUseCase

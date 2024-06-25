@@ -1,7 +1,7 @@
 package domilopment.apkextractor.domain.usecase.installer
 
 import android.app.Activity
-import domilopment.apkextractor.dependencyInjection.installation.InstallationRepository
+import domilopment.apkextractor.data.repository.installation.InstallationRepository
 
 interface UninstallUseCase {
     suspend operator fun <T : Activity> invoke(packageName: String, cls: Class<T>)

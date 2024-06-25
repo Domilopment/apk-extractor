@@ -63,8 +63,8 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.appList.ApplicationModel
-import domilopment.apkextractor.data.appList.ExtractionResult
+import domilopment.apkextractor.data.model.appList.ApplicationModel
+import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.ui.components.ExpandableColumn
 import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.MySnackbarVisuals

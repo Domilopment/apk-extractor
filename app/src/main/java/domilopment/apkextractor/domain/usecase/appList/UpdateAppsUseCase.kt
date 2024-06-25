@@ -1,6 +1,6 @@
 package domilopment.apkextractor.domain.usecase.appList
 
-import domilopment.apkextractor.dependencyInjection.applications.ApplicationRepository
+import domilopment.apkextractor.data.repository.applications.ApplicationRepository
 
 interface UpdateAppsUseCase {
     suspend operator fun invoke()

@@ -4,7 +4,7 @@ import android.content.Intent
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import dagger.hilt.android.AndroidEntryPoint
-import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 

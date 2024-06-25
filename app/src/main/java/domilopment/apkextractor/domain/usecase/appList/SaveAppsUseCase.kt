@@ -1,10 +1,10 @@
 package domilopment.apkextractor.domain.usecase.appList
 
-import domilopment.apkextractor.data.appList.ApplicationModel
-import domilopment.apkextractor.data.appList.ExtractionResult
-import domilopment.apkextractor.dependencyInjection.files.FilesRepository
-import domilopment.apkextractor.dependencyInjection.packageArchive.PackageArchiveRepository
-import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.data.model.appList.ApplicationModel
+import domilopment.apkextractor.data.model.appList.ExtractionResult
+import domilopment.apkextractor.data.repository.files.FilesRepository
+import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveRepository
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.utils.SaveApkResult
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers

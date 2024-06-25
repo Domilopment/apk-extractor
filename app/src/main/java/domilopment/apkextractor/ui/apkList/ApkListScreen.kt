@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.apkList.AppPackageArchiveFile
+import domilopment.apkextractor.data.model.apkList.AppPackageArchiveFile
 import domilopment.apkextractor.domain.mapper.PackageArchiveModelToPackageArchiveEntityMapper
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet

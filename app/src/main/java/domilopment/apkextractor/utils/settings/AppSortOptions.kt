@@ -1,6 +1,6 @@
 package domilopment.apkextractor.utils.settings
 
-import domilopment.apkextractor.data.appList.ApplicationModel
+import domilopment.apkextractor.data.model.appList.ApplicationModel
 
 enum class AppSortOptions {
     SORT_BY_NAME {

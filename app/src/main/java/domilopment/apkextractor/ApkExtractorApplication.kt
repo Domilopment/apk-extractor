@@ -8,7 +8,7 @@ import android.content.Context
 import android.content.res.Configuration
 import dagger.hilt.android.HiltAndroidApp
 import domilopment.apkextractor.autoBackup.AutoBackupService
-import domilopment.apkextractor.dependencyInjection.preferenceDataStore.PreferenceRepository
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking

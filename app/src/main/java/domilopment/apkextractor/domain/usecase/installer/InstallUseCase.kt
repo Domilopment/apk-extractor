@@ -2,7 +2,7 @@ package domilopment.apkextractor.domain.usecase.installer
 
 import android.app.Activity
 import android.net.Uri
-import domilopment.apkextractor.dependencyInjection.installation.InstallationRepository
+import domilopment.apkextractor.data.repository.installation.InstallationRepository
 import domilopment.apkextractor.utils.InstallApkResult
 import kotlinx.coroutines.flow.Flow
 
