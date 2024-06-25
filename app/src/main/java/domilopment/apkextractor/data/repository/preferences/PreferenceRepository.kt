@@ -303,7 +303,7 @@ class MyPreferenceRepository @Inject constructor(
 
     override suspend fun setNightMode(value: Int) = setPreference(NIGHT_MODE, value.toString())
 
-    override val backupModeXapk: Flow<Boolean> = getPreference(BACKUP_MODE_XAPK).map { it ?: false }
+    override val backupModeXapk: Flow<Boolean> = getPreference(BACKUP_MODE_XAPK).map { it ?: true }
 
     override suspend fun setBackupModeXapk(value: Boolean) = setPreference(BACKUP_MODE_XAPK, value)
 }

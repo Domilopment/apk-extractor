@@ -17,5 +17,5 @@ data class SettingsScreenState(
     val swipeActionCustomThreshold: Boolean = false,
     val swipeActionThresholdMod: Float = 32f,
     val checkUpdateOnStart: Boolean = true,
-    val backupModeXapk: Boolean = false
+    val backupModeXapk: Boolean = true
 )
