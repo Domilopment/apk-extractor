@@ -45,11 +45,9 @@ class MyPackageArchiveRepository @Inject constructor(
 
         apkDao.update(mustAdd, mustDelete)
 
-        val mustLoad = inDb.filter { !it.loaded && it !in mustDelete }.map { apk ->
-            PackageArchiveDetailLoader.load(context, apk)
-        }
+        val mustLoad = inDb.filter { !it.loaded && it !in mustDelete }
 
-        val load = (mustAdd + mustLoad).toSet().toList()
+        val load = (mustAdd + mustLoad).toSet()
         load.forEach {
             val loaded = PackageArchiveDetailLoader.load(context, it)
             apkDao.upsertApk(loaded)
