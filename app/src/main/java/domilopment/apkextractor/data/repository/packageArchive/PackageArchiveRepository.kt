@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.drawable.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.data.room.dao.ApkDao
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.data.sources.ListOfAPKs
@@ -29,7 +30,8 @@ interface PackageArchiveRepository {
 class MyPackageArchiveRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val apkDao: ApkDao,
-    private val packageArchiveService: ListOfAPKs
+    private val packageArchiveService: ListOfAPKs,
+    private val settings: PreferenceRepository,
 ) : PackageArchiveRepository {
     private val updateTrigger = MutableStateFlow(true)
 
@@ -47,7 +49,8 @@ class MyPackageArchiveRepository @Inject constructor(
 
         val mustLoad = inDb.filter { !it.loaded && it !in mustDelete }
 
-        val load = (mustAdd + mustLoad).toSet()
+        val sortOrder = settings.apkSortOrder.first()
+        val load = (mustAdd + mustLoad).toSortedSet(sortOrder.comparator)
         load.forEach {
             val loaded = PackageArchiveDetailLoader.load(context, it)
             apkDao.upsertApk(loaded)
