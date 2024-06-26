@@ -1,10 +1,13 @@
 package domilopment.apkextractor.domain.usecase.appList
 
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.graphics.drawable.toBitmap
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.data.repository.files.FilesRepository
 import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
+import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.utils.SaveApkResult
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +54,23 @@ class SaveAppsUseCaseImpl @Inject constructor(
             when (newFile) {
                 is SaveApkResult.Failure -> errorMessage = newFile.errorMessage
                 is SaveApkResult.Success -> newFile.uri.let { uri ->
-                    filesRepository.fileInfo(uri)?.also {
+                    filesRepository.fileInfo(uri)?.let {
+                        PackageArchiveEntity(
+                            fileUri = it.uri,
+                            fileName = it.displayName!!,
+                            fileType = it.mimeType!!,
+                            fileLastModified = it.lastModified!!,
+                            fileSize = it.size!!,
+                            appName = app.appName,
+                            appPackageName = app.appPackageName,
+                            appIcon = app.appIcon.toBitmap().asImageBitmap(),
+                            appVersionName = app.appVersionName,
+                            appVersionCode = app.appVersionCode,
+                            appMinSdkVersion = app.minSdkVersion,
+                            appTargetSdkVersion = app.targetSdkVersion,
+                            loaded = true,
+                        )
+                    }?.also {
                         apkRepository.addApk(it)
                     }
                 }
