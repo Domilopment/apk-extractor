@@ -34,7 +34,7 @@ class InstallerActivityViewModel @Inject constructor(
             process = null,
             progress = 0F,
             tasks = 100,
-            shouldBeShown = true
+            shouldBeShown = false
         )
     )
         private set
@@ -47,14 +47,10 @@ class InstallerActivityViewModel @Inject constructor(
         super.onCleared()
     }
 
-    fun updateState(
+    private fun updateState(
         packageName: String? = uiState.process, progress: Float = uiState.progress / 100
     ) {
         uiState = uiState.copy(process = packageName, progress = progress * 100)
-    }
-
-    fun setProgressDialogActive(active: Boolean) {
-        uiState = uiState.copy(shouldBeShown = active)
     }
 
     fun installXAPK(fileUri: Uri) {
@@ -63,16 +59,17 @@ class InstallerActivityViewModel @Inject constructor(
                 when (it) {
                     is InstallApkResult.OnPrepare -> {
                         session = it.session
-                        updateState(packageName = it.packageName, 0F)
+                        uiState = uiState.copy(
+                            process = it.packageName, progress = 0F, shouldBeShown = true
+                        )
                     }
 
                     is InstallApkResult.OnProgress -> updateState(
                         packageName = it.packageName, progress = it.progress
                     )
 
-                    is InstallApkResult.OnSuccess, is InstallApkResult.OnFail -> setProgressDialogActive(
-                        false
-                    )
+                    is InstallApkResult.OnSuccess, is InstallApkResult.OnFail -> uiState =
+                        uiState.copy(shouldBeShown = false)
                 }
             }
         }
@@ -86,7 +83,6 @@ class InstallerActivityViewModel @Inject constructor(
     }
 
     fun uninstallApp(packageUri: Uri) {
-        setProgressDialogActive(false)
         val packageName = packageUri.schemeSpecificPart
         viewModelScope.launch {
             uninstallUseCase(packageName, InstallerActivity::class.java)
