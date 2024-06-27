@@ -42,6 +42,11 @@ class InstallerActivityViewModel @Inject constructor(
     private var session: PackageInstaller.Session? = null
     private var task: Job? = null
 
+    override fun onCleared() {
+        cancel()
+        super.onCleared()
+    }
+
     fun updateState(
         packageName: String? = uiState.process, progress: Float = uiState.progress / 100
     ) {
@@ -76,9 +81,8 @@ class InstallerActivityViewModel @Inject constructor(
     fun cancel() {
         task?.cancel()
         task = null
-        val temp = session
+        session?.abandon()
         session = null
-        temp?.abandon()
     }
 
     fun uninstallApp(packageUri: Uri) {
