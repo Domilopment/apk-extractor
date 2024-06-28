@@ -194,6 +194,9 @@
     <string name="auto_backup_broadcast_receiver_backup_failed">Backup %s fehlgeschlagen</string>
     <string name="auto_backup_broadcast_receiver_notification_title">Auto Backup</string>
 
+    <!-- Auto Backup Tile Service -->
+    <string name="auto_backup_tile_service_start_foreground_error">Fehler: Öffne die App um den Dienst zu starten</string>
+
     <!-- App Options Bottom Sheet -->
     <string name="info_bottom_sheet_source_directory">APK Quellverzeichnis</string>
     <string name="info_bottom_sheet_split_sources">geteilt</string>

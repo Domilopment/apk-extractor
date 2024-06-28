@@ -7,6 +7,7 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
 import dagger.hilt.android.AndroidEntryPoint
+import domilopment.apkextractor.R
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -57,7 +58,11 @@ class AutoBackupTileService : TileService() {
                         startForegroundService(it)
                         qsTile.state = Tile.STATE_ACTIVE
                     } catch (e: ForegroundServiceStartNotAllowedException) {
-                        Toast.makeText(applicationContext, e.message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            applicationContext,
+                            R.string.auto_backup_tile_service_start_foreground_error,
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 } else {
                     startForegroundService(it)
