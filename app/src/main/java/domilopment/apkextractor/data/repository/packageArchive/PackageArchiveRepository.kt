@@ -68,29 +68,7 @@ class MyPackageArchiveRepository @Inject constructor(
     }
 
     override suspend fun updateApp(apk: PackageArchiveEntity): Unit = withContext(Dispatchers.IO) {
-        apk.let {
-            PackageArchiveUtils.getApkFileFromDocument(context, apk.fileUri, apk.fileType)
-                ?.let { file ->
-                    val newApk =
-                        PackageArchiveUtils.getPackageInfoFromApkFile(context.packageManager, file)
-                            ?.let { packageInfo ->
-                                apk.copy(
-                                    appName = packageInfo.applicationInfo.loadLabel(context.packageManager)
-                                        .toString(),
-                                    appPackageName = packageInfo.applicationInfo.packageName,
-                                    appIcon = packageInfo.applicationInfo.loadIcon(context.packageManager)
-                                        ?.toBitmap()?.asImageBitmap(),
-                                    appVersionName = packageInfo.versionName,
-                                    appVersionCode = Utils.versionCode(packageInfo),
-                                    appMinSdkVersion = packageInfo.applicationInfo.minSdkVersion,
-                                    appTargetSdkVersion = packageInfo.applicationInfo.targetSdkVersion,
-                                    loaded = true
-                                )
-                            }
-                    file.delete()
-                    newApk
-                }
-        }?.also {
+        PackageArchiveDetailLoader.load(context, apk).also {
             apkDao.upsertApk(it)
         }
     }
