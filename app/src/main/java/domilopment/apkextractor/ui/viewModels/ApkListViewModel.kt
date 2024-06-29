@@ -61,6 +61,11 @@ class ApkListViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            saveDir.collect {
+                updatePackageArchives()
+            }
+        }
     }
 
     /**
