@@ -3,11 +3,14 @@ package domilopment.apkextractor.autoBackup
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.core.app.NotificationManagerCompat
 import dagger.hilt.android.AndroidEntryPoint
+import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AsyncBackupTask.Companion.ACTION_DELETE_APK
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.utils.FileUtil
+import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -60,9 +63,15 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                 }
 
                 if (SettingsManager.shouldStartService(isBackupService)) {
-                    context.startForegroundService(Intent(context, AutoBackupService::class.java).apply {
+                    Intent(context, AutoBackupService::class.java).apply {
                         action = AutoBackupService.Actions.START.name
-                    })
+                    }.also {
+                        if (!Utils.startForegroundService(context, it)) Toast.makeText(
+                            context,
+                            R.string.auto_backup_tile_service_start_foreground_error,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
 

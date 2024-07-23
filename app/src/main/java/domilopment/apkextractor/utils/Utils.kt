@@ -1,5 +1,8 @@
 package domilopment.apkextractor.utils
 
+import android.app.ForegroundServiceStartNotAllowedException
+import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -128,4 +131,24 @@ object Utils {
         34 to "14",
         35 to "15",
     )
+
+    /**
+     * Start ForegroundService with intent and Catch/Notify user when StartNotAllowed exception was thrown
+     * @param context
+     * @param intent
+     * @return Boolean who tells if Service could be Started or not
+     */
+    fun startForegroundService(context: Context, intent: Intent): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            try {
+                context.startForegroundService(intent)
+            } catch (e: ForegroundServiceStartNotAllowedException) {
+                return false
+            }
+        } else {
+            context.startForegroundService(intent)
+        }
+
+        return true
+    }
 }
