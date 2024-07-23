@@ -2,6 +2,7 @@ package domilopment.apkextractor.data.room.converter
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -12,10 +13,14 @@ class ImageConverter {
     @TypeConverter
     fun fromDrawable(imageBitmap: ImageBitmap?): ByteArray? {
         val outputStream = ByteArrayOutputStream()
-        return imageBitmap?.asAndroidBitmap()
-            ?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)?.let {
-                if (it) outputStream.toByteArray() else null
-            }
+        val compressFormat = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Bitmap.CompressFormat.WEBP_LOSSLESS
+        } else {
+            Bitmap.CompressFormat.PNG
+        }
+        return imageBitmap?.asAndroidBitmap()?.compress(compressFormat, 100, outputStream)?.let {
+            if (it) outputStream.toByteArray() else null
+        }
     }
 
     @TypeConverter
