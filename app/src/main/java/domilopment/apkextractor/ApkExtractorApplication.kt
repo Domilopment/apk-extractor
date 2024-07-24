@@ -28,6 +28,8 @@ class ApkExtractorApplication : Application() {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+        } else {
+            Timber.plant(ReleaseTree())
         }
 
         runBlocking {
