@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytics)
+    alias(libs.plugins.firebasePerf)
 }
 
 android {
@@ -105,6 +106,7 @@ dependencies {
     implementation(libs.jakewharton.timber)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.perf)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
