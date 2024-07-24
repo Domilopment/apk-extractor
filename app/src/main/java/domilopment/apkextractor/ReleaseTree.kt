@@ -1,8 +1,8 @@
 package domilopment.apkextractor
 
 import android.util.Log
-import com.google.firebase.crashlytics.CustomKeysAndValues
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.setCustomKeys
 import timber.log.Timber
 
 class ReleaseTree : Timber.Tree() {
@@ -13,11 +13,11 @@ class ReleaseTree : Timber.Tree() {
             return
         }
 
-        crashlytics.setCustomKeys(CustomKeysAndValues.Builder().apply {
-            putInt(CRASHLYTICS_KEY_PRIORITY, priority)
-            if (tag != null) putString(CRASHLYTICS_KEY_TAG, tag)
-            putString(CRASHLYTICS_KEY_MESSAGE, message)
-        }.build())
+        crashlytics.setCustomKeys {
+            key(CRASHLYTICS_KEY_PRIORITY, priority)
+            if (tag != null) key(CRASHLYTICS_KEY_TAG, tag)
+            key(CRASHLYTICS_KEY_MESSAGE, message)
+        }
 
         if (t == null) {
             crashlytics.recordException(Exception(message))
