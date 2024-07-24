@@ -257,7 +257,7 @@ fun SettingsScreen(
         },
         onPrivacyPolicy = {
             CustomTabsIntent.Builder().build().launchUrl(
-                context, Uri.parse("https://sites.google.com/view/domilopment/privacy-policy")
+                context, Uri.parse("https://sites.google.com/view/domilopment/apk-extractor/privacy-policy")
             )
         })
 }
