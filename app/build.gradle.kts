@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.devtoolsKsp)
     alias(libs.plugins.hiltAndroid)
     alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebaseCrashlytics)
 }
 
 android {
@@ -30,6 +32,7 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
             isMinifyEnabled = false
+            manifestPlaceholders += mapOf(Pair("crashlyticsCollectionEnabled", "false"))
         }
         release {
             isMinifyEnabled = true
@@ -68,6 +71,7 @@ android {
 dependencies {
 
     val composeBom = platform(libs.androidx.compose.bom)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.profileinstaller)
     baselineProfile(project(":baselineprofile"))
     implementation(libs.androidx.core.ktx)
@@ -99,6 +103,8 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.jakewharton.timber)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
