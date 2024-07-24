@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.appList
 
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +41,7 @@ import domilopment.apkextractor.ui.components.ScrollToTopLazyColumn
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.Utils.getAnnotatedString
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -244,7 +244,7 @@ private fun AppListPreview() {
                 triggerActionMode = { if (!actionMode) actionMode = true },
                 rightSwipeAction = ApkActionsOptions.SAVE,
                 leftSwipeAction = ApkActionsOptions.SHARE,
-                swipeActionCallback = { app, action -> Log.e(action.name, app.appPackageName) },
+                swipeActionCallback = { app, action -> Timber.tag(action.name).i(app.appPackageName) },
                 isSwipeActionCustomThreshold = false,
                 swipeActionThresholdModifier = 0.5f,
                 uninstalledAppFound = { _ -> })

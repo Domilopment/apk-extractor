@@ -14,6 +14,7 @@ import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -24,6 +25,11 @@ class ApkExtractorApplication : Application() {
     @SuppressLint("DiscouragedPrivateApi")
     override fun onCreate() {
         super.onCreate()
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+
         runBlocking {
             // Set UI Mode
             SettingsManager.changeUIMode(prefs.nightMode.first())
@@ -49,9 +55,7 @@ class ApkExtractorApplication : Application() {
             field.isAccessible = true
             field[null] = 100 * 1024 * 1024
         } catch (e: Exception) {
-            if (BuildConfig.DEBUG) {
-                e.printStackTrace()
-            }
+            Timber.e(e)
         }
     }
 

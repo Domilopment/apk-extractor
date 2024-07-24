@@ -2,7 +2,6 @@ package domilopment.apkextractor.ui.apkList
 
 import android.net.Uri
 import android.text.format.Formatter
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -45,6 +44,7 @@ import domilopment.apkextractor.ui.attrColorResource
 import domilopment.apkextractor.ui.components.ScrollToTopLazyColumn
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
+import timber.log.Timber
 
 @Composable
 fun ApkList(
@@ -306,7 +306,7 @@ private fun ApkListPreview() {
                 takenSpace = space,
                 freeSpace = 4L * 1000 * 1000 * 1000,
                 searchString = "",
-                onClick = { apk -> Log.e(apk.fileName, apk.appPackageName.toString()) },
+                onClick = { apk -> Timber.tag(apk.fileName).i(apk.appPackageName.toString()) },
                 isApkFileDeleted = { _ -> false },
                 deletedDocumentFound = { _ -> },
                 onStorageInfoClick = { })
