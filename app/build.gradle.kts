@@ -106,6 +106,7 @@ dependencies {
     implementation(libs.jakewharton.timber)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.installations)
     implementation(libs.firebase.perf)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
