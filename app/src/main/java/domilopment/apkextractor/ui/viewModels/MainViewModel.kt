@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.ActionModeState
 import domilopment.apkextractor.data.MainScreenState
 import domilopment.apkextractor.data.UiMode
+import domilopment.apkextractor.data.repository.analytics.AnalyticsRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val preferenceRepository: PreferenceRepository
+    private val preferenceRepository: PreferenceRepository,
+    private val analyticsRepository: AnalyticsRepository
 ) : ViewModel() {
     var mainScreenState by mutableStateOf(MainScreenState())
         private set
@@ -42,6 +44,10 @@ class MainViewModel @Inject constructor(
     )
     val updateOnStart = preferenceRepository.checkUpdateOnStart.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), true
+    )
+
+    val firstLaunch = preferenceRepository.firstLaunch.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
     )
 
     fun updateSearchQuery(query: String) {
@@ -99,5 +105,12 @@ class MainViewModel @Inject constructor(
 
     fun setUpdateOnStart(b: Boolean) {
         viewModelScope.launch { preferenceRepository.setCheckUpdateOnStart(b) }
+    }
+
+    fun setFirstLaunch(analytics: Boolean, crashlytics: Boolean, performance: Boolean) {
+        analyticsRepository.setAnalyticsCollectionEnabled(analytics)
+        analyticsRepository.setCrashlyticsCollectionEnabled(crashlytics)
+        analyticsRepository.setPerformanceCollectionEnabled(performance)
+        viewModelScope.launch { preferenceRepository.setFirstLaunch(false) }
     }
 }

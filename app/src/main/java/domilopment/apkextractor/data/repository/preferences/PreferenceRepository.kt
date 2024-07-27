@@ -28,6 +28,7 @@ import domilopment.apkextractor.data.repository.preferences.MyPreferenceReposito
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.AUTO_BACKUP_SERVICE
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.BACKUP_MODE_XAPK
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.CHECK_UPDATE_ON_START
+import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.FIRST_LAUNCH
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.MATERIAL_YOU
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.NIGHT_MODE
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.SAVE_DIR
@@ -114,6 +115,9 @@ interface PreferenceRepository {
 
     val backupModeXapk: Flow<Boolean>
     suspend fun setBackupModeXapk(value: Boolean)
+
+    val firstLaunch: Flow<Boolean>
+    suspend fun setFirstLaunch(value: Boolean)
 }
 
 class MyPreferenceRepository @Inject constructor(
@@ -147,6 +151,7 @@ class MyPreferenceRepository @Inject constructor(
         val MATERIAL_YOU = booleanPreferencesKey("use_material_you")
         val NIGHT_MODE = stringPreferencesKey("list_preference_ui_mode")
         val BACKUP_MODE_XAPK = booleanPreferencesKey("backup_mode_xapk")
+        val FIRST_LAUNCH = booleanPreferencesKey("first_launch_0")
     }
 
     private fun <T> getPreference(key: Preferences.Key<T>): Flow<T?> =
@@ -306,4 +311,8 @@ class MyPreferenceRepository @Inject constructor(
     override val backupModeXapk: Flow<Boolean> = getPreference(BACKUP_MODE_XAPK).map { it ?: true }
 
     override suspend fun setBackupModeXapk(value: Boolean) = setPreference(BACKUP_MODE_XAPK, value)
+
+    override val firstLaunch: Flow<Boolean> = getPreference(FIRST_LAUNCH).map { it ?: true }
+
+    override suspend fun setFirstLaunch(value: Boolean) = setPreference(FIRST_LAUNCH, value)
 }

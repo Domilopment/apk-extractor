@@ -60,6 +60,7 @@ import domilopment.apkextractor.data.UiMode
 import domilopment.apkextractor.data.rememberAppBarState
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.actionBar.APKExtractorAppBar
+import domilopment.apkextractor.ui.dialogs.AnalyticsDialog
 import domilopment.apkextractor.ui.dialogs.AskForSaveDirDialog
 import domilopment.apkextractor.ui.dialogs.InAppUpdateDialog
 import domilopment.apkextractor.ui.navigation.APKExtractorBottomNavigation
@@ -106,6 +107,7 @@ class MainActivity : AppCompatActivity() {
             val actionModeState = model.actionModeState
             val saveDir by model.saveDir.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
             val dynamicColors by model.materialYou.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
+            val firstLaunch by model.firstLaunch.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
             val navController = rememberNavController()
             val appBarState = rememberAppBarState(navController = navController)
             val scope = rememberCoroutineScope()
@@ -233,6 +235,8 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         if (showAskForSaveDir) AskForSaveDirDialog(chooseSaveDir = chooseSaveDir)
+
+                        if (firstLaunch) AnalyticsDialog(onConfirmButton = model::setFirstLaunch)
                     }
                 }
             }

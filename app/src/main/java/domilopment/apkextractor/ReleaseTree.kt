@@ -8,17 +8,10 @@ import timber.log.Timber
 
 class ReleaseTree : Timber.Tree() {
     private val crashlytics = FirebaseCrashlytics.getInstance()
-    private val installations = FirebaseInstallations.getInstance()
-
-    init {
-        installations.id.addOnSuccessListener {
-            crashlytics.setUserId(it)
-        }
-    }
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        if (priority == Log.VERBOSE || priority == Log.DEBUG || priority == Log.INFO) {
-            return
+        when(priority) {
+            Log.VERBOSE,Log.DEBUG, Log.INFO -> return
         }
 
         crashlytics.setCustomKeys {
