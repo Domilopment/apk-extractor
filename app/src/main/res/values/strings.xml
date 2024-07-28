@@ -40,9 +40,14 @@
 
     <!-- Preference Data Collection -->
     <string name="data_collection_header">Data Collection</string>
+    <string name="data_collection_confirm">Confirm Selected</string>
+    <string name="data_collection_dismiss">Deny All</string>
     <string name="data_collection_analytics">Analytics</string>
+    <string name="data_collection_analytics_summary">Collects user activity data (like app interactions, screen views), device and network information, crash and performance data, and identifiers (like Instance ID or Android Advertising ID).\nTo understand user behavior, improve user experience, and optimize app performance.</string>
     <string name="data_collection_crashlytics">Crashlytics</string>
+    <string name="data_collection_crashlytics_summary">Collects crash reports, device and system data, user actions leading up to the crash, and app-specific log data.\nTo monitor and resolve app crashes and improve app stability.</string>
     <string name="data_collection_perf">Performance</string>
+    <string name="data_collection_perf_summary">Collects performance metrics like app start time, network request details, and user interaction times, device and network information.\nTo monitor app performance, identify bottlenecks, and optimize user experience.</string>
     <string name="data_collection_delete">Delete Installations-ID</string>
     <string name="data_collection_delete_summary">Firebase installation IDs are different for every installation of every application; different applications on the same device have different Firebase installation IDs. Firebase installation IDs identify app installations and data tied to those app installations.\n\nWhen you delete an installation ID, the data tied to that installation ID is removed from live and backup systems of all Firebase services that use Firebase installation IDs to identify installations within 180 days. This process is described at a high level in Google’s statement on deletion and retention.</string>
 

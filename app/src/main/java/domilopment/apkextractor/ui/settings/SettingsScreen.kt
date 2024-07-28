@@ -46,6 +46,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
+import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.SettingsManager
@@ -256,7 +257,7 @@ fun SettingsScreen(
         onDeleteFirebaseInstallationsId = model::onDeleteFirebaseInstallationsId,
         onGitHub = {
             CustomTabsIntent.Builder().build().launchUrl(
-                context, Uri.parse("https://github.com/domilopment/apk-extractor")
+                context, Uri.parse(Constants.GITHUB_URL)
             )
         },
         onGooglePlay = {
@@ -287,7 +288,7 @@ fun SettingsScreen(
         onPrivacyPolicy = {
             CustomTabsIntent.Builder().build().launchUrl(
                 context,
-                Uri.parse("https://sites.google.com/view/domilopment/apk-extractor/privacy-policy")
+                Uri.parse(Constants.PRIVACY_POLICY_URL)
             )
         })
 }

@@ -11,34 +11,33 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APK_SORT_ORDER
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_FILTER_CATEGORY
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_FILTER_INSTALLER
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_FILTER_OTHERS
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_LEFT_SWIPE_ACTION
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_LIST_FAVORITES
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_RIGHT_SWIPE_ACTION
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_SAVE_NAME
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_SORT_ASC
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_SORT_FAVORITES
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_SORT_ORDER
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_AUTO_BACKUP_LIST
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_SWIPE_ACTION_CUSTOM_THRESHOLD
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.APP_SWIPE_ACTION_THRESHOLD_MODIFIER
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.AUTO_BACKUP_SERVICE
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.BACKUP_MODE_XAPK
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.CHECK_UPDATE_ON_START
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.DATA_COLLECTION_ANALYTICS
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.DATA_COLLECTION_CRASHLYTICS
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.DATA_COLLECTION_PERF
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.FIRST_LAUNCH
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.MATERIAL_YOU
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.NIGHT_MODE
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.SAVE_DIR
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.SYSTEM_APPS
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.UPDATED_SYSTEM_APPS
-import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.USER_APPS
-import domilopment.apkextractor.utils.Constants
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APK_SORT_ORDER
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_AUTO_BACKUP_LIST
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_FILTER_CATEGORY
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_FILTER_INSTALLER
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_FILTER_OTHERS
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_LEFT_SWIPE_ACTION
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_LIST_FAVORITES
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_RIGHT_SWIPE_ACTION
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SAVE_NAME
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SORT_ASC
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SORT_FAVORITES
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SORT_ORDER
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SWIPE_ACTION_CUSTOM_THRESHOLD
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SWIPE_ACTION_THRESHOLD_MODIFIER
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.AUTO_BACKUP_SERVICE
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.BACKUP_MODE_XAPK
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.CHECK_UPDATE_ON_START
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.DATA_COLLECTION_ANALYTICS
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.DATA_COLLECTION_CRASHLYTICS
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.DATA_COLLECTION_PERF
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.FIRST_LAUNCH
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.MATERIAL_YOU
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.NIGHT_MODE
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.SAVE_DIR
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.SYSTEM_APPS
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.UPDATED_SYSTEM_APPS
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.USER_APPS
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import domilopment.apkextractor.utils.settings.AppSortOptions
@@ -50,6 +49,40 @@ import java.io.IOException
 import javax.inject.Inject
 
 interface PreferenceRepository {
+    object PreferencesKeys {
+        val SAVE_DIR = stringPreferencesKey("dir")
+        val CHECK_UPDATE_ON_START =
+            booleanPreferencesKey("check_update_on_start")
+        val UPDATED_SYSTEM_APPS =
+            booleanPreferencesKey("updated_system_apps")
+        val SYSTEM_APPS = booleanPreferencesKey("system_apps")
+        val USER_APPS = booleanPreferencesKey("user_apps")
+        val APP_SORT_ORDER = intPreferencesKey("app_sort")
+        val APP_SORT_FAVORITES = booleanPreferencesKey("sort_favorites")
+        val APP_SORT_ASC = booleanPreferencesKey("app_sort_asc")
+        val APP_LIST_FAVORITES = stringSetPreferencesKey("favorites")
+        val APP_FILTER_INSTALLER = stringPreferencesKey("filter_installer_v2")
+        val APP_FILTER_CATEGORY = stringPreferencesKey("filter_category_v2")
+        val APP_FILTER_OTHERS = stringSetPreferencesKey("filter_others")
+        val APP_RIGHT_SWIPE_ACTION = stringPreferencesKey("list_preference_swipe_actions_right")
+        val APP_LEFT_SWIPE_ACTION = stringPreferencesKey("list_preference_swipe_actions_left")
+        val APP_SWIPE_ACTION_CUSTOM_THRESHOLD =
+            booleanPreferencesKey("swipe_action_custom_threshold")
+        val APP_SWIPE_ACTION_THRESHOLD_MODIFIER =
+            floatPreferencesKey("swipe_action_threshold_modifier")
+        val APP_AUTO_BACKUP_LIST = stringSetPreferencesKey("app_list_auto_backup")
+        val APP_SAVE_NAME = stringSetPreferencesKey("app_save_name")
+        val APK_SORT_ORDER = stringPreferencesKey("apk_sort")
+        val AUTO_BACKUP_SERVICE = booleanPreferencesKey("auto_backup")
+        val MATERIAL_YOU = booleanPreferencesKey("use_material_you")
+        val NIGHT_MODE = stringPreferencesKey("list_preference_ui_mode")
+        val BACKUP_MODE_XAPK = booleanPreferencesKey("backup_mode_xapk")
+        val FIRST_LAUNCH = booleanPreferencesKey("first_launch_0")
+        val DATA_COLLECTION_ANALYTICS = booleanPreferencesKey("data_collection_analytics")
+        val DATA_COLLECTION_CRASHLYTICS = booleanPreferencesKey("data_collection_crashlytics")
+        val DATA_COLLECTION_PERF = booleanPreferencesKey("data_collection_perf")
+    }
+
     val saveDir: Flow<Uri?>
     suspend fun setSaveDir(uri: Uri)
 
@@ -135,40 +168,6 @@ interface PreferenceRepository {
 class MyPreferenceRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) : PreferenceRepository {
-    private object PreferencesKeys {
-        val SAVE_DIR = stringPreferencesKey(Constants.PREFERENCE_KEY_SAVE_DIR)
-        val CHECK_UPDATE_ON_START =
-            booleanPreferencesKey(Constants.PREFERENCE_CHECK_UPDATE_ON_START)
-        val UPDATED_SYSTEM_APPS =
-            booleanPreferencesKey(Constants.PREFERENCE_KEY_UPDATED_SYSTEM_APPS)
-        val SYSTEM_APPS = booleanPreferencesKey(Constants.PREFERENCE_KEY_SYSTEM_APPS)
-        val USER_APPS = booleanPreferencesKey(Constants.PREFERENCE_KEY_USER_APPS)
-        val APP_SORT_ORDER = intPreferencesKey(Constants.PREFERENCE_KEY_APP_SORT)
-        val APP_SORT_FAVORITES = booleanPreferencesKey(Constants.PREFERENCE_KEY_SORT_FAVORITES)
-        val APP_SORT_ASC = booleanPreferencesKey(Constants.PREFERENCE_KEY_APP_SORT_ASC)
-        val APP_LIST_FAVORITES = stringSetPreferencesKey(Constants.PREFERENCE_KEY_FAVORITES)
-        val APP_FILTER_INSTALLER = stringPreferencesKey(Constants.PREFERENCE_KEY_FILTER_INSTALLER)
-        val APP_FILTER_CATEGORY = stringPreferencesKey(Constants.PREFERENCE_KEY_FILTER_CATEGORY)
-        val APP_FILTER_OTHERS = stringSetPreferencesKey(Constants.PREFERENCE_KEY_FILTER_OTHERS)
-        val APP_RIGHT_SWIPE_ACTION = stringPreferencesKey("list_preference_swipe_actions_right")
-        val APP_LEFT_SWIPE_ACTION = stringPreferencesKey("list_preference_swipe_actions_left")
-        val APP_SWIPE_ACTION_CUSTOM_THRESHOLD =
-            booleanPreferencesKey("swipe_action_custom_threshold")
-        val APP_SWIPE_ACTION_THRESHOLD_MODIFIER =
-            floatPreferencesKey("swipe_action_threshold_modifier")
-        val APP_AUTO_BACKUP_LIST = stringSetPreferencesKey("app_list_auto_backup")
-        val APP_SAVE_NAME = stringSetPreferencesKey("app_save_name")
-        val APK_SORT_ORDER = stringPreferencesKey("apk_sort")
-        val AUTO_BACKUP_SERVICE = booleanPreferencesKey("auto_backup")
-        val MATERIAL_YOU = booleanPreferencesKey("use_material_you")
-        val NIGHT_MODE = stringPreferencesKey("list_preference_ui_mode")
-        val BACKUP_MODE_XAPK = booleanPreferencesKey("backup_mode_xapk")
-        val FIRST_LAUNCH = booleanPreferencesKey("first_launch_0")
-        val DATA_COLLECTION_ANALYTICS = booleanPreferencesKey("data_collection_analytics")
-        val DATA_COLLECTION_CRASHLYTICS = booleanPreferencesKey("data_collection_crashlytics")
-        val DATA_COLLECTION_PERF = booleanPreferencesKey("data_collection_perf")
-    }
-
     private fun <T> getPreference(key: Preferences.Key<T>): Flow<T?> =
         dataStore.data.catch { exception ->
             /*

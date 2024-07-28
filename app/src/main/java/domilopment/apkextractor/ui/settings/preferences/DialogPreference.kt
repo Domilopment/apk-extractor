@@ -20,7 +20,6 @@ fun DialogPreference(
     @StringRes iconDesc: Int? = null,
     @StringRes name: Int,
     @StringRes summary: Int? = null,
-    @StringRes dialogTitle: Int,
     dialogContent: @Composable (() -> Unit),
     onConfirm: () -> Unit,
 ) {
@@ -30,7 +29,7 @@ fun DialogPreference(
         iconDesc = iconDesc?.let { stringResource(id = it) },
         name = stringResource(id = name),
         summary = summary?.let { stringResource(id = it) },
-        dialogTitle = stringResource(id = dialogTitle),
+        dialogTitle = stringResource(id = name),
         dialogContent = dialogContent,
         onConfirm = onConfirm
     )

@@ -56,10 +56,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.ui.components.ApkExtractorBottomSheet
 import domilopment.apkextractor.ui.components.SegmentedButton
 import domilopment.apkextractor.ui.components.SingleChoiceSegmentedButtonColumn
-import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterInstaller
@@ -90,8 +90,7 @@ fun AppFilterBottomSheet(
     setFilterOthers: (Set<String>) -> Unit
 ) {
     ApkExtractorBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState
+        onDismissRequest = onDismissRequest, sheetState = sheetState
     ) {
         AppFilterAppType(updatedSystemApps, systemApps, userApps, changeSelection)
         Spacer(modifier = Modifier.height(8.dp))
@@ -292,8 +291,7 @@ private fun AppFilterSort(
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.Sort,
                         contentDescription = null,
-                        Modifier.conditional(
-                            sortOrder,
+                        Modifier.conditional(sortOrder,
                             ifTrue = { scale(scaleX = 1f, scaleY = -1f) })
                     )
                 }
@@ -420,7 +418,9 @@ private fun AppFilterAppType(
         ) {
             SegmentedButton(checked = updatedSystemApps,
                 onCheckedChange = {
-                    changeSelection(Constants.PREFERENCE_KEY_UPDATED_SYSTEM_APPS, it)
+                    changeSelection(
+                        PreferenceRepository.PreferencesKeys.UPDATED_SYSTEM_APPS.name, it
+                    )
                 },
                 modifier = Modifier.fillMaxHeight(),
                 shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
@@ -440,7 +440,7 @@ private fun AppFilterAppType(
             }
             SegmentedButton(checked = systemApps,
                 onCheckedChange = {
-                    changeSelection(Constants.PREFERENCE_KEY_SYSTEM_APPS, it)
+                    changeSelection(PreferenceRepository.PreferencesKeys.SYSTEM_APPS.name, it)
                 },
                 shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
                 enabled = updatedSystemApps,
@@ -459,7 +459,7 @@ private fun AppFilterAppType(
             }
             SegmentedButton(checked = userApps,
                 onCheckedChange = {
-                    changeSelection(Constants.PREFERENCE_KEY_USER_APPS, it)
+                    changeSelection(PreferenceRepository.PreferencesKeys.USER_APPS.name, it)
                 },
                 shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
                 modifier = Modifier.fillMaxHeight(),

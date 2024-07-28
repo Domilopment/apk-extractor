@@ -259,6 +259,7 @@ fun SettingsContent(
             preferenceCategoryItemTop {
                 SwitchPreferenceCompat(
                     name = R.string.data_collection_analytics,
+                    summary = R.string.data_collection_analytics_summary,
                     state = analytics,
                     onClick = onAnalytics
                 )
@@ -266,6 +267,7 @@ fun SettingsContent(
             preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
                     name = R.string.data_collection_crashlytics,
+                    summary = R.string.data_collection_crashlytics_summary,
                     state = crashlytics,
                     onClick = onCrashlytics
                 )
@@ -273,6 +275,7 @@ fun SettingsContent(
             preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
                     name = R.string.data_collection_perf,
+                    summary = R.string.data_collection_perf_summary,
                     state = performance,
                     onClick = onPerformance
                 )
@@ -280,7 +283,6 @@ fun SettingsContent(
             preferenceCategoryItemBottom {
                 DialogPreference(
                     name = R.string.data_collection_delete,
-                    dialogTitle = R.string.data_collection_delete,
                     onConfirm = onDeleteFirebaseInstallationsId,
                     dialogContent = dataCollectionDeleteDialogContent
                 )
