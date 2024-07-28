@@ -79,7 +79,8 @@ fun SettingsContent(
     onDeleteFirebaseInstallationsId: () -> Unit,
     onGitHub: () -> Unit,
     onGooglePlay: () -> Unit,
-    onPrivacyPolicy: () -> Unit
+    onPrivacyPolicy: () -> Unit,
+    onTerms: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -304,6 +305,9 @@ fun SettingsContent(
             }
             preferenceCategoryItemMiddle {
                 Preference(name = R.string.privacy_policy_title, onClick = onPrivacyPolicy)
+            }
+            preferenceCategoryItemMiddle {
+                Preference(name = R.string.terms_title, onClick = onTerms)
             }
             preferenceCategoryItemBottom {
                 Preference(name = stringResource(

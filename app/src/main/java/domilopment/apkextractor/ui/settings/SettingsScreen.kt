@@ -287,8 +287,12 @@ fun SettingsScreen(
         },
         onPrivacyPolicy = {
             CustomTabsIntent.Builder().build().launchUrl(
-                context,
-                Uri.parse(Constants.PRIVACY_POLICY_URL)
+                context, Uri.parse(Constants.PRIVACY_POLICY_URL)
+            )
+        },
+        onTerms = {
+            CustomTabsIntent.Builder().build().launchUrl(
+                context, Uri.parse(Constants.TERMS_URL)
             )
         })
 }
@@ -301,14 +305,12 @@ fun SettingsScreen(
  */
 private fun handleAutoBackupService(newValue: Boolean, context: Context) {
     if (newValue and !AutoBackupService.isRunning) context.startForegroundService(Intent(
-        context,
-        AutoBackupService::class.java
+        context, AutoBackupService::class.java
     ).apply {
         action = AutoBackupService.Actions.START.name
     })
     else if (!newValue and AutoBackupService.isRunning) context.startService(Intent(
-        context,
-        AutoBackupService::class.java
+        context, AutoBackupService::class.java
     ).apply {
         action = AutoBackupService.Actions.STOP.name
     })
