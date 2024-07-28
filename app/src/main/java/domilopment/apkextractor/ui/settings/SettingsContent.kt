@@ -69,6 +69,12 @@ fun SettingsContent(
     checkUpdateOnStart: Boolean,
     onCheckUpdateOnStart: (Boolean) -> Unit,
     onClearCache: () -> Unit,
+    analytics: Boolean,
+    onAnalytics: (Boolean) -> Unit,
+    crashlytics: Boolean,
+    onCrashlytics: (Boolean) -> Unit,
+    performance: Boolean,
+    onPerformance: (Boolean) -> Unit,
     dataCollectionDeleteDialogContent: @Composable (() -> Unit),
     onDeleteFirebaseInstallationsId: () -> Unit,
     onGitHub: () -> Unit,
@@ -250,6 +256,27 @@ fun SettingsContent(
         }
 
         preferenceCategory(title = R.string.data_collection_header) {
+            preferenceCategoryItemTop {
+                SwitchPreferenceCompat(
+                    name = R.string.data_collection_analytics,
+                    state = analytics,
+                    onClick = onAnalytics
+                )
+            }
+            preferenceCategoryItemMiddle {
+                SwitchPreferenceCompat(
+                    name = R.string.data_collection_crashlytics,
+                    state = crashlytics,
+                    onClick = onCrashlytics
+                )
+            }
+            preferenceCategoryItemMiddle {
+                SwitchPreferenceCompat(
+                    name = R.string.data_collection_perf,
+                    state = performance,
+                    onClick = onPerformance
+                )
+            }
             preferenceCategoryItemBottom {
                 DialogPreference(
                     name = R.string.data_collection_delete,

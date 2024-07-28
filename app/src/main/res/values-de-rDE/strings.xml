@@ -39,6 +39,9 @@
 
     <!-- Preference Data Collection -->
     <string name="data_collection_header">Datenerhebung</string>
+    <string name="data_collection_analytics">Analytics</string>
+    <string name="data_collection_crashlytics">Crashlytics</string>
+    <string name="data_collection_perf">Performance</string>
     <string name="data_collection_delete">Installations-ID Löschen</string>
     <string name="data_collection_delete_summary">Die Firebase-Installations-IDs sind für jede Installation jeder Anwendung unterschiedlich. Verschiedene Anwendungen auf demselben Gerät haben unterschiedliche Firebase-Installations-IDs. Firebase-Installations-IDs identifizieren App-Installationen und Daten, die mit diesen App-Installationen verknüpft sind.\n\nWenn Sie eine Installations-ID löschen, werden die mit dieser Installations-ID verknüpften Daten innerhalb von 180 Tagen aus den Live- und Backup-Systemen aller Firebase-Dienste entfernt, die Firebase-Installations-IDs zur Identifizierung von Installationen verwenden. Dieser Vorgang wird in der Stellungnahme von Google zur Löschung und Aufbewahrung ausführlich beschrieben.</string>
 

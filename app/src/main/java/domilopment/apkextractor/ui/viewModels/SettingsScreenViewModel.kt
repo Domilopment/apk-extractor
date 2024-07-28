@@ -119,6 +119,21 @@ class SettingsScreenViewModel @Inject constructor(
                 _uiState.update { state -> state.copy(backupModeXapk = it) }
             }
         }
+        viewModelScope.launch {
+            settings.analytics.collect{
+                _uiState.update { state -> state.copy(analytics = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.crashlytics.collect{
+                _uiState.update { state -> state.copy(crashlytics = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.performance.collect{
+                _uiState.update { state -> state.copy(performance = it) }
+            }
+        }
     }
 
     fun setAppSaveName(set: Set<String>) {
@@ -167,5 +182,26 @@ class SettingsScreenViewModel @Inject constructor(
 
     fun onDeleteFirebaseInstallationsId() {
         viewModelScope.launch { analytics.delete() }
+    }
+
+    fun setAnalytics(b: Boolean) {
+        viewModelScope.launch {
+            analytics.setAnalyticsCollectionEnabled(b)
+            settings.setAnalytics(b)
+        }
+    }
+
+    fun setCrashlytics(b: Boolean) {
+        viewModelScope.launch {
+            analytics.setCrashlyticsCollectionEnabled(b)
+            settings.setCrashlytics(b)
+        }
+    }
+
+    fun setPerformance(b: Boolean) {
+        viewModelScope.launch {
+            analytics.setPerformanceCollectionEnabled(b)
+            settings.setPerformance(b)
+        }
     }
 }

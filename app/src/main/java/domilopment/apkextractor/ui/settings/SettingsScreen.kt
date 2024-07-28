@@ -227,6 +227,12 @@ fun SettingsScreen(
                 context, context.getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT
             ).show()
         },
+        analytics = uiState.analytics,
+        onAnalytics = model::setAnalytics,
+        crashlytics = uiState.crashlytics,
+        onCrashlytics = model::setCrashlytics,
+        performance = uiState.performance,
+        onPerformance = model::setPerformance,
         dataCollectionDeleteDialogContent = {
             val summary = Utils.getAnnotatedUrlString(
                 text = stringResource(id = R.string.data_collection_delete_summary), Pair(

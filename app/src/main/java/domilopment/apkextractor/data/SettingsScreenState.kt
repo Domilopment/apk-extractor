@@ -16,6 +16,9 @@ data class SettingsScreenState(
     val leftSwipeAction: String = ApkActionsOptions.SHARE.preferenceValue,
     val swipeActionCustomThreshold: Boolean = false,
     val swipeActionThresholdMod: Float = 32f,
+    val analytics: Boolean = false,
+    val crashlytics: Boolean = false,
+    val performance: Boolean = false,
     val checkUpdateOnStart: Boolean = true,
     val backupModeXapk: Boolean = true
 )

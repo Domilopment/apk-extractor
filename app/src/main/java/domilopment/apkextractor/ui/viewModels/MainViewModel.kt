@@ -111,6 +111,11 @@ class MainViewModel @Inject constructor(
         analyticsRepository.setAnalyticsCollectionEnabled(analytics)
         analyticsRepository.setCrashlyticsCollectionEnabled(crashlytics)
         analyticsRepository.setPerformanceCollectionEnabled(performance)
-        viewModelScope.launch { preferenceRepository.setFirstLaunch(false) }
+        viewModelScope.launch {
+            preferenceRepository.setAnalytics(analytics)
+            preferenceRepository.setCrashlytics(crashlytics)
+            preferenceRepository.setPerformance(performance)
+            preferenceRepository.setFirstLaunch(false)
+        }
     }
 }

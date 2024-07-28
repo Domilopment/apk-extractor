@@ -28,6 +28,9 @@ import domilopment.apkextractor.data.repository.preferences.MyPreferenceReposito
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.AUTO_BACKUP_SERVICE
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.BACKUP_MODE_XAPK
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.CHECK_UPDATE_ON_START
+import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.DATA_COLLECTION_ANALYTICS
+import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.DATA_COLLECTION_CRASHLYTICS
+import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.DATA_COLLECTION_PERF
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.FIRST_LAUNCH
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.MATERIAL_YOU
 import domilopment.apkextractor.data.repository.preferences.MyPreferenceRepository.PreferencesKeys.NIGHT_MODE
@@ -118,6 +121,15 @@ interface PreferenceRepository {
 
     val firstLaunch: Flow<Boolean>
     suspend fun setFirstLaunch(value: Boolean)
+
+    val analytics: Flow<Boolean>
+    suspend fun setAnalytics(value: Boolean)
+
+    val crashlytics: Flow<Boolean>
+    suspend fun setCrashlytics(value: Boolean)
+
+    val performance: Flow<Boolean>
+    suspend fun setPerformance(value: Boolean)
 }
 
 class MyPreferenceRepository @Inject constructor(
@@ -152,6 +164,9 @@ class MyPreferenceRepository @Inject constructor(
         val NIGHT_MODE = stringPreferencesKey("list_preference_ui_mode")
         val BACKUP_MODE_XAPK = booleanPreferencesKey("backup_mode_xapk")
         val FIRST_LAUNCH = booleanPreferencesKey("first_launch_0")
+        val DATA_COLLECTION_ANALYTICS = booleanPreferencesKey("data_collection_analytics")
+        val DATA_COLLECTION_CRASHLYTICS = booleanPreferencesKey("data_collection_crashlytics")
+        val DATA_COLLECTION_PERF = booleanPreferencesKey("data_collection_perf")
     }
 
     private fun <T> getPreference(key: Preferences.Key<T>): Flow<T?> =
@@ -315,4 +330,21 @@ class MyPreferenceRepository @Inject constructor(
     override val firstLaunch: Flow<Boolean> = getPreference(FIRST_LAUNCH).map { it ?: true }
 
     override suspend fun setFirstLaunch(value: Boolean) = setPreference(FIRST_LAUNCH, value)
+
+    override val analytics: Flow<Boolean> =
+        getPreference(DATA_COLLECTION_ANALYTICS).map { it ?: false }
+
+    override suspend fun setAnalytics(value: Boolean) =
+        setPreference(DATA_COLLECTION_ANALYTICS, value)
+
+    override val crashlytics: Flow<Boolean> =
+        getPreference(DATA_COLLECTION_CRASHLYTICS).map { it ?: false }
+
+    override suspend fun setCrashlytics(value: Boolean) =
+        setPreference(DATA_COLLECTION_CRASHLYTICS, value)
+
+    override val performance: Flow<Boolean> =
+        getPreference(DATA_COLLECTION_PERF).map { it ?: false }
+
+    override suspend fun setPerformance(value: Boolean) = setPreference(DATA_COLLECTION_PERF, value)
 }
