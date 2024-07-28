@@ -40,8 +40,6 @@
 
     <!-- Preference Data Collection -->
     <string name="data_collection_header">Data Collection</string>
-    <string name="data_collection_confirm">Confirm Selected</string>
-    <string name="data_collection_dismiss">Deny All</string>
     <string name="data_collection_analytics">Analytics</string>
     <string name="data_collection_analytics_summary">Collects user activity data (like app interactions, screen views), device and network information, crash and performance data, and identifiers (like Instance ID or Android Advertising ID).\nTo understand user behavior, improve user experience, and optimize app performance.</string>
     <string name="data_collection_crashlytics">Crashlytics</string>
@@ -59,6 +57,8 @@
     <string name="googleplay_summary">View Play Store Page of App</string>
 
     <string name="privacy_policy_title">Privacy Policy</string>
+
+    <string name="terms_title">Terms &amp; Conditions</string>
 
     <string name="version">Version: %s</string>
 
@@ -302,5 +302,12 @@
     <string name="popup_dialog_update_failed_text">The app could not be updated, try again, load it directly from the Play Store or try next time you open the App.</string>
     <string name="popup_dialog_update_failed_button_positive">Try again</string>
     <string name="popup_dialog_update_failed_button_negative">Close</string>
+
+    <!-- User Consent Dialog -->
+    <string name="consent_dialog_header">We value your privacy and want to ensure you have control over your data. Our app uses Firebase, Crashlytics, and performance monitoring to improve your experience. Please review the details below:</string>
+    <string name="consent_dialog_consent_notice">Consent:\nBy tapping \"Confirm Selected\" you consent to the collection and processing of your data as described above. If you do not consent, certain features of the app may not function as intended.\n</string>
+    <string name="consent_dialog_footer">For more details, please review our %s and %s.</string>
+    <string name="consent_dialog_confirm">Confirm Selected</string>
+    <string name="consent_dialog_dismiss">Deny All</string>
 
 </resources>
