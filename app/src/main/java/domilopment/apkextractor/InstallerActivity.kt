@@ -26,6 +26,7 @@ import domilopment.apkextractor.ui.dialogs.InstallationResultDialog
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.InstallerActivityViewModel
+import timber.log.Timber
 
 @AndroidEntryPoint
 class InstallerActivity : ComponentActivity() {
@@ -133,6 +134,7 @@ class InstallerActivity : ComponentActivity() {
                                 userActionIntent
                             }
                         } catch (e: SecurityException) {
+                            Timber.tag("Pending User Action Security Exception").e(e)
                             result(InstallationResultType.Failure.Security(e.message))
                             null
                         }

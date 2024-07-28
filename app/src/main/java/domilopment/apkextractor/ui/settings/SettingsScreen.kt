@@ -20,6 +20,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -225,6 +227,27 @@ fun SettingsScreen(
                 context, context.getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT
             ).show()
         },
+        dataCollectionDeleteDialogContent = {
+            val summary = Utils.getAnnotatedUrlString(
+                text = stringResource(id = R.string.data_collection_delete_summary), Pair(
+                    "statement on deletion and retention",
+                    "https://policies.google.com/technologies/retention"
+                ), Pair(
+                    "der Stellungnahme von Google zur Löschung und Aufbewahrung ausführlich beschrieben",
+                    "https://policies.google.com/technologies/retention?hl=de"
+                )
+            )
+
+            ClickableText(text = summary) { offset ->
+                summary.getStringAnnotations(offset, offset).find { it.tag.startsWith("URL") }
+                    ?.let { stringAnnotation ->
+                        CustomTabsIntent.Builder().build().launchUrl(
+                            context, Uri.parse(stringAnnotation.item)
+                        )
+                    }
+            }
+        },
+        onDeleteFirebaseInstallationsId = model::onDeleteFirebaseInstallationsId,
         onGitHub = {
             CustomTabsIntent.Builder().build().launchUrl(
                 context, Uri.parse("https://github.com/domilopment/apk-extractor")
@@ -257,7 +280,8 @@ fun SettingsScreen(
         },
         onPrivacyPolicy = {
             CustomTabsIntent.Builder().build().launchUrl(
-                context, Uri.parse("https://sites.google.com/view/domilopment/apk-extractor/privacy-policy")
+                context,
+                Uri.parse("https://sites.google.com/view/domilopment/apk-extractor/privacy-policy")
             )
         })
 }
@@ -269,14 +293,16 @@ fun SettingsScreen(
  * @param newValue boolean of service should be running
  */
 private fun handleAutoBackupService(newValue: Boolean, context: Context) {
-    if (newValue and !AutoBackupService.isRunning) context.startForegroundService(
-        Intent(context, AutoBackupService::class.java).apply {
-            action = AutoBackupService.Actions.START.name
-        }
-    )
-    else if (!newValue and AutoBackupService.isRunning) context.startService(
-        Intent(context, AutoBackupService::class.java).apply {
-            action = AutoBackupService.Actions.STOP.name
-        }
-    )
+    if (newValue and !AutoBackupService.isRunning) context.startForegroundService(Intent(
+        context,
+        AutoBackupService::class.java
+    ).apply {
+        action = AutoBackupService.Actions.START.name
+    })
+    else if (!newValue and AutoBackupService.isRunning) context.startService(Intent(
+        context,
+        AutoBackupService::class.java
+    ).apply {
+        action = AutoBackupService.Actions.STOP.name
+    })
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
 import domilopment.apkextractor.data.SettingsScreenState
+import domilopment.apkextractor.data.repository.analytics.AnalyticsRepository
 import domilopment.apkextractor.data.repository.applications.ApplicationRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.domain.usecase.appList.IsAppInstalledUseCase
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class SettingsScreenViewModel @Inject constructor(
     appsRepository: ApplicationRepository,
     private val settings: PreferenceRepository,
+    private val analytics: AnalyticsRepository,
     private val isAppInstalled: IsAppInstalledUseCase,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<SettingsScreenState> =
@@ -161,5 +163,9 @@ class SettingsScreenViewModel @Inject constructor(
 
     fun setBackupModeXapk(b: Boolean) {
         viewModelScope.launch { settings.setBackupModeXapk(b) }
+    }
+
+    fun onDeleteFirebaseInstallationsId() {
+        viewModelScope.launch { analytics.delete() }
     }
 }

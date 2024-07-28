@@ -38,6 +38,11 @@
     <string name="app_type_system_updated">System (updated)</string>
     <string name="app_type_user">User</string>
 
+    <!-- Preference Data Collection -->
+    <string name="data_collection_header">Data Collection</string>
+    <string name="data_collection_delete">Delete Installations-ID</string>
+    <string name="data_collection_delete_summary">Firebase installation IDs are different for every installation of every application; different applications on the same device have different Firebase installation IDs. Firebase installation IDs identify app installations and data tied to those app installations.\n\nWhen you delete an installation ID, the data tied to that installation ID is removed from live and backup systems of all Firebase services that use Firebase installation IDs to identify installations within 180 days. This process is described at a high level in Google’s statement on deletion and retention.</string>
+
     <!-- Preferences Info -->
     <string name="github">GitHub</string>
     <string name="github_summary">View Code or create Issue, Pull Request</string>

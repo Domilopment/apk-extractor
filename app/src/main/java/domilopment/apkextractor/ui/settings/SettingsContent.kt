@@ -21,6 +21,7 @@ import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
 import domilopment.apkextractor.ui.settings.preferences.APKNamePreference
+import domilopment.apkextractor.ui.settings.preferences.DialogPreference
 import domilopment.apkextractor.ui.settings.preferences.ListPreference
 import domilopment.apkextractor.ui.settings.preferences.MultiSelectListPreference
 import domilopment.apkextractor.ui.settings.preferences.Preference
@@ -68,6 +69,8 @@ fun SettingsContent(
     checkUpdateOnStart: Boolean,
     onCheckUpdateOnStart: (Boolean) -> Unit,
     onClearCache: () -> Unit,
+    dataCollectionDeleteDialogContent: @Composable (() -> Unit),
+    onDeleteFirebaseInstallationsId: () -> Unit,
     onGitHub: () -> Unit,
     onGooglePlay: () -> Unit,
     onPrivacyPolicy: () -> Unit
@@ -242,6 +245,17 @@ fun SettingsContent(
                     name = R.string.clear_cache,
                     summary = R.string.clear_cache_summary,
                     onClick = onClearCache
+                )
+            }
+        }
+
+        preferenceCategory(title = R.string.data_collection_header) {
+            preferenceCategoryItemBottom {
+                DialogPreference(
+                    name = R.string.data_collection_delete,
+                    dialogTitle = R.string.data_collection_delete,
+                    onConfirm = onDeleteFirebaseInstallationsId,
+                    dialogContent = dataCollectionDeleteDialogContent
                 )
             }
         }
