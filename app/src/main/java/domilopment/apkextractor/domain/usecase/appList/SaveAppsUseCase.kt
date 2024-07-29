@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
+import timber.log.Timber
 import javax.inject.Inject
 
 interface SaveAppsUseCase {
@@ -52,7 +53,10 @@ class SaveAppsUseCaseImpl @Inject constructor(
                 trySend(ExtractionResult.Progress(app, 1))
             }
             when (newFile) {
-                is SaveApkResult.Failure -> errorMessage = newFile.errorMessage
+                is SaveApkResult.Failure -> {
+                    Timber.tag("Save Apps Error").e(Exception(newFile.errorMessage))
+                    errorMessage = newFile.errorMessage
+                }
                 is SaveApkResult.Success -> newFile.uri.let { uri ->
                     filesRepository.fileInfo(uri)?.let {
                         PackageArchiveEntity(

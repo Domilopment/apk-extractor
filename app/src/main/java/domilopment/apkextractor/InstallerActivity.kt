@@ -159,10 +159,19 @@ class InstallerActivity : ComponentActivity() {
                     val errorMessage = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
                         ?: "No Error message provided"
 
-                    if (intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
-                        result(InstallationResultType.Failure.Uninstall(packageName, errorMessage))
-                    } else if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
-                        result(InstallationResultType.Failure.Install(packageName, errorMessage))
+                    Timber.tag("Package Installer: ${intent.action}").e(Exception(errorMessage))
+                    when (intent.action) {
+                        MainActivity.PACKAGE_UNINSTALLATION_ACTION -> result(
+                            InstallationResultType.Failure.Uninstall(
+                                packageName, errorMessage
+                            )
+                        )
+
+                        MainActivity.PACKAGE_INSTALLATION_ACTION -> result(
+                            InstallationResultType.Failure.Install(
+                                packageName, errorMessage
+                            )
+                        )
                     }
                 }
             }
