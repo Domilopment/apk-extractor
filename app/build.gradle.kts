@@ -33,7 +33,6 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
             isMinifyEnabled = false
-            manifestPlaceholders += mapOf(Pair("crashlyticsCollectionEnabled", "false"))
         }
         release {
             isMinifyEnabled = true
