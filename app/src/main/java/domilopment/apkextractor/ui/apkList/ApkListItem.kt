@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
@@ -51,7 +52,8 @@ fun ApkListItem(
             text = apkFileName,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .offset(y = 8.dp),
+                .offset(y = 8.dp)
+                .zIndex(zIndex = 1f),
             color = ListItemDefaults.contentColor,
             fontSize = 11.sp,
             maxLines = 1,
