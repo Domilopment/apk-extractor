@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -34,12 +35,18 @@ import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.Utils
+import domilopment.apkextractor.utils.fadingEdge
 
 @Composable
 fun AnalyticsDialog(
     onConfirmButton: (Boolean, Boolean, Boolean) -> Unit, context: Context = LocalContext.current
 ) {
     val scrollState = rememberScrollState()
+    val onTop by remember {
+        derivedStateOf {
+            scrollState.value == 0
+        }
+    }
     val endReached by remember {
         derivedStateOf {
             scrollState.value == scrollState.maxValue
@@ -69,7 +76,20 @@ fun AnalyticsDialog(
     }, title = {
         Text(text = stringResource(id = R.string.data_collection_header))
     }, text = {
-        Column(modifier = Modifier.verticalScroll(state = scrollState)) {
+        Column(
+            modifier = Modifier
+                .fadingEdge(
+                    start = Offset.Zero,
+                    end = Offset(0f, Float.POSITIVE_INFINITY),
+                    visible = onTop
+                )
+                .fadingEdge(
+                    start = Offset(0f, Float.POSITIVE_INFINITY),
+                    end = Offset.Zero,
+                    visible = endReached
+                )
+                .verticalScroll(state = scrollState)
+        ) {
             Text(
                 text = AnnotatedString(
                     text = stringResource(id = R.string.consent_dialog_header),
