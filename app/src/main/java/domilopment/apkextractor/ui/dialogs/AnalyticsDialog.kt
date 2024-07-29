@@ -18,6 +18,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,10 +48,14 @@ fun AnalyticsDialog(
             scrollState.value == 0
         }
     }
-    val endReached by remember {
+    val onEnd by remember {
         derivedStateOf {
             scrollState.value == scrollState.maxValue
         }
+    }
+
+    var endReached by remember {
+        mutableStateOf(false)
     }
 
     var analytics by remember {
@@ -61,6 +66,10 @@ fun AnalyticsDialog(
     }
     var performance by remember {
         mutableStateOf(true)
+    }
+
+    LaunchedEffect(key1 = onEnd) {
+        if (onEnd && !endReached) endReached = true
     }
 
     AlertDialog(onDismissRequest = {}, confirmButton = {
@@ -79,14 +88,10 @@ fun AnalyticsDialog(
         Column(
             modifier = Modifier
                 .fadingEdge(
-                    start = Offset.Zero,
-                    end = Offset(0f, Float.POSITIVE_INFINITY),
-                    visible = onTop
+                    start = Offset.Zero, end = Offset(0f, Float.POSITIVE_INFINITY), visible = onTop
                 )
                 .fadingEdge(
-                    start = Offset(0f, Float.POSITIVE_INFINITY),
-                    end = Offset.Zero,
-                    visible = endReached
+                    start = Offset(0f, Float.POSITIVE_INFINITY), end = Offset.Zero, visible = onEnd
                 )
                 .verticalScroll(state = scrollState)
         ) {

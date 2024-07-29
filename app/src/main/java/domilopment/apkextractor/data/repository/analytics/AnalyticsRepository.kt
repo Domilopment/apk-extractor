@@ -8,6 +8,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.perf.FirebasePerformance
 import dagger.hilt.android.qualifiers.ApplicationContext
+import domilopment.apkextractor.R
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -47,14 +48,12 @@ class AnalyticsRepositoryImpl @Inject constructor(
         installations.delete().addOnCompleteListener { task ->
             if (task.isComplete) {
                 Timber.tag("firebase-Installations").d("Installation deleted")
-                Toast.makeText(context, "Firebase-Installation-ID deleted", Toast.LENGTH_LONG)
+                Toast.makeText(context, R.string.data_collection_delete_success, Toast.LENGTH_LONG)
                     .show()
             } else {
                 Timber.tag("firebase-Installations").d("Unable to delete Installation")
                 Toast.makeText(
-                    context,
-                    "Unable to delete Firebase-Installation-ID, try again later or contact the developer",
-                    Toast.LENGTH_LONG
+                    context, R.string.data_collection_delete_failure, Toast.LENGTH_LONG
                 ).show()
             }
         }
