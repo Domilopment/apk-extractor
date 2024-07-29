@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,7 +49,9 @@ fun ApkListItem(
     ) {
         Text(
             text = apkFileName,
-            modifier = Modifier.padding(16.dp, 0.dp),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .offset(y = 8.dp),
             color = ListItemDefaults.contentColor,
             fontSize = 11.sp,
             maxLines = 1,
@@ -92,7 +95,7 @@ private fun ApkListItemAvatar(appIcon: ImageBitmap?) {
             bitmap = icon,
             contentDescription = null,
             modifier = Modifier
-                .size(50.dp)
+                .size(56.dp)
                 .align(Alignment.Center)
         )
     }
