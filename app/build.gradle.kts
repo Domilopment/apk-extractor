@@ -72,7 +72,6 @@ android {
 dependencies {
 
     val composeBom = platform(libs.androidx.compose.bom)
-    implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.profileinstaller)
     baselineProfile(project(":baselineprofile"))
     implementation(libs.androidx.core.ktx)
@@ -104,6 +103,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.jakewharton.timber)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.installations)
