@@ -82,7 +82,9 @@ class StartupBenchmarks {
 
                     // Save dir Dialog
                     device.findObject(By.text("OK")).clickAndWait(Until.newWindow(), 1_000)
-                    device.findObject(By.text("Documents"))?.clickAndWait(Until.newWindow(), 1_000)
+                    device.findObject(By.text("Documents"))?.also {
+                        if (it.isClickable) it.clickAndWait(Until.newWindow(), 1_000)
+                    }
                     device.findObject(By.text("USE THIS FOLDER")).clickAndWait(Until.newWindow(), 1_000)
                     device.findObject(By.text("ALLOW")).clickAndWait(Until.newWindow(), 5_000)
                 } catch (_: NullPointerException) {
