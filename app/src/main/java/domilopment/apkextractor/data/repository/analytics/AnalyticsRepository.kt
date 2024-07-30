@@ -51,7 +51,7 @@ class AnalyticsRepositoryImpl @Inject constructor(
                 Toast.makeText(context, R.string.data_collection_delete_success, Toast.LENGTH_LONG)
                     .show()
             } else {
-                Timber.tag("firebase-Installations").d("Unable to delete Installation")
+                Timber.tag("firebase-Installations").e(Exception("Unable to delete Installation"))
                 Toast.makeText(
                     context, R.string.data_collection_delete_failure, Toast.LENGTH_LONG
                 ).show()
