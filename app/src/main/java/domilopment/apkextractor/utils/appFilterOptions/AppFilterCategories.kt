@@ -27,7 +27,7 @@ enum class AppFilterCategories(
     }
 
     companion object {
-        private val categoriesMap = values().associateBy { it.category }
+        private val categoriesMap = entries.associateBy { it.category }
         fun getByCategory(appCategory: Int): AppFilterCategories? {
             return categoriesMap[appCategory]
         }
