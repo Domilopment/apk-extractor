@@ -68,9 +68,18 @@ class BaselineProfileGenerator {
             // https://d.android.com/training/testing/other-components/ui-automator
 
             try {
+                // Privacy Consent Dialog
+                device.wait(Until.hasObject(By.textStartsWith("We value your privacy")), 10_000)
+                device.findObject(By.textStartsWith("We value your privacy")).fling(Direction.DOWN)
+                device.findObject(By.text("Deny All")).clickAndWait(Until.newWindow(), 1_000)
+
+                // Save dir Dialog
                 device.findObject(By.text("OK")).clickAndWait(Until.newWindow(), 1_000)
+                device.findObject(By.text("Documents"))?.also {
+                    if (it.isClickable) it.clickAndWait(Until.newWindow(), 1_000)
+                }
                 device.findObject(By.text("USE THIS FOLDER")).clickAndWait(Until.newWindow(), 1_000)
-                device.findObject(By.text("ALLOW")).clickAndWait(Until.newWindow(), 1_000)
+                device.findObject(By.text("ALLOW")).clickAndWait(Until.newWindow(), 5_000)
             } catch (_: NullPointerException) {
                 // Save dir already selected.
             }

@@ -3,7 +3,6 @@ package domilopment.apkextractor
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.setCustomKeys
-import com.google.firebase.installations.FirebaseInstallations
 import timber.log.Timber
 
 class ReleaseTree : Timber.Tree() {
