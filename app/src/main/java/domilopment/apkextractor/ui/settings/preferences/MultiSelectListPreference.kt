@@ -5,25 +5,19 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import domilopment.apkextractor.R
 
 @Composable
 fun MultiSelectListPreference(
@@ -78,11 +72,7 @@ fun MultiSelectListPreference(
         mutableStateListOf(*state.toTypedArray())
     }
 
-    var dialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    Preference(icon = icon,
+    DialogPreference(icon = icon,
         enabled = enabled,
         iconDesc = iconDesc,
         name = name,
@@ -92,34 +82,25 @@ fun MultiSelectListPreference(
                 clear()
                 addAll(state)
             }
-            dialog = true
-        })
-
-    if (dialog) AlertDialog(onDismissRequest = { dialog = false }, confirmButton = {
-        TextButton(onClick = {
-            onClick(value.toSet())
-            dialog = false
-        }) {
-            Text(text = stringResource(id = R.string.app_name_dialog_ok))
-        }
-    }, dismissButton = {
-        TextButton(onClick = { dialog = false }) {
-            Text(text = stringResource(id = R.string.app_name_dialog_cancel))
-        }
-    }, title = { Text(text = name) }, text = {
-        LazyColumn {
-            items(items = entriesMap, key = { it.second }) {
-                ListItem(headlineContent = { Text(text = it.first) },
-                    modifier = Modifier.clickable {
-                        if (value.contains(it.second)) value.remove(it.second) else value.add(it.second)
-                    },
-                    leadingContent = {
-                        Checkbox(
-                            checked = value.contains(it.second), onCheckedChange = null
-                        )
-                    })
+        },
+        scrollable = false,
+        dialogContent = {
+            LazyColumn {
+                items(items = entriesMap, key = { it.second }) {
+                    ListItem(headlineContent = { Text(text = it.first) },
+                        modifier = Modifier.clickable {
+                            if (value.contains(it.second)) value.remove(it.second) else value.add(it.second)
+                        },
+                        leadingContent = {
+                            Checkbox(
+                                checked = value.contains(it.second), onCheckedChange = null
+                            )
+                        })
+                }
             }
-        }
-    })
+        },
+        onConfirm = {
+            onClick(value.toSet())
+        })
 }
 

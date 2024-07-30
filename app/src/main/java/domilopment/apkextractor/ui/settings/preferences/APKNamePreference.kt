@@ -10,13 +10,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragIndicator
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -28,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -117,10 +114,6 @@ fun APKNamePreference(
         }.toTypedArray())
     }
 
-    var dialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-
     val isValid by remember {
         derivedStateOf {
             value.any { it == "name" || it == "package" }
@@ -133,7 +126,8 @@ fun APKNamePreference(
         ).show()
     }
 
-    Preference(icon = icon,
+    DialogPreference(
+        icon = icon,
         enabled = enabled,
         iconDesc = iconDesc,
         name = name,
@@ -150,87 +144,80 @@ fun APKNamePreference(
                     if (index > -1) index else Int.MAX_VALUE
                 })
             }
-            dialog = true
-        })
+        },
+        scrollable = false,
+        dialogContent = {
+            val scope = rememberCoroutineScope()
+            val overscrollJob = remember { mutableStateOf<Job?>(null) }
+            val itemListDragAndDropState = rememberDragDropListState(onMove = { from, to ->
+                val items = dragMap.map { it.second }
+                val fromItem = items[from]
+                val toItem = items[to]
+                dragMap.move(from, to)
+                if (fromItem !in value && toItem in value) value.add(fromItem)
+                else if (fromItem in value && toItem !in value) value.remove(fromItem)
+            })
 
-    if (dialog) AlertDialog(onDismissRequest = { dialog = false }, confirmButton = {
-        TextButton(onClick = {
+            val haptic = LocalHapticFeedback.current
+            LazyColumn(
+                modifier = Modifier.pointerInput(Unit) {
+                    detectDragGesturesAfterLongPress(onDrag = { change, offset ->
+                        change.consume()
+                        itemListDragAndDropState.onDrag(offset)
+                        handleOverscrollJob(overscrollJob, scope, itemListDragAndDropState)
+                    },
+                        onDragStart = { offset ->
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            itemListDragAndDropState.onDragStart(offset)
+                        },
+                        onDragEnd = { itemListDragAndDropState.onDragInterrupted() },
+                        onDragCancel = { itemListDragAndDropState.onDragInterrupted() })
+                }, state = itemListDragAndDropState.getLazyListState()
+            ) {
+                itemsIndexed(items = dragMap, key = { _, item -> item.second }) { index, item ->
+                    val displacementOffset =
+                        if (index == itemListDragAndDropState.getCurrentIndexOfDraggedListItem()) {
+                            itemListDragAndDropState.elementDisplacement.takeIf { it != 0f }
+                        } else {
+                            null
+                        }
+                    ListItem(headlineContent = { Text(text = item.first) },
+                        modifier = Modifier
+                            .clickable {
+                                if (value.contains(item.second)) value.remove(item.second) else value.add(
+                                    item.second
+                                )
+                                dragMap.sortBy { it.second !in value }
+                            }
+                            .graphicsLayer { translationY = displacementOffset ?: 0f }
+                            .zIndex(if (displacementOffset != null) 1f else 0f),
+                        leadingContent = {
+                            Checkbox(
+                                checked = value.contains(item.second), onCheckedChange = null
+                            )
+                        },
+                        trailingContent = {
+                            Icon(
+                                imageVector = Icons.Default.DragIndicator, contentDescription = null
+                            )
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = if (displacementOffset != null) {
+                                ListItemDefaults.containerColor.copy(alpha = 0.9f)
+                            } else {
+                                ListItemDefaults.containerColor
+                            }
+                        )
+                    )
+                }
+            }
+        },
+        onConfirm = {
             val selectedItemsInOrder = dragMap.map { it.second }.filter { it in value }
             onClick(value.map { "${selectedItemsInOrder.indexOf(it)}:$it" }.toSet())
-            dialog = false
-        }, enabled = isValid) {
-            Text(text = stringResource(id = R.string.app_name_dialog_ok))
-        }
-    }, dismissButton = {
-        TextButton(onClick = { dialog = false }) {
-            Text(text = stringResource(id = R.string.app_name_dialog_cancel))
-        }
-    }, title = { Text(text = name) }, text = {
-        val scope = rememberCoroutineScope()
-        val overscrollJob = remember { mutableStateOf<Job?>(null) }
-        val itemListDragAndDropState = rememberDragDropListState(onMove = { from, to ->
-            val items = dragMap.map { it.second }
-            val fromItem = items[from]
-            val toItem = items[to]
-            dragMap.move(from, to)
-            if (fromItem !in value && toItem in value) value.add(fromItem)
-            else if (fromItem in value && toItem !in value) value.remove(fromItem)
-        })
-
-        val haptic = LocalHapticFeedback.current
-        LazyColumn(
-            modifier = Modifier.pointerInput(Unit) {
-                detectDragGesturesAfterLongPress(onDrag = { change, offset ->
-                    change.consume()
-                    itemListDragAndDropState.onDrag(offset)
-                    handleOverscrollJob(overscrollJob, scope, itemListDragAndDropState)
-                },
-                    onDragStart = { offset ->
-                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        itemListDragAndDropState.onDragStart(offset)
-                    },
-                    onDragEnd = { itemListDragAndDropState.onDragInterrupted() },
-                    onDragCancel = { itemListDragAndDropState.onDragInterrupted() })
-            }, state = itemListDragAndDropState.getLazyListState()
-        ) {
-            itemsIndexed(items = dragMap, key = { _, item -> item.second }) { index, item ->
-                val displacementOffset =
-                    if (index == itemListDragAndDropState.getCurrentIndexOfDraggedListItem()) {
-                        itemListDragAndDropState.elementDisplacement.takeIf { it != 0f }
-                    } else {
-                        null
-                    }
-                ListItem(headlineContent = { Text(text = item.first) },
-                    modifier = Modifier
-                        .clickable {
-                            if (value.contains(item.second)) value.remove(item.second) else value.add(
-                                item.second
-                            )
-                            dragMap.sortBy { it.second !in value }
-                        }
-                        .graphicsLayer { translationY = displacementOffset ?: 0f }
-                        .zIndex(if (displacementOffset != null) 1f else 0f),
-                    leadingContent = {
-                        Checkbox(
-                            checked = value.contains(item.second), onCheckedChange = null
-                        )
-                    },
-                    trailingContent = {
-                        Icon(
-                            imageVector = Icons.Default.DragIndicator, contentDescription = null
-                        )
-                    },
-                    colors = ListItemDefaults.colors(
-                        containerColor = if (displacementOffset != null) {
-                            ListItemDefaults.containerColor.copy(alpha = 0.9f)
-                        } else {
-                            ListItemDefaults.containerColor
-                        }
-                    )
-                )
-            }
-        }
-    })
+        },
+        onConfirmEnabled = isValid
+    )
 }
 
 private fun handleOverscrollJob(
