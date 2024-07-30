@@ -25,6 +25,9 @@ release/
 .gradle/
 build/
 
+# Kotlin files
+.kotlin/
+
 # Local configuration file (sdk path, etc)
 local.properties
 
