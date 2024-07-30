@@ -21,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -245,7 +247,9 @@ fun SettingsScreen(
                 )
             )
 
-            ClickableText(text = summary) { offset ->
+            ClickableText(
+                text = summary, style = TextStyle.Default.copy(color = LocalContentColor.current)
+            ) { offset ->
                 summary.getStringAnnotations(offset, offset).find { it.tag.startsWith("URL") }
                     ?.let { stringAnnotation ->
                         CustomTabsIntent.Builder().build().launchUrl(

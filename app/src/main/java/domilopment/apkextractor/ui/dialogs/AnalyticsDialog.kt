@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
@@ -154,7 +156,7 @@ fun AnalyticsDialog(
                 ), Pair(stringResource(id = R.string.terms_title), Constants.TERMS_URL)
             )
             ClickableText(
-                text = text
+                text = text, style = TextStyle.Default.copy(color = LocalContentColor.current)
             ) { offset ->
                 text.getStringAnnotations(offset, offset).find { it.tag.startsWith("URL") }
                     ?.let { stringAnnotation ->
