@@ -98,10 +98,9 @@ object Utils {
 
     fun getAnnotatedUrlString(text: String, vararg links: Pair<String, String>): AnnotatedString {
         return buildAnnotatedString {
-
             append(text)
 
-            links.forEachIndexed { index, pair ->
+            links.forEach { pair ->
                 val startIndex = text.indexOf(pair.first)
                 val endIndex = startIndex + pair.first.length
 
@@ -112,7 +111,7 @@ object Utils {
                 )
 
                 addStringAnnotation(
-                    tag = "URL${index}", annotation = pair.second, start = startIndex, end = endIndex
+                    tag = "URL", annotation = pair.second, start = startIndex, end = endIndex
                 )
             }
         }

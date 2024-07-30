@@ -238,19 +238,15 @@ fun SettingsScreen(
         onPerformance = model::setPerformance,
         dataCollectionDeleteDialogContent = {
             val summary = Utils.getAnnotatedUrlString(
-                text = stringResource(id = R.string.data_collection_delete_summary), Pair(
-                    "statement on deletion and retention",
-                    "https://policies.google.com/technologies/retention"
-                ), Pair(
-                    "der Stellungnahme von Google zur Löschung und Aufbewahrung ausführlich beschrieben",
-                    "https://policies.google.com/technologies/retention?hl=de"
-                )
+                text = stringResource(id = R.string.data_collection_delete_summary),
+                "statement on deletion and retention" to "https://policies.google.com/technologies/retention",
+                "der Stellungnahme von Google zur Löschung und Aufbewahrung ausführlich beschrieben" to "https://policies.google.com/technologies/retention?hl=de"
             )
 
             ClickableText(
                 text = summary, style = TextStyle.Default.copy(color = LocalContentColor.current)
             ) { offset ->
-                summary.getStringAnnotations(offset, offset).find { it.tag.startsWith("URL") }
+                summary.getStringAnnotations(tag = "URL", offset, offset).firstOrNull()
                     ?.let { stringAnnotation ->
                         CustomTabsIntent.Builder().build().launchUrl(
                             context, Uri.parse(stringAnnotation.item)

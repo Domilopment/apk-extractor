@@ -146,19 +146,19 @@ fun AnalyticsDialog(
             Text(
                 text = AnnotatedString(text = stringResource(id = R.string.consent_dialog_consent_notice))
             )
+
+            val privacyPolicy = stringResource(id = R.string.privacy_policy_title)
+            val terms = stringResource(id = R.string.terms_title)
             val text = Utils.getAnnotatedUrlString(
                 stringResource(
-                    id = R.string.consent_dialog_footer,
-                    stringResource(id = R.string.privacy_policy_title),
-                    stringResource(id = R.string.terms_title)
-                ), Pair(
-                    stringResource(id = R.string.privacy_policy_title), Constants.PRIVACY_POLICY_URL
-                ), Pair(stringResource(id = R.string.terms_title), Constants.TERMS_URL)
+                    id = R.string.consent_dialog_footer, privacyPolicy, terms
+
+                ), privacyPolicy to Constants.PRIVACY_POLICY_URL, terms to Constants.TERMS_URL
             )
             ClickableText(
                 text = text, style = TextStyle.Default.copy(color = LocalContentColor.current)
             ) { offset ->
-                text.getStringAnnotations(offset, offset).find { it.tag.startsWith("URL") }
+                text.getStringAnnotations(tag = "URL", offset, offset).firstOrNull()
                     ?.let { stringAnnotation ->
                         CustomTabsIntent.Builder().build().launchUrl(
                             context, Uri.parse(stringAnnotation.item)
