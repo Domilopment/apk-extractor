@@ -148,7 +148,6 @@ fun AnalyticsDialog(
             HyperlinkText(
                 text = stringResource(
                     id = R.string.consent_dialog_footer, privacyPolicy, terms
-
                 ), links = arrayOf(
                     Link(text = privacyPolicy, href = Constants.PRIVACY_POLICY_URL),
                     Link(text = terms, href = Constants.TERMS_URL)
