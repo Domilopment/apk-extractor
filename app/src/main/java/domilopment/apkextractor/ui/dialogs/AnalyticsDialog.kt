@@ -1,19 +1,15 @@
 package domilopment.apkextractor.ui.dialogs
 
 import android.content.Context
-import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -32,12 +28,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
+import domilopment.apkextractor.ui.components.HyperlinkText
+import domilopment.apkextractor.ui.components.Link
 import domilopment.apkextractor.utils.Constants
-import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.fadingEdge
 
 @Composable
@@ -149,22 +145,15 @@ fun AnalyticsDialog(
 
             val privacyPolicy = stringResource(id = R.string.privacy_policy_title)
             val terms = stringResource(id = R.string.terms_title)
-            val text = Utils.getAnnotatedUrlString(
-                stringResource(
+            HyperlinkText(
+                text = stringResource(
                     id = R.string.consent_dialog_footer, privacyPolicy, terms
 
-                ), privacyPolicy to Constants.PRIVACY_POLICY_URL, terms to Constants.TERMS_URL
+                ), links = arrayOf(
+                    Link(text = privacyPolicy, href = Constants.PRIVACY_POLICY_URL),
+                    Link(text = terms, href = Constants.TERMS_URL)
+                )
             )
-            ClickableText(
-                text = text, style = TextStyle.Default.copy(color = LocalContentColor.current)
-            ) { offset ->
-                text.getStringAnnotations(tag = "URL", offset, offset).firstOrNull()
-                    ?.let { stringAnnotation ->
-                        CustomTabsIntent.Builder().build().launchUrl(
-                            context, Uri.parse(stringAnnotation.item)
-                        )
-                    }
-            }
         }
     })
 }

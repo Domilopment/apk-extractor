@@ -20,8 +20,6 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -47,6 +44,8 @@ import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.ui.Screen
+import domilopment.apkextractor.ui.components.HyperlinkText
+import domilopment.apkextractor.ui.components.Link
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import domilopment.apkextractor.utils.Constants
 import domilopment.apkextractor.utils.MySnackbarVisuals
@@ -237,22 +236,18 @@ fun SettingsScreen(
         performance = uiState.performance,
         onPerformance = model::setPerformance,
         dataCollectionDeleteDialogContent = {
-            val summary = Utils.getAnnotatedUrlString(
+            HyperlinkText(
                 text = stringResource(id = R.string.data_collection_delete_summary),
-                "statement on deletion and retention" to "https://policies.google.com/technologies/retention",
-                "der Stellungnahme von Google zur Löschung und Aufbewahrung ausführlich beschrieben" to "https://policies.google.com/technologies/retention?hl=de"
+                links = arrayOf(
+                    Link(
+                        text = "statement on deletion and retention",
+                        href = "https://policies.google.com/technologies/retention"
+                    ), Link(
+                        text = "der Stellungnahme von Google zur Löschung und Aufbewahrung ausführlich beschrieben",
+                        href = "https://policies.google.com/technologies/retention?hl=de"
+                    )
+                )
             )
-
-            ClickableText(
-                text = summary, style = TextStyle.Default.copy(color = LocalContentColor.current)
-            ) { offset ->
-                summary.getStringAnnotations(tag = "URL", offset, offset).firstOrNull()
-                    ?.let { stringAnnotation ->
-                        CustomTabsIntent.Builder().build().launchUrl(
-                            context, Uri.parse(stringAnnotation.item)
-                        )
-                    }
-            }
         },
         onDeleteFirebaseInstallationsId = model::onDeleteFirebaseInstallationsId,
         onGitHub = {

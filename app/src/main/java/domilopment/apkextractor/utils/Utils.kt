@@ -10,8 +10,6 @@ import android.os.Build
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextDecoration
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -94,27 +92,6 @@ object Utils {
                 listOf(AnnotatedString.Range(SpanStyle(color), startIndex, endIndex))
             )
         } else AnnotatedString(text.toString())
-    }
-
-    fun getAnnotatedUrlString(text: String, vararg links: Pair<String, String>): AnnotatedString {
-        return buildAnnotatedString {
-            append(text)
-
-            links.forEach { pair ->
-                val startIndex = text.indexOf(pair.first)
-                val endIndex = startIndex + pair.first.length
-
-                addStyle(
-                    style = SpanStyle(
-                        color = Color.Blue, textDecoration = TextDecoration.Underline
-                    ), start = startIndex, end = endIndex
-                )
-
-                addStringAnnotation(
-                    tag = "URL", annotation = pair.second, start = startIndex, end = endIndex
-                )
-            }
-        }
     }
 
     val androidApiLevel: Map<Int, String> = mapOf(
