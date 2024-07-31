@@ -39,7 +39,7 @@
     <string name="app_type_user">User</string>
 
     <!-- Preference Data Collection -->
-    <string name="data_collection_header">Data Collection</string>
+    <string name="data_collection_header">Data Collection and Usage</string>
     <string name="data_collection_analytics">Analytics</string>
     <string name="data_collection_analytics_summary">Collection of user data, such as app interactions and screen views, to understand user behavior and optimize app performance.</string>
     <string name="data_collection_crashlytics">Crashlytics</string>

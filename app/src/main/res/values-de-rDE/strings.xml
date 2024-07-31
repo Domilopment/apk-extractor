@@ -38,7 +38,7 @@
     <string name="app_type_user">Benutzer</string>
 
     <!-- Preference Data Collection -->
-    <string name="data_collection_header">Datenerhebung</string>
+    <string name="data_collection_header">Datenerfassung und -nutzung</string>
     <string name="data_collection_analytics">Analysen</string>
     <string name="data_collection_analytics_summary">Erfassung von Benutzerdaten, wie App-Interaktionen und Bildschirmansichten, um das Benutzerverhalten zu verstehen und die App-Leistung zu optimieren.</string>
     <string name="data_collection_crashlytics">Absturzberichte</string>
