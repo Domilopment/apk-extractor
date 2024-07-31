@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.dialogs
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -25,9 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -37,12 +34,11 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.components.HyperlinkText
 import domilopment.apkextractor.ui.components.Link
 import domilopment.apkextractor.utils.Constants
-import domilopment.apkextractor.utils.fadingEdge
+import domilopment.apkextractor.utils.fadingBottom
+import domilopment.apkextractor.utils.fadingTop
 
 @Composable
-fun AnalyticsDialog(
-    onConfirmButton: (Boolean, Boolean, Boolean) -> Unit, context: Context = LocalContext.current
-) {
+fun AnalyticsDialog(onConfirmButton: (Boolean, Boolean, Boolean) -> Unit) {
     val scrollState = rememberScrollState()
     val onTop by remember {
         derivedStateOf {
@@ -88,12 +84,8 @@ fun AnalyticsDialog(
     }, text = {
         Column(
             modifier = Modifier
-                .fadingEdge(
-                    start = Offset.Zero, end = Offset(0f, Float.POSITIVE_INFINITY), visible = onTop
-                )
-                .fadingEdge(
-                    start = Offset(0f, Float.POSITIVE_INFINITY), end = Offset.Zero, visible = onEnd
-                )
+                .fadingTop(visible = onTop)
+                .fadingBottom(visible = onEnd)
                 .verticalScroll(state = scrollState)
         ) {
             Text(

@@ -25,9 +25,7 @@ fun Modifier.conditional(
 }
 
 fun Modifier.fadingEdge(
-    start: Offset,
-    end: Offset,
-    visible: Boolean = true
+    start: Offset, end: Offset, visible: Boolean = true
 ) = this
     .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
     .composed {
@@ -43,3 +41,11 @@ fun Modifier.fadingEdge(
             )
         }
     }
+
+fun Modifier.fadingTop(
+    visible: Boolean
+) = fadingEdge(start = Offset.Zero, end = Offset(0f, Float.POSITIVE_INFINITY), visible = visible)
+
+fun Modifier.fadingBottom(visible: Boolean) = fadingEdge(
+    start = Offset(0f, Float.POSITIVE_INFINITY), end = Offset.Zero, visible = visible
+)
