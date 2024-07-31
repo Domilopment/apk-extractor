@@ -2,6 +2,7 @@ package domilopment.apkextractor.ui.viewModels
 
 import android.content.pm.PackageInstaller
 import android.net.Uri
+import android.os.Bundle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,6 +13,7 @@ import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.data.UiText
+import domilopment.apkextractor.data.repository.analytics.AnalyticsRepository
 import domilopment.apkextractor.domain.usecase.appList.AddAppUseCase
 import domilopment.apkextractor.domain.usecase.appList.RemoveAppUseCase
 import domilopment.apkextractor.domain.usecase.installer.InstallUseCase
@@ -23,6 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InstallerActivityViewModel @Inject constructor(
+    private val analyticsRepository: AnalyticsRepository,
     private val installUseCase: InstallUseCase,
     private val addAppUseCase: AddAppUseCase,
     private val uninstallUseCase: UninstallUseCase,
@@ -98,6 +101,12 @@ class InstallerActivityViewModel @Inject constructor(
     fun addApp(packageName: String) {
         viewModelScope.launch {
             addAppUseCase(packageName)
+        }
+    }
+
+    fun analyticsEventLogger(screenView: String, bundle: Bundle) {
+        viewModelScope.launch {
+            analyticsRepository.logEvent(screenView, bundle)
         }
     }
 }

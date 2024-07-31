@@ -22,6 +22,7 @@ import androidx.core.util.Consumer
 import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.data.ApkInstallationResult
 import domilopment.apkextractor.data.InstallationResultType
+import domilopment.apkextractor.data.repository.analytics.AnalyticsRepository
 import domilopment.apkextractor.ui.dialogs.InstallationResultDialog
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
@@ -90,6 +91,12 @@ class InstallerActivity : ComponentActivity() {
                 else -> super.finish()
             }
         } ?: super.finish()
+
+        val bundle = Bundle().apply {
+            putString(AnalyticsRepository.Param.SCREEN_NAME, InstallerActivity::class.simpleName)
+            putString(AnalyticsRepository.Param.SCREEN_CLASS, InstallerActivity::class.simpleName)
+        }
+        model.analyticsEventLogger(AnalyticsRepository.Events.SCREEN_VIEW, bundle)
     }
 
     private fun onNewIntent(intent: Intent, result: (InstallationResultType) -> Unit) {
