@@ -1,6 +1,7 @@
 package domilopment.apkextractor.data.repository.analytics
 
 import android.content.Context
+import android.os.Bundle
 import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -16,6 +17,19 @@ interface AnalyticsRepository {
     fun setCrashlyticsCollectionEnabled(boolean: Boolean)
     fun setPerformanceCollectionEnabled(boolean: Boolean)
     suspend fun delete()
+    suspend fun logEvent(name: String, bundle: Bundle)
+
+    object Events {
+        const val SCREEN_VIEW = FirebaseAnalytics.Event.SCREEN_VIEW
+        const val SELECT_ITEM = FirebaseAnalytics.Event.SELECT_ITEM
+    }
+
+    object Param {
+        const val SCREEN_NAME = FirebaseAnalytics.Param.SCREEN_NAME
+        const val SCREEN_CLASS = FirebaseAnalytics.Param.SCREEN_CLASS
+        const val ITEM_LIST_ID = FirebaseAnalytics.Param.ITEM_LIST_ID
+        const val ITEM_LIST_NAME = FirebaseAnalytics.Param.ITEM_LIST_NAME
+    }
 }
 
 class AnalyticsRepositoryImpl @Inject constructor(
@@ -52,5 +66,9 @@ class AnalyticsRepositoryImpl @Inject constructor(
                 ).show()
             }
         }
+    }
+
+    override suspend fun logEvent(name: String, bundle: Bundle) {
+        analytics.logEvent(name, bundle)
     }
 }

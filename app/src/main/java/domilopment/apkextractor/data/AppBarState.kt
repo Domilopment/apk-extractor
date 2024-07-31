@@ -25,7 +25,7 @@ class AppBarState(
     init {
         navController.currentBackStackEntryFlow.distinctUntilChanged().onEach { backStackEntry ->
             val route = backStackEntry.destination.route
-            currentScreen = getScreen(route)
+            currentScreen = Screen.getScreen(route)
         }.launchIn(scope)
     }
 
@@ -52,13 +52,6 @@ class AppBarState(
 
     val actionModeActions: List<BottomBarItem>
         get() = currentScreen?.bottomBarActions.orEmpty()
-
-    private fun getScreen(route: String?): Screen? = when (route) {
-        Screen.AppList.route -> Screen.AppList
-        Screen.ApkList.route -> Screen.ApkList
-        Screen.Settings.route -> Screen.Settings
-        else -> null
-    }
 }
 
 @Composable

@@ -102,6 +102,7 @@ class MainActivity : AppCompatActivity() {
             }
             setKeepOnScreenCondition { keepOnScreen }
         }
+
         setContent {
             val mainScreenState = model.mainScreenState
             val actionModeState = model.actionModeState
@@ -205,6 +206,7 @@ class MainActivity : AppCompatActivity() {
                         ApkExtractorNavHost(
                             modifier = Modifier.padding(contentPadding),
                             navController = navController,
+                            analyticsEventLogger = model::logEvent,
                             showSnackbar = {
                                 scope.launch {
                                     snackbarHostState.showSnackbar(it)

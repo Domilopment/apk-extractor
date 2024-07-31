@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Apps
@@ -18,10 +19,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 sealed interface Screen {
+    @get:StringRes
     val routeNameRes: Int
     val route: String
     val icon: ImageVector
     val appBarOnNavIconClick: (() -> Unit)?
+
+    @get:StringRes
     val appBarTitleRes: Int
     val isSearchable: Boolean
     val appBarActions: List<ActionMenuItem>
@@ -115,5 +119,14 @@ sealed interface Screen {
 
         private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
         val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
+
+    companion object {
+        fun getScreen(route: String?): Screen? = when (route) {
+            AppList.route -> AppList
+            ApkList.route -> ApkList
+            Settings.route -> Settings
+            else -> null
+        }
     }
 }
