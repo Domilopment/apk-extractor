@@ -30,6 +30,9 @@ fun HyperlinkText(
 
         links.forEach { link ->
             val startIndex = text.indexOf(link.text)
+
+            if (startIndex < 0) return@forEach
+
             val endIndex = startIndex + link.text.length
 
             addStyle(
