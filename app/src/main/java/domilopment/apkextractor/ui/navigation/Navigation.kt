@@ -31,9 +31,7 @@ import timber.log.Timber
 fun ApkExtractorNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    analyticsEventLogger: (
-        name: String, bundle: Bundle
-    ) -> Unit,
+    analyticsEventLogger: (name: String, bundle: Bundle) -> Unit,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     searchQuery: String,
     onTriggerActionMode: () -> Unit,
@@ -82,6 +80,7 @@ fun ApkExtractorNavHost(
                         restoreState = true
                     }
                 },
+                analyticsEventLogger = analyticsEventLogger,
                 showSnackbar = showSnackbar,
                 onTriggerActionMode = onTriggerActionMode,
                 isActionModeAllItemsSelected = isActionModeAllItemsSelected,
@@ -96,13 +95,14 @@ fun ApkExtractorNavHost(
                     launchSingleTop = true
                     restoreState = true
                 }
-            }, showSnackbar = { showSnackbar(it) })
+            }, analyticsEventLogger = analyticsEventLogger, showSnackbar = { showSnackbar(it) })
         }
         composable(Screen.Settings.route) {
             val model = hiltViewModel<SettingsScreenViewModel>()
 
             SettingsScreen(
                 model = model,
+                analyticsEventLogger = analyticsEventLogger,
                 showSnackbar = showSnackbar,
                 onBackClicked = {
                     navController.popBackStack(

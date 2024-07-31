@@ -3,6 +3,7 @@ package domilopment.apkextractor.ui.apkList
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.widget.Toast
@@ -36,6 +37,7 @@ fun ApkListScreen(
     model: ApkListViewModel,
     searchString: String,
     onNavigate: () -> Unit,
+    analyticsEventLogger: (name: String, bundle: Bundle) -> Unit,
     showSnackbar: (MySnackbarVisuals) -> Unit
 ) {
     val context = LocalContext.current
