@@ -8,7 +8,6 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -42,16 +41,12 @@ fun ApkExtractorNavHost(
     appUpdateManager: AppUpdateManager,
     inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
-    val context = LocalContext.current
     DisposableEffect(key1 = navController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
-            val label =
-                Screen.getScreen(destination.route)?.routeNameRes?.let { context.getString(it) }
-
-            Timber.d("Navigated to: $label")
+            Timber.d("Navigated to: ${destination.route}")
 
             val bundle = Bundle().apply {
-                putString(AnalyticsRepository.Param.SCREEN_NAME, label)
+                putString(AnalyticsRepository.Param.SCREEN_NAME, destination.route)
                 putString(AnalyticsRepository.Param.SCREEN_CLASS, MainActivity::class.simpleName)
             }
             analyticsEventLogger(AnalyticsRepository.Events.SCREEN_VIEW, bundle)
