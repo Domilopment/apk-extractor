@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -57,13 +60,13 @@ fun AnalyticsDialog(
     }
 
     var analytics by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     var crashlytics by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     var performance by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     LaunchedEffect(key1 = onEnd) {
@@ -100,10 +103,12 @@ fun AnalyticsDialog(
                 )
             )
             Column(
-                modifier = Modifier.background(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(8.dp)
-                )
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(8.dp)
+                    )
             ) {
                 ListItem(
                     headlineContent = { Text(text = stringResource(id = R.string.data_collection_analytics)) },
@@ -139,9 +144,6 @@ fun AnalyticsDialog(
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                 )
             }
-            Text(
-                text = AnnotatedString(text = stringResource(id = R.string.consent_dialog_consent_notice))
-            )
 
             val privacyPolicy = stringResource(id = R.string.privacy_policy_title)
             val terms = stringResource(id = R.string.terms_title)
@@ -151,6 +153,15 @@ fun AnalyticsDialog(
                 ), links = arrayOf(
                     Link(text = privacyPolicy, href = Constants.PRIVACY_POLICY_URL),
                     Link(text = terms, href = Constants.TERMS_URL)
+                )
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = AnnotatedString(
+                    text = stringResource(id = R.string.consent_dialog_consent_notice),
+                    SpanStyle(fontWeight = FontWeight.Bold)
                 )
             )
         }

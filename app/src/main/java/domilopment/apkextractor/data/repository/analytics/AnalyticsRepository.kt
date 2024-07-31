@@ -3,7 +3,6 @@ package domilopment.apkextractor.data.repository.analytics
 import android.content.Context
 import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.setConsent
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.perf.FirebasePerformance
@@ -29,10 +28,6 @@ class AnalyticsRepositoryImpl @Inject constructor(
 
     override fun setAnalyticsCollectionEnabled(boolean: Boolean) {
         analytics.setAnalyticsCollectionEnabled(boolean)
-        analytics.setConsent {
-            analyticsStorage =
-                if (boolean) FirebaseAnalytics.ConsentStatus.GRANTED else FirebaseAnalytics.ConsentStatus.DENIED
-        }
         if (!boolean) analytics.resetAnalyticsData()
     }
 

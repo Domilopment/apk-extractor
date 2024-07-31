@@ -41,11 +41,11 @@
     <!-- Preference Data Collection -->
     <string name="data_collection_header">Data Collection</string>
     <string name="data_collection_analytics">Analytics</string>
-    <string name="data_collection_analytics_summary">Collects user activity data (like app interactions, screen views), device and network information, crash and performance data, and identifiers (like Instance ID or Android Advertising ID).\nTo understand user behavior, improve user experience, and optimize app performance.</string>
+    <string name="data_collection_analytics_summary">Collection of user data, such as app interactions and screen views, to understand user behavior and optimize app performance.</string>
     <string name="data_collection_crashlytics">Crashlytics</string>
-    <string name="data_collection_crashlytics_summary">Collects crash reports, device and system data, user actions leading up to the crash, and app-specific log data.\nTo monitor and resolve app crashes and improve app stability.</string>
+    <string name="data_collection_crashlytics_summary">Collection of crash reports and system-related data to troubleshoot issues and improve stability.</string>
     <string name="data_collection_perf">Performance</string>
-    <string name="data_collection_perf_summary">Collects performance metrics like app start time, network request details, and user interaction times, device and network information.\nTo monitor app performance, identify bottlenecks, and optimize user experience.</string>
+    <string name="data_collection_perf_summary">Collection of performance metrics, such as app startup time and network requests, to optimize app performance.</string>
     <string name="data_collection_delete">Delete Installations-ID</string>
     <string name="data_collection_delete_summary">Firebase installation IDs are different for every installation of every application; different applications on the same device have different Firebase installation IDs. Firebase installation IDs identify app installations and data tied to those app installations.\n\nWhen you delete an installation ID, the data tied to that installation ID is removed from live and backup systems of all Firebase services that use Firebase installation IDs to identify installations within 180 days. This process is described at a high level in Google’s statement on deletion and retention.</string>
     <string name="data_collection_delete_success">Firebase-Installation-ID deleted</string>
@@ -306,10 +306,10 @@
     <string name="popup_dialog_update_failed_button_negative">Close</string>
 
     <!-- User Consent Dialog -->
-    <string name="consent_dialog_header">We value your privacy and want to ensure you have control over your data. Our app uses Firebase, Crashlytics, and performance monitoring to improve your experience. Please review the details below:</string>
-    <string name="consent_dialog_consent_notice">Consent:\nBy tapping \"Confirm Selected\" you consent to the collection and processing of your data as described above. If you do not consent, certain features of the app may not function as intended.\n</string>
-    <string name="consent_dialog_footer">For more details, please review our %s and %s.</string>
-    <string name="consent_dialog_confirm">Confirm Selected</string>
+    <string name="consent_dialog_header">We value your privacy. To improve your experience, we use Firebase, Crashlytics, and performance monitoring. You can choose which data we are allowed to collect.</string>
+    <string name="consent_dialog_consent_notice">By tapping \"Confirm Selection,\" you agree to the collection and processing of your data as described above. Without your consent, some features of the app may be limited.</string>
+    <string name="consent_dialog_footer">You can withdraw your consent at any time in the Settings. Please read our %s and %s for more information.</string>
+    <string name="consent_dialog_confirm">Confirm Selection</string>
     <string name="consent_dialog_dismiss">Deny All</string>
 
 </resources>
