@@ -22,8 +22,6 @@ fun SwitchPreferenceCompat(
         isPreferenceVisible = isVisible,
         onClick = { onClick(!state) },
         trailingContent = {
-            Switch(
-                checked = state, onCheckedChange = null
-            )
+            Switch(checked = state, onCheckedChange = null)
         })
 }

@@ -3,7 +3,6 @@ package domilopment.apkextractor.ui.apkList
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
@@ -92,16 +90,9 @@ private fun ApkListItemAvatar(appIcon: ImageBitmap?) {
             context.resources, android.R.drawable.sym_def_app_icon, context.theme
         )!!.toBitmap().asImageBitmap()
     }
-    Box {
-        Image(
-            bitmap = icon,
-            contentDescription = null,
-            modifier = Modifier
-                .size(56.dp)
-                .align(Alignment.Center)
-        )
-    }
-
+    Image(
+        bitmap = icon, contentDescription = null, modifier = Modifier.size(56.dp)
+    )
 }
 
 @Preview
