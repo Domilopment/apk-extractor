@@ -42,10 +42,8 @@ fun Modifier.fadingEdge(
         }
     }
 
-fun Modifier.fadingTop(
-    visible: Boolean
-) = fadingEdge(start = Offset.Zero, end = Offset(0f, Float.POSITIVE_INFINITY), visible = visible)
+fun Modifier.fadingTop(visible: Boolean) =
+    fadingEdge(start = Offset.Zero, end = Offset(0f, Float.POSITIVE_INFINITY), visible = visible)
 
-fun Modifier.fadingBottom(visible: Boolean) = fadingEdge(
-    start = Offset(0f, Float.POSITIVE_INFINITY), end = Offset.Zero, visible = visible
-)
+fun Modifier.fadingBottom(visible: Boolean) =
+    fadingEdge(start = Offset(0f, Float.POSITIVE_INFINITY), end = Offset.Zero, visible = visible)

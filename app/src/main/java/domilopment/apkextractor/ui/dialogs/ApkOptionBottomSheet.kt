@@ -267,7 +267,7 @@ fun ApkSheetHeader(
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis
         )
-    }, modifier = Modifier.height(72.dp), supportingContent = {
+    }, supportingContent = {
         if (packageName != null) Text(
             text = packageName,
             modifier = Modifier

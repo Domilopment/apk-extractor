@@ -365,7 +365,7 @@ private fun AppSheetHeader(
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
         )
-    }, modifier = Modifier.height(72.dp), supportingContent = {
+    }, supportingContent = {
         Text(
             text = packageName,
             modifier = Modifier
