@@ -11,7 +11,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,16 +24,22 @@ import androidx.core.util.Consumer
 import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.data.ApkInstallationResult
 import domilopment.apkextractor.data.InstallationResultType
-import domilopment.apkextractor.data.repository.analytics.AnalyticsRepository
+import domilopment.apkextractor.data.repository.analytics.AnalyticsHelper
+import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
+import domilopment.apkextractor.data.repository.analytics.logScreenView
 import domilopment.apkextractor.ui.dialogs.InstallationResultDialog
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.InstallerActivityViewModel
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class InstallerActivity : ComponentActivity() {
     private val model by viewModels<InstallerActivityViewModel>()
+
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,30 +61,41 @@ class InstallerActivity : ComponentActivity() {
                 }
             }
 
-            APKExtractorTheme(dynamicColor = true) {
-                Surface {
-                    Box(contentAlignment = Alignment.Center) {
-                        if (uiState.shouldBeShown) ProgressDialog(state = uiState,
-                            onDismissRequest = {
-                                model.cancel()
-                                this@InstallerActivity.finish()
-                            },
-                            onCancel = {
-                                model.cancel()
-                                this@InstallerActivity.finish()
-                            },
-                            dismissOnBackPress = true,
-                            dismissOnClickOutside = true
-                        )
+            CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
+                APKExtractorTheme(dynamicColor = true) {
+                    Surface {
+                        val analytics = LocalAnalyticsHelper.current
 
-                        installationResult?.let {
-                            InstallationResultDialog(
+                        Box(contentAlignment = Alignment.Center) {
+                            if (uiState.shouldBeShown) ProgressDialog(state = uiState,
                                 onDismissRequest = {
-                                    installationResult = null
+                                    model.cancel()
                                     this@InstallerActivity.finish()
                                 },
-                                result = it.result,
+                                onCancel = {
+                                    model.cancel()
+                                    this@InstallerActivity.finish()
+                                },
+                                dismissOnBackPress = true,
+                                dismissOnClickOutside = true
                             )
+
+                            installationResult?.let {
+                                InstallationResultDialog(
+                                    onDismissRequest = {
+                                        installationResult = null
+                                        this@InstallerActivity.finish()
+                                    },
+                                    result = it.result,
+                                )
+                            }
+
+                            LaunchedEffect(key1 = Unit) {
+                                analytics.logScreenView(
+                                    InstallerActivity::class.simpleName,
+                                    InstallerActivity::class.simpleName
+                                )
+                            }
                         }
                     }
                 }
@@ -91,12 +110,6 @@ class InstallerActivity : ComponentActivity() {
                 else -> super.finish()
             }
         } ?: super.finish()
-
-        val bundle = Bundle().apply {
-            putString(AnalyticsRepository.Param.SCREEN_NAME, InstallerActivity::class.simpleName)
-            putString(AnalyticsRepository.Param.SCREEN_CLASS, InstallerActivity::class.simpleName)
-        }
-        model.analyticsEventLogger(AnalyticsRepository.Events.SCREEN_VIEW, bundle)
     }
 
     private fun onNewIntent(intent: Intent, result: (InstallationResultType) -> Unit) {

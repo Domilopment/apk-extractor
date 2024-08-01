@@ -3,7 +3,6 @@ package domilopment.apkextractor.ui.appList
 import android.Manifest
 import android.content.ClipData
 import android.content.Intent
-import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,7 +43,6 @@ fun AppListScreen(
     model: AppListViewModel,
     searchString: String,
     onNavigate: () -> Unit,
-    analyticsEventLogger: (name: String, bundle: Bundle) -> Unit,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     isActionMode: Boolean,
     onTriggerActionMode: () -> Unit,

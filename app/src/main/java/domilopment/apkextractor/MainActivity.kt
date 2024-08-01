@@ -24,6 +24,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,6 +59,8 @@ import domilopment.apkextractor.data.InAppUpdateResult
 import domilopment.apkextractor.data.InAppUpdateResultType
 import domilopment.apkextractor.data.UiMode
 import domilopment.apkextractor.data.rememberAppBarState
+import domilopment.apkextractor.data.repository.analytics.AnalyticsHelper
+import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.actionBar.APKExtractorAppBar
 import domilopment.apkextractor.ui.dialogs.AnalyticsDialog
@@ -70,6 +73,7 @@ import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -86,6 +90,9 @@ class MainActivity : AppCompatActivity() {
             popupSnackbarForCompleteUpdate()
         }
     }
+
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
 
     @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -163,88 +170,90 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            APKExtractorTheme(dynamicColor = dynamicColors) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .semantics { testTagsAsResourceId = true },
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Scaffold(topBar = {
-                        APKExtractorAppBar(
-                            appBarState = appBarState,
-                            modifier = Modifier.fillMaxWidth(),
-                            uiMode = mainScreenState.uiMode,
-                            searchText = mainScreenState.appBarSearchText,
-                            isAllItemsChecked = actionModeState.selectAllItemsCheck,
-                            onSearchQueryChanged = model::updateSearchQuery,
-                            onTriggerSearch = model::setSearchBarState,
-                            onReturnUiMode = model::onReturnUiMode,
-                            onCheckAllItems = { model.updateActionMode(selectAllItems = it) },
-                            selectedApplicationsCount = actionModeState.selectedItemCount
-                        )
-                    }, bottomBar = {
-                        APKExtractorBottomNavigation(
-                            items = listOf(
-                                Screen.AppList, Screen.ApkList
-                            ),
-                            navController = navController,
-                            appBarState = appBarState,
-                            isActionMode = isActionModeActive,
-                            onNavigate = model::resetAppBarState
-                        )
-                    }, snackbarHost = {
-                        SnackbarHost(hostState = snackbarHostState, snackbar = { snackbarData ->
-                            val visuals = snackbarData.visuals as MySnackbarVisuals
-                            Snackbar(
-                                snackbarData = snackbarData,
-                                contentColor = visuals.messageColor ?: SnackbarDefaults.contentColor
+            CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
+                APKExtractorTheme(dynamicColor = dynamicColors) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .semantics { testTagsAsResourceId = true },
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        Scaffold(topBar = {
+                            APKExtractorAppBar(
+                                appBarState = appBarState,
+                                modifier = Modifier.fillMaxWidth(),
+                                uiMode = mainScreenState.uiMode,
+                                searchText = mainScreenState.appBarSearchText,
+                                isAllItemsChecked = actionModeState.selectAllItemsCheck,
+                                onSearchQueryChanged = model::updateSearchQuery,
+                                onTriggerSearch = model::setSearchBarState,
+                                onReturnUiMode = model::onReturnUiMode,
+                                onCheckAllItems = { model.updateActionMode(selectAllItems = it) },
+                                selectedApplicationsCount = actionModeState.selectedItemCount
                             )
-                        })
-                    }) { contentPadding ->
-                        val haptic = LocalHapticFeedback.current
-                        ApkExtractorNavHost(
-                            modifier = Modifier.padding(contentPadding),
-                            navController = navController,
-                            analyticsEventLogger = model::logEvent,
-                            showSnackbar = {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(it)
-                                }
-                            },
-                            searchQuery = mainScreenState.appBarSearchText.trim(),
-                            isActionMode = isActionModeActive,
-                            isActionModeAllItemsSelected = actionModeState.selectAllItemsCheck,
-                            onTriggerActionMode = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                model.updateActionMode(selectedItems = 1)
-                                model.setActionModeState()
-                            },
-                            onAppSelection = { isAllSelected, appCount ->
-                                model.updateActionMode(isAllSelected, appCount)
-                            },
-                            chooseSaveDir = chooseSaveDir,
-                            appUpdateManager = appUpdateManager,
-                            inAppUpdateResultLauncher = activityResultLauncher
-                        )
+                        }, bottomBar = {
+                            APKExtractorBottomNavigation(
+                                items = listOf(
+                                    Screen.AppList, Screen.ApkList
+                                ),
+                                navController = navController,
+                                appBarState = appBarState,
+                                isActionMode = isActionModeActive,
+                                onNavigate = model::resetAppBarState
+                            )
+                        }, snackbarHost = {
+                            SnackbarHost(hostState = snackbarHostState, snackbar = { snackbarData ->
+                                val visuals = snackbarData.visuals as MySnackbarVisuals
+                                Snackbar(
+                                    snackbarData = snackbarData,
+                                    contentColor = visuals.messageColor
+                                        ?: SnackbarDefaults.contentColor
+                                )
+                            })
+                        }) { contentPadding ->
+                            val haptic = LocalHapticFeedback.current
+                            ApkExtractorNavHost(
+                                modifier = Modifier.padding(contentPadding),
+                                navController = navController,
+                                showSnackbar = {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(it)
+                                    }
+                                },
+                                searchQuery = mainScreenState.appBarSearchText.trim(),
+                                isActionMode = isActionModeActive,
+                                isActionModeAllItemsSelected = actionModeState.selectAllItemsCheck,
+                                onTriggerActionMode = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    model.updateActionMode(selectedItems = 1)
+                                    model.setActionModeState()
+                                },
+                                onAppSelection = { isAllSelected, appCount ->
+                                    model.updateActionMode(isAllSelected, appCount)
+                                },
+                                chooseSaveDir = chooseSaveDir,
+                                appUpdateManager = appUpdateManager,
+                                inAppUpdateResultLauncher = activityResultLauncher
+                            )
 
-                        inAppUpdateResult?.let {
-                            InAppUpdateDialog(
-                                onDismissRequest = { inAppUpdateResult = null },
-                                confirmButtonOnClick = ::checkForAppUpdates,
-                                inAppUpdateResultType = it.resultType
-                            )
+                            inAppUpdateResult?.let {
+                                InAppUpdateDialog(
+                                    onDismissRequest = { inAppUpdateResult = null },
+                                    confirmButtonOnClick = ::checkForAppUpdates,
+                                    inAppUpdateResultType = it.resultType
+                                )
+                            }
+
+                            if (showAskForSaveDir) AskForSaveDirDialog(chooseSaveDir = chooseSaveDir)
+
+                            if (firstLaunch) AnalyticsDialog(onConfirmButton = model::setFirstLaunch)
                         }
-
-                        if (showAskForSaveDir) AskForSaveDirDialog(chooseSaveDir = chooseSaveDir)
-
-                        if (firstLaunch) AnalyticsDialog(onConfirmButton = model::setFirstLaunch)
                     }
                 }
-            }
 
-            LaunchedEffect(key1 = Unit) {
-                model.hideSplashScreen()
+                LaunchedEffect(key1 = Unit) {
+                    model.hideSplashScreen()
+                }
             }
         }
 

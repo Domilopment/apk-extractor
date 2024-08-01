@@ -1,7 +1,6 @@
 package domilopment.apkextractor.ui.navigation
 
 import android.net.Uri
-import android.os.Bundle
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
@@ -15,7 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.android.play.core.appupdate.AppUpdateManager
 import domilopment.apkextractor.MainActivity
-import domilopment.apkextractor.data.repository.analytics.AnalyticsRepository
+import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
+import domilopment.apkextractor.data.repository.analytics.logScreenView
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
@@ -24,13 +24,11 @@ import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
-import timber.log.Timber
 
 @Composable
 fun ApkExtractorNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    analyticsEventLogger: (name: String, bundle: Bundle) -> Unit,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     searchQuery: String,
     onTriggerActionMode: () -> Unit,
@@ -41,15 +39,10 @@ fun ApkExtractorNavHost(
     appUpdateManager: AppUpdateManager,
     inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
+    val analytics = LocalAnalyticsHelper.current
     DisposableEffect(key1 = navController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
-            Timber.d("Navigated to: ${destination.route}")
-
-            val bundle = Bundle().apply {
-                putString(AnalyticsRepository.Param.SCREEN_NAME, destination.route)
-                putString(AnalyticsRepository.Param.SCREEN_CLASS, MainActivity::class.simpleName)
-            }
-            analyticsEventLogger(AnalyticsRepository.Events.SCREEN_VIEW, bundle)
+            analytics.logScreenView(destination.route, MainActivity::class.simpleName)
         }
 
         navController.addOnDestinationChangedListener(listener)
@@ -75,7 +68,6 @@ fun ApkExtractorNavHost(
                         restoreState = true
                     }
                 },
-                analyticsEventLogger = analyticsEventLogger,
                 showSnackbar = showSnackbar,
                 onTriggerActionMode = onTriggerActionMode,
                 isActionModeAllItemsSelected = isActionModeAllItemsSelected,
@@ -90,14 +82,13 @@ fun ApkExtractorNavHost(
                     launchSingleTop = true
                     restoreState = true
                 }
-            }, analyticsEventLogger = analyticsEventLogger, showSnackbar = { showSnackbar(it) })
+            }, showSnackbar = { showSnackbar(it) })
         }
         composable(Screen.Settings.route) {
             val model = hiltViewModel<SettingsScreenViewModel>()
 
             SettingsScreen(
                 model = model,
-                analyticsEventLogger = analyticsEventLogger,
                 showSnackbar = showSnackbar,
                 onBackClicked = {
                     navController.popBackStack(

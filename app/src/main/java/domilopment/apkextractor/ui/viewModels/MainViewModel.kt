@@ -1,7 +1,6 @@
 package domilopment.apkextractor.ui.viewModels
 
 import android.net.Uri
-import android.os.Bundle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -117,12 +116,6 @@ class MainViewModel @Inject constructor(
             preferenceRepository.setCrashlytics(crashlytics)
             preferenceRepository.setPerformance(performance)
             preferenceRepository.setFirstLaunch(false)
-        }
-    }
-
-    fun logEvent(name: String, bundle: Bundle) {
-        viewModelScope.launch {
-            analyticsRepository.logEvent(name, bundle)
         }
     }
 }
