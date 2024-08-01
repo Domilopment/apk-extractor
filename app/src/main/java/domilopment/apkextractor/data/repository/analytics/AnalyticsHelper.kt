@@ -10,6 +10,7 @@ interface AnalyticsHelper {
         const val SCREEN_VIEW = FirebaseAnalytics.Event.SCREEN_VIEW
         const val SELECT_ITEM = FirebaseAnalytics.Event.SELECT_ITEM
         const val SELECT_CONTENT = FirebaseAnalytics.Event.SELECT_CONTENT
+        const val SET_DATA_COLLECTION = "data_collection"
     }
 
     object Param {
@@ -19,6 +20,9 @@ interface AnalyticsHelper {
         const val ITEM_LIST_NAME = FirebaseAnalytics.Param.ITEM_LIST_NAME
         const val CONTENT_TYPE = FirebaseAnalytics.Param.CONTENT_TYPE
         const val ITEM_ID = FirebaseAnalytics.Param.ITEM_ID
+        const val COLLECT_ANALYTICS = "collect_analytics"
+        const val COLLECT_CRASHLYTICS = "collect_crashlytics"
+        const val COLLECT_PERFORMANCE = "collect_performance"
     }
 }
 

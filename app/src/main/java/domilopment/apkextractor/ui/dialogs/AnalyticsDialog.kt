@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.dialogs
 
+import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,8 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
+import domilopment.apkextractor.data.repository.analytics.AnalyticsHelper
+import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
 import domilopment.apkextractor.ui.components.HyperlinkText
 import domilopment.apkextractor.ui.components.Link
 import domilopment.apkextractor.utils.Constants
@@ -39,6 +42,8 @@ import domilopment.apkextractor.utils.fadingTop
 
 @Composable
 fun AnalyticsDialog(onConfirmButton: (Boolean, Boolean, Boolean) -> Unit) {
+    val analyticsHelper = LocalAnalyticsHelper.current
+
     val scrollState = rememberScrollState()
     val onTop by remember {
         derivedStateOf {
@@ -71,7 +76,15 @@ fun AnalyticsDialog(onConfirmButton: (Boolean, Boolean, Boolean) -> Unit) {
 
     AlertDialog(onDismissRequest = {}, confirmButton = {
         TextButton(
-            onClick = { onConfirmButton(analytics, crashlytics, performance) }, enabled = endReached
+            onClick = {
+                onConfirmButton(analytics, crashlytics, performance)
+                val params = Bundle().apply {
+                    putString(AnalyticsHelper.Param.COLLECT_ANALYTICS, analytics.toString())
+                    putString(AnalyticsHelper.Param.COLLECT_CRASHLYTICS, crashlytics.toString())
+                    putString(AnalyticsHelper.Param.COLLECT_PERFORMANCE, performance.toString())
+                }
+                analyticsHelper.logEvent(AnalyticsHelper.Events.SET_DATA_COLLECTION, params)
+            }, enabled = endReached
         ) {
             Text(text = stringResource(id = R.string.consent_dialog_confirm))
         }
