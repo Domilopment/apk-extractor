@@ -11,8 +11,8 @@ class DebugAnalyticsHelper : AnalyticsHelper {
             keys.append("$it, ")
             values.append("${params.getString(it)}, ")
         }
-        keys.delete(keys.length - 2, keys.length)
-        values.delete(values.length - 2, values.length)
+        if (keys.length > 2) keys.delete(keys.length - 2, keys.length)
+        if (values.length > 2) values.delete(values.length - 2, values.length)
 
         Timber.tag("AnalyticsHelper").d("Logging $event with $keys: $values")
     }
