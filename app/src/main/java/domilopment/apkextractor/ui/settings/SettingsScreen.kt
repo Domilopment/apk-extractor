@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.PowerManager
 import android.provider.DocumentsContract
 import android.provider.Settings
+import android.text.format.Formatter
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -94,6 +96,10 @@ fun SettingsScreen(
 
     var language by remember {
         mutableStateOf(AppCompatDelegate.getApplicationLocales()[0]?.toLanguageTag() ?: "default")
+    }
+
+    var cacheSize by remember {
+        mutableLongStateOf(context.cacheDir.walkTopDown().map { it.length() }.sum())
     }
 
     val ignoreBatteryOptimizationResult =
@@ -221,11 +227,14 @@ fun SettingsScreen(
         },
         checkUpdateOnStart = uiState.checkUpdateOnStart,
         onCheckUpdateOnStart = model::setCheckUpdateOnStart,
+        cacheSize = Formatter.formatFileSize(context, cacheSize),
         onClearCache = {
-            if (context.cacheDir?.deleteRecursively() == true) Toast.makeText(
-                context, context.getString(R.string.clear_cache_success), Toast.LENGTH_SHORT
-            ).show()
-            else Toast.makeText(
+            if (context.cacheDir?.deleteRecursively() == true) {
+                cacheSize = context.cacheDir.walkTopDown().map { it.length() }.sum()
+                Toast.makeText(
+                    context, context.getString(R.string.clear_cache_success), Toast.LENGTH_SHORT
+                ).show()
+            } else Toast.makeText(
                 context, context.getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT
             ).show()
         },

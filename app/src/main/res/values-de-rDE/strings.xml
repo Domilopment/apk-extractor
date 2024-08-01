@@ -116,7 +116,7 @@
     <string name="check_update_on_start_summary">Überprüfe, wenn die App startet, ob Updates verfügbar sind, und zeige eine aufforderung sie zu installieren.</string>
 
     <string name="clear_cache">Cache leeren</string>
-    <string name="clear_cache_summary">Leere App cache</string>
+    <string name="clear_cache_summary">App cache größe: %s</string>
     <string name="clear_cache_success">Cache gesäubert!</string>
     <string name="clear_cache_failed">Cache konnte nicht geleert werden!</string>
 

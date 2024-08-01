@@ -68,6 +68,7 @@ fun SettingsContent(
     onBatteryOptimization: (Boolean) -> Unit,
     checkUpdateOnStart: Boolean,
     onCheckUpdateOnStart: (Boolean) -> Unit,
+    cacheSize: String,
     onClearCache: () -> Unit,
     analytics: Boolean,
     onAnalytics: (Boolean) -> Unit,
@@ -249,8 +250,8 @@ fun SettingsContent(
             }
             preferenceCategoryItemBottom {
                 Preference(
-                    name = R.string.clear_cache,
-                    summary = R.string.clear_cache_summary,
+                    name = stringResource(id = R.string.clear_cache),
+                    summary = stringResource(id = R.string.clear_cache_summary, cacheSize),
                     onClick = onClearCache
                 )
             }
