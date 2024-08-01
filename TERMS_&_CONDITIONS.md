@@ -32,7 +32,7 @@ These terms and conditions are effective as of 2024-08-01
 
 **Contact Us**
 
-If you have any questions or suggestions about the Terms and Conditions, please do not hesitate to contact the Service Provider at [domilopment@protonmail.com](mailto:domilopment@protonmail.com?subject=[Terms%20&%20Conditions]%20APK%20Extractor).
+If you have any questions or suggestions about the Terms and Conditions, please do not hesitate to contact the Service Provider at [domilopment@protonmail.com](mailto:domilopment@protonmail.com?subject=[Terms%20%26%20Conditions]%20APK%20Extractor).
 
 * * *
 
