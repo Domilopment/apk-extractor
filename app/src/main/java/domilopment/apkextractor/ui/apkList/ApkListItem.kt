@@ -59,7 +59,7 @@ fun ApkListItem(
                 .zIndex(zIndex = 1f),
             color = ListItemDefaults.contentColor,
             fontSize = 11.sp,
-            lineHeight = TextUnit(11F, TextUnitType.Sp),
+            lineHeight = TextUnit(16F, TextUnitType.Sp),
             overflow = TextOverflow.Clip,
             maxLines = 1,
         )
@@ -103,7 +103,7 @@ private fun ApkListItemAvatar(appIcon: ImageBitmap?) {
         )!!.toBitmap().asImageBitmap()
     }
     Image(
-        bitmap = icon, contentDescription = null, modifier = Modifier.size(64.dp)
+        bitmap = icon, contentDescription = null, modifier = Modifier.size(56.dp)
     )
 }
 
