@@ -91,7 +91,7 @@ private fun ApkListItemAvatar(appIcon: ImageBitmap?) {
         )!!.toBitmap().asImageBitmap()
     }
     Image(
-        bitmap = icon, contentDescription = null, modifier = Modifier.size(56.dp)
+        bitmap = icon, contentDescription = null, modifier = Modifier.size(64.dp)
     )
 }
 
