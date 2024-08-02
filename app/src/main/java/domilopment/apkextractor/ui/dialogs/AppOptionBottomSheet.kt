@@ -379,13 +379,13 @@ private fun AppSheetHeader(
         Image(
             painter = rememberDrawablePainter(drawable = appIcon),
             contentDescription = stringResource(id = R.string.list_item_Image_description),
-            modifier = Modifier.width(64.dp)
+            modifier = Modifier.width(56.dp)
         )
     }, trailingContent = {
         IconToggleButton(
             checked = isFavorite,
             onCheckedChange = onFavoriteChanged,
-            modifier = Modifier.width(64.dp)
+            modifier = Modifier.width(56.dp)
         ) {
             Icon(
                 imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,

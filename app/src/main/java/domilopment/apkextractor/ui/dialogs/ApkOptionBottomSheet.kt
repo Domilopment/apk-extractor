@@ -285,10 +285,10 @@ fun ApkSheetHeader(
                 context.resources, android.R.drawable.sym_def_app_icon, context.theme
             )!!.toBitmap().asImageBitmap(),
             contentDescription = stringResource(id = R.string.list_item_Image_description),
-            modifier = Modifier.width(64.dp)
+            modifier = Modifier.width(56.dp)
         )
     }, trailingContent = {
-        Box(modifier = Modifier.width(64.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.width(56.dp), contentAlignment = Alignment.Center) {
             if (isRefreshing) CircularProgressIndicator(
                 color = MaterialTheme.colorScheme.secondary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
