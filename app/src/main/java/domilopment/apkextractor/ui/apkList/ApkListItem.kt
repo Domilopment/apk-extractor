@@ -2,6 +2,7 @@ package domilopment.apkextractor.ui.apkList
 
 import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
@@ -18,12 +19,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -44,41 +48,49 @@ fun ApkListItem(
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
+            .background(color = ListItemDefaults.containerColor)
             .clickable(onClick = onClick),
     ) {
         Text(
             text = apkFileName,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .offset(y = 8.dp)
+                .offset(y = 6.dp)
                 .zIndex(zIndex = 1f),
             color = ListItemDefaults.contentColor,
             fontSize = 11.sp,
+            lineHeight = TextUnit(11F, TextUnitType.Sp),
+            overflow = TextOverflow.Clip,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
         )
-        ListItem(headlineContent = {
-            if (appPackageName != null) Text(
-                text = appPackageName,
-                fontSize = 12.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }, overlineContent = {
-            Text(
-                text = appName ?: apkFileName,
-                fontSize = 16.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }, supportingContent = {
-            if (apkVersionInfo != null) Text(
-                text = apkVersionInfo,
-                fontSize = 12.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }, leadingContent = { ApkListItemAvatar(appIcon = appIcon) })
+        ListItem(
+            headlineContent = {
+                if (appPackageName != null) Text(
+                    text = appPackageName,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            overlineContent = {
+                Text(
+                    text = appName ?: apkFileName,
+                    fontSize = 16.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            supportingContent = {
+                if (apkVersionInfo != null) Text(
+                    text = apkVersionInfo,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            leadingContent = { ApkListItemAvatar(appIcon = appIcon) },
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+        )
     }
 }
 
