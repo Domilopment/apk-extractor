@@ -1,5 +1,7 @@
 package domilopment.apkextractor.ui.dialogs
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,11 +28,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.repository.analytics.AnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
@@ -41,7 +45,9 @@ import domilopment.apkextractor.utils.fadingBottom
 import domilopment.apkextractor.utils.fadingTop
 
 @Composable
-fun AnalyticsDialog(onConfirmButton: (Boolean, Boolean, Boolean) -> Unit) {
+fun AnalyticsDialog(
+    onConfirmButton: (Boolean, Boolean, Boolean) -> Unit, context: Context = LocalContext.current
+) {
     val analyticsHelper = LocalAnalyticsHelper.current
 
     val scrollState = rememberScrollState()
@@ -74,7 +80,7 @@ fun AnalyticsDialog(onConfirmButton: (Boolean, Boolean, Boolean) -> Unit) {
         if (onEnd && !endReached) endReached = true
     }
 
-    AlertDialog(onDismissRequest = {}, confirmButton = {
+    AlertDialog(onDismissRequest = { (context as? Activity)?.finish() }, confirmButton = {
         TextButton(
             onClick = {
                 onConfirmButton(analytics, crashlytics, performance)
@@ -170,5 +176,5 @@ fun AnalyticsDialog(onConfirmButton: (Boolean, Boolean, Boolean) -> Unit) {
                 )
             )
         }
-    })
+    }, properties = DialogProperties(dismissOnClickOutside = false))
 }
