@@ -307,7 +307,7 @@
 
     <!-- User Consent Dialog -->
     <string name="consent_dialog_header">We value your privacy. To improve your experience, we use Firebase, Crashlytics, and performance monitoring. You can choose which data we are allowed to collect.</string>
-    <string name="consent_dialog_consent_notice">By tapping \"Confirm Selection,\" you agree to the collection and processing of your data as described above. Without your consent, some features of the app may be limited.</string>
+    <string name="consent_dialog_consent_notice">By tapping \"Confirm Selection,\" you agree to the collection and processing of your data as described above. Without your consent, it may be more difficult to identify and fix errors and bugs, which could affect your app experience.</string>
     <string name="consent_dialog_footer">You can withdraw your consent at any time in the Settings. Please read our %s and %s for more information.</string>
     <string name="consent_dialog_confirm">Confirm Selection</string>
     <string name="consent_dialog_dismiss">Deny All</string>
