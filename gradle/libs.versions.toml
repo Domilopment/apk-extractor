@@ -1,5 +1,5 @@
 [versions]
-accompanistDrawablepainter = "0.34.0"
+accompanist = "0.34.0"
 agp = "8.5.1"
 appcompat = "1.7.0"
 appUpdate = "2.1.0"
@@ -17,7 +17,7 @@ kotlin = "2.0.10"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
-ksp = "2.0.0-1.0.22"
+ksp = "2.0.10-1.0.24"
 espressoCore = "3.6.1"
 lifecycleRuntime = "2.8.4"
 activityCompose = "1.9.1"
@@ -31,8 +31,8 @@ timber = "5.0.1"
 uiautomator = "2.3.0"
 
 [libraries]
-accompanist-drawablepainter = { group = "com.google.accompanist", name = "accompanist-drawablepainter", version.ref = "accompanistDrawablepainter" }
-accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistDrawablepainter" }
+accompanist-drawablepainter = { group = "com.google.accompanist", name = "accompanist-drawablepainter", version.ref = "accompanist" }
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
