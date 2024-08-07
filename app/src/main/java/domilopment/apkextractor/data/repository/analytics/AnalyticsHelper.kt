@@ -11,6 +11,7 @@ interface AnalyticsHelper {
         const val SELECT_ITEM = FirebaseAnalytics.Event.SELECT_ITEM
         const val SELECT_CONTENT = FirebaseAnalytics.Event.SELECT_CONTENT
         const val SET_DATA_COLLECTION = "data_collection"
+        const val SAVE_DIR_DIALOG = "save_dir_dialog"
     }
 
     object Param {
