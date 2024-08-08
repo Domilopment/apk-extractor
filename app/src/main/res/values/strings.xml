@@ -312,4 +312,6 @@
     <string name="consent_dialog_confirm">Confirm Selection</string>
     <string name="consent_dialog_dismiss">Deny All</string>
 
+    <string name="double_back_press_first_press_toast_text">Click again to close the App</string>
+
 </resources>

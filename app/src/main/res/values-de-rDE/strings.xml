@@ -306,4 +306,6 @@
     <string name="consent_dialog_confirm">Auswahl bestätigen</string>
     <string name="consent_dialog_dismiss">Alle ablehnen</string>
 
+    <string name="double_back_press_first_press_toast_text">Erneut klicken um die App zu schließen</string>
+
 </resources>
