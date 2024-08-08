@@ -5,6 +5,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 
 interface AnalyticsHelper {
     fun logEvent(event: String, params: Bundle)
+    fun logEvent(event: String, params: Bundle.() -> Unit)
 
     object Events {
         const val SCREEN_VIEW = FirebaseAnalytics.Event.SCREEN_VIEW
@@ -28,25 +29,22 @@ interface AnalyticsHelper {
 }
 
 fun AnalyticsHelper.logScreenView(screenName: String?, screenClass: String?) {
-    val bundle = Bundle().apply {
+    logEvent(AnalyticsHelper.Events.SCREEN_VIEW) {
         putString(AnalyticsHelper.Param.SCREEN_NAME, screenName)
         putString(AnalyticsHelper.Param.SCREEN_CLASS, screenClass)
     }
-    logEvent(AnalyticsHelper.Events.SCREEN_VIEW, bundle)
 }
 
 fun AnalyticsHelper.logListItem(itemListId: String?, itemListName: String?) {
-    val bundle = Bundle().apply {
+    logEvent(AnalyticsHelper.Events.SELECT_ITEM) {
         putString(AnalyticsHelper.Param.ITEM_LIST_ID, itemListId)
         putString(AnalyticsHelper.Param.ITEM_LIST_NAME, itemListName)
     }
-    logEvent(AnalyticsHelper.Events.SELECT_ITEM, bundle)
 }
 
 fun AnalyticsHelper.logItemClick(contentType: String?, itemId: String?) {
-    val bundle = Bundle().apply {
+    logEvent(AnalyticsHelper.Events.SELECT_CONTENT) {
         putString(AnalyticsHelper.Param.CONTENT_TYPE, contentType)
         putString(AnalyticsHelper.Param.ITEM_ID, itemId)
     }
-    logEvent(AnalyticsHelper.Events.SELECT_CONTENT, bundle)
 }

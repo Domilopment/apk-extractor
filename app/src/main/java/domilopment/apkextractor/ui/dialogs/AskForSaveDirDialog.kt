@@ -22,15 +22,15 @@ fun AskForSaveDirDialog(
 ) {
     val analytics = LocalAnalyticsHelper.current
     AlertDialog(onDismissRequest = {
-        analytics.logEvent(AnalyticsHelper.Events.SAVE_DIR_DIALOG, Bundle().apply {
+        analytics.logEvent(AnalyticsHelper.Events.SAVE_DIR_DIALOG) {
             putString(AnalyticsHelper.Param.CONTENT_TYPE, "on_dismiss")
-        })
+        }
         (context as? Activity)?.finish()
     }, confirmButton = {
         TextButton(onClick = {
-            analytics.logEvent(AnalyticsHelper.Events.SAVE_DIR_DIALOG, Bundle().apply {
+            analytics.logEvent(AnalyticsHelper.Events.SAVE_DIR_DIALOG) {
                 putString(AnalyticsHelper.Param.CONTENT_TYPE, "on_confirm")
-            })
+            }
             chooseSaveDir.launch(null)
         }) {
             Text(text = stringResource(id = R.string.alert_save_path_ok))

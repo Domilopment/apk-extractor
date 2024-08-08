@@ -84,12 +84,11 @@ fun AnalyticsDialog(
         TextButton(
             onClick = {
                 onConfirmButton(analytics, crashlytics, performance)
-                val params = Bundle().apply {
+                analyticsHelper.logEvent(AnalyticsHelper.Events.SET_DATA_COLLECTION) {
                     putString(AnalyticsHelper.Param.COLLECT_ANALYTICS, analytics.toString())
                     putString(AnalyticsHelper.Param.COLLECT_CRASHLYTICS, crashlytics.toString())
                     putString(AnalyticsHelper.Param.COLLECT_PERFORMANCE, performance.toString())
                 }
-                analyticsHelper.logEvent(AnalyticsHelper.Events.SET_DATA_COLLECTION, params)
             }, enabled = endReached
         ) {
             Text(text = stringResource(id = R.string.consent_dialog_confirm))

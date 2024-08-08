@@ -17,4 +17,9 @@ class DebugAnalyticsHelper : AnalyticsHelper {
         Timber.tag("AnalyticsHelper").d("Logging $event with $keys: $values")
     }
 
+    override fun logEvent(event: String, params: Bundle.() -> Unit) {
+        val bundle = Bundle()
+        bundle.params()
+        logEvent(event, bundle)
+    }
 }
