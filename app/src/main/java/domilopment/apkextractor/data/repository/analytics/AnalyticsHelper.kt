@@ -5,7 +5,12 @@ import com.google.firebase.analytics.FirebaseAnalytics
 
 interface AnalyticsHelper {
     fun logEvent(event: String, params: Bundle)
-    fun logEvent(event: String, params: Bundle.() -> Unit)
+
+    fun logEvent(event: String, params: Bundle.() -> Unit) {
+        val bundle = Bundle()
+        bundle.params()
+        logEvent(event, bundle)
+    }
 
     object Events {
         const val SCREEN_VIEW = FirebaseAnalytics.Event.SCREEN_VIEW

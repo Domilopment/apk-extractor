@@ -11,10 +11,4 @@ class FirebaseAnalyticsHelper(@ApplicationContext context: Context) : AnalyticsH
     override fun logEvent(event: String, params: Bundle) {
         analytics.logEvent(event, params)
     }
-
-    override fun logEvent(event: String, params: Bundle.() -> Unit) {
-        val bundle = Bundle()
-        bundle.params()
-        logEvent(event, bundle)
-    }
 }
