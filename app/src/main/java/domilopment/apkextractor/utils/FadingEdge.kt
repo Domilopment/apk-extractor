@@ -59,8 +59,8 @@ fun Modifier.fadingBottom(
 fun Modifier.fadingStart(
     visible: Boolean, @FloatRange(from = 0.0, to = 1.0) edgeSize: Float = 0.1f
 ) = fadingEdge(
-    start = Offset(0f, 0f),
-    end =  Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
+    start = Offset.Zero,
+    end =  Offset(Float.POSITIVE_INFINITY, 0f),
     visible = visible,
     edgeSize = edgeSize
 )
@@ -68,8 +68,8 @@ fun Modifier.fadingStart(
 fun Modifier.fadingEnd(
     visible: Boolean, @FloatRange(from = 0.0, to = 1.0) edgeSize: Float = 0.1f
 ) = fadingEdge(
-    start = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
-    end =  Offset(0f, 0f),
+    start = Offset(Float.POSITIVE_INFINITY, 0f),
+    end =  Offset.Zero,
     visible = visible,
     edgeSize = edgeSize
 )
