@@ -33,6 +33,8 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -58,6 +60,8 @@ import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
+import domilopment.apkextractor.utils.fadingEnd
+import domilopment.apkextractor.utils.fadingStart
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -133,8 +137,20 @@ fun ApkSheetActions(
     onActionUninstall: () -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val onStart by remember {
+        derivedStateOf {
+            scrollState.value == 0
+        }
+    }
+    val onEnd by remember {
+        derivedStateOf {
+            scrollState.value == scrollState.maxValue
+        }
+    }
     Row(
         modifier = Modifier
+            .fadingStart(visible = onStart)
+            .fadingEnd(visible = onEnd)
             .horizontalScroll(scrollState)
             .padding(8.dp, 0.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)

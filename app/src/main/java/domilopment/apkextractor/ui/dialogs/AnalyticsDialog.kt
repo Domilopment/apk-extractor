@@ -55,7 +55,7 @@ fun AnalyticsDialog(
             scrollState.value == 0
         }
     }
-    val onEnd by remember {
+    val onBottom by remember {
         derivedStateOf {
             scrollState.value == scrollState.maxValue
         }
@@ -75,8 +75,8 @@ fun AnalyticsDialog(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(key1 = onEnd) {
-        if (onEnd && !endReached) endReached = true
+    LaunchedEffect(key1 = onBottom) {
+        if (onBottom && !endReached) endReached = true
     }
 
     DoubleBackPressDialog(
@@ -108,7 +108,7 @@ fun AnalyticsDialog(
             Column(
                 modifier = Modifier
                     .fadingTop(visible = onTop)
-                    .fadingBottom(visible = onEnd)
+                    .fadingBottom(visible = onBottom)
                     .verticalScroll(state = scrollState)
             ) {
                 Text(

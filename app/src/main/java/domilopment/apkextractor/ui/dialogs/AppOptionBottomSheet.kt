@@ -43,6 +43,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -71,6 +73,8 @@ import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
+import domilopment.apkextractor.utils.fadingEnd
+import domilopment.apkextractor.utils.fadingStart
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
@@ -182,8 +186,20 @@ private fun AppSheetActions(
     onActionUninstall: () -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val onStart by remember {
+        derivedStateOf {
+            scrollState.value == 0
+        }
+    }
+    val onEnd by remember {
+        derivedStateOf {
+            scrollState.value == scrollState.maxValue
+        }
+    }
     Row(
         modifier = Modifier
+            .fadingStart(visible = onStart)
+            .fadingEnd(visible = onEnd)
             .horizontalScroll(scrollState)
             .padding(8.dp, 0.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
