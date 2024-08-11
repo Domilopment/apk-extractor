@@ -39,6 +39,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +66,8 @@ import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterInstaller
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterOthers
 import domilopment.apkextractor.utils.conditional
+import domilopment.apkextractor.utils.fadingEnd
+import domilopment.apkextractor.utils.fadingStart
 import domilopment.apkextractor.utils.settings.AppSortOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -226,11 +229,24 @@ private fun AppFilterApps(
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val scrollState = rememberScrollState()
+        val onStart by remember {
+            derivedStateOf {
+                scrollState.value == 0
+            }
+        }
+        val onEnd by remember {
+            derivedStateOf {
+                scrollState.value == scrollState.maxValue
+            }
+        }
         AppFilterCategoryHeader(header = stringResource(id = R.string.filter_title))
         Row(
             Modifier
                 .fillMaxWidth()
-                .horizontalScroll(state = rememberScrollState()),
+                .fadingStart(visible = onStart)
+                .fadingEnd(visible = onEnd)
+                .horizontalScroll(state = scrollState),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             FilterMenuChip(prefString = installationSource,
