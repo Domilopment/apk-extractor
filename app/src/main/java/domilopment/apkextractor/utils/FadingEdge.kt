@@ -15,6 +15,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 
+/**
+ * A fading edge drawn by a linear gradient from start to end
+ * @param start the begin of the fading edge from it is drawn drawn
+ * @param end the end of the fading edge to it is drawn
+ * @param visible set if the content should be fully visible or not
+ * @param edgeSize the size of the fading edge
+ */
 fun Modifier.fadingEdge(
     start: Offset,
     end: Offset,
@@ -38,6 +45,11 @@ fun Modifier.fadingEdge(
         }
     }
 
+/**
+ * Draws a fading edge at the top of the content
+ * @param visible set if the content should be fully visible or not
+ * @param edgeSize the size of the fading edge
+ */
 fun Modifier.fadingTop(
     visible: Boolean, @FloatRange(from = 0.0, to = 1.0) edgeSize: Float = 0.1f
 ) = fadingEdge(
@@ -47,6 +59,11 @@ fun Modifier.fadingTop(
     edgeSize = edgeSize
 )
 
+/**
+ * Draws a fading edge at the bottom of the content
+ * @param visible set if the content should be fully visible or not
+ * @param edgeSize the size of the fading edge
+ */
 fun Modifier.fadingBottom(
     visible: Boolean, @FloatRange(from = 0.0, to = 1.0) edgeSize: Float = 0.1f
 ) = fadingEdge(
@@ -56,20 +73,30 @@ fun Modifier.fadingBottom(
     edgeSize = edgeSize
 )
 
+/**
+ * Draws a fading edge at the start of the content
+ * @param visible set if the content should be fully visible or not
+ * @param edgeSize the size of the fading edge
+ */
 fun Modifier.fadingStart(
     visible: Boolean, @FloatRange(from = 0.0, to = 1.0) edgeSize: Float = 0.1f
 ) = fadingEdge(
     start = Offset.Zero,
-    end =  Offset(Float.POSITIVE_INFINITY, 0f),
+    end = Offset(Float.POSITIVE_INFINITY, 0f),
     visible = visible,
     edgeSize = edgeSize
 )
 
+/**
+ * Draws a fading edge at the end of the content
+ * @param visible set if the content should be fully visible or not
+ * @param edgeSize the size of the fading edge
+ */
 fun Modifier.fadingEnd(
     visible: Boolean, @FloatRange(from = 0.0, to = 1.0) edgeSize: Float = 0.1f
 ) = fadingEdge(
     start = Offset(Float.POSITIVE_INFINITY, 0f),
-    end =  Offset.Zero,
+    end = Offset.Zero,
     visible = visible,
     edgeSize = edgeSize
 )
