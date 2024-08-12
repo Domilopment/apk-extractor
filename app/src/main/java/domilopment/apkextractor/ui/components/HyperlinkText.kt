@@ -21,9 +21,9 @@ data class Link(
 @Composable
 fun HyperlinkText(
     text: String,
-    vararg links: Link,
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
+    vararg links: Link = emptyArray(),
 ) {
     val annotatedText = buildAnnotatedString {
         append(text)
