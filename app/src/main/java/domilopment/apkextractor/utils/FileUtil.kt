@@ -5,6 +5,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
 import domilopment.apkextractor.BuildConfig
+import timber.log.Timber
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -58,7 +59,12 @@ object FileUtil {
      * If document was deleted or not
      */
     fun deleteDocument(context: Context, uri: Uri): Boolean {
-        return DocumentsContract.deleteDocument(context.contentResolver, uri)
+        return try {
+            DocumentsContract.deleteDocument(context.contentResolver, uri)
+        } catch (e: IllegalStateException) {
+            Timber.tag("FileUtil: deleteDocument").e(e)
+            false
+        }
     }
 
     /**
