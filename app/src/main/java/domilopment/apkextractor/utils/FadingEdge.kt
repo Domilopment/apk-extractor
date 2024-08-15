@@ -61,7 +61,7 @@ fun Modifier.fadingEdge(start: Offset, end: Offset, visible: Boolean, size: Dp) 
                 width > 0 && height <= 0f -> fade.toPx() / width
                 width <= 0f && height > 0 -> fade.toPx() / height
                 width <= 0f && height <= 0f -> 0f
-                width > 0f && height > 0f -> sqrt(width * width + height * height)
+                width > 0f && height > 0f -> fade.toPx() / sqrt(width * width + height * height)
                 else -> error("FadingEdge float fraction is not in range")
             }
 
