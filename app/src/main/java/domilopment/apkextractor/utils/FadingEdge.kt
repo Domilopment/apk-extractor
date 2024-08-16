@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
@@ -15,7 +16,6 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import timber.log.Timber
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -37,31 +37,33 @@ fun Modifier.fadingEdge(start: Offset, end: Offset, visible: Boolean, size: Dp) 
             label = "FadingEdge"
         )
 
+        val width = remember(start, end) {
+            abs(end.x - start.x)
+        }
+
+        val height = remember(start, end) {
+            abs(end.y - start.y)
+        }
+
         drawWithContent {
             drawContent()
 
-            val width = (end.x - start.x).let {
-                val absolute = abs(it)
-                when {
-                    absolute > this.size.width -> this.size.width
-                    absolute.isNaN() -> 0f
-                    else -> absolute
-                }
+            val contentWidth = when {
+                width > this.size.width -> this.size.width
+                width.isNaN() -> 0f
+                else -> width
             }
-            val height = (end.y - start.y).let {
-                val absolute = abs(it)
-                when {
-                    absolute > this.size.height -> this.size.height
-                    absolute.isNaN() -> 0f
-                    else -> absolute
-                }
+            val contentHeight = when {
+                height > this.size.height -> this.size.height
+                height.isNaN() -> 0f
+                else -> height
             }
 
             val fraction = when {
-                width > 0 && height <= 0f -> fade.toPx() / width
-                width <= 0f && height > 0 -> fade.toPx() / height
-                width <= 0f && height <= 0f -> 0f
-                width > 0f && height > 0f -> fade.toPx() / sqrt(width * width + height * height)
+                contentWidth > 0 && contentHeight <= 0f -> fade.toPx() / contentWidth
+                contentWidth <= 0f && contentHeight > 0 -> fade.toPx() / contentHeight
+                contentWidth <= 0f && contentHeight <= 0f -> 0f
+                contentWidth > 0f && contentHeight > 0f -> fade.toPx() / sqrt(contentWidth * contentWidth + contentHeight * contentHeight)
                 else -> error("FadingEdge float fraction is not in range")
             }
 
