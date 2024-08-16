@@ -43,6 +43,7 @@ fun Modifier.fadingEdge(start: EdgeOffset, end: EdgeOffset, visible: Boolean, si
     .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
     .composed {
         require(size > 0.dp) { "Invalid fade width: Width must be greater than 0" }
+        
         val fade by animateDpAsState(
             targetValue = if (visible) 0.dp else size,
             animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
@@ -76,7 +77,7 @@ fun Modifier.fadingEdge(start: EdgeOffset, end: EdgeOffset, visible: Boolean, si
                 )
 
                 width == 0f && height == 0f -> 0f
-                else -> error("FadingEdge float fraction is not in range")
+                else -> error("FadingEdge fraction is not in range: width=$width, height=$height")
             }
 
             drawRect(
