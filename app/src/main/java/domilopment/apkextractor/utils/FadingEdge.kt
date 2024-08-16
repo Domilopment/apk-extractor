@@ -19,6 +19,19 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.abs
 import kotlin.math.sqrt
 
+enum class EdgeOffsetValues(val value: Float) {
+    ZERO(0f), INFINITE(Float.POSITIVE_INFINITY)
+}
+
+class EdgeOffset(val x: EdgeOffsetValues, val y: EdgeOffsetValues) {
+    fun toOffset(): Offset = Offset(x.value, y.value)
+
+    companion object {
+        val Zero = EdgeOffset(EdgeOffsetValues.ZERO, EdgeOffsetValues.ZERO)
+        val Infinite = EdgeOffset(EdgeOffsetValues.INFINITE, EdgeOffsetValues.INFINITE)
+    }
+}
+
 /**
  * A fading edge drawn by a linear gradient from start to end
  * @param start the begin of the fading edge from it is drawn drawn
@@ -26,11 +39,10 @@ import kotlin.math.sqrt
  * @param visible set if the content should be fully visible or not
  * @param size the size of the fading edge
  */
-fun Modifier.fadingEdge(start: Offset, end: Offset, visible: Boolean, size: Dp) = this
+fun Modifier.fadingEdge(start: EdgeOffset, end: EdgeOffset, visible: Boolean, size: Dp) = this
     .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
     .composed {
         require(size > 0.dp) { "Invalid fade width: Width must be greater than 0" }
-
         val fade by animateDpAsState(
             targetValue = if (visible) 0.dp else size,
             animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
@@ -38,39 +50,42 @@ fun Modifier.fadingEdge(start: Offset, end: Offset, visible: Boolean, size: Dp) 
         )
 
         val width = remember(start, end) {
-            abs(end.x - start.x)
+            val abs = abs(end.x.value - start.x.value)
+            when {
+                abs.isNaN() -> 0f
+                else -> abs
+            }
         }
 
         val height = remember(start, end) {
-            abs(end.y - start.y)
+            val abs = abs(end.y.value - start.y.value)
+            when {
+                abs.isNaN() -> 0f
+                else -> abs
+            }
         }
 
         drawWithContent {
             drawContent()
 
-            val contentWidth = when {
-                width > this.size.width -> this.size.width
-                width.isNaN() -> 0f
-                else -> width
-            }
-            val contentHeight = when {
-                height > this.size.height -> this.size.height
-                height.isNaN() -> 0f
-                else -> height
-            }
-
             val fraction = when {
-                contentWidth > 0 && contentHeight <= 0f -> fade.toPx() / contentWidth
-                contentWidth <= 0f && contentHeight > 0 -> fade.toPx() / contentHeight
-                contentWidth <= 0f && contentHeight <= 0f -> 0f
-                contentWidth > 0f && contentHeight > 0f -> fade.toPx() / sqrt(contentWidth * contentWidth + contentHeight * contentHeight)
+                width == Float.POSITIVE_INFINITY && height == 0f -> fade.toPx() / this.size.width
+                width == 0f && height == Float.POSITIVE_INFINITY -> fade.toPx() / this.size.height
+                width == Float.POSITIVE_INFINITY && height == Float.POSITIVE_INFINITY -> fade.toPx() / sqrt(
+                    this.size.width * this.size.width + this.size.height * this.size.height
+                )
+
+                width == 0f && height == 0f -> 0f
                 else -> error("FadingEdge float fraction is not in range")
             }
 
             drawRect(
                 brush = Brush.linearGradient(
-                    0f to Color.Transparent, fraction to Color.Black, start = start, end = end
-                ), blendMode = BlendMode.DstIn
+                    0f to Color.Transparent,
+                    fraction to Color.Black,
+                    start = start.toOffset(),
+                    end = end.toOffset()
+                ), size = this.size, blendMode = BlendMode.DstIn
             )
         }
     }
@@ -81,7 +96,10 @@ fun Modifier.fadingEdge(start: Offset, end: Offset, visible: Boolean, size: Dp) 
  * @param size the size of the fading edge
  */
 fun Modifier.fadingTop(visible: Boolean, size: Dp = 32.dp) = fadingEdge(
-    start = Offset.Zero, end = Offset(0f, Float.POSITIVE_INFINITY), visible = visible, size = size
+    start = EdgeOffset.Zero,
+    end = EdgeOffset(EdgeOffsetValues.ZERO, EdgeOffsetValues.INFINITE),
+    visible = visible,
+    size = size
 )
 
 /**
@@ -90,7 +108,10 @@ fun Modifier.fadingTop(visible: Boolean, size: Dp = 32.dp) = fadingEdge(
  * @param size the size of the fading edge
  */
 fun Modifier.fadingBottom(visible: Boolean, size: Dp = 32.dp) = fadingEdge(
-    start = Offset(0f, Float.POSITIVE_INFINITY), end = Offset.Zero, visible = visible, size = size
+    start = EdgeOffset(EdgeOffsetValues.ZERO, EdgeOffsetValues.INFINITE),
+    end = EdgeOffset.Zero,
+    visible = visible,
+    size = size
 )
 
 /**
@@ -99,7 +120,10 @@ fun Modifier.fadingBottom(visible: Boolean, size: Dp = 32.dp) = fadingEdge(
  * @param size the size of the fading edge
  */
 fun Modifier.fadingStart(visible: Boolean, size: Dp = 32.dp) = fadingEdge(
-    start = Offset.Zero, end = Offset(Float.POSITIVE_INFINITY, 0f), visible = visible, size = size
+    start = EdgeOffset.Zero,
+    end = EdgeOffset(EdgeOffsetValues.INFINITE, EdgeOffsetValues.ZERO),
+    visible = visible,
+    size = size
 )
 
 /**
@@ -108,5 +132,8 @@ fun Modifier.fadingStart(visible: Boolean, size: Dp = 32.dp) = fadingEdge(
  * @param size the size of the fading edge
  */
 fun Modifier.fadingEnd(visible: Boolean, size: Dp = 32.dp) = fadingEdge(
-    start = Offset(Float.POSITIVE_INFINITY, 0f), end = Offset.Zero, visible = visible, size = size
+    start = EdgeOffset(EdgeOffsetValues.INFINITE, EdgeOffsetValues.ZERO),
+    end = EdgeOffset.Zero,
+    visible = visible,
+    size = size
 )
