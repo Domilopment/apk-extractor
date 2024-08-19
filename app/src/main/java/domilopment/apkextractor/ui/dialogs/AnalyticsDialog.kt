@@ -107,8 +107,8 @@ fun AnalyticsDialog(
         text = {
             Column(
                 modifier = Modifier
-                    .fadingTop(visible = onTop, size = 64.dp)
-                    .fadingBottom(visible = onBottom, size = 64.dp)
+                    .fadingTop(visible = onTop)
+                    .fadingBottom(visible = onBottom)
                     .verticalScroll(state = scrollState)
             ) {
                 Text(

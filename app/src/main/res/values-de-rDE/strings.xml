@@ -300,7 +300,7 @@
     <string name="popup_dialog_update_failed_button_negative">Schließen</string>
 
     <!-- User Consent Dialog -->
-    <string name="consent_dialog_header">Wir legen großen Wert auf Ihre Privatsphäre. Um Ihre Erfahrung zu verbessern, verwenden wir Firebase, Crashlytics und Leistungsüberwachung. Sie können entscheiden, welche Daten wir erfassen dürfen.</string>
+    <string name="consent_dialog_header">Wir legen großen Wert auf Ihre Privatsphäre. Um Ihre Erfahrung zu verbessern, verwenden wir Firebase Analytics, Crashlytics und Leistungsüberwachung. Sie können entscheiden, welche Daten wir erfassen dürfen.</string>
     <string name="consent_dialog_consent_notice">Durch Tippen auf „Auswahl bestätigen“ stimmen Sie der Erhebung und Verarbeitung Ihrer Daten zu. Ohne Ihre Zustimmung kann es schwieriger sein, Fehler und Bugs zu finden und zu beheben, was die App-Erfahrung beeinträchtigen könnte.</string>
     <string name="consent_dialog_footer">Sie können die Zustimmung jederzeit in den Einstellungen widerrufen. Lesen Sie unsere %s und %s für weitere Informationen.</string>
     <string name="consent_dialog_confirm">Auswahl bestätigen</string>
