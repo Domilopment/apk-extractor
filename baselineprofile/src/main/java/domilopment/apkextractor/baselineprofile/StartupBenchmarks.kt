@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.StaleObjectException
 import androidx.test.uiautomator.Until
 
 import org.junit.Rule
@@ -44,8 +45,7 @@ class StartupBenchmarks {
     val rule = MacrobenchmarkRule()
 
     @Test
-    fun startupCompilationNone() =
-        benchmark(CompilationMode.None())
+    fun startupCompilationNone() = benchmark(CompilationMode.None())
 
     @Test
     fun startupCompilationBaselineProfiles() =
@@ -53,8 +53,7 @@ class StartupBenchmarks {
 
     private fun benchmark(compilationMode: CompilationMode) {
         // This example works only with the variant with application id `domilopment.apkextractor`."
-        rule.measureRepeated(
-            packageName = "domilopment.apkextractor",
+        rule.measureRepeated(packageName = "domilopment.apkextractor",
             metrics = listOf(StartupTimingMetric()),
             compilationMode = compilationMode,
             startupMode = StartupMode.COLD,
@@ -76,19 +75,26 @@ class StartupBenchmarks {
 
                 try {
                     // Privacy Consent Dialog
-                    device.wait(Until.hasObject(By.textStartsWith("We value your privacy")), 10_000)
-                    device.findObject(By.textStartsWith("We value your privacy")).fling(Direction.DOWN)
+                    device.wait(Until.hasObject(By.textStartsWith("We value your privacy")), 5_000)
+                    while (!device.findObject(By.text("Deny All")).parent.isEnabled) {
+                        try {
+                            device.findObject(By.textStartsWith("We value your privacy"))
+                                .swipe(Direction.UP, 1f)
+                        } catch (_: StaleObjectException) {
+                            // Hot Fix
+                        }
+                    }
+                    device.waitForIdle(1_000)
                     device.findObject(By.text("Deny All")).clickAndWait(Until.newWindow(), 1_000)
 
                     // Save dir Dialog
-                    device.findObject(By.text("OK")).clickAndWait(Until.newWindow(), 1_000)
-                    device.findObject(By.text("Documents"))?.also {
-                        if (it.isClickable) it.clickAndWait(Until.newWindow(), 1_000)
-                    }
-                    device.findObject(By.text("USE THIS FOLDER")).clickAndWait(Until.newWindow(), 1_000)
+                    device.findObject(By.text("OK")).clickAndWait(Until.newWindow(), 5_000)
+                    device.findObject(By.text("Documents")).clickAndWait(Until.newWindow(), 1_000)
+                    device.findObject(By.text("USE THIS FOLDER"))
+                        .clickAndWait(Until.newWindow(), 1_000)
                     device.findObject(By.text("ALLOW")).clickAndWait(Until.newWindow(), 5_000)
                 } catch (_: NullPointerException) {
-                    // Save dir already selected.
+                    // Onboarding already done.
                 }
 
                 device.findObject(By.res("ActionsMoreVert")).clickAndWait(Until.newWindow(), 1_000)
@@ -98,7 +104,6 @@ class StartupBenchmarks {
                     it.fling(Direction.UP)
                 }
                 device.pressBack()
-            }
-        )
+            })
     }
 }
