@@ -75,17 +75,17 @@ androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lif
 jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
 [plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
-androidTest = { id = "com.android.test", version.ref = "agp" }
-composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+android-test = { id = "com.android.test", version.ref = "agp" }
+jetbrains-kotlin-plugin-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
-jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-devtoolsKsp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
-firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
-firebasePerf = { id = "com.google.firebase.firebase-perf", version.ref = "perf" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+firebase-perf = { id = "com.google.firebase.firebase-perf", version.ref = "perf" }
 
 [bundles]
 firebase = [

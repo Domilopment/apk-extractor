@@ -1,13 +1,13 @@
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.devtoolsKsp)
-    alias(libs.plugins.hiltAndroid)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.plugin.compiler)
+    alias(libs.plugins.devtools.ksp)
+    alias(libs.plugins.hilt.android)
     alias(libs.plugins.baselineprofile)
-    alias(libs.plugins.googleServices)
-    alias(libs.plugins.firebaseCrashlytics)
-    alias(libs.plugins.firebasePerf)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.firebase.perf)
 }
 
 android {
