@@ -1,7 +1,6 @@
 package domilopment.apkextractor.data.repository.analytics
 
 import android.os.Bundle
-import com.google.firebase.analytics.FirebaseAnalytics
 
 interface AnalyticsHelper {
     fun logEvent(event: String, params: Bundle)
@@ -13,20 +12,20 @@ interface AnalyticsHelper {
     }
 
     object Events {
-        const val SCREEN_VIEW = FirebaseAnalytics.Event.SCREEN_VIEW
-        const val SELECT_ITEM = FirebaseAnalytics.Event.SELECT_ITEM
-        const val SELECT_CONTENT = FirebaseAnalytics.Event.SELECT_CONTENT
+        const val SCREEN_VIEW = "screen_view"
+        const val SELECT_ITEM = "select_item"
+        const val SELECT_CONTENT = "select_content"
         const val SET_DATA_COLLECTION = "data_collection"
         const val SAVE_DIR_DIALOG = "save_dir_dialog"
     }
 
     object Param {
-        const val SCREEN_NAME = FirebaseAnalytics.Param.SCREEN_NAME
-        const val SCREEN_CLASS = FirebaseAnalytics.Param.SCREEN_CLASS
-        const val ITEM_LIST_ID = FirebaseAnalytics.Param.ITEM_LIST_ID
-        const val ITEM_LIST_NAME = FirebaseAnalytics.Param.ITEM_LIST_NAME
-        const val CONTENT_TYPE = FirebaseAnalytics.Param.CONTENT_TYPE
-        const val ITEM_ID = FirebaseAnalytics.Param.ITEM_ID
+        const val SCREEN_NAME = "screen_name"
+        const val SCREEN_CLASS = "screen_class"
+        const val ITEM_LIST_ID = "item_list_id"
+        const val ITEM_LIST_NAME = "item_list_name"
+        const val CONTENT_TYPE = "content_type"
+        const val ITEM_ID = "item_id"
         const val COLLECT_ANALYTICS = "collect_analytics"
         const val COLLECT_CRASHLYTICS = "collect_crashlytics"
         const val COLLECT_PERFORMANCE = "collect_performance"

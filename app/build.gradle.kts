@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 
 plugins {
@@ -106,8 +107,8 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.jakewharton.timber)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.bundles.firebase)
+    releaseImplementation(platform(libs.firebase.bom))
+    releaseImplementation(libs.bundles.firebase)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -115,4 +116,12 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+androidComponents {
+    onVariants { variant ->
+        val googleTask =
+            tasks.findByName("process${variant.name.uppercaseFirstChar()}GoogleServices")
+        googleTask?.enabled = "debug" != variant.name
+    }
 }
