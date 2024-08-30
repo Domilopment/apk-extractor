@@ -11,6 +11,7 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.StaleObjectException
 import androidx.test.uiautomator.Until
+import domilopment.apkextractor.baselineprofile.Constants.PRIVACY_NOTICE
 
 import org.junit.Rule
 import org.junit.Test
@@ -75,10 +76,10 @@ class StartupBenchmarks {
 
                 try {
                     // Privacy Consent Dialog
-                    device.wait(Until.hasObject(By.textStartsWith("We value your privacy")), 5_000)
+                    device.wait(Until.hasObject(By.textStartsWith(PRIVACY_NOTICE)), 5_000)
                     while (!device.findObject(By.text("Deny All")).parent.isEnabled) {
                         try {
-                            device.findObject(By.textStartsWith("We value your privacy"))
+                            device.findObject(By.textStartsWith(PRIVACY_NOTICE))
                                 .swipe(Direction.UP, 1f)
                         } catch (_: StaleObjectException) {
                             // Hot Fix
