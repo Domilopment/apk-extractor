@@ -87,7 +87,11 @@ class StartupBenchmarks {
                     }
                     device.waitForIdle(1_000)
                     device.findObject(By.text("Deny All")).clickAndWait(Until.newWindow(), 1_000)
+                } catch (_: NullPointerException) {
+                    // Onboarding already done.
+                }
 
+                try {
                     // Save dir Dialog
                     device.findObject(By.text("OK")).clickAndWait(Until.newWindow(), 5_000)
                     device.findObject(By.text("Documents")).clickAndWait(Until.newWindow(), 1_000)
