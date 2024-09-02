@@ -23,6 +23,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -73,7 +75,10 @@ private fun DefaultBottomNavigation(
             },
                 label = {
                     Text(
-                        text = stringResource(id = item.routeNameRes)
+                        text = stringResource(id = item.routeNameRes),
+                        textAlign = TextAlign.Center,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 2
                     )
                 },
                 selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
