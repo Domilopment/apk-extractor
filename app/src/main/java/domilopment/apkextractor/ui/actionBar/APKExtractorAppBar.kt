@@ -51,6 +51,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.AppBarState
@@ -118,41 +119,43 @@ private fun DefaultAppBar(
         }
     }
 
-    TopAppBar(title = { Text(text = stringResource(id = appBarState.title)) },
-        modifier = modifier.onGloballyPositioned {
-            barWidth = with(localDensity) { it.size.width.toDp() }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary
-        ),
-        navigationIcon = {
-            if (appBarState.isBackArrow) IconButton(onClick = appBarState.onBackArrowClick!!) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-        },
-        actions = {
-            if (appBarState.isSearchable) IconButton(onClick = onActionSearch) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-            appBarState.actions.takeIf { it.isNotEmpty() }?.let { action ->
-                ActionsMenu(
-                    items = action,
-                    hasSearchIcon = appBarState.isSearchable,
-                    isOpen = menuExpanded,
-                    onToggleOverflow = { menuExpanded = it },
-                    maxVisibleItems = visibleItems,
-                )
-            }
-        })
+    TopAppBar(title = {
+        Text(
+            text = stringResource(id = appBarState.title),
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
+        )
+    }, modifier = modifier.onGloballyPositioned {
+        barWidth = with(localDensity) { it.size.width.toDp() }
+    }, colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        titleContentColor = MaterialTheme.colorScheme.onPrimary
+    ), navigationIcon = {
+        if (appBarState.isBackArrow) IconButton(onClick = appBarState.onBackArrowClick!!) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+    }, actions = {
+        if (appBarState.isSearchable) IconButton(onClick = onActionSearch) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+        appBarState.actions.takeIf { it.isNotEmpty() }?.let { action ->
+            ActionsMenu(
+                items = action,
+                hasSearchIcon = appBarState.isSearchable,
+                isOpen = menuExpanded,
+                onToggleOverflow = { menuExpanded = it },
+                maxVisibleItems = visibleItems,
+            )
+        }
+    })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
