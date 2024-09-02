@@ -32,7 +32,7 @@ enum class FadingEdge {
 /**
  * A fading edge drawn by a linear gradient from start to end
  * @param edge the anchor point for the edge on canvas
- * @param visible set if the content should be fully visible or not
+ * @param visible if edge should be visible
  * @param size the size of the fading edge
  */
 fun Modifier.fadingEdge(edge: FadingEdge, visible: Boolean, size: Dp) = this
@@ -41,7 +41,7 @@ fun Modifier.fadingEdge(edge: FadingEdge, visible: Boolean, size: Dp) = this
         require(size > 0.dp) { "Invalid fade width: Width must be greater than 0" }
 
         val fade by animateDpAsState(
-            targetValue = if (visible) 0.dp else size,
+            targetValue = if (visible) size else 0.dp,
             animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
             label = "FadingEdge"
         )
@@ -80,7 +80,7 @@ fun Modifier.fadingEdge(edge: FadingEdge, visible: Boolean, size: Dp) = this
 
 /**
  * Draws a fading edge at the top of the content
- * @param visible set if the content should be fully visible or not
+ * @param visible if edge should be visible
  * @param size the size of the fading edge
  */
 fun Modifier.fadingTop(visible: Boolean, size: Dp = 32.dp) =
@@ -88,7 +88,7 @@ fun Modifier.fadingTop(visible: Boolean, size: Dp = 32.dp) =
 
 /**
  * Draws a fading edge at the bottom of the content
- * @param visible set if the content should be fully visible or not
+ * @param visible if edge should be visible
  * @param size the size of the fading edge
  */
 fun Modifier.fadingBottom(visible: Boolean, size: Dp = 32.dp) =
@@ -96,7 +96,7 @@ fun Modifier.fadingBottom(visible: Boolean, size: Dp = 32.dp) =
 
 /**
  * Draws a fading edge at the start of the content
- * @param visible set if the content should be fully visible or not
+ * @param visible if edge should be visible
  * @param size the size of the fading edge
  */
 fun Modifier.fadingStart(visible: Boolean, size: Dp = 32.dp) =
@@ -104,7 +104,7 @@ fun Modifier.fadingStart(visible: Boolean, size: Dp = 32.dp) =
 
 /**
  * Draws a fading edge at the end of the content
- * @param visible set if the content should be fully visible or not
+ * @param visible if edge should be visible
  * @param size the size of the fading edge
  */
 fun Modifier.fadingEnd(visible: Boolean, size: Dp = 32.dp) =

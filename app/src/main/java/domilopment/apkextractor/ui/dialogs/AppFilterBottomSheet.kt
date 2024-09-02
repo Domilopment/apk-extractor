@@ -39,7 +39,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -97,7 +96,11 @@ fun AppFilterBottomSheet(
     ) {
         AppFilterAppType(updatedSystemApps, systemApps, userApps, changeSelection)
         Spacer(modifier = Modifier.height(8.dp))
-        Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(state = rememberScrollState())
+                .weight(weight = 1f, fill = false)
+        ) {
             AppFilterSort(
                 sortOrder, sort, prefSortFavorites, setSortOrder, sortApps, sortFavorites
             )
@@ -230,22 +233,13 @@ private fun AppFilterApps(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val scrollState = rememberScrollState()
-        val onStart by remember {
-            derivedStateOf {
-                scrollState.value == 0
-            }
-        }
-        val onEnd by remember {
-            derivedStateOf {
-                scrollState.value == scrollState.maxValue
-            }
-        }
+
         AppFilterCategoryHeader(header = stringResource(id = R.string.filter_title))
         Row(
             Modifier
                 .fillMaxWidth()
-                .fadingStart(visible = onStart)
-                .fadingEnd(visible = onEnd)
+                .fadingStart(visible = scrollState.canScrollBackward)
+                .fadingEnd(visible = scrollState.canScrollForward)
                 .horizontalScroll(state = scrollState),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {

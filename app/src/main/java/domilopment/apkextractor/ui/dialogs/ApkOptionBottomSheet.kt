@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -33,8 +32,6 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -137,20 +134,11 @@ fun ApkSheetActions(
     onActionUninstall: () -> Unit
 ) {
     val scrollState = rememberScrollState()
-    val onStart by remember {
-        derivedStateOf {
-            scrollState.value == 0
-        }
-    }
-    val onEnd by remember {
-        derivedStateOf {
-            scrollState.value == scrollState.maxValue
-        }
-    }
+
     Row(
         modifier = Modifier
-            .fadingStart(visible = onStart)
-            .fadingEnd(visible = onEnd)
+            .fadingStart(visible = scrollState.canScrollBackward)
+            .fadingEnd(visible = scrollState.canScrollForward)
             .horizontalScroll(scrollState)
             .padding(8.dp, 0.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)

@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,16 +49,6 @@ fun AnalyticsDialog(
     val analyticsHelper = LocalAnalyticsHelper.current
 
     val scrollState = rememberScrollState()
-    val onTop by remember {
-        derivedStateOf {
-            scrollState.value == 0
-        }
-    }
-    val onBottom by remember {
-        derivedStateOf {
-            scrollState.value == scrollState.maxValue
-        }
-    }
 
     var endReached by remember {
         mutableStateOf(false)
@@ -75,8 +64,8 @@ fun AnalyticsDialog(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(key1 = onBottom) {
-        if (onBottom && !endReached) endReached = true
+    LaunchedEffect(key1 = scrollState.canScrollForward) {
+        if (!scrollState.canScrollForward && !endReached) endReached = true
     }
 
     DoubleBackPressDialog(
@@ -107,8 +96,8 @@ fun AnalyticsDialog(
         text = {
             Column(
                 modifier = Modifier
-                    .fadingTop(visible = onTop)
-                    .fadingBottom(visible = onBottom)
+                    .fadingTop(visible = scrollState.canScrollBackward)
+                    .fadingBottom(visible = scrollState.canScrollForward)
                     .verticalScroll(state = scrollState)
             ) {
                 Text(

@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import domilopment.apkextractor.R
 import domilopment.apkextractor.utils.conditional
+import domilopment.apkextractor.utils.fadingBottom
+import domilopment.apkextractor.utils.fadingTop
 
 @Composable
 fun DialogPreference(
@@ -94,8 +96,11 @@ fun DialogPreference(
     }, title = { Text(text = name) }, text = {
         val scrollState = rememberScrollState()
         Box(
-            modifier = Modifier.conditional(condition = scrollable,
-                ifTrue = { verticalScroll(state = scrollState) })
+            modifier = Modifier.conditional(condition = scrollable, ifTrue = {
+                fadingTop(visible = scrollState.canScrollBackward)
+                    .fadingBottom(visible = scrollState.canScrollForward)
+                    .verticalScroll(state = scrollState)
+            })
         ) {
             dialogContent()
         }
