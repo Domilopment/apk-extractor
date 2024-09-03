@@ -58,7 +58,10 @@ fun AppList(
     swipeActionThresholdModifier: Float,
     uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
-    val highlightColor = attrColorResource(attrId = android.R.attr.textColorHighlight)
+    val highlightColor = attrColorResource(
+        attrId = android.R.attr.textColorHighlight,
+        defaultColor = MaterialTheme.colorScheme.inversePrimary
+    )
 
     ScrollToTopLazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
         items(items = appList, key = { it.appPackageName }) { app ->
@@ -244,7 +247,9 @@ private fun AppListPreview() {
                 triggerActionMode = { if (!actionMode) actionMode = true },
                 rightSwipeAction = ApkActionsOptions.SAVE,
                 leftSwipeAction = ApkActionsOptions.SHARE,
-                swipeActionCallback = { app, action -> Timber.tag(action.name).i(app.appPackageName) },
+                swipeActionCallback = { app, action ->
+                    Timber.tag(action.name).i(app.appPackageName)
+                },
                 isSwipeActionCustomThreshold = false,
                 swipeActionThresholdModifier = 0.5f,
                 uninstalledAppFound = { _ -> })

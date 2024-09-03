@@ -6,9 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,11 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -56,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiMode
-import domilopment.apkextractor.ui.keyboardAsState
 
 @Composable
 fun APKExtractorAppBar(
@@ -81,9 +74,10 @@ fun APKExtractorAppBar(
                 )
 
                 UiMode.Search -> SearchBar(
-                    text = searchText, onTextChange = onSearchQueryChanged, onCloseClicked = {
-                        if (searchText.isNotEmpty()) onSearchQueryChanged("") else onReturnUiMode()
-                    }, onSearchClicked = onSearchQueryChanged
+                    text = searchText,
+                    onTextChange = onSearchQueryChanged,
+                    onCloseClicked = onReturnUiMode,
+                    onSearchClicked = onSearchQueryChanged
                 )
 
                 is UiMode.Action -> ActionModeBar(
@@ -210,8 +204,6 @@ private fun SearchBar(
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-    val isKeyboardOpen by keyboardAsState()
 
     Surface(
         modifier = Modifier
@@ -220,60 +212,60 @@ private fun SearchBar(
         shadowElevation = 8.dp,
         color = MaterialTheme.colorScheme.primary
     ) {
-        TextField(modifier = Modifier
-            .fillMaxWidth()
-            .focusRequester(focusRequester)
-            .pointerInput(Unit) {
-                awaitEachGesture {
-                    awaitFirstDown(pass = PointerEventPass.Initial)
-                    val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
-                    if (upEvent != null && !isKeyboardOpen) {
-                        focusManager.clearFocus()
-                        focusRequester.requestFocus()
-                        keyboard?.show()
-                    }
-                }
-            }, value = text, onValueChange = {
-            onTextChange(it)
-        }, placeholder = {
-            Text(
-                text = stringResource(id = R.string.menu_search),
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
-            )
-        }, textStyle = TextStyle(
-            color = MaterialTheme.colorScheme.onPrimary,
-            fontSize = MaterialTheme.typography.titleMedium.fontSize,
-            textDecoration = TextDecoration.Underline
-        ), singleLine = true, leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search Icon",
-                tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
-            )
-        }, trailingIcon = {
-            IconButton(onClick = {
-                if (text.isNotEmpty()) {
-                    onTextChange("")
-                } else {
-                    onCloseClicked()
-                }
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close Icon",
-                    tint = MaterialTheme.colorScheme.onPrimary
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
+            value = text,
+            onValueChange = {
+                onTextChange(it)
+            },
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.menu_search),
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
                 )
-            }
-        }, keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Search
-        ), keyboardActions = KeyboardActions(onSearch = {
-            onSearchClicked(text)
-            focusManager.clearFocus()
-        }), colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-            cursorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
-        )
+            },
+            textStyle = TextStyle(
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                textDecoration = TextDecoration.Underline
+            ),
+            singleLine = true,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search Icon",
+                    tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+                )
+            },
+            trailingIcon = {
+                IconButton(onClick = {
+                    if (text.isNotEmpty()) {
+                        onTextChange("")
+                    } else {
+                        onCloseClicked()
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close Icon",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Search
+            ),
+            keyboardActions = KeyboardActions(onSearch = {
+                onSearchClicked(text)
+                keyboard?.hide()
+            }),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                cursorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+            )
         )
 
         LaunchedEffect(focusRequester) {
@@ -282,7 +274,11 @@ private fun SearchBar(
         }
 
         BackHandler {
-            onCloseClicked()
+            if (text.isNotEmpty()) {
+                onTextChange("")
+            } else {
+                onCloseClicked()
+            }
         }
     }
 }

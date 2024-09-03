@@ -147,7 +147,10 @@ private fun AppListItemPreview() {
     var actionMode by remember {
         mutableStateOf(false)
     }
-    val color = attrColorResource(attrId = android.R.attr.textColorHighlight)
+    val color = attrColorResource(
+        attrId = android.R.attr.textColorHighlight,
+        defaultColor = MaterialTheme.colorScheme.inversePrimary
+    )
     MaterialTheme {
         Column {
             Text(text = "ActionMode is ${if (actionMode) "ON" else "OFF"}")

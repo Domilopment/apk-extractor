@@ -58,7 +58,10 @@ fun ApkList(
     deletedDocumentFound: (PackageArchiveEntity) -> Unit,
     onStorageInfoClick: () -> Unit
 ) {
-    val highlightColor = attrColorResource(attrId = android.R.attr.textColorHighlight)
+    val highlightColor = attrColorResource(
+        attrId = android.R.attr.textColorHighlight,
+        defaultColor = MaterialTheme.colorScheme.inversePrimary
+    )
 
     ScrollToTopLazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
         item {
