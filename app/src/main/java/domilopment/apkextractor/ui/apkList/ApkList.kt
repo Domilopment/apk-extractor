@@ -3,6 +3,7 @@ package domilopment.apkextractor.ui.apkList
 import android.net.Uri
 import android.text.format.Formatter
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +25,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -139,6 +142,24 @@ private fun StorageInfo(
         shape = RoundedCornerShape(8.dp),
         color = MaterialTheme.colorScheme.surfaceVariant
     ) {
+        var width by remember {
+            mutableFloatStateOf(0f)
+        }
+        val backupsOffset = remember {
+            Animatable(initialValue = 0f)
+        }
+        val nonFreeOffset = remember {
+            Animatable(initialValue = 0f)
+        }
+
+        LaunchedEffect(width, takenSpace) {
+            backupsOffset.animateTo(targetValue = width * (takenSpace.toFloat() / totalSpace))
+        }
+
+        LaunchedEffect(width, freeSpace) {
+            nonFreeOffset.animateTo(targetValue = width * ((totalSpace - freeSpace).toFloat() / totalSpace))
+        }
+
         Column(
             modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.Center,
@@ -158,9 +179,7 @@ private fun StorageInfo(
                     .height(8.dp)
             ) {
                 val y = size.height / 2
-                val width = size.width
-                val backupsOffset = width * (takenSpace.toFloat() / totalSpace)
-                val nonFreeOffset = width * ((totalSpace - freeSpace).toFloat() / totalSpace)
+                width = size.width
                 val strokeWidth = size.height
                 drawLine(
                     trackColor,
@@ -171,15 +190,15 @@ private fun StorageInfo(
                 )
                 drawLine(
                     nonFree,
-                    Offset(backupsOffset, y),
-                    Offset(nonFreeOffset, y),
+                    Offset(backupsOffset.value, y),
+                    Offset(nonFreeOffset.value, y),
                     strokeWidth,
                     StrokeCap.Round
                 )
                 drawLine(
                     color,
                     Offset(0f, y),
-                    Offset(backupsOffset, y),
+                    Offset(backupsOffset.value, y),
                     strokeWidth,
                     StrokeCap.Round,
                 )
