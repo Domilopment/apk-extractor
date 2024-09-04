@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -15,9 +16,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 
 @Composable
 inline fun <reified T> ListPreference(
@@ -73,18 +76,18 @@ inline fun <reified T> ListPreference(
         dialogState = dialog,
         scrollable = false,
         dialogContent = {
-            LazyColumn {
+            LazyColumn(modifier = Modifier.clip(RoundedCornerShape(8.dp))) {
                 items(items = entriesMap, key = { it.second }) {
                     ListItem(headlineContent = { Text(text = it.first) },
                         modifier = Modifier.clickable {
-                            val newValue = when (T::class) {
-                                Int::class -> it.second.toInt() as T
-                                String::class -> it.second as T
-                                else -> error("Unknown Generic Type")
-                            }
-                            onClick(newValue)
-                            dialog.hide()
-                        },
+                                val newValue = when (T::class) {
+                                    Int::class -> it.second.toInt() as T
+                                    String::class -> it.second as T
+                                    else -> error("Unknown Generic Type")
+                                }
+                                onClick(newValue)
+                                dialog.hide()
+                            },
                         leadingContent = {
                             RadioButton(
                                 selected = value.toString() == it.second, onClick = null

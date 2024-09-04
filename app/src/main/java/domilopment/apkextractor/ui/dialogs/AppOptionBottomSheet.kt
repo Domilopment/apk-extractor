@@ -35,6 +35,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarDuration
@@ -46,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -189,8 +191,7 @@ private fun AppSheetActions(
             .fadingStart(visible = scrollState.canScrollBackward)
             .fadingEnd(visible = scrollState.canScrollForward)
             .horizontalScroll(scrollState)
-            .padding(8.dp, 0.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(8.dp, 0.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         AssistChip(onClick = onActionSave,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_save)) },
@@ -396,7 +397,7 @@ private fun AppSheetHeader(
                 contentDescription = null,
             )
         }
-    })
+    }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
 }
 
 @Composable

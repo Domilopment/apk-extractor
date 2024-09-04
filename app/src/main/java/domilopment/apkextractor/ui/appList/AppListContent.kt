@@ -5,7 +5,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -41,9 +40,7 @@ fun AppListContent(
     uninstalledAppFound: (ApplicationModel) -> Unit
 ) {
     PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
-        state = rememberPullToRefreshState(enabled = { isPullToRefresh })
+        isRefreshing = isRefreshing, onRefresh = onRefresh, enabled = isPullToRefresh
     ) {
         AppList(
             appList = appList,

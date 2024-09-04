@@ -8,6 +8,7 @@ import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material3.Checkbox
@@ -28,6 +29,7 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -36,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.components.ItemListDragAndDropState
@@ -160,19 +163,21 @@ fun APKNamePreference(
 
             val haptic = LocalHapticFeedback.current
             LazyColumn(
-                modifier = Modifier.pointerInput(Unit) {
-                    detectDragGesturesAfterLongPress(onDrag = { change, offset ->
-                        change.consume()
-                        itemListDragAndDropState.onDrag(offset)
-                        handleOverscrollJob(overscrollJob, scope, itemListDragAndDropState)
-                    },
-                        onDragStart = { offset ->
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            itemListDragAndDropState.onDragStart(offset)
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .pointerInput(Unit) {
+                        detectDragGesturesAfterLongPress(onDrag = { change, offset ->
+                            change.consume()
+                            itemListDragAndDropState.onDrag(offset)
+                            handleOverscrollJob(overscrollJob, scope, itemListDragAndDropState)
                         },
-                        onDragEnd = { itemListDragAndDropState.onDragInterrupted() },
-                        onDragCancel = { itemListDragAndDropState.onDragInterrupted() })
-                }, state = itemListDragAndDropState.getLazyListState()
+                            onDragStart = { offset ->
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                itemListDragAndDropState.onDragStart(offset)
+                            },
+                            onDragEnd = { itemListDragAndDropState.onDragInterrupted() },
+                            onDragCancel = { itemListDragAndDropState.onDragInterrupted() })
+                    }, state = itemListDragAndDropState.getLazyListState()
             ) {
                 itemsIndexed(items = dragMap, key = { _, item -> item.second }) { index, item ->
                     val displacementOffset =

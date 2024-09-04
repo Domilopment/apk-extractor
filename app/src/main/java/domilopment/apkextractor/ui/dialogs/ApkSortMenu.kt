@@ -3,13 +3,13 @@ package domilopment.apkextractor.ui.dialogs
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import domilopment.apkextractor.ui.components.ApkExtractorBottomSheet
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -22,7 +22,7 @@ fun ApkSortMenu(
     sheetState: SheetState,
     sort: (ApkSortOptions) -> Unit
 ) {
-    if (expanded) ApkExtractorBottomSheet(
+    if (expanded) ModalBottomSheet(
         onDismissRequest = onDismissRequest, modifier = modifier, sheetState = sheetState
     ) {
         ApkSortOptions.entries.forEach {

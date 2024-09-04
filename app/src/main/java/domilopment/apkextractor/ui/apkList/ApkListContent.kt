@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -37,9 +36,7 @@ fun ApkListContent(
     onStorageInfoClick: () -> Unit
 ) {
     PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
-        state = rememberPullToRefreshState(enabled = { isPullToRefresh })
+        isRefreshing = isRefreshing, onRefresh = onRefresh, enabled = isPullToRefresh
     ) {
         ApkList(
             apkList = apkList,

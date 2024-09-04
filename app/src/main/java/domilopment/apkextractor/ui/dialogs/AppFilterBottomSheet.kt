@@ -31,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -53,11 +54,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
-import domilopment.apkextractor.ui.components.ApkExtractorBottomSheet
 import domilopment.apkextractor.ui.components.SegmentedButton
 import domilopment.apkextractor.ui.components.SingleChoiceSegmentedButtonColumn
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
@@ -91,7 +90,7 @@ fun AppFilterBottomSheet(
     setCategory: (String?) -> Unit,
     setFilterOthers: (Set<String>) -> Unit
 ) {
-    ApkExtractorBottomSheet(
+    ModalBottomSheet(
         onDismissRequest = onDismissRequest, sheetState = sheetState
     ) {
         AppFilterAppType(updatedSystemApps, systemApps, userApps, changeSelection)
@@ -193,12 +192,12 @@ private fun <T : AppFilter> FilterMenuChip(
                 contentDescription = null
             )
         })
-        DropdownMenu(expanded = expanded,
+        DropdownMenu(
+            expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier.onGloballyPositioned {
                 dialogHeight = with(density) { it.size.height.toDp() }
             },
-            offset = DpOffset(0.dp, -dialogHeight - 46.dp)
         ) {
             DropdownMenuItem(text = { Text(text = neutralMenuOptionTitle) }, onClick = {
                 onDeselectItem()
