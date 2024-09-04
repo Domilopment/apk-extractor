@@ -1,9 +1,8 @@
 package domilopment.apkextractor.ui.settings.preferences
 
 import android.annotation.SuppressLint
+import androidx.annotation.IntRange
 import androidx.annotation.StringRes
-import androidx.compose.foundation.interaction.DragInteraction
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -64,26 +63,17 @@ fun SeekBarPreference(
     summary: String? = null,
     min: Float = 0f,
     max: Float = 100f,
-    steps: Int = 1,
+    @IntRange(from = 0L) steps: Int = 1,
     showValue: Boolean = false,
     state: Float,
     onValueChanged: (Float) -> Unit
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
     var value by remember {
         mutableFloatStateOf(state)
     }
 
     LaunchedEffect(state) {
         value = state
-    }
-
-    LaunchedEffect(interactionSource) {
-        interactionSource.interactions.collect {
-            when (it) {
-                is DragInteraction.Stop -> onValueChanged(value)
-            }
-        }
     }
 
     BasePreference(icon = icon, enabled = enabled, iconDesc = iconDesc, name = {
@@ -110,7 +100,7 @@ fun SeekBarPreference(
                     enabled = enabled,
                     valueRange = min..max,
                     steps = steps,
-                    interactionSource = interactionSource
+                    onValueChangeFinished = { onValueChanged(value) },
                 )
                 if (showValue) Text(text = value.toInt().toString())
             }
