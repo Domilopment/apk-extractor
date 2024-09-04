@@ -44,6 +44,8 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
+import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
+import domilopment.apkextractor.data.repository.analytics.logItemClick
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.components.HyperlinkText
 import domilopment.apkextractor.ui.components.Link
@@ -67,7 +69,8 @@ fun SettingsScreen(
     appUpdateManager: AppUpdateManager,
     inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
-    val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+    val analytics = LocalAnalyticsHelper.current
+    val pm = remember { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
 
     val uiState by model.uiState.collectAsStateWithLifecycle()
 
@@ -209,9 +212,15 @@ fun SettingsScreen(
         leftSwipeAction = uiState.leftSwipeAction,
         onLeftSwipeAction = model::setLeftSwipeAction,
         swipeActionCustomThreshold = uiState.swipeActionCustomThreshold,
-        onSwipeActionCustomThreshold = model::setSwipeActionCustomThreshold,
+        onSwipeActionCustomThreshold = {
+            model.setSwipeActionCustomThreshold(it)
+            analytics.logItemClick("SwitchPreference", "SwipeActionCustomThreshold")
+        },
         swipeActionThresholdMod = uiState.swipeActionThresholdMod,
-        onSwipeActionThresholdMod = model::setSwipeActionThresholdMod,
+        onSwipeActionThresholdMod = {
+            model.setSwipeActionThresholdMod(it)
+            analytics.logItemClick("SeekBarPreference", "SwipeActionCustomMod")
+        },
         batteryOptimization = batteryOptimization,
         onBatteryOptimization = {
             val isIgnoringBatteryOptimization =

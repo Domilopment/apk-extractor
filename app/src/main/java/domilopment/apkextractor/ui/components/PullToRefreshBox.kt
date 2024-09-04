@@ -49,7 +49,6 @@ fun PullToRefreshBox(
         content()
         indicator()
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
