@@ -66,8 +66,11 @@ fun AppListItem(
     modifier: Modifier = Modifier
 ) {
     val containerColor by animateColorAsState(
-        targetValue = if (isChecked) MaterialTheme.colorScheme.surfaceVariant else ListItemDefaults.containerColor,
-        label = "AppListItemContainerColor"
+        targetValue = if (isChecked) ListItemDefaults.containerColor.copy(
+            red = ListItemDefaults.containerColor.red * 3.5f,
+            green = ListItemDefaults.containerColor.green * 3.5f,
+            blue = ListItemDefaults.containerColor.blue * 3.5f
+        ) else ListItemDefaults.containerColor, label = "AppListItemContainerColor"
     )
     ListItem(
         headlineContent = {
