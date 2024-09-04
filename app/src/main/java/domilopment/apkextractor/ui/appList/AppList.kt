@@ -97,7 +97,8 @@ fun AppList(
             }
 
             SwipeToDismissBox(
-                state = state, backgroundContent = {
+                state = state,
+                backgroundContent = {
                     val color by animateColorAsState(
                         when (state.dismissDirection) {
                             SwipeToDismissBoxValue.Settled -> Color.Transparent
@@ -117,9 +118,12 @@ fun AppList(
 
                         else -> Unit
                     }
-                }, enableDismissFromStartToEnd = getSwipeDirections(
+                },
+                modifier = Modifier.animateItem(),
+                enableDismissFromStartToEnd = getSwipeDirections(
                     app, isSwipeToDismiss, rightSwipeAction
-                ), enableDismissFromEndToStart = getSwipeDirections(
+                ),
+                enableDismissFromEndToStart = getSwipeDirections(
                     app, isSwipeToDismiss, leftSwipeAction
                 )
             ) {

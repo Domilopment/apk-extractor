@@ -1,6 +1,7 @@
 package domilopment.apkextractor.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
@@ -39,7 +40,10 @@ private fun ScrollToTopButton(
     visible: Boolean, modifier: Modifier = Modifier, onScrollToTop: () -> Unit
 ) {
     AnimatedVisibility(
-        visible = visible, modifier = modifier, enter = fadeIn(), exit = fadeOut()
+        visible = visible,
+        modifier = modifier,
+        enter = fadeIn(animationSpec = tween(durationMillis = 450)),
+        exit = fadeOut()
     ) {
         IconButton(
             onClick = onScrollToTop,
@@ -84,7 +88,7 @@ fun ScrollToTopLazyColumn(
         ScrollToTopButton(
             visible = scrollToTop, modifier = Modifier.align(Alignment.BottomCenter),
         ) {
-            scope.launch { state.scrollToItem(0) }
+            scope.launch { state.animateScrollToItem(0) }
         }
     }
 }

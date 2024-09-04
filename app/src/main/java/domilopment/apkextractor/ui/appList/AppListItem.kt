@@ -1,6 +1,12 @@
 package domilopment.apkextractor.ui.appList
 
 import android.graphics.drawable.Drawable
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -57,7 +63,12 @@ fun AppListItem(
     isFavorite: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    val containerColor by animateColorAsState(
+        targetValue = if (isChecked) MaterialTheme.colorScheme.surfaceVariant else ListItemDefaults.containerColor,
+        label = "AppListItemContainerColor"
+    )
     ListItem(
         headlineContent = {
             Row(
@@ -79,7 +90,7 @@ fun AppListItem(
                 )
             }
         },
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .combinedClickable(onClick = onClick, onLongClick = onLongClick),
         supportingContent = {
@@ -100,7 +111,7 @@ fun AppListItem(
                 )
             }
         },
-        colors = ListItemDefaults.colors(containerColor = if (isChecked) MaterialTheme.colorScheme.surfaceVariant else ListItemDefaults.containerColor)
+        colors = ListItemDefaults.colors(containerColor = containerColor)
     )
 
 }
@@ -125,11 +136,16 @@ private fun AppListItemAvatar(appIcon: Drawable, isChecked: Boolean) {
 
 @Composable
 private fun AppListItemCheckmark(isChecked: Boolean, modifier: Modifier = Modifier) {
-    if (isChecked) {
+    AnimatedVisibility(
+        visible = isChecked,
+        modifier = modifier,
+        enter = fadeIn() + scaleIn(),
+        exit = fadeOut() + scaleOut()
+    ) {
         Icon(
             Icons.Filled.CheckCircle,
             contentDescription = stringResource(id = R.string.list_item_checkbox_description),
-            modifier = modifier.background(
+            modifier = Modifier.background(
                 color = MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape
             ),
             tint = MaterialTheme.colorScheme.tertiary

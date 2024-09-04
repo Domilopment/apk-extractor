@@ -101,12 +101,15 @@ fun ApkList(
                 Utils.getAnnotatedString(versionName, searchString, highlightColor)
             }
 
-            ApkListItem(apkFileName = fileName!!,
+            ApkListItem(
+                apkFileName = fileName!!,
                 appName = appName,
                 appPackageName = packageName,
                 appIcon = apk.appIcon,
                 apkVersionInfo = versionInfo,
-                onClick = { onClick(apk) })
+                onClick = { onClick(apk) },
+                modifier = Modifier.animateItem()
+            )
         }
     }
 }

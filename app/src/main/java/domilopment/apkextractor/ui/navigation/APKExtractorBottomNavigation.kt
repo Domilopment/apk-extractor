@@ -1,8 +1,12 @@
 package domilopment.apkextractor.ui.navigation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +47,19 @@ fun APKExtractorBottomNavigation(
     onNavigate: () -> Unit
 ) {
     AnimatedContent(targetState = isActionMode, transitionSpec = {
-        slideInVertically(initialOffsetY = { it }) togetherWith fadeOut()
+        slideInVertically(animationSpec = tween(
+            durationMillis = 100,
+            delayMillis = 100,
+        ), initialOffsetY = { it }) + fadeIn(
+            animationSpec = tween(
+                durationMillis = 100,
+                delayMillis = 100,
+            )
+        ) togetherWith slideOutVertically(animationSpec = tween(
+            durationMillis = 100, easing = LinearOutSlowInEasing
+        ), targetOffsetY = { it }) + fadeOut(
+            animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
+        )
     }, label = "Bottom Navigation Content") { actionMode ->
         when {
             actionMode && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(appBarState.actionModeActions)

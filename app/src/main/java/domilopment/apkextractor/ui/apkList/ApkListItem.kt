@@ -43,10 +43,11 @@ fun ApkListItem(
     appPackageName: AnnotatedString?,
     appIcon: ImageBitmap?,
     apkVersionInfo: AnnotatedString?,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .background(color = ListItemDefaults.containerColor)
             .clickable(onClick = onClick),
@@ -63,15 +64,14 @@ fun ApkListItem(
             overflow = TextOverflow.Clip,
             maxLines = 1,
         )
-        ListItem(
-            headlineContent = {
-                if (appPackageName != null) Text(
-                    text = appPackageName,
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            },
+        ListItem(headlineContent = {
+            if (appPackageName != null) Text(
+                text = appPackageName,
+                fontSize = 12.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
             overlineContent = {
                 Text(
                     text = appName ?: apkFileName,
@@ -130,13 +130,12 @@ private fun ApkListItemPreview() {
     }
     MaterialTheme {
         Column {
-            ApkListItem(
-                AnnotatedString(apk.fileName),
+            ApkListItem(AnnotatedString(apk.fileName),
                 appName = AnnotatedString(apk.appName.toString()),
                 appPackageName = AnnotatedString(apk.appPackageName.toString()),
                 appIcon = apk.appIcon,
                 apkVersionInfo = AnnotatedString("Version: ${apk.appVersionName} (${apk.appVersionCode})"),
-            ) { }
+                onClick = {})
         }
     }
 }
