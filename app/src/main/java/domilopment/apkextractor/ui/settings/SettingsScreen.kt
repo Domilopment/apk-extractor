@@ -13,7 +13,6 @@ import android.provider.DocumentsContract
 import android.provider.Settings
 import android.text.format.Formatter
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -132,10 +131,6 @@ fun SettingsScreen(
             appUpdateInfo = info
         }
     })
-
-    BackHandler {
-        onBackClicked()
-    }
 
     LaunchedEffect(key1 = Unit) {
         Screen.Settings.buttons.onEach { button ->

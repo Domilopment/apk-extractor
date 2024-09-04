@@ -4,6 +4,14 @@ import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
@@ -53,7 +61,36 @@ fun ApkExtractorNavHost(
 
     }
     NavHost(
-        navController = navController, startDestination = Screen.AppList.route, modifier = modifier
+        navController = navController,
+        startDestination = Screen.AppList.route,
+        popEnterTransition = {
+            scaleIn(
+                animationSpec = tween(
+                    durationMillis = 100,
+                    delayMillis = 35,
+                ),
+                initialScale = 1.1f,
+            ) + fadeIn(
+                animationSpec = tween(
+                    durationMillis = 100,
+                    delayMillis = 35,
+                ),
+            ) + slideInHorizontally(
+                animationSpec = tween(
+                    durationMillis = 100,
+                    delayMillis = 35,
+                )
+            )
+        },
+        popExitTransition = {
+            scaleOut(targetScale = 0.9f) + fadeOut(
+                animationSpec = tween(
+                    durationMillis = 35,
+                    easing = CubicBezierEasing(0.1f, 0.1f, 0f, 1f),
+                ),
+            ) + slideOutHorizontally(targetOffsetX = { it + (it / 2) })
+        },
+        modifier = modifier
     ) {
         composable(Screen.AppList.route) {
             val model = hiltViewModel<AppListViewModel>()
