@@ -47,9 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -174,9 +172,7 @@ private fun <T : AppFilter> FilterMenuChip(
     onSelectItem: (String) -> Unit,
     onDeselectItem: () -> Unit
 ) {
-    val density = LocalDensity.current
     var expanded by remember { mutableStateOf(false) }
-    var dialogHeight by remember { mutableStateOf(0.dp) }
     val selected = prefString != null
     Box {
         FilterChip(selected = selected, onClick = { expanded = true }, label = {
@@ -192,13 +188,7 @@ private fun <T : AppFilter> FilterMenuChip(
                 contentDescription = null
             )
         })
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.onGloballyPositioned {
-                dialogHeight = with(density) { it.size.height.toDp() }
-            },
-        ) {
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             DropdownMenuItem(text = { Text(text = neutralMenuOptionTitle) }, onClick = {
                 onDeselectItem()
                 expanded = false
@@ -267,7 +257,6 @@ private fun AppFilterApps(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppFilterSort(
     sortOrder: Boolean,
@@ -403,7 +392,6 @@ private fun AppFilterSort(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppFilterAppType(
     updatedSystemApps: Boolean,
