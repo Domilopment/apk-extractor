@@ -38,6 +38,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -66,11 +68,9 @@ fun AppListItem(
     modifier: Modifier = Modifier
 ) {
     val containerColor by animateColorAsState(
-        targetValue = if (isChecked) ListItemDefaults.containerColor.copy(
-            red = ListItemDefaults.containerColor.red * 3.5f,
-            green = ListItemDefaults.containerColor.green * 3.5f,
-            blue = ListItemDefaults.containerColor.blue * 3.5f
-        ) else ListItemDefaults.containerColor, label = "AppListItemContainerColor"
+        targetValue = if (isChecked) MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.2f)
+            .compositeOver(ListItemDefaults.containerColor) else ListItemDefaults.containerColor,
+        label = "AppListItemContainerColor"
     )
     ListItem(
         headlineContent = {
@@ -104,7 +104,11 @@ fun AppListItem(
                 overflow = TextOverflow.Ellipsis
             )
         },
-        leadingContent = { AppListItemAvatar(appIcon = appIcon, isChecked = isChecked) },
+        leadingContent = {
+            AppListItemAvatar(
+                appIcon = appIcon, isChecked = isChecked, containerColor = containerColor
+            )
+        },
         trailingContent = {
             if (isFavorite) {
                 Icon(
@@ -120,7 +124,9 @@ fun AppListItem(
 }
 
 @Composable
-private fun AppListItemAvatar(appIcon: Drawable, isChecked: Boolean) {
+private fun AppListItemAvatar(
+    appIcon: Drawable, isChecked: Boolean, containerColor: Color = ListItemDefaults.containerColor
+) {
     Box {
         Image(
             painter = rememberDrawablePainter(drawable = appIcon),
@@ -130,15 +136,21 @@ private fun AppListItemAvatar(appIcon: Drawable, isChecked: Boolean) {
                 .align(Alignment.Center)
         )
         AppListItemCheckmark(
-            isChecked = isChecked, modifier = Modifier
+            isChecked = isChecked,
+            modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .offset(6.dp, 2.dp)
+                .offset(6.dp, 2.dp),
+            containerColor = containerColor
         )
     }
 }
 
 @Composable
-private fun AppListItemCheckmark(isChecked: Boolean, modifier: Modifier = Modifier) {
+private fun AppListItemCheckmark(
+    isChecked: Boolean,
+    modifier: Modifier = Modifier,
+    containerColor: Color = ListItemDefaults.containerColor
+) {
     AnimatedVisibility(
         visible = isChecked,
         modifier = modifier,
@@ -149,7 +161,7 @@ private fun AppListItemCheckmark(isChecked: Boolean, modifier: Modifier = Modifi
             Icons.Filled.CheckCircle,
             contentDescription = stringResource(id = R.string.list_item_checkbox_description),
             modifier = Modifier.background(
-                color = MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape
+                color = containerColor, shape = CircleShape
             ),
             tint = MaterialTheme.colorScheme.tertiary
         )
