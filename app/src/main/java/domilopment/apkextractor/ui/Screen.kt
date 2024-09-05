@@ -17,6 +17,7 @@ import domilopment.apkextractor.ui.navigation.BottomBarItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 
 sealed interface Screen {
@@ -122,10 +123,11 @@ sealed interface Screen {
     }
 
     companion object {
+        @OptIn(ExperimentalSerializationApi::class)
         fun getScreen(route: String?): Screen? = when (route) {
-            AppList::class.qualifiedName -> AppList
-            ApkList::class.qualifiedName -> ApkList
-            Settings::class.qualifiedName -> Settings
+            AppList.serializer().descriptor.serialName -> AppList
+            ApkList.serializer().descriptor.serialName -> ApkList
+            Settings.serializer().descriptor.serialName -> Settings
             else -> null
         }
     }

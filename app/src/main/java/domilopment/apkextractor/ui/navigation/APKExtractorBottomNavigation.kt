@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -97,7 +98,7 @@ private fun DefaultBottomNavigation(
                         maxLines = 2
                     )
                 },
-                selected = currentDestination?.hierarchy?.any { it.route == item::class.qualifiedName } == true,
+                selected = currentDestination?.hierarchy?.any { it.hasRoute(item::class) } == true,
                 onClick = {
                     onNavigate()
                     navController.navigate(item) {
