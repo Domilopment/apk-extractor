@@ -17,11 +17,11 @@ import domilopment.apkextractor.ui.navigation.BottomBarItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.serialization.Serializable
 
 sealed interface Screen {
     @get:StringRes
     val routeNameRes: Int
-    val route: String
     val icon: ImageVector
     val appBarOnNavIconClick: (() -> Unit)?
 
@@ -36,9 +36,9 @@ sealed interface Screen {
         NavigationIcon, Refresh, Settings, FilterList, Sort, OpenExplorer, Share, Save
     }
 
+    @Serializable
     data object AppList : Screen {
         override val routeNameRes = R.string.menu_show_app_list
-        override val route = "app_list_route"
         override val icon = Icons.Default.Apps
         override val appBarOnNavIconClick = null
         override val appBarTitleRes = R.string.app_name
@@ -59,11 +59,11 @@ sealed interface Screen {
                 }, icon = Icons.Default.Settings, contentDescription = null
             )
         )
-        override val bottomBarActions = listOf(
-            BottomBarItem(icon = Icons.Default.Save, onClick = {
-                _buttons.tryEmit(ScreenActions.Save)
-            }),
-            BottomBarItem(icon = Icons.Default.Share,
+        override val bottomBarActions = listOf(BottomBarItem(icon = Icons.Default.Save, onClick = {
+            _buttons.tryEmit(ScreenActions.Save)
+        }),
+            BottomBarItem(
+                icon = Icons.Default.Share,
                 onClick = { _buttons.tryEmit(ScreenActions.Share) })
         )
 
@@ -71,9 +71,9 @@ sealed interface Screen {
         val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
     }
 
+    @Serializable
     data object ApkList : Screen {
         override val routeNameRes = R.string.menu_show_save_dir
-        override val route = "apk_list_route"
         override val icon = Icons.Default.Folder
         override val appBarOnNavIconClick = null
         override val appBarTitleRes = R.string.app_name
@@ -104,9 +104,9 @@ sealed interface Screen {
         val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
     }
 
+    @Serializable
     data object Settings : Screen {
         override val routeNameRes = R.string.title_activity_settings
-        override val route = "settings_route"
         override val icon = Icons.Default.Settings
         override val appBarOnNavIconClick: () -> Unit = {
             _buttons.tryEmit(ScreenActions.NavigationIcon)
@@ -123,9 +123,9 @@ sealed interface Screen {
 
     companion object {
         fun getScreen(route: String?): Screen? = when (route) {
-            AppList.route -> AppList
-            ApkList.route -> ApkList
-            Settings.route -> Settings
+            AppList::class.qualifiedName -> AppList
+            ApkList::class.qualifiedName -> ApkList
+            Settings::class.qualifiedName -> Settings
             else -> null
         }
     }

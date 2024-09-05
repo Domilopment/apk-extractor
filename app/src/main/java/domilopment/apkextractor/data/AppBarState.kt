@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.onEach
 
 @Stable
 class AppBarState(
-    private val navController: NavController,
+    navController: NavController,
     scope: CoroutineScope,
 ) {
     init {

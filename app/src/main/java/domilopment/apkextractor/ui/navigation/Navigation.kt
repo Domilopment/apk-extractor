@@ -60,39 +60,34 @@ fun ApkExtractorNavHost(
         }
 
     }
-    NavHost(
-        navController = navController,
-        startDestination = Screen.AppList.route,
-        popEnterTransition = {
-            scaleIn(
-                animationSpec = tween(
-                    durationMillis = 100,
-                    delayMillis = 35,
-                ),
-                initialScale = 1.1f,
-            ) + fadeIn(
-                animationSpec = tween(
-                    durationMillis = 100,
-                    delayMillis = 35,
-                ),
-            ) + slideInHorizontally(
-                animationSpec = tween(
-                    durationMillis = 100,
-                    delayMillis = 35,
-                )
+    NavHost(navController = navController, startDestination = Screen.AppList, popEnterTransition = {
+        scaleIn(
+            animationSpec = tween(
+                durationMillis = 100,
+                delayMillis = 35,
+            ),
+            initialScale = 1.1f,
+        ) + fadeIn(
+            animationSpec = tween(
+                durationMillis = 100,
+                delayMillis = 35,
+            ),
+        ) + slideInHorizontally(
+            animationSpec = tween(
+                durationMillis = 100,
+                delayMillis = 35,
             )
-        },
-        popExitTransition = {
-            scaleOut(targetScale = 0.9f) + fadeOut(
-                animationSpec = tween(
-                    durationMillis = 35,
-                    easing = CubicBezierEasing(0.1f, 0.1f, 0f, 1f),
-                ),
-            ) + slideOutHorizontally(targetOffsetX = { it + (it / 2) })
-        },
-        modifier = modifier
+        )
+    }, popExitTransition = {
+        scaleOut(targetScale = 0.9f) + fadeOut(
+            animationSpec = tween(
+                durationMillis = 35,
+                easing = CubicBezierEasing(0.1f, 0.1f, 0f, 1f),
+            ),
+        ) + slideOutHorizontally(targetOffsetX = { it + (it / 2) })
+    }, modifier = modifier
     ) {
-        composable(Screen.AppList.route) {
+        composable<Screen.AppList> {
             val model = hiltViewModel<AppListViewModel>()
 
             AppListScreen(
@@ -100,7 +95,7 @@ fun ApkExtractorNavHost(
                 searchString = searchQuery,
                 isActionMode = isActionMode,
                 onNavigate = {
-                    navController.navigate(Screen.Settings.route) {
+                    navController.navigate(Screen.Settings) {
                         launchSingleTop = true
                         restoreState = true
                     }
@@ -111,17 +106,17 @@ fun ApkExtractorNavHost(
                 onAppSelection = onAppSelection
             )
         }
-        composable(Screen.ApkList.route) {
+        composable<Screen.ApkList> {
             val model = hiltViewModel<ApkListViewModel>()
 
             ApkListScreen(model = model, searchString = searchQuery, onNavigate = {
-                navController.navigate(Screen.Settings.route) {
+                navController.navigate(Screen.Settings) {
                     launchSingleTop = true
                     restoreState = true
                 }
             }, showSnackbar = { showSnackbar(it) })
         }
-        composable(Screen.Settings.route) {
+        composable<Screen.Settings> {
             val model = hiltViewModel<SettingsScreenViewModel>()
 
             SettingsScreen(
@@ -129,7 +124,7 @@ fun ApkExtractorNavHost(
                 showSnackbar = showSnackbar,
                 onBackClicked = {
                     navController.popBackStack(
-                        Screen.Settings.route, inclusive = true, saveState = true
+                        Screen.Settings, inclusive = true, saveState = true
                     )
                 },
                 chooseSaveDir = chooseSaveDir,

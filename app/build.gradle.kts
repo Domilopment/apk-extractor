@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.firebase.perf)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {
@@ -107,6 +108,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.jakewharton.timber)
+    implementation(libs.kotlinx.serialization.json)
     releaseImplementation(platform(libs.firebase.bom))
     releaseImplementation(libs.bundles.firebase)
     testImplementation(libs.junit)

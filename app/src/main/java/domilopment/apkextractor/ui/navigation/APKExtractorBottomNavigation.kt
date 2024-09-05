@@ -97,10 +97,10 @@ private fun DefaultBottomNavigation(
                         maxLines = 2
                     )
                 },
-                selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
+                selected = currentDestination?.hierarchy?.any { it.route == item::class.qualifiedName } == true,
                 onClick = {
                     onNavigate()
-                    navController.navigate(item.route) {
+                    navController.navigate(item) {
                         // Pop up to the start destination of the graph to
                         // avoid building up a large stack of destinations
                         // on the back stack as users select items
