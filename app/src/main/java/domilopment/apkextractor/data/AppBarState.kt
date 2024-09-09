@@ -24,7 +24,7 @@ class AppBarState(
 ) {
     init {
         navController.currentBackStackEntryFlow.distinctUntilChanged().onEach { backStackEntry ->
-            val route = backStackEntry.destination.route
+            val route = backStackEntry.destination.route?.substringBefore('?')?.substringBefore('/')
             currentScreen = Screen.getScreen(route)
         }.launchIn(scope)
     }
