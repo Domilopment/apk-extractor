@@ -230,14 +230,14 @@ fun ApkSheetInfo(
             text = stringResource(
                 id = R.string.info_bottom_sheet_min_sdk,
                 minSdk ?: -1,
-                Utils.androidApiLevel[minSdk] ?: ""
+                Utils.androidApiLevel.getValue(minSdk ?: -1)
             )
         )
         InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_target_sdk,
                 targetSdk ?: -1,
-                Utils.androidApiLevel[targetSdk] ?: ""
+                Utils.androidApiLevel.getValue(targetSdk ?: -1)
             )
         )
         InfoText(

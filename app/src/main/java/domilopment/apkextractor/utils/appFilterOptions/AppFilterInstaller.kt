@@ -27,9 +27,9 @@ enum class AppFilterInstaller(private val packageName: String?) : AppFilter {
     override fun getTitleString(context: Context): CharSequence? {
         val packageManager = context.packageManager
         return try {
-            Utils.getPackageInfo(packageManager, packageName!!).applicationInfo.loadLabel(
-                packageManager
-            )
+            packageName?.let {
+                Utils.getApplicationInfo(packageManager, packageName).loadLabel(packageManager)
+            }
         } catch (_: PackageManager.NameNotFoundException) {
             null
         }

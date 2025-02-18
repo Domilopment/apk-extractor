@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -49,7 +48,7 @@ fun ProgressDialog(
                 Text(
                     text = stringResource(
                         id = R.string.progress_dialog_percentage,
-                        if (state.tasks > 0) (state.progress / state.tasks) * 100 else 0
+                        if (state.tasks > 0) (state.progress / state.tasks) * 100 else 0f
                     )
                 )
                 Text(

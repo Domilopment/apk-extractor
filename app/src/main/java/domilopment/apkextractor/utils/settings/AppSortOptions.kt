@@ -5,9 +5,9 @@ import domilopment.apkextractor.data.model.appList.ApplicationModel
 enum class AppSortOptions {
     SORT_BY_NAME {
         override fun comparator(asc: Boolean) = if (asc) compareBy(
-            String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName
+            nullsLast(String.CASE_INSENSITIVE_ORDER), ApplicationModel::appName
         ) else compareByDescending(
-            String.CASE_INSENSITIVE_ORDER, ApplicationModel::appName
+            nullsLast(String.CASE_INSENSITIVE_ORDER), ApplicationModel::appName
         )
     },
     SORT_BY_PACKAGE {

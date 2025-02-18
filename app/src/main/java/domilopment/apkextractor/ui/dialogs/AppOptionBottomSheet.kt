@@ -129,7 +129,7 @@ fun AppOptionsBottomSheet(
         snackbarHostState = snackbarHostState
     ) {
         AppSheetHeader(
-            appName = app.appName,
+            appName = app.appName ?: app.appPackageName,
             packageName = app.appPackageName,
             appIcon = app.appIcon,
             isFavorite = app.isFavorite,
@@ -137,14 +137,14 @@ fun AppOptionsBottomSheet(
         )
         HorizontalDivider(modifier = Modifier.padding(4.dp))
         AppSheetInfo(modifier = Modifier.weight(1f, fill = false),
-            sourceDirectory = app.appSourceDirectory,
+            sourceDirectory = app.appSourceDirectory.toString(),
             splitDirectories = app.appSplitSourceDirectories,
             apkSize = app.apkSize,
             versionName = app.appVersionName,
             versionNumber = app.appVersionCode,
-            minSdk = app.minSdkVersion,
-            targetSdk = app.targetSdkVersion,
-            appCategory = app.appCategory,
+            minSdk = app.minSdkVersion ?: -1,
+            targetSdk = app.targetSdkVersion ?: -1,
+            appCategory = app.appCategory ?: -1,
             installTime = app.appInstallTime,
             updateTime = app.appUpdateTime,
             installationSource = app.installationSource,
@@ -228,7 +228,7 @@ private fun AppSheetActions(
                     imageVector = Icons.Default.Settings, contentDescription = null
                 )
             })
-        if ((app.appFlags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM) || (app.appUpdateTime > app.appInstallTime)) AssistChip(
+        if ((app.appFlags?.and(ApplicationInfo.FLAG_SYSTEM) != ApplicationInfo.FLAG_SYSTEM) || (app.appUpdateTime > app.appInstallTime)) AssistChip(
             onClick = onActionUninstall,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_uninstall)) },
             leadingIcon = {
@@ -284,14 +284,14 @@ private fun AppSheetInfo(
         )
         InfoText(
             text = stringResource(
-                id = R.string.info_bottom_sheet_min_sdk, minSdk, Utils.androidApiLevel[minSdk] ?: ""
+                id = R.string.info_bottom_sheet_min_sdk, minSdk, Utils.androidApiLevel.getValue(minSdk)
             )
         )
         InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_target_sdk,
                 targetSdk,
-                Utils.androidApiLevel[targetSdk] ?: ""
+                Utils.androidApiLevel.getValue(targetSdk)
             )
         )
         InfoText(
@@ -317,13 +317,12 @@ private fun AppSheetInfo(
             installationSource?.runCatching {
                 Utils.getPackageInfo(packageManager, this).applicationInfo
             }?.onSuccess { applicationInfo ->
-                val isKnownStore = applicationInfo.packageName in Utils.listOfKnownStores
-                val sourceName = if (isKnownStore) "" else packageManager.getApplicationLabel(
-                    applicationInfo
-                )
+                val isKnownStore = applicationInfo?.packageName in Utils.listOfKnownStores
+                val sourceName =
+                    if (isKnownStore) "" else applicationInfo?.loadLabel(packageManager)
                 InfoText(
                     text = stringResource(
-                        id = R.string.info_bottom_sheet_installation_source, sourceName
+                        id = R.string.info_bottom_sheet_installation_source, sourceName.toString()
                     )
                 )
                 if (isKnownStore) Button(
@@ -335,14 +334,12 @@ private fun AppSheetInfo(
                 ) {
                     Image(
                         painter = rememberDrawablePainter(
-                            drawable = packageManager.getApplicationIcon(
-                                applicationInfo
-                            )
+                            drawable = applicationInfo?.loadIcon(packageManager)
                         ), contentDescription = null, modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = packageManager.getApplicationLabel(applicationInfo).toString(),
+                        text = applicationInfo?.loadLabel(packageManager).toString(),
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                     )

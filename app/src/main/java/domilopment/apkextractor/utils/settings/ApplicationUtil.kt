@@ -1,10 +1,15 @@
 package domilopment.apkextractor.utils.settings
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.net.Uri
+import domilopment.apkextractor.data.model.appList.AppModel
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.utils.SaveApkResult
 import domilopment.apkextractor.utils.FileUtil
+import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterInstaller
@@ -25,12 +30,16 @@ object ApplicationUtil {
      * @param app the resource App
      * @return String of the name after the APK should be named
      */
-    fun appName(app: ApplicationModel, set: Set<String>): String {
+    fun appName(
+        packageManager: PackageManager, packageInfo: PackageInfo, set: Set<String>
+    ): String {
+        val appName =
+            packageInfo.applicationInfo?.loadLabel(packageManager) ?: packageInfo.packageName
         val names = mapOf(
-            "name" to app.appName,
-            "package" to app.appPackageName,
-            "version_name" to app.appVersionName,
-            "version_number" to "v${app.appVersionCode}",
+            "name" to appName,
+            "package" to packageInfo.packageName,
+            "version_name" to packageInfo.versionName,
+            "version_number" to "v${Utils.versionCode(packageInfo)}",
             "datetime" to SimpleDateFormat.getDateTimeInstance().format(Date())
         )
         return StringBuilder().apply {
@@ -40,7 +49,7 @@ object ApplicationUtil {
                 set
             }
             processedPrefs.also {
-                if (it.isEmpty()) append(app.appName)
+                if (it.isEmpty()) append(appName)
                 else it.forEach { v ->
                     append(" ${names[v]}")
                 }
@@ -48,25 +57,42 @@ object ApplicationUtil {
         }.removePrefix(" ").toString()
     }
 
+    fun appName(
+        packageManager: PackageManager, applicationInfo: ApplicationInfo, set: Set<String>
+    ): String {
+        val packageInfo = Utils.getPackageInfo(packageManager, applicationInfo.packageName)
+        return appName(packageManager, packageInfo, set)
+    }
+
     /**
      * Creates a List containing of all Types the User Selected in Settings
      * @return List of Selected App Types
      */
     fun selectedAppTypes(
-        applications: Triple<List<ApplicationModel>, List<ApplicationModel>, List<ApplicationModel>>,
+        applications: List<AppModel>,
         selectUpdatedSystemApps: Boolean,
         selectSystemApps: Boolean,
-        selectUserApps: Boolean,
-        favorites: Set<String>
-    ): List<ApplicationModel> {
-        val (updatedSystemApps, systemApps, userApps) = applications
-        val mData: MutableList<ApplicationModel> = mutableListOf()
+        selectUserApps: Boolean
+    ): List<AppModel> {
+        val mData: MutableList<AppModel> = mutableListOf()
         if (selectUpdatedSystemApps) {
-            mData.addAll(updatedSystemApps)
-            if (selectSystemApps) mData.addAll(systemApps)
+            mData.addAll(applications.filter { it is AppModel.UpdatedSystemApps })
+            if (selectSystemApps) mData.addAll(applications.filter { it is AppModel.SystemApp })
         }
-        if (selectUserApps) mData.addAll(userApps)
-        return mData.map {
+        if (selectUserApps) mData.addAll(applications.filter { it is AppModel.UserApp })
+        return mData
+    }
+
+    /**
+     * Sets ApplicationModels favorite state from Set of package names
+     * @param apps List of Applications
+     * @param favorites Set of package names
+     * @return List of Applications with correct favorite state
+     */
+    fun getFavorites(
+        apps: List<ApplicationModel>, favorites: Set<String>
+    ): List<ApplicationModel> {
+        return apps.map {
             it.copy(isFavorite = it.appPackageName in favorites)
         }
     }
@@ -171,7 +197,9 @@ object ApplicationUtil {
             }
             SaveApkResult.Success(extractedApk)
         } catch (fnf_e: FileNotFoundException) {
-            fnf_e.printStackTrace()
+            extractedApk?.let {
+                FileUtil.deleteDocument(context, extractedApk)
+            }
             SaveApkResult.Failure(fnf_e.message)
         } catch (e: CancellationException) {
             extractedApk?.let {
@@ -199,8 +227,9 @@ object ApplicationUtil {
     suspend fun shareXapk(
         context: Context, app: ApplicationModel, appName: String, callback: suspend (String) -> Unit
     ): Uri = withContext(Dispatchers.IO) {
-        val splits =
-            arrayOf(app.appSourceDirectory, *(app.appSplitSourceDirectories ?: emptyArray()))
+        val splits = arrayOf(
+            app.appSourceDirectory, *(app.appSplitSourceDirectories ?: emptyArray())
+        )
 
         val outFile =
             FileUtil.ZipUtil.createTempZip(context, appName, suffix = FileUtil.FileInfo.XAPK.suffix)
@@ -211,5 +240,17 @@ object ApplicationUtil {
             }
         }
         return@withContext FileUtil.createShareUriForFile(context, outFile)
+    }
+
+    fun appModelFromPackageName(packageName: String, packageManager: PackageManager): AppModel? {
+        val applicationInfo = Utils.getApplicationInfo(packageManager, packageName)
+
+        return if (applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) AppModel.UpdatedSystemApps(
+            applicationInfo
+        )
+        else if (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == ApplicationInfo.FLAG_SYSTEM) AppModel.SystemApp(
+            applicationInfo
+        )
+        else AppModel.UserApp(applicationInfo)
     }
 }

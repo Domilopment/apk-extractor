@@ -11,8 +11,10 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -63,7 +65,7 @@ fun APKExtractorBottomNavigation(
         )
     }, label = "Bottom Navigation Content") { actionMode ->
         when {
-            actionMode && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(appBarState.actionModeActions)
+            actionMode && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(items = appBarState.actionModeActions)
             appBarState.hasBottomNavigation -> DefaultBottomNavigation(
                 items = items,
                 navController = navController,
@@ -120,16 +122,18 @@ private fun DefaultBottomNavigation(
 }
 
 @Composable
-private fun ActionModeBar(items: List<BottomBarItem>) {
+private fun ActionModeBar(modifier: Modifier = Modifier, items: List<BottomBarItem>) {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp), color = MaterialTheme.colorScheme.primary
+        modifier = modifier, color = MaterialTheme.colorScheme.primary
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .defaultMinSize(minHeight = 80.dp)
+
         ) {
             items.forEach { item ->
                 OutlinedButton(

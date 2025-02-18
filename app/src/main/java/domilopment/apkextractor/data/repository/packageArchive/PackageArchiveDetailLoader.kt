@@ -18,14 +18,14 @@ object PackageArchiveDetailLoader {
             )
         }?.let { apk ->
             val load = model.copy(
-                appName = apk.applicationInfo.loadLabel(context.packageManager).toString(),
-                appPackageName = apk.applicationInfo.packageName,
-                appIcon = apk.applicationInfo.loadIcon(context.packageManager)?.toBitmap()
+                appName = apk.applicationInfo?.loadLabel(context.packageManager).toString(),
+                appPackageName = apk.applicationInfo?.packageName,
+                appIcon = apk.applicationInfo?.loadIcon(context.packageManager)?.toBitmap()
                     ?.asImageBitmap(),
                 appVersionName = apk.versionName,
                 appVersionCode = Utils.versionCode(apk),
-                appMinSdkVersion = apk.applicationInfo.minSdkVersion,
-                appTargetSdkVersion = apk.applicationInfo.targetSdkVersion,
+                appMinSdkVersion = apk.applicationInfo?.minSdkVersion,
+                appTargetSdkVersion = apk.applicationInfo?.targetSdkVersion,
                 loaded = true
             )
             apkFile.delete()

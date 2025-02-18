@@ -61,7 +61,6 @@ class AppListViewModel @Inject constructor(
     val shareResult: SharedFlow<ShareResult> = _shareResult.asSharedFlow()
 
     private val appListFavorites = preferenceRepository.appListFavorites
-    private val backupXapk = preferenceRepository.backupModeXapk
     val appSortOrder = preferenceRepository.appSortOrder.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
@@ -254,20 +253,17 @@ class AppListViewModel @Inject constructor(
      * @param list of apps user wants to save
      */
     private suspend fun saveApps(list: List<ApplicationModel>) = coroutineScope {
-        val backupMode = backupXapk.first()
-        _progressDialogState.update {
-            val taskSize = if (backupMode) list.fold(0) { acc, applicationModel ->
-                acc + (applicationModel.appSplitSourceDirectories?.size ?: 0) + 1
-            } else list.size
-            it.copy(
-                title = UiText(
-                    R.string.progress_dialog_title_save, if (backupMode) "XAPK" else "APK"
-                ), tasks = taskSize, shouldBeShown = true
-            )
-        }
         saveApp.invoke(list).collect {
             when (it) {
                 ExtractionResult.None -> resetProgress()
+                is ExtractionResult.Init -> _progressDialogState.update { state ->
+                    state.copy(
+                        title = UiText(R.string.progress_dialog_title_save),
+                        tasks = it.tasks,
+                        shouldBeShown = true
+                    )
+                }
+
                 is ExtractionResult.Progress -> _progressDialogState.update { state ->
                     state.copy(
                         process = it.app.appPackageName,
@@ -297,17 +293,17 @@ class AppListViewModel @Inject constructor(
      * @param list list of all apps
      */
     private suspend fun createShareUrisForApps(list: List<ApplicationModel>) = coroutineScope {
-        val backupMode = backupXapk.first()
-        _progressDialogState.update {
-            it.copy(title = UiText(R.string.progress_dialog_title_share),
-                tasks = if (backupMode) list.fold(0) { acc, applicationModel ->
-                    acc + (applicationModel.appSplitSourceDirectories?.size ?: 0) + 1
-                } else list.size,
-                shouldBeShown = true)
-        }
         shareApps.invoke(list).collect {
             when (it) {
                 ShareResult.None -> resetProgress()
+                is ShareResult.Init -> _progressDialogState.update { state ->
+                    state.copy(
+                        title = UiText(R.string.progress_dialog_title_share),
+                        tasks = it.tasks,
+                        shouldBeShown = true
+                    )
+                }
+
                 ShareResult.Progress -> _progressDialogState.update { state ->
                     state.copy(
                         progress = state.progress + 1

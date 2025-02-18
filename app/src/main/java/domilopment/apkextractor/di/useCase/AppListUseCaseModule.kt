@@ -40,11 +40,12 @@ object AppListUseCaseModule {
     @Provides
     @Reusable
     fun getGetAppListUseCase(
+        @ApplicationContext context: Context,
         isAppInstalledUseCase: IsAppInstalledUseCase,
         appsRepository: ApplicationRepository,
         settings: PreferenceRepository
     ): GetAppListUseCase {
-        return GetAppListUseCaseImpl(isAppInstalledUseCase, appsRepository, settings)
+        return GetAppListUseCaseImpl(context.packageManager, isAppInstalledUseCase, appsRepository, settings)
     }
 
     @Provides
@@ -58,11 +59,12 @@ object AppListUseCaseModule {
     @Provides
     @Reusable
     fun getSaveAppsUseCase(
+        @ApplicationContext context: Context,
         filesRepository: FilesRepository,
         apkRepository: PackageArchiveRepository,
         settings: PreferenceRepository
     ): SaveAppsUseCase {
-        return SaveAppsUseCaseImpl(filesRepository, apkRepository, settings)
+        return SaveAppsUseCaseImpl(context, filesRepository, apkRepository, settings)
     }
 
     @Provides

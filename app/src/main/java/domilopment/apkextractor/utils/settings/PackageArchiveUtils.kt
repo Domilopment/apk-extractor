@@ -32,8 +32,8 @@ object PackageArchiveUtils {
                 apkFile.path, PackageManager.PackageInfoFlags.of(0L)
             ) else packageManager.getPackageArchiveInfo(apkFile.path, 0)
         return archiveInfo?.apply {
-            applicationInfo.sourceDir = apkFile.path
-            applicationInfo.publicSourceDir = apkFile.path
+            applicationInfo?.sourceDir = apkFile.path
+            applicationInfo?.publicSourceDir = apkFile.path
         }
     }
 

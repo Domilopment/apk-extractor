@@ -23,6 +23,14 @@ object Utils {
         else packageManager.getPackageInfo(packageName, 0)
     }
 
+    @Throws(PackageManager.NameNotFoundException::class)
+    fun getApplicationInfo(packageManager: PackageManager, packageName: String): ApplicationInfo {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) packageManager.getApplicationInfo(
+            packageName, PackageManager.ApplicationInfoFlags.of(0L)
+        )
+        else packageManager.getApplicationInfo(packageName, 0)
+    }
+
     fun versionCode(packageInfo: PackageInfo): Long {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) packageInfo.longVersionCode
         else packageInfo.versionCode.toLong()
@@ -57,7 +65,7 @@ object Utils {
      * App to check
      */
     fun isSystemApp(app: ApplicationModel): Boolean {
-        return app.appFlags and ApplicationInfo.FLAG_SYSTEM == ApplicationInfo.FLAG_SYSTEM
+        return app.appFlags?.and(ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM
     }
 
     /**
@@ -130,7 +138,7 @@ object Utils {
         33 to "13",
         34 to "14",
         35 to "15",
-    )
+    ).withDefault { "Undefined" }
 
     /**
      * Start ForegroundService with intent and Catch/Notify user when StartNotAllowed exception was thrown

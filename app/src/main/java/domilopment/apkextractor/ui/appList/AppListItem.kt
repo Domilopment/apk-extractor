@@ -173,7 +173,26 @@ private fun AppListItemCheckmark(
 private fun AppListItemPreview() {
     val context = LocalContext.current
     var app by remember {
-        mutableStateOf(ApplicationModel(context.packageManager, BuildConfig.APPLICATION_ID))
+        mutableStateOf(
+            ApplicationModel(
+                appPackageName = BuildConfig.APPLICATION_ID,
+                appName = "Apk Ectractor",
+                appSourceDirectory = "/data/app/${BuildConfig.APPLICATION_ID}/base.apk",
+                appSplitSourceDirectories = null,
+                appIcon = context.packageManager.getApplicationIcon(BuildConfig.APPLICATION_ID),
+                appVersionName = "1.0",
+                appVersionCode = 1,
+                minSdkVersion = 39,
+                targetSdkVersion = 34,
+                appFlags = 0,
+                appCategory = 0,
+                appInstallTime = 0,
+                appUpdateTime = 0,
+                apkSize = 1024F,
+                launchIntent = null,
+                installationSource = null,
+            )
+        )
     }
     var actionMode by remember {
         mutableStateOf(false)

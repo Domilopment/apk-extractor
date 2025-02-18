@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -197,6 +198,7 @@ private fun ActionModeBar(
 
 @Composable
 private fun SearchBar(
+    modifier: Modifier = Modifier,
     text: String,
     onTextChange: (String) -> Unit,
     onCloseClicked: () -> Unit,
@@ -206,67 +208,70 @@ private fun SearchBar(
     val keyboard = LocalSoftwareKeyboardController.current
 
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp),
-        shadowElevation = 8.dp,
-        color = MaterialTheme.colorScheme.primary
+        modifier = modifier, color = MaterialTheme.colorScheme.primary
     ) {
-        TextField(
-            modifier = Modifier
+        Box(
+            Modifier
                 .fillMaxWidth()
-                .focusRequester(focusRequester),
-            value = text,
-            onValueChange = {
-                onTextChange(it)
-            },
-            placeholder = {
-                Text(
-                    text = stringResource(id = R.string.menu_search),
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
-                )
-            },
-            textStyle = TextStyle(
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                textDecoration = TextDecoration.Underline
-            ),
-            singleLine = true,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon",
-                    tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
-                )
-            },
-            trailingIcon = {
-                IconButton(onClick = {
-                    if (text.isNotEmpty()) {
-                        onTextChange("")
-                    } else {
-                        onCloseClicked()
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close Icon",
-                        tint = MaterialTheme.colorScheme.onPrimary
+                .statusBarsPadding()
+                .height(64.dp)
+        ) {
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                value = text,
+                onValueChange = {
+                    onTextChange(it)
+                },
+                placeholder = {
+                    Text(
+                        text = stringResource(id = R.string.menu_search),
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
                     )
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(onSearch = {
-                onSearchClicked(text)
-                keyboard?.hide()
-            }),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                cursorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                },
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                    textDecoration = TextDecoration.Underline
+                ),
+                singleLine = true,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search Icon",
+                        tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+                    )
+                },
+                trailingIcon = {
+                    IconButton(onClick = {
+                        if (text.isNotEmpty()) {
+                            onTextChange("")
+                        } else {
+                            onCloseClicked()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close Icon",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(onSearch = {
+                    onSearchClicked(text)
+                    keyboard?.hide()
+                }),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    cursorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                )
             )
-        )
+        }
 
         LaunchedEffect(focusRequester) {
             focusRequester.requestFocus()

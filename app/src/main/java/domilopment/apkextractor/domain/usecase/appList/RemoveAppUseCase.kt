@@ -4,6 +4,7 @@ import android.content.Context
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.repository.applications.ApplicationRepository
 import domilopment.apkextractor.utils.Utils
+import domilopment.apkextractor.utils.settings.ApplicationUtil
 import javax.inject.Inject
 
 interface RemoveAppUseCase {
@@ -17,6 +18,9 @@ class RemoveAppUseCaseImpl @Inject constructor(
     override suspend operator fun invoke(packageName: String) {
         if (Utils.isPackageInstalled(context.packageManager, packageName)) return
 
-        appsRepository.removeApp(ApplicationModel(context.packageManager, packageName))
+        ApplicationUtil.appModelFromPackageName(packageName, context.packageManager)?.let {
+            appsRepository.removeApp(it)
+        }
+
     }
 }

@@ -65,10 +65,60 @@ private fun AppListScreenPreview() {
     val apps = remember {
         mutableStateListOf(
             ApplicationModel(
-                context.packageManager, BuildConfig.APPLICATION_ID
-            ).apply { isFavorite = true },
-            ApplicationModel(context.packageManager, "com.google.android.youtube"),
-            ApplicationModel(context.packageManager, "com.google.android.apps.messaging")
+                appPackageName = BuildConfig.APPLICATION_ID,
+                appName = "Apk Ectractor",
+                appSourceDirectory = "/data/app/${BuildConfig.APPLICATION_ID}/base.apk",
+                appSplitSourceDirectories = null,
+                appIcon = context.packageManager.getApplicationIcon(BuildConfig.APPLICATION_ID),
+                appVersionName = "1.0",
+                appVersionCode = 1,
+                minSdkVersion = 39,
+                targetSdkVersion = 34,
+                appFlags = 0,
+                appCategory = 0,
+                appInstallTime = 0,
+                appUpdateTime = 0,
+                apkSize = 1024F,
+                launchIntent = null,
+                installationSource = null,
+                isFavorite = true
+            ),
+            ApplicationModel(
+                appPackageName = "com.google.android.youtube",
+                appName = "YouTube",
+                appSourceDirectory = "/data/app/com.google.android.youtube/base.apk",
+                appSplitSourceDirectories = null,
+                appIcon = context.packageManager.defaultActivityIcon,
+                appVersionName = "1.0",
+                appVersionCode = 1,
+                minSdkVersion = 39,
+                targetSdkVersion = 34,
+                appFlags = 0,
+                appCategory = 0,
+                appInstallTime = 0,
+                appUpdateTime = 0,
+                apkSize = 1024F * 5,
+                launchIntent = null,
+                installationSource = null,
+            ),
+            ApplicationModel(
+                appPackageName = "com.google.android.apps.messaging",
+                appName = "Messages",
+                appSourceDirectory = "/data/app/com.google.android.apps.messaging/base.apk",
+                appSplitSourceDirectories = null,
+                appIcon = context.packageManager.defaultActivityIcon,
+                appVersionName = "1.0",
+                appVersionCode = 1,
+                minSdkVersion = 39,
+                targetSdkVersion = 34,
+                appFlags = 0,
+                appCategory = 0,
+                appInstallTime = 0,
+                appUpdateTime = 0,
+                apkSize = 1024F * 10,
+                launchIntent = null,
+                installationSource = null,
+            ),
         )
     }
     var actionMode by remember {
@@ -76,7 +126,24 @@ private fun AppListScreenPreview() {
     }
     val refreshScope = rememberCoroutineScope()
     var refreshing by remember { mutableStateOf(false) }
-    val appToAdd = ApplicationModel(context.packageManager, "com.android.vending")
+    val appToAdd = ApplicationModel(
+        appPackageName = "com.android.vending",
+        appName = "Play Store",
+        appSourceDirectory = "/data/app/com.android.vending/base.apk",
+        appSplitSourceDirectories = null,
+        appIcon = context.packageManager.defaultActivityIcon,
+        appVersionName = "1.0",
+        appVersionCode = 1,
+        minSdkVersion = 39,
+        targetSdkVersion = 34,
+        appFlags = 0,
+        appCategory = 0,
+        appInstallTime = 0,
+        appUpdateTime = 0,
+        apkSize = 1024F * 20,
+        launchIntent = null,
+        installationSource = null,
+    )
 
     MaterialTheme {
         Column {

@@ -6,11 +6,12 @@ import android.content.pm.PackageInstaller
 import android.net.Uri
 import android.provider.DocumentsContract
 import dagger.hilt.android.qualifiers.ApplicationContext
-import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.sources.ListOfApps
+import domilopment.apkextractor.domain.mapper.AppModelToApplicationModelMapper
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.InstallApkResult
 import domilopment.apkextractor.utils.InstallationUtil
+import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -61,7 +62,9 @@ class InstallationService private constructor(@ApplicationContext private val co
 
                 if (success) {
                     val app = packageName?.let {
-                        ApplicationModel(context.packageManager, it)
+                        ApplicationUtil.appModelFromPackageName(it, context.packageManager)
+                    }?.let {
+                        AppModelToApplicationModelMapper(context.packageManager).map(it)
                     }
                     trySend(InstallApkResult.OnSuccess(app))
                 } else {

@@ -1,13 +1,17 @@
 package domilopment.apkextractor.ui.viewModels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
 import domilopment.apkextractor.data.SettingsScreenState
 import domilopment.apkextractor.data.repository.analytics.AnalyticsRepository
 import domilopment.apkextractor.data.repository.applications.ApplicationRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
+import domilopment.apkextractor.domain.mapper.AppModelToApplicationModelMapper
+import domilopment.apkextractor.domain.mapper.mapAll
 import domilopment.apkextractor.domain.usecase.appList.IsAppInstalledUseCase
 import domilopment.apkextractor.utils.settings.AppSortOptions
 import domilopment.apkextractor.utils.settings.ApplicationUtil
@@ -24,6 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
     appsRepository: ApplicationRepository,
+    @ApplicationContext private val context: Context,
     private val settings: PreferenceRepository,
     private val analytics: AnalyticsRepository,
     private val isAppInstalled: IsAppInstalledUseCase,
@@ -41,9 +46,10 @@ class SettingsScreenViewModel @Inject constructor(
                         selectUpdatedSystemApps = true,
                         selectSystemApps = false,
                         selectUserApps = true,
-                        emptySet()
                     ).filter { app ->
-                        isAppInstalled(app.appPackageName)
+                        isAppInstalled(app.applicationInfo.packageName)
+                    }.let {
+                        AppModelToApplicationModelMapper(context.packageManager).mapAll(it)
                     }.let {
                         ApplicationUtil.sortAppData(
                             it,

@@ -16,10 +16,10 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.SaveApkResult
 import domilopment.apkextractor.utils.FileUtil
+import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.*
 import java.io.FileNotFoundException
 
@@ -44,10 +44,7 @@ class AsyncBackupTask(
 
     private val mainDispatcher get() = Dispatchers.Main
 
-    // Get Application Info from Package
-    private val app = ApplicationModel(
-        context.packageManager, packageName
-    )
+    val appInfo = Utils.getApplicationInfo(context.packageManager, packageName)
 
     fun execute(dispatcher: CoroutineDispatcher = Dispatchers.Default) {
         launch(mainDispatcher) {
@@ -61,12 +58,12 @@ class AsyncBackupTask(
     }
 
     private suspend fun backup(): SaveApkResult {
-        val splits = arrayListOf(app.appSourceDirectory)
-        if (!app.appSplitSourceDirectories.isNullOrEmpty() && extractXapk) splits.addAll(app.appSplitSourceDirectories!!)
+        val splits = arrayListOf(appInfo.sourceDir)
+        if (!appInfo.splitSourceDirs.isNullOrEmpty() && extractXapk) splits.addAll(appInfo.splitSourceDirs!!)
 
-        val name = ApplicationUtil.appName(app, appName)
+        val name = ApplicationUtil.appName(context.packageManager, appInfo, appName)
         return if (splits.size == 1) {
-            ApplicationUtil.saveApk(context, app.appSourceDirectory, saveDir, name)
+            ApplicationUtil.saveApk(context, appInfo.sourceDir, saveDir, name)
         } else {
             ApplicationUtil.saveXapk(context, splits.toTypedArray(), saveDir, name) {}
         }
@@ -170,7 +167,8 @@ class AsyncBackupTask(
             .setContentTitle(context.getString(R.string.auto_backup_broadcast_receiver_notification_title))
             .setContentText(
                 context.getString(
-                    R.string.auto_backup_broadcast_receiver_backup_success, app.appName
+                    R.string.auto_backup_broadcast_receiver_backup_success,
+                    appInfo.loadLabel(context.packageManager)
                 )
             ).setSmallIcon(R.drawable.ic_small_notification_icon_24)
             .setColor(context.getColor(R.color.notificationColor)).setContentIntent(pendingIntent)
@@ -204,7 +202,8 @@ class AsyncBackupTask(
             .setContentTitle(context.getString(R.string.auto_backup_broadcast_receiver_notification_title))
             .setContentText(
                 context.getString(
-                    R.string.auto_backup_broadcast_receiver_backup_failed, app.appName
+                    R.string.auto_backup_broadcast_receiver_backup_failed,
+                    appInfo.loadLabel(context.packageManager)
                 )
             ).setSmallIcon(R.drawable.ic_small_notification_icon_24)
             .setColor(context.getColor(R.color.notificationColor)).setContentIntent(pendingIntent)

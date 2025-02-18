@@ -1,5 +1,6 @@
 package domilopment.apkextractor.domain.usecase.appList
 
+import android.content.Context
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.drawable.toBitmap
 import domilopment.apkextractor.data.model.appList.ApplicationModel
@@ -8,7 +9,11 @@ import domilopment.apkextractor.data.repository.files.FilesRepository
 import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
+import domilopment.apkextractor.domain.mapper.AppModelToApplicationModelMapper
+import domilopment.apkextractor.domain.mapper.ApplicationModelToAppModelMapper
+import domilopment.apkextractor.domain.mapper.mapAll
 import domilopment.apkextractor.utils.SaveApkResult
+import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +28,7 @@ interface SaveAppsUseCase {
 }
 
 class SaveAppsUseCaseImpl @Inject constructor(
+    private val context: Context,
     private val filesRepository: FilesRepository,
     private val apkRepository: PackageArchiveRepository,
     private val settingsRepository: PreferenceRepository,
@@ -39,24 +45,39 @@ class SaveAppsUseCaseImpl @Inject constructor(
         var application: ApplicationModel? = null
         var errorMessage: String? = null
 
-        list.forEach { app ->
-            application = app
-            val splits = arrayListOf(app.appSourceDirectory)
-            if (!app.appSplitSourceDirectories.isNullOrEmpty() && backupMode) splits.addAll(
-                app.appSplitSourceDirectories!!
-            )
-            val appName = ApplicationUtil.appName(app, appNameConfig)
+        val tasks =
+            ApplicationModelToAppModelMapper(context.packageManager).mapAll(list).filterNotNull()
 
-            trySend(ExtractionResult.Progress(app, 0))
+        val taskSize = if (backupMode) tasks.fold(0) { acc, applicationModel ->
+            acc + (applicationModel.applicationInfo.splitSourceDirs?.size ?: 0) + 1
+        } else list.size
 
-            val newFile = filesRepository.save(splits, saveDir!!, appName) {
-                trySend(ExtractionResult.Progress(app, 1))
+        trySend(ExtractionResult.Init(taskSize))
+
+        tasks.forEach { app ->
+            application = AppModelToApplicationModelMapper(context.packageManager).map(app)
+
+            val splits = mutableListOf(app.applicationInfo.sourceDir)
+            val splitSources = app.applicationInfo.splitSourceDirs
+            if (!splitSources.isNullOrEmpty() && backupMode) splits.addAll(splitSources)
+
+            val packageInfo =
+                Utils.getPackageInfo(context.packageManager, app.applicationInfo.packageName)
+            val appName = packageInfo.let {
+                ApplicationUtil.appName(context.packageManager, it, appNameConfig)
+            }
+
+            trySend(ExtractionResult.Progress(application, 0))
+
+            val newFile = filesRepository.save(splits.filterNotNull(), saveDir!!, appName) {
+                trySend(ExtractionResult.Progress(application, 1))
             }
             when (newFile) {
                 is SaveApkResult.Failure -> {
                     Timber.tag("Save Apps Error").e(Exception(newFile.errorMessage))
                     errorMessage = newFile.errorMessage
                 }
+
                 is SaveApkResult.Success -> newFile.uri.let { uri ->
                     filesRepository.fileInfo(uri)?.let {
                         PackageArchiveEntity(
@@ -65,13 +86,15 @@ class SaveAppsUseCaseImpl @Inject constructor(
                             fileType = it.mimeType!!,
                             fileLastModified = it.lastModified!!,
                             fileSize = it.size!!,
-                            appName = app.appName,
-                            appPackageName = app.appPackageName,
-                            appIcon = app.appIcon.toBitmap().asImageBitmap(),
-                            appVersionName = app.appVersionName,
-                            appVersionCode = app.appVersionCode,
-                            appMinSdkVersion = app.minSdkVersion,
-                            appTargetSdkVersion = app.targetSdkVersion,
+                            appName = app.applicationInfo.loadLabel(context.packageManager)
+                                .toString(),
+                            appPackageName = app.applicationInfo.packageName,
+                            appIcon = app.applicationInfo.loadIcon(context.packageManager)
+                                .toBitmap().asImageBitmap(),
+                            appVersionName = packageInfo.versionName,
+                            appVersionCode = Utils.versionCode(packageInfo),
+                            appMinSdkVersion = app.applicationInfo.minSdkVersion,
+                            appTargetSdkVersion = app.applicationInfo.targetSdkVersion,
                             loaded = true,
                         )
                     }?.also {
@@ -82,7 +105,7 @@ class SaveAppsUseCaseImpl @Inject constructor(
             if (errorMessage != null) {
                 trySend(
                     ExtractionResult.Failure(
-                        application!!, errorMessage!!
+                        application, errorMessage
                     )
                 )
                 close()

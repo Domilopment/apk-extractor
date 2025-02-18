@@ -5,6 +5,10 @@ import android.net.Uri
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
+import domilopment.apkextractor.domain.mapper.AppModelToApplicationModelMapper
+import domilopment.apkextractor.domain.mapper.ApplicationModelToAppModelMapper
+import domilopment.apkextractor.domain.mapper.mapAll
+import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -29,19 +33,35 @@ class ShareAppsUseCaseImpl @Inject constructor(
         val files = ArrayList<Uri>()
         val backupMode = settings.backupModeXapk.first()
 
-        list.forEach { app ->
-            val splits = arrayListOf(app.appSourceDirectory)
-            if (!app.appSplitSourceDirectories.isNullOrEmpty() && backupMode) splits.addAll(
-                app.appSplitSourceDirectories!!
+        val tasks =
+            ApplicationModelToAppModelMapper(context.packageManager).mapAll(list).filterNotNull()
+
+        val taskSize = if (backupMode) tasks.fold(0) { acc, applicationModel ->
+            acc + (applicationModel.applicationInfo.splitSourceDirs?.size ?: 0) + 1
+        } else list.size
+
+        trySend(ShareResult.Init(taskSize))
+
+        tasks.forEach { app ->
+            val appInfo = AppModelToApplicationModelMapper(context.packageManager).map(app)
+
+            val splits = arrayListOf(app.applicationInfo.sourceDir)
+            if (!app.applicationInfo.splitSourceDirs.isNullOrEmpty() && backupMode) splits.addAll(
+                app.applicationInfo.splitSourceDirs!!
             )
-            val name = ApplicationUtil.appName(app, settings.appSaveName.first())
+            val name =
+                Utils.getPackageInfo(context.packageManager, app.applicationInfo.packageName).let {
+                    ApplicationUtil.appName(
+                        context.packageManager, it, settings.appSaveName.first()
+                    )
+                }
 
             val uri = if (splits.size == 1) {
-                val shareUri = ApplicationUtil.shareApk(context, app, name)
+                val shareUri = ApplicationUtil.shareApk(context, appInfo, name)
                 trySend(ShareResult.Progress)
                 shareUri
             } else ApplicationUtil.shareXapk(
-                context, app, name
+                context, appInfo, name
             ) { trySend(ShareResult.Progress) }
             files.add(uri)
         }
