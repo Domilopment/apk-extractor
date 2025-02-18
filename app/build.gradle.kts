@@ -29,7 +29,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        resourceConfigurations += setOf("en", "de-rDE")
+    }
+
+    androidResources {
+        localeFilters += setOf("en", "de-rDE")
     }
 
     buildTypes {
