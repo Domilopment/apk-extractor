@@ -15,6 +15,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -208,9 +209,9 @@ fun APKNamePreference(
                         },
                         colors = ListItemDefaults.colors(
                             containerColor = if (displacementOffset != null) {
-                                ListItemDefaults.containerColor.copy(alpha = 0.9f)
+                                MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.9f)
                             } else {
-                                ListItemDefaults.containerColor
+                                MaterialTheme.colorScheme.surfaceContainerHighest
                             }
                         )
                     )

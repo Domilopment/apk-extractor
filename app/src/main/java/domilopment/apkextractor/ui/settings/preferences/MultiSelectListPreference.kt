@@ -8,6 +8,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -92,15 +94,17 @@ fun MultiSelectListPreference(
                 items(items = entriesMap, key = { it.second }) {
                     ListItem(headlineContent = { Text(text = it.first) },
                         modifier = Modifier.clickable {
-                                if (value.contains(it.second)) value.remove(it.second) else value.add(
-                                    it.second
-                                )
-                            },
+                            if (value.contains(it.second)) value.remove(it.second) else value.add(
+                                it.second
+                            )
+                        },
                         leadingContent = {
                             Checkbox(
                                 checked = value.contains(it.second), onCheckedChange = null
                             )
-                        })
+                        },
+                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest)
+                    )
                 }
             }
         },

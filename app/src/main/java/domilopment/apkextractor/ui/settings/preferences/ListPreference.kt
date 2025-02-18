@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -80,19 +82,21 @@ inline fun <reified T> ListPreference(
                 items(items = entriesMap, key = { it.second }) {
                     ListItem(headlineContent = { Text(text = it.first) },
                         modifier = Modifier.clickable {
-                                val newValue = when (T::class) {
-                                    Int::class -> it.second.toInt() as T
-                                    String::class -> it.second as T
-                                    else -> error("Unknown Generic Type")
-                                }
-                                onClick(newValue)
-                                dialog.hide()
-                            },
+                            val newValue = when (T::class) {
+                                Int::class -> it.second.toInt() as T
+                                String::class -> it.second as T
+                                else -> error("Unknown Generic Type")
+                            }
+                            onClick(newValue)
+                            dialog.hide()
+                        },
                         leadingContent = {
                             RadioButton(
                                 selected = value.toString() == it.second, onClick = null
                             )
-                        })
+                        },
+                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest)
+                    )
                 }
             }
         })
