@@ -179,6 +179,10 @@
     <string name="alert_save_path_title">Bitte einen Speicherort auswählen</string>
     <string name="alert_save_path_message">Damit die App extrahierte APKs speichern kann, musst du einen Ordner wählen oder erstellen, auf dem die App Schreibzugriff erhält.</string>
     <string name="alert_save_path_ok">Ok</string>
+    <string name="alert_save_path_error_title">Dateimanager erforderlich!</string>
+    <string name="alert_save_path_error_message">Es scheint, als ob auf Ihrem Gerät keine Dateimanager-App installiert ist, welche die Auswahl von Verzeichnissen unterstützt. Dies ist erforderlich, damit die App korrekt funktioniert.\n\nNachdem Sie das Problem behoben haben, versuchen Sie bitte erneut, ein Verzeichnis auszuwählen.</string>
+    <string name="alert_save_path_error_cancel">Beenden</string>
+
     <string name="toast_save_apps">Wähle Apps die gespeichert werden sollen</string>
     <string name="snackbar_successful_extracted">%s erfolgreich extraiert</string>
     <plurals name="snackbar_successful_extracted_multiple">
