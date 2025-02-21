@@ -25,6 +25,8 @@ activityCompose = "1.10.0"
 composeBom = "2025.02.00"
 material = "1.12.0"
 navigationCompose = "2.8.7"
+ossLicence = "17.1.0"
+ossLicencePlugin = "0.10.6"
 profileinstaller = "1.4.1"
 perf = "1.4.2"
 room = "2.6.1"
@@ -75,6 +77,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntime" }
 jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name= "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "ossLicence" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -89,6 +92,7 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 firebase-perf = { id = "com.google.firebase.firebase-perf", version.ref = "perf" }
+oss-licenses = { id = "com.google.android.gms.oss-licenses-plugin", version.ref = "ossLicencePlugin" }
 
 [bundles]
 firebase = [

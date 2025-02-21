@@ -63,6 +63,8 @@
 
     <string name="terms_title">Terms &amp; Conditions</string>
 
+    <string name="oss_dependencies_title">Used Libraries</string>
+
     <string name="version">Version: %s</string>
 
     <string name="appearance">Appearance</string>

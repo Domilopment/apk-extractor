@@ -82,6 +82,7 @@ fun SettingsContent(
     onGooglePlay: () -> Unit,
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit,
+    ossDependencies: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -310,10 +311,18 @@ fun SettingsContent(
             preferenceCategoryItemMiddle {
                 Preference(name = R.string.terms_title, onClick = onTerms)
             }
+            preferenceCategoryItemMiddle {
+                Preference(
+                    name = stringResource(id = R.string.oss_dependencies_title),
+                    onClick = ossDependencies
+                )
+            }
             preferenceCategoryItemBottom {
-                Preference(name = stringResource(
-                    id = R.string.version, BuildConfig.VERSION_NAME
-                ), enabled = false, onClick = {})
+                Preference(
+                    name = stringResource(id = R.string.version, BuildConfig.VERSION_NAME),
+                    enabled = false,
+                    onClick = {},
+                )
             }
         }
     }

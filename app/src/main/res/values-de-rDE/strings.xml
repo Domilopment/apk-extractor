@@ -61,6 +61,8 @@
 
     <string name="terms_title">Nutzungsbedingungen</string>
 
+    <string name="oss_dependencies_title">Verwendete Bibliotheken</string>
+
     <string name="version">Version: %s</string>
 
     <string name="appearance">Erscheinungsbild</string>

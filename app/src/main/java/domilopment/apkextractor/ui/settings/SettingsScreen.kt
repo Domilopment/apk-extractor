@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.color.DynamicColors
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -302,6 +303,9 @@ fun SettingsScreen(
             CustomTabsIntent.Builder().build().launchUrl(
                 context, Uri.parse(Constants.TERMS_URL)
             )
+        },
+        ossDependencies = {
+            context.startActivity(Intent(context.applicationContext, OssLicensesMenuActivity::class.java))
         })
 }
 
