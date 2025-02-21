@@ -65,7 +65,7 @@
 
     <string name="oss_dependencies_title">Used Libraries</string>
 
-    <string name="version">Version: %s</string>
+    <string name="version">Version: %s (%d)</string>
 
     <string name="appearance">Appearance</string>
     <string name="ui_mode">Night Mode</string>

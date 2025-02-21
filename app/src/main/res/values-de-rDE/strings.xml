@@ -63,7 +63,7 @@
 
     <string name="oss_dependencies_title">Verwendete Bibliotheken</string>
 
-    <string name="version">Version: %s</string>
+    <string name="version">Version: %s (%d)</string>
 
     <string name="appearance">Erscheinungsbild</string>
     <string name="ui_mode">Nacht Modus</string>

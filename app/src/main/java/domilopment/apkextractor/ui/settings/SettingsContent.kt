@@ -319,7 +319,9 @@ fun SettingsContent(
             }
             preferenceCategoryItemBottom {
                 Preference(
-                    name = stringResource(id = R.string.version, BuildConfig.VERSION_NAME),
+                    name = stringResource(
+                        id = R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE
+                    ),
                     enabled = false,
                     onClick = {},
                 )
