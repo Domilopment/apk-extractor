@@ -130,7 +130,7 @@ fun SettingsScreen(
         }
     } else null
 
-    LaunchedEffect(key1 = appUpdateManager.appUpdateInfo, block = {
+    LaunchedEffect(key1 = appUpdateManager, block = {
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
             appUpdateInfo = info
         }
