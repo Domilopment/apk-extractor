@@ -102,43 +102,51 @@ object Utils {
         } else AnnotatedString(text.toString())
     }
 
-    val androidApiLevel: Map<Int, String> = mapOf(
-        1 to "1.0",
-        2 to "1.1",
-        3 to "1.5",
-        4 to "1.6",
-        5 to "2.0",
-        6 to "2.0.1",
-        7 to "2.1",
-        8 to "2.2",
-        9 to "2.3.0 - 2.3.2",
-        10 to "2.3.3 - 2.3.7",
-        11 to "3.0",
-        12 to "3.1",
-        13 to "3.2",
-        14 to "4.0.1 - 4.0.2",
-        15 to "4.0.3 - 4.0.4",
-        16 to "4.1",
-        17 to "4.2",
-        18 to "4.3",
-        19 to "4.4",
-        20 to "4.4W",
-        21 to "5.0",
-        22 to "5.1",
-        23 to "6.0",
-        24 to "7.0",
-        25 to "7.1",
-        26 to "8.0",
-        27 to "8.1",
-        28 to "9",
-        29 to "10",
-        30 to "11",
-        31 to "12",
-        32 to "12L",
-        33 to "13",
-        34 to "14",
-        35 to "15",
-    ).withDefault { "Undefined" }
+    enum class AndroidVersions(val api: Int, val version: String, val codename: String) {
+        Unknown(-1, "Unknown", ""),
+        BASE(1, "1.0", ""),
+        BASE_1_1(2, "1.1", "Petit Four"),
+        CUPCAKE(3, "1.5", "Cupcake"),
+        DONUT(4, "1.6", "Donut"),
+        ECLAIR(5, "2.0", "Eclair"),
+        ECLAIR_0_1(6, "2.0.1", "Eclair"),
+        ECLAIR_MR1(7, "2.1", "Eclair"),
+        FROYO(8, "2.2", "Froyo"),
+        GINGERBREAD(9, "2.3.0 - 2.3.2", "Gingerbread"),
+        GINGERBREAD_MR1(10, "2.3.3 - 2.3.7", "Gingerbread"),
+        HONEYCOMB(11, "3.0", "Honeycomb"),
+        HONEYCOMB_MR1(12, "3.1", "Honeycomb"),
+        HONEYCOMB_MR2(13, "3.2", "Honeycomb"),
+        ICE_CREAM_SANDWICH(14, "4.0.1 - 4.0.2", "Ice Cream Sandwich"),
+        ICE_CREAM_SANDWICH_MR1(15, "4.0.3 - 4.0.4", "Ice Cream Sandwich"),
+        JELLY_BEAN(16, "4.1", "Jelly Bean"),
+        JELLY_BEAN_MR1(17, "4.2", "Jelly Bean"),
+        JELLY_BEAN_MR2(18, "4.3", "Jelly Bean"),
+        KITKAT(19, "4.4", "KitKat Wear"),
+        KITKAT_WATCH(20, "4.4W", "KitKat Wear"),
+        LOLLIPOP(21, "5.0", "Lollipop"),
+        LOLLIPOP_MR1(22, "5.1", "Lollipop"),
+        MARSHMALLOW(23, "6.0", "Marshmallow"),
+        NOUGAT(24, "7.0", "Nougat"),
+        NOUGAT_MR1(25, "7.1", "Nougat"),
+        OREO(26, "8.0", "Oreo"),
+        OREO_MR1(27, "8.1", "Oreo"),
+        PIE(28, "9", "Pie"),
+        QUINCE_TART(29, "10", "Quince Tart"),
+        RED_VELVET_CAKE(30, "11", "Red Velvet Cake"),
+        SNOW_CONE(31, "12", "Snow Cone"),
+        SNOW_CONE_V2(32, "12L", "Snow Cone v2"),
+        TIRAMISU(33, "13", "Tiramisu"),
+        UP_SIDE_DOWN_CAKE(34, "14", "Upside Down Cake"),
+        VANILLA_ICE_CREAM(35, "15", "Vanilla Ice Cream"),
+        BAKLAVA(36, "16", "Baklava");
+
+        companion object {
+            fun fromApi(api: Int?): AndroidVersions {
+                return entries.find { it.api == api } ?: Unknown
+            }
+        }
+    }
 
     /**
      * Start ForegroundService with intent and Catch/Notify user when StartNotAllowed exception was thrown

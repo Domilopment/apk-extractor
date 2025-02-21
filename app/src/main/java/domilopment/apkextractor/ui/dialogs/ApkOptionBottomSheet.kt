@@ -226,18 +226,24 @@ fun ApkSheetInfo(
                 id = R.string.apk_bottom_sheet_last_modified, Utils.getAsFormattedDate(apkCreated)
             )
         )
+
+        val minSdkInfo = Utils.AndroidVersions.fromApi(minSdk)
         InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_min_sdk,
                 minSdk ?: -1,
-                Utils.androidApiLevel.getValue(minSdk ?: -1)
+                minSdkInfo.version,
+                minSdkInfo.codename
             )
         )
+
+        val targetSdkInfo = Utils.AndroidVersions.fromApi(targetSdk)
         InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_target_sdk,
                 targetSdk ?: -1,
-                Utils.androidApiLevel.getValue(targetSdk ?: -1)
+                targetSdkInfo.version,
+                targetSdkInfo.codename
             )
         )
         InfoText(

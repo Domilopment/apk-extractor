@@ -142,9 +142,9 @@ fun AppOptionsBottomSheet(
             apkSize = app.apkSize,
             versionName = app.appVersionName,
             versionNumber = app.appVersionCode,
-            minSdk = app.minSdkVersion ?: -1,
-            targetSdk = app.targetSdkVersion ?: -1,
-            appCategory = app.appCategory ?: -1,
+            minSdk = app.minSdkVersion,
+            targetSdk = app.targetSdkVersion,
+            appCategory = app.appCategory,
             installTime = app.appInstallTime,
             updateTime = app.appUpdateTime,
             installationSource = app.installationSource,
@@ -282,16 +282,24 @@ private fun AppSheetInfo(
                 id = R.string.info_bottom_sheet_version_number, versionNumber
             )
         )
+
+        val minSdkInfo = Utils.AndroidVersions.fromApi(minSdk)
         InfoText(
             text = stringResource(
-                id = R.string.info_bottom_sheet_min_sdk, minSdk, Utils.androidApiLevel.getValue(minSdk)
+                id = R.string.info_bottom_sheet_min_sdk,
+                minSdk,
+                minSdkInfo.version,
+                minSdkInfo.codename
             )
         )
+
+        val targetSdkInfo = Utils.AndroidVersions.fromApi(targetSdk)
         InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_target_sdk,
                 targetSdk,
-                Utils.androidApiLevel.getValue(targetSdk)
+                targetSdkInfo.version,
+                targetSdkInfo.codename
             )
         )
         InfoText(
