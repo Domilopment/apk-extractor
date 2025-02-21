@@ -48,9 +48,12 @@ class GetAppListUseCaseImpl @Inject constructor(
                 it,
                 settings.appFilterInstaller,
                 settings.appFilterCategory,
-                settings.appFilterOthers
-            ) { appList, installer, category, others ->
-                ApplicationUtil.filterApps(appList, installer, category, others)
+                settings.appFilterOthers,
+                settings.appListFavorites
+            ) { appList, installer, category, others, favorites ->
+                ApplicationUtil.filterApps(appList, installer, category, others).map {
+                    it.copy(isFavorite = it.appPackageName in favorites)
+                }
             }
         }.let {
             combine(
