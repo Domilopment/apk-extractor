@@ -228,8 +228,8 @@
     <string name="info_bottom_sheet_apk_size">APK size: %.2f MB</string>
     <string name="info_bottom_sheet_version_name">Version name: %s</string>
     <string name="info_bottom_sheet_version_number">Version number: %d</string>
-    <string name="info_bottom_sheet_min_sdk">Min SDK: %d - Android %s (%s)</string>
-    <string name="info_bottom_sheet_target_sdk">Target SDK: %d - Android %s (%s)</string>
+    <string name="info_bottom_sheet_min_sdk">Min SDK: %d | Android %s (%s)</string>
+    <string name="info_bottom_sheet_target_sdk">Target SDK: %d | Android %s (%s)</string>
     <string name="info_bottom_sheet_category">Category: %s</string>
     <string name="info_bottom_sheet_install_time">Installed: %s</string>
     <string name="info_bottom_sheet_update_time">Last updated: %s</string>
