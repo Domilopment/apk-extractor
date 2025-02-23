@@ -68,7 +68,7 @@ class ListOfApps private constructor(context: Context) {
         _apps.value = newApps
     }
 
-    suspend fun add(app: AppModel) = withContext(Dispatchers.IO) {
+    suspend fun add(app: AppModel) = withContext(Dispatchers.Default) {
         _apps.update { apps ->
             val newApps = apps.toMutableList()
             val element: AppModel? =
@@ -85,7 +85,7 @@ class ListOfApps private constructor(context: Context) {
         }
     }
 
-    suspend fun remove(app: AppModel) = withContext(Dispatchers.IO) {
+    suspend fun remove(app: AppModel) = withContext(Dispatchers.Default) {
         _apps.update { apps ->
             val element: AppModel =
                 apps.find { it.applicationInfo.packageName == app.applicationInfo.packageName }

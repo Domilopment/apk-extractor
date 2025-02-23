@@ -49,5 +49,5 @@ class GetApkListUseCaseImpl(
                     }
                 }
             }
-        }.flowOn(Dispatchers.IO)
+        }.flowOn(Dispatchers.Default)
 }

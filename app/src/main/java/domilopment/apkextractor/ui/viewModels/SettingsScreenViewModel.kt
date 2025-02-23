@@ -40,7 +40,7 @@ class SettingsScreenViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             appsRepository.apps.map { apps ->
-                async(Dispatchers.IO) {
+                async(Dispatchers.Default) {
                     ApplicationUtil.selectedAppTypes(
                         apps,
                         selectUpdatedSystemApps = true,
