@@ -60,7 +60,7 @@ fun AskForSaveDirDialog(
                 }
 
             }) {
-                Text(text = stringResource(id = R.string.alert_save_path_ok))
+                Text(text = stringResource(id = if (error) R.string.alert_save_path_error_ok else R.string.alert_save_path_ok))
             }
         },
         backPressNotice = stringResource(id = R.string.double_back_press_first_press_toast_text),

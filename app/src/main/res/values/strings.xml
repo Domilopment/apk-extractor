@@ -190,6 +190,7 @@
     <string name="alert_save_path_ok">OK</string>
     <string name="alert_save_path_error_title">File Manager Required!</string>
     <string name="alert_save_path_error_message">It seems your device is missing a file manager app that can handle directory selection. This is needed for the app to work correctly.\n\nAfter resolving the Problem, please try selecting a directory again.</string>
+    <string name="alert_save_path_error_ok">Retry</string>
     <string name="alert_save_path_error_cancel">Cancel</string>
 
     <string name="toast_save_apps">Select Apps to Save</string>
