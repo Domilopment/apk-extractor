@@ -8,7 +8,12 @@ import javax.inject.Inject
 
 interface FilesRepository {
     suspend fun save(
-        data: List<String>, saveDir: Uri, saveName: String, progressCallback: (String) -> Unit
+        data: List<String>,
+        saveDir: Uri,
+        saveName: String,
+        mimeType: String,
+        suffix: String,
+        progressCallback: (String) -> Unit
     ): SaveApkResult
 
     suspend fun delete(data: Uri): Boolean
@@ -20,9 +25,14 @@ class FilesRepositoryImpl @Inject constructor(
     private val filesService: FilesService
 ) : FilesRepository {
     override suspend fun save(
-        data: List<String>, saveDir: Uri, saveName: String, progressCallback: (String) -> Unit
+        data: List<String>,
+        saveDir: Uri,
+        saveName: String,
+        mimeType: String,
+        suffix: String,
+        progressCallback: (String) -> Unit
     ): SaveApkResult {
-        return filesService.save(data, saveDir, saveName, progressCallback)
+        return filesService.save(data, saveDir, saveName, mimeType, suffix, progressCallback)
     }
 
     override suspend fun delete(data: Uri): Boolean {

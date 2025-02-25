@@ -2,10 +2,13 @@ package domilopment.apkextractor.data
 
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 
 data class SettingsScreenState(
-    val autoBackupAppsListState: SettingsScreenAppAutoBackUpListState = SettingsScreenAppAutoBackUpListState(emptyList()),
+    val autoBackupAppsListState: SettingsScreenAppAutoBackUpListState = SettingsScreenAppAutoBackUpListState(
+        emptyList()
+    ),
     val saveDir: Uri? = null,
     val saveName: Set<String> = setOf("0:name"),
     val autoBackupService: Boolean = false,
@@ -20,5 +23,6 @@ data class SettingsScreenState(
     val crashlytics: Boolean = false,
     val performance: Boolean = false,
     val checkUpdateOnStart: Boolean = true,
-    val backupModeXapk: Boolean = true
+    val backupModeXapk: Boolean = true,
+    val bundleFileInfo: FileUtil.FileInfo = FileUtil.FileInfo.APKS,
 )

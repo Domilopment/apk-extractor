@@ -29,7 +29,7 @@
     <string name="auto_backup_app_list_summary">Wähle Apps aus von denen ein automatisches Backup nach dem aktualisieren erzeugt werden soll</string>
 
     <string name="backup_mode_xapk">Backup geteilte Ressourcen APKs</string>
-    <string name="backup_mode_xapk_summary_active">Backup base.apk + geteilte apks als XAPK file (kann zur \'.zip\' unbenannt und als solche verwendet werden).</string>
+    <string name="backup_mode_xapk_summary_active">Backup base.apk + geteilte apks als APK Bundle (kann zur \'.zip\' unbenannt und als solche verwendet werden).</string>
     <string name="backup_mode_xapk_summary_inactive">Speichere nur base.apk (Warnung: Eine App nur von einer base.apk zu installieren könnte zum crash dieser führen, aufgrund fehlender Ressourcen).</string>
 
     <!-- Preferences Apps -->
@@ -110,6 +110,9 @@
     <string name="installation_sources">Installations Quelle</string>
     <string name="app_categories">Kategorie</string>
     <string name="other_filter">Andere Filter</string>
+
+    <string name="backup_apk_bundle_file_ending_title">APK Bundle Dateiendung</string>
+    <string name="backup_apk_bundle_file_ending_summary">Wähle Standard Dateiendung (suffix) für APK Bundle (geteilte APK)</string>
 
     <string name="ignore_battery_optimization_title">Hintergrundaktivität</string>
     <string name="ignore_battery_optimization_summary">Falls der Auto Backup Service im Hintergrung gestoppt wird, ohne neu zu starten, ziehen sie es vielleicht in betracht, das einschränken der Hintergrundaktivität für diese app zu deaktivieren</string>

@@ -21,9 +21,15 @@ object FileUtil {
     )
 
     enum class FileInfo(val mimeType: String, val suffix: String) {
-        APK("application/vnd.android.package-archive", "apk"), XAPK(
-            "application/octet-stream", "xapk"
-        )
+        APK("application/vnd.android.package-archive", "apk"),
+        XAPK("application/octet-stream", "xapk"),
+        APKS("application/octet-stream", "apks");
+
+        companion object {
+            fun fromSuffix(suffix: String): FileInfo? {
+                return entries.find { it.suffix == suffix }
+            }
+        }
     }
 
     /**

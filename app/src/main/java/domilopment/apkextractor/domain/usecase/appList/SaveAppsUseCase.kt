@@ -42,6 +42,7 @@ class SaveAppsUseCaseImpl @Inject constructor(
         val backupMode = settingsRepository.backupModeXapk.first()
         val appNameConfig = settingsRepository.appSaveName.first()
         val saveDir = settingsRepository.saveDir.first()
+        val bundleFileInfo = settingsRepository.bundleFileInfo.first()
         var application: ApplicationModel? = null
         var errorMessage: String? = null
 
@@ -69,7 +70,13 @@ class SaveAppsUseCaseImpl @Inject constructor(
 
             trySend(ExtractionResult.Progress(application, 0))
 
-            val newFile = filesRepository.save(splits.filterNotNull(), saveDir!!, appName) {
+            val newFile = filesRepository.save(
+                splits.filterNotNull(),
+                saveDir!!,
+                appName,
+                bundleFileInfo.mimeType,
+                bundleFileInfo.suffix
+            ) {
                 trySend(ExtractionResult.Progress(application, 1))
             }
             when (newFile) {

@@ -23,6 +23,7 @@ import com.google.android.play.core.appupdate.AppUpdateInfo
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
+import domilopment.apkextractor.ui.copy
 import domilopment.apkextractor.ui.settings.preferences.APKNamePreference
 import domilopment.apkextractor.ui.settings.preferences.DialogPreference
 import domilopment.apkextractor.ui.settings.preferences.ListPreference
@@ -34,6 +35,7 @@ import domilopment.apkextractor.ui.settings.preferences.SwitchPreferenceCompat
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBottom
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMiddle
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
+import domilopment.apkextractor.utils.FileUtil
 
 @Composable
 fun SettingsContent(
@@ -67,6 +69,8 @@ fun SettingsContent(
     onSwipeActionCustomThreshold: (Boolean) -> Unit,
     swipeActionThresholdMod: Float,
     onSwipeActionThresholdMod: (Float) -> Unit,
+    bundleFileInfo: String,
+    onBundleFileInfo: (String) -> Unit,
     batteryOptimization: Boolean,
     onBatteryOptimization: (Boolean) -> Unit,
     checkUpdateOnStart: Boolean,
@@ -88,11 +92,10 @@ fun SettingsContent(
     ossDependencies: () -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .testTag("SettingsLazyColumn"),
+        modifier = Modifier.testTag("SettingsLazyColumn"),
         state = rememberLazyListState(),
         contentPadding = WindowInsets.navigationBars.asPaddingValues()
+            .copy(start = 8.dp, end = 8.dp)
     ) {
         item {
             if (appUpdateInfo != null) Preference(
@@ -237,6 +240,18 @@ fun SettingsContent(
 
         preferenceCategory(title = R.string.advanced) {
             preferenceCategoryItemTop {
+                ListPreference(
+                    name = stringResource(id = R.string.backup_apk_bundle_file_ending_title),
+                    summary = stringResource(id = R.string.backup_apk_bundle_file_ending_summary),
+                    entries = arrayOf(FileUtil.FileInfo.APKS.name, FileUtil.FileInfo.XAPK.name),
+                    entryValues = arrayOf(
+                        FileUtil.FileInfo.APKS.suffix, FileUtil.FileInfo.XAPK.suffix
+                    ),
+                    state = bundleFileInfo,
+                    onClick = onBundleFileInfo
+                )
+            }
+            preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
                     name = R.string.ignore_battery_optimization_title,
                     summary = R.string.ignore_battery_optimization_summary,

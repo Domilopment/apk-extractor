@@ -27,6 +27,7 @@ import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SWIPE_ACTION_THRESHOLD_MODIFIER
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.AUTO_BACKUP_SERVICE
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.BACKUP_MODE_XAPK
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.BUNDLE_FILE_INFO
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.CHECK_UPDATE_ON_START
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.DATA_COLLECTION_ANALYTICS
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.DATA_COLLECTION_CRASHLYTICS
@@ -38,6 +39,7 @@ import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.SYSTEM_APPS
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.UPDATED_SYSTEM_APPS
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.USER_APPS
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import domilopment.apkextractor.utils.settings.AppSortOptions
@@ -51,10 +53,8 @@ import javax.inject.Inject
 interface PreferenceRepository {
     object PreferencesKeys {
         val SAVE_DIR = stringPreferencesKey("dir")
-        val CHECK_UPDATE_ON_START =
-            booleanPreferencesKey("check_update_on_start")
-        val UPDATED_SYSTEM_APPS =
-            booleanPreferencesKey("updated_system_apps")
+        val CHECK_UPDATE_ON_START = booleanPreferencesKey("check_update_on_start")
+        val UPDATED_SYSTEM_APPS = booleanPreferencesKey("updated_system_apps")
         val SYSTEM_APPS = booleanPreferencesKey("system_apps")
         val USER_APPS = booleanPreferencesKey("user_apps")
         val APP_SORT_ORDER = intPreferencesKey("app_sort")
@@ -81,6 +81,7 @@ interface PreferenceRepository {
         val DATA_COLLECTION_ANALYTICS = booleanPreferencesKey("data_collection_analytics")
         val DATA_COLLECTION_CRASHLYTICS = booleanPreferencesKey("data_collection_crashlytics")
         val DATA_COLLECTION_PERF = booleanPreferencesKey("data_collection_perf")
+        val BUNDLE_FILE_INFO = stringPreferencesKey("bundle_file_info")
     }
 
     val saveDir: Flow<Uri?>
@@ -163,10 +164,13 @@ interface PreferenceRepository {
 
     val performance: Flow<Boolean>
     suspend fun setPerformance(value: Boolean)
+
+    val bundleFileInfo: Flow<FileUtil.FileInfo>
+    suspend fun setBundleFileInfo(value: FileUtil.FileInfo)
 }
 
 class MyPreferenceRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
 ) : PreferenceRepository {
     private fun <T> getPreference(key: Preferences.Key<T>): Flow<T?> =
         dataStore.data.catch { exception ->
@@ -346,4 +350,12 @@ class MyPreferenceRepository @Inject constructor(
         getPreference(DATA_COLLECTION_PERF).map { it ?: false }
 
     override suspend fun setPerformance(value: Boolean) = setPreference(DATA_COLLECTION_PERF, value)
+
+    override val bundleFileInfo: Flow<FileUtil.FileInfo> = getPreference(BUNDLE_FILE_INFO).map {
+        it?.let { suffix -> FileUtil.FileInfo.fromSuffix(suffix) } ?: FileUtil.FileInfo.APKS
+    }
+
+    override suspend fun setBundleFileInfo(value: FileUtil.FileInfo) {
+        setPreference(BUNDLE_FILE_INFO, value.suffix)
+    }
 }

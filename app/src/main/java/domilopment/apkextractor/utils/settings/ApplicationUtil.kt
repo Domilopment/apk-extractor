@@ -177,16 +177,14 @@ object ApplicationUtil {
         files: Array<String>,
         to: Uri,
         fileName: String,
+        mimeType: String,
+        suffix: String,
         callback: suspend (String) -> Unit
     ): SaveApkResult = withContext(Dispatchers.IO) {
         var extractedApk: Uri? = null
         return@withContext try {
             extractedApk = FileUtil.ZipUtil.createPersistentZip(
-                context,
-                to,
-                fileName,
-                mimeType = FileUtil.FileInfo.XAPK.mimeType,
-                suffix = FileUtil.FileInfo.XAPK.suffix
+                context, to, fileName, mimeType, suffix
             )!!
             FileUtil.ZipUtil.openZipOutputStream(context, extractedApk).use { output ->
                 for (file in files) {
@@ -225,14 +223,17 @@ object ApplicationUtil {
         }
 
     suspend fun shareXapk(
-        context: Context, app: ApplicationModel, appName: String, callback: suspend (String) -> Unit
+        context: Context,
+        app: ApplicationModel,
+        appName: String,
+        suffix: String,
+        callback: suspend (String) -> Unit
     ): Uri = withContext(Dispatchers.IO) {
         val splits = arrayOf(
             app.appSourceDirectory, *(app.appSplitSourceDirectories ?: emptyArray())
         )
 
-        val outFile =
-            FileUtil.ZipUtil.createTempZip(context, appName, suffix = FileUtil.FileInfo.XAPK.suffix)
+        val outFile = FileUtil.ZipUtil.createTempZip(context, appName, suffix)
         FileUtil.ZipUtil.openZipOutputStream(outFile).use { output ->
             for (file in splits) {
                 FileUtil.ZipUtil.writeToZip(output, file)

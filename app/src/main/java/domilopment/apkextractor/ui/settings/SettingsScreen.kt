@@ -222,6 +222,8 @@ fun SettingsScreen(
             model.setSwipeActionThresholdMod(it)
             analytics.logItemClick("SeekBarPreference", "SwipeActionCustomMod")
         },
+        bundleFileInfo = uiState.bundleFileInfo.suffix,
+        onBundleFileInfo = model::setBundleFileInfo,
         batteryOptimization = batteryOptimization,
         onBatteryOptimization = {
             val isIgnoringBatteryOptimization =

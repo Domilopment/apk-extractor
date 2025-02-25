@@ -13,6 +13,7 @@ import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.domain.mapper.AppModelToApplicationModelMapper
 import domilopment.apkextractor.domain.mapper.mapAll
 import domilopment.apkextractor.domain.usecase.appList.IsAppInstalledUseCase
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.AppSortOptions
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
@@ -126,18 +127,23 @@ class SettingsScreenViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            settings.analytics.collect{
+            settings.analytics.collect {
                 _uiState.update { state -> state.copy(analytics = it) }
             }
         }
         viewModelScope.launch {
-            settings.crashlytics.collect{
+            settings.crashlytics.collect {
                 _uiState.update { state -> state.copy(crashlytics = it) }
             }
         }
         viewModelScope.launch {
-            settings.performance.collect{
+            settings.performance.collect {
                 _uiState.update { state -> state.copy(performance = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.bundleFileInfo.collect {
+                _uiState.update { state -> state.copy(bundleFileInfo = it) }
             }
         }
     }
@@ -208,6 +214,14 @@ class SettingsScreenViewModel @Inject constructor(
         viewModelScope.launch {
             analytics.setPerformanceCollectionEnabled(b)
             settings.setPerformance(b)
+        }
+    }
+
+    fun setBundleFileInfo(s: String) {
+        viewModelScope.launch {
+            settings.setBundleFileInfo(s.let {
+                FileUtil.FileInfo.fromSuffix(s) ?: FileUtil.FileInfo.APKS
+            })
         }
     }
 }
