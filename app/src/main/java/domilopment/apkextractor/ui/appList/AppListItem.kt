@@ -57,6 +57,7 @@ import domilopment.apkextractor.utils.Utils
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppListItem(
+    modifier: Modifier = Modifier,
     appName: AnnotatedString,
     apkSize: Float,
     appPackageName: AnnotatedString,
@@ -64,8 +65,7 @@ fun AppListItem(
     isChecked: Boolean,
     isFavorite: Boolean,
     onClick: () -> Unit,
-    onLongClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onLongClick: () -> Unit
 ) {
     val containerColor by animateColorAsState(
         targetValue = if (isChecked) MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.2f)

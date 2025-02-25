@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.ui.attrColorResource
@@ -66,9 +67,18 @@ fun ApkList(
         defaultColor = MaterialTheme.colorScheme.inversePrimary
     )
 
-    ScrollToTopLazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
+    ScrollToTopLazyColumn(
+        state = rememberLazyListState(),
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
         item {
-            StorageInfo(totalSpace, takenSpace, freeSpace, onStorageInfoClick)
+            StorageInfo(
+                totalSpace = totalSpace,
+                takenSpace = takenSpace,
+                freeSpace = freeSpace,
+                onStorageInfoClick = onStorageInfoClick
+            )
         }
 
         items(items = apkList, key = { it.fileUri }) { apk ->
@@ -119,7 +129,11 @@ fun ApkList(
 
 @Composable
 private fun StorageInfo(
-    totalSpace: Long, takenSpace: Long, freeSpace: Long, onStorageInfoClick: () -> Unit
+    modifier: Modifier = Modifier,
+    totalSpace: Long,
+    takenSpace: Long,
+    freeSpace: Long,
+    onStorageInfoClick: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -136,11 +150,11 @@ private fun StorageInfo(
     }
 
     Surface(
-        modifier = Modifier
-            .padding(8.dp)
+        modifier = modifier
+            .zIndex(1f)
             .clickable(onClick = onStorageInfoClick),
-        shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant
+        shape = RoundedCornerShape(bottomEnd = 8.dp, bottomStart = 8.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
         var width by remember {
             mutableFloatStateOf(0f)

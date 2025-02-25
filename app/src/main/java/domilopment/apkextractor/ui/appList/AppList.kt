@@ -63,7 +63,11 @@ fun AppList(
         defaultColor = MaterialTheme.colorScheme.inversePrimary
     )
 
-    ScrollToTopLazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxSize()) {
+    ScrollToTopLazyColumn(
+        state = rememberLazyListState(),
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
         items(items = appList, key = { it.appPackageName }) { app ->
             if (!Utils.isPackageInstalled(
                     LocalContext.current.packageManager, app.appPackageName
@@ -120,12 +124,9 @@ fun AppList(
                     }
                 },
                 modifier = Modifier.animateItem(),
-                enableDismissFromStartToEnd = getSwipeDirections(
-                    app, isSwipeToDismiss, rightSwipeAction
-                ),
-                enableDismissFromEndToStart = getSwipeDirections(
-                    app, isSwipeToDismiss, leftSwipeAction
-                )
+                enableDismissFromStartToEnd = getSwipeDirections(app, rightSwipeAction),
+                enableDismissFromEndToStart = getSwipeDirections(app, leftSwipeAction),
+                gesturesEnabled = isSwipeToDismiss
             ) {
                 val appName = remember(app.appName, searchString) {
                     getAnnotatedString(
@@ -139,14 +140,16 @@ fun AppList(
                     )
                 }
 
-                AppListItem(appName = appName!!,
+                AppListItem(
+                    appName = appName!!,
                     appPackageName = packageName!!,
                     appIcon = app.appIcon,
                     apkSize = app.apkSize,
                     isChecked = app.isChecked,
                     isFavorite = app.isFavorite,
                     onClick = { updateApp(app) },
-                    onLongClick = { triggerActionMode(app) })
+                    onLongClick = { triggerActionMode(app) },
+                )
             }
         }
     }
@@ -154,10 +157,9 @@ fun AppList(
 
 private fun getSwipeDirections(
     app: ApplicationModel,
-    isSwipeToDismiss: Boolean,
     swipeDirection: ApkActionsOptions,
 ): Boolean {
-    return isSwipeToDismiss && swipeDirection != ApkActionsOptions.NONE && ApkActionsOptions.isOptionSupported(
+    return swipeDirection != ApkActionsOptions.NONE && ApkActionsOptions.isOptionSupported(
         app, swipeDirection
     )
 }
@@ -173,7 +175,7 @@ private fun AppListItemSwipeLeft(
     ) {
         Text(
             text = stringResource(id = leftSwipeAction.title),
-            modifier = Modifier.padding(0.dp, 6.dp),
+            modifier = Modifier.padding(vertical = 6.dp),
             color = MaterialTheme.colorScheme.onPrimaryContainer,
             fontSize = 20.sp,
             maxLines = 1
@@ -210,7 +212,7 @@ private fun AppListItemSwipeRight(
         )
         Text(
             text = stringResource(id = rightSwipeAction.title),
-            modifier = Modifier.padding(0.dp, 6.dp),
+            modifier = Modifier.padding(vertical = 6.dp),
             color = MaterialTheme.colorScheme.onPrimaryContainer,
             fontSize = 20.sp,
             maxLines = 1
