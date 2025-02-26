@@ -35,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -211,10 +212,11 @@ private fun SearchBar(
         modifier = modifier, color = MaterialTheme.colorScheme.primary
     ) {
         Box(
-            Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .statusBarsPadding()
-                .height(64.dp)
+                .height(64.dp),
+            contentAlignment = Alignment.CenterStart
         ) {
             TextField(
                 modifier = Modifier
