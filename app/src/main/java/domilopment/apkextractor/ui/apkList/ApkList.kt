@@ -154,7 +154,7 @@ private fun StorageInfo(
             .zIndex(1f)
             .clickable(onClick = onStorageInfoClick),
         shape = RoundedCornerShape(bottomEnd = 8.dp, bottomStart = 8.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh
+        color = MaterialTheme.colorScheme.surfaceContainer
     ) {
         var width by remember {
             mutableFloatStateOf(0f)

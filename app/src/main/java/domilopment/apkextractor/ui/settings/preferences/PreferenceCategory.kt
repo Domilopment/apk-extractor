@@ -43,7 +43,7 @@ fun LazyListScope.preferenceCategoryItemTop(
 ) {
     item(key, contentType) {
         Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant,
+            color = MaterialTheme.colorScheme.surfaceContainer,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         ) {
@@ -57,7 +57,7 @@ fun LazyListScope.preferenceCategoryItemMiddle(
 ) {
     item(key, contentType) {
         Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant,
+            color = MaterialTheme.colorScheme.surfaceContainer,
             modifier = Modifier.fillMaxWidth(),
             shape = RectangleShape,
         ) {
@@ -71,7 +71,7 @@ fun LazyListScope.preferenceCategoryItemBottom(
 ) {
     item(key, contentType) {
         Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant,
+            color = MaterialTheme.colorScheme.surfaceContainer,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
