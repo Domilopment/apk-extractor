@@ -1,6 +1,9 @@
 package domilopment.apkextractor.ui.dialogs
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -27,19 +30,21 @@ fun ApkSortMenu(
     if (expanded) ModalBottomSheet(
         onDismissRequest = onDismissRequest, modifier = modifier, sheetState = sheetState
     ) {
-        ApkSortOptions.entries.forEach {
-            ListItem(
-                headlineContent = { Text(text = stringResource(id = it.displayNameRes)) },
-                modifier = Modifier.clickable {
-                    sort(it)
-                },
-                leadingContent = {
-                    RadioButton(
-                        selected = sortOrder == it, onClick = null
-                    )
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-            )
+        Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+            ApkSortOptions.entries.forEach {
+                ListItem(
+                    headlineContent = { Text(text = stringResource(id = it.displayNameRes)) },
+                    modifier = Modifier.clickable {
+                        sort(it)
+                    },
+                    leadingContent = {
+                        RadioButton(
+                            selected = sortOrder == it, onClick = null
+                        )
+                    },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                )
+            }
         }
     }
 }
