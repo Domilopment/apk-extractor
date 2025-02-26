@@ -53,8 +53,8 @@ class ListOfAPKs private constructor(
                         DocumentsContract.buildDocumentUriUsingTree(childrenUri, documentId)
 
                     val model = when {
-                        mimeType == FileUtil.FileInfo.APK.mimeType || displayName.endsWith(".xapk") || displayName.endsWith(
-                            ".apks"
+                        mimeType == FileUtil.FileInfo.APK.mimeType || displayName.endsWith(".${FileUtil.FileInfo.APKS.suffix}") || displayName.endsWith(
+                            ".${FileUtil.FileInfo.XAPK.suffix}"
                         ) -> PackageArchiveEntity(
                             fileUri = documentUri,
                             fileName = displayName,

@@ -53,7 +53,7 @@ object PackageArchiveUtils {
                     )
                 }
 
-                FileUtil.FileInfo.XAPK.mimeType -> inputStream?.let {
+                FileUtil.FileInfo.APKS.mimeType, FileUtil.FileInfo.XAPK.mimeType -> inputStream?.let {
                     getApkFromZipFile(
                         it, outputStream
                     )
