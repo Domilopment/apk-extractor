@@ -11,7 +11,6 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.Dp
 import androidx.core.content.ContextCompat
 
 /**
@@ -43,11 +42,16 @@ fun getDarkModeConfiguration(theme: Int): Boolean {
 
 @ReadOnlyComposable
 @Composable
-fun PaddingValues.copy(
-    start: Dp = this.calculateStartPadding(LocalLayoutDirection.current),
-    top: Dp = this.calculateTopPadding(),
-    end: Dp = this.calculateEndPadding(LocalLayoutDirection.current),
-    bottom: Dp = this.calculateBottomPadding()
-): PaddingValues {
+fun PaddingValues.add(paddingValues: PaddingValues): PaddingValues {
+    val localLayoutDirection = LocalLayoutDirection.current
+    val start =
+        this.calculateStartPadding(localLayoutDirection) + paddingValues.calculateStartPadding(
+            localLayoutDirection
+        )
+    val top = this.calculateTopPadding() + paddingValues.calculateTopPadding()
+    val end = this.calculateEndPadding(localLayoutDirection) + paddingValues.calculateEndPadding(
+        localLayoutDirection
+    )
+    val bottom = this.calculateBottomPadding() + paddingValues.calculateBottomPadding()
     return PaddingValues(start = start, top = top, end = end, bottom = bottom)
 }

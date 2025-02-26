@@ -2,6 +2,7 @@ package domilopment.apkextractor.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -23,7 +24,6 @@ import com.google.android.play.core.appupdate.AppUpdateInfo
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
-import domilopment.apkextractor.ui.copy
 import domilopment.apkextractor.ui.settings.preferences.APKNamePreference
 import domilopment.apkextractor.ui.settings.preferences.DialogPreference
 import domilopment.apkextractor.ui.settings.preferences.ListPreference
@@ -94,8 +94,8 @@ fun SettingsContent(
     LazyColumn(
         modifier = Modifier.testTag("SettingsLazyColumn"),
         state = rememberLazyListState(),
-        contentPadding = WindowInsets.navigationBars.asPaddingValues()
-            .copy(start = 8.dp, end = 8.dp)
+        contentPadding = WindowInsets.navigationBars.add(WindowInsets(left = 8.dp, right = 8.dp))
+            .asPaddingValues()
     ) {
         item {
             if (appUpdateInfo != null) Preference(
