@@ -12,7 +12,7 @@ interface ApplicationRepository {
     val userApps: Flow<List<AppModel.UserApp>>
     suspend fun updateApps()
     suspend fun addApp(app: AppModel)
-    suspend fun removeApp(app: AppModel)
+    suspend fun removeApp(packageName: String)
 }
 
 class MyApplicationRepository @Inject constructor(
@@ -32,7 +32,7 @@ class MyApplicationRepository @Inject constructor(
         applicationService.add(app)
     }
 
-    override suspend fun removeApp(app: AppModel) {
-        applicationService.remove(app)
+    override suspend fun removeApp(packageName: String) {
+        applicationService.remove(packageName)
     }
 }

@@ -244,7 +244,11 @@ object ApplicationUtil {
     }
 
     fun appModelFromPackageName(packageName: String, packageManager: PackageManager): AppModel? {
-        val applicationInfo = Utils.getApplicationInfo(packageManager, packageName)
+        val applicationInfo = try {
+            Utils.getApplicationInfo(packageManager, packageName)
+        } catch (_: PackageManager.NameNotFoundException) {
+            return null
+        }
 
         return if (applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) AppModel.UpdatedSystemApps(
             applicationInfo

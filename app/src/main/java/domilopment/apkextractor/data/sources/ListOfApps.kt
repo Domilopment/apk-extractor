@@ -85,11 +85,10 @@ class ListOfApps private constructor(context: Context) {
         }
     }
 
-    suspend fun remove(app: AppModel) = withContext(Dispatchers.Default) {
+    suspend fun remove(packageName: String) = withContext(Dispatchers.Default) {
         _apps.update { apps ->
             val element: AppModel =
-                apps.find { it.applicationInfo.packageName == app.applicationInfo.packageName }
-                    ?: return@withContext
+                apps.find { it.applicationInfo.packageName == packageName } ?: return@withContext
             if (element is AppModel.SystemApp) return@withContext
 
             val newApps = apps.toMutableList()
