@@ -2,20 +2,13 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
-
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| 2.x.x   | :white_check_mark: |
+| 1.x.x   | :x:                |
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+If you find a vulnerability, report it at [domilopment@protonmail.com](mailto:domilopment@protonmail.com?subject=[Privacy%20Policy]%20APK%20Extractor%20Vulnerability)
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+To avoid vulnerabilities keep your installation up to date ([APK Extractor at Google Play](https://play.google.com/store/apps/details?id=domilopment.apkextractor)) and check for updates regularly. If an active vulnerability is found, I will work to provide an update as fast as possible. Any further complications will receive an answer to a reported vulnerability per mail.
