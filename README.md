@@ -9,6 +9,14 @@ A Simple Modern APK Extractor App
 The APK Extractor enables you to Backup and Restore your installed App.
 This means to save the install file from the Version on your device to your System and restore it afterwards or Mange them.
 
+## Screenshots
+
+| ![](images/1.png "App list light") | ![](images/2.png "App list dark") | ![](images/3.png "App details") | ![](images/4.png "App list multiselect") |
+|------------------------------------|-----------------------------------|---------------------------------|------------------------------------------|
+| ![](images/5.png "App list filter") | ![](images/6.png "App list search") | ![](images/7.png "Apk list details") | ![](images/8.png "Settings") |
+
+## Highlights
+
 Provided functions are:
 
 -   **Fast and easy to use. (hopefully)**
