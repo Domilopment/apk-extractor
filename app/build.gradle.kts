@@ -23,8 +23,8 @@ android {
         applicationId = "domilopment.apkextractor"
         minSdk = 26
         targetSdk = 35
-        versionCode = 93
-        versionName = "2.3.0-2025.02.27"
+        versionCode = 94
+        versionName = "2.3.0-2025.03.02"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
