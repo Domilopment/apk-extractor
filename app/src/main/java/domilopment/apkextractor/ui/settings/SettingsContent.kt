@@ -102,7 +102,8 @@ fun SettingsContent(
                 name = R.string.update_available_title,
                 modifier = Modifier
                     .background(
-                        MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        shape = RoundedCornerShape(8.dp)
                     )
                     .padding(top = 8.dp),
                 summary = R.string.update_available_summary,
