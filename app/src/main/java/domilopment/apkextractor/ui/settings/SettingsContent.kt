@@ -2,17 +2,31 @@ package domilopment.apkextractor.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BatteryStd
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.FolderZip
+import androidx.compose.material.icons.filled.HourglassDisabled
+import androidx.compose.material.icons.filled.HourglassEmpty
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.ModeNight
+import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.Shop
+import androidx.compose.material.icons.filled.SwipeLeft
+import androidx.compose.material.icons.filled.SwipeRight
+import androidx.compose.material.icons.filled.TextFormat
+import androidx.compose.material.icons.filled.Update
+import androidx.compose.material.icons.filled.UpdateDisabled
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -96,7 +110,7 @@ fun SettingsContent(
     LazyColumn(
         modifier = Modifier.testTag("SettingsLazyColumn"),
         state = rememberLazyListState(),
-        contentPadding = WindowInsets.navigationBars.add(WindowInsets(left = 8.dp, right = 8.dp))
+        contentPadding = WindowInsets.navigationBars.union(WindowInsets(left = 8.dp, right = 8.dp))
             .asPaddingValues()
     ) {
         item {
@@ -126,6 +140,7 @@ fun SettingsContent(
             preferenceCategoryItemMiddle {
                 APKNamePreference(
                     name = R.string.app_save_name,
+                    icon = Icons.Default.TextFormat,
                     summary = R.string.app_save_name_summary,
                     entries = R.array.app_save_name_names,
                     entryValues = R.array.app_save_name_values,
@@ -135,6 +150,7 @@ fun SettingsContent(
             }
             preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
+                    icon = Icons.Default.FolderZip,
                     name = R.string.backup_mode_xapk,
                     summary = if (isBackupModeXapk) R.string.backup_mode_xapk_summary_active else R.string.backup_mode_xapk_summary_inactive,
                     state = isBackupModeXapk,
@@ -144,6 +160,7 @@ fun SettingsContent(
             preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
                     name = R.string.auto_backup,
+                    icon = if (autoBackupService) Icons.Default.HourglassEmpty else Icons.Default.HourglassDisabled,
                     summary = R.string.auto_backup_summary,
                     state = autoBackupService,
                     onClick = onAutoBackupService
@@ -151,6 +168,7 @@ fun SettingsContent(
             }
             preferenceCategoryItemBottom {
                 MultiSelectListPreference(
+                    icon = Icons.Default.Checklist,
                     name = stringResource(id = R.string.auto_backup_app_list),
                     enabled = isSelectAutoBackupApps,
                     entries = autoBackupListApps.entries,
@@ -186,6 +204,7 @@ fun SettingsContent(
             preferenceCategoryItemBottom {
                 ListPreference(
                     name = stringResource(id = R.string.locale_list_title),
+                    icon = Icons.Default.Language,
                     summary = stringResource(
                         id = R.string.locale_list_summary, languageLocaleDisplayName
                     ),
@@ -201,6 +220,7 @@ fun SettingsContent(
             preferenceCategoryItemTop {
                 ListPreference(
                     name = R.string.apk_swipe_action_right_title,
+                    icon = Icons.Default.SwipeRight,
                     summary = R.string.apk_swipe_action_right_summary,
                     entries = R.array.apk_swipe_options_entries,
                     entryValues = R.array.apk_swipe_options_values,
@@ -211,6 +231,7 @@ fun SettingsContent(
             preferenceCategoryItemMiddle {
                 ListPreference(
                     name = R.string.apk_swipe_action_left_title,
+                    icon = Icons.Default.SwipeLeft,
                     summary = R.string.apk_swipe_action_left_summary,
                     entries = R.array.apk_swipe_options_entries,
                     entryValues = R.array.apk_swipe_options_values,
@@ -266,6 +287,7 @@ fun SettingsContent(
             preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
                     name = R.string.check_update_on_start_title,
+                    icon = if (checkUpdateOnStart) Icons.Default.Update else Icons.Default.UpdateDisabled,
                     summary = R.string.check_update_on_start_summary,
                     state = checkUpdateOnStart,
                     onClick = onCheckUpdateOnStart
@@ -274,6 +296,7 @@ fun SettingsContent(
             preferenceCategoryItemBottom {
                 Preference(
                     name = stringResource(id = R.string.clear_cache),
+                    icon = Icons.Default.CleaningServices,
                     summary = stringResource(id = R.string.clear_cache_summary, cacheSize),
                     onClick = onClearCache
                 )
@@ -326,15 +349,22 @@ fun SettingsContent(
             preferenceCategoryItemMiddle {
                 Preference(
                     name = R.string.googleplay,
+                    icon = Icons.Default.Shop,
                     summary = R.string.googleplay_summary,
                     onClick = onGooglePlay
                 )
             }
             preferenceCategoryItemMiddle {
-                Preference(name = R.string.privacy_policy_title, onClick = onPrivacyPolicy)
+                Preference(
+                    name = R.string.privacy_policy_title,
+                    icon = Icons.Default.PrivacyTip,
+                    onClick = onPrivacyPolicy
+                )
             }
             preferenceCategoryItemMiddle {
-                Preference(name = R.string.terms_title, onClick = onTerms)
+                Preference(
+                    name = R.string.terms_title, icon = Icons.Default.Info, onClick = onTerms
+                )
             }
             preferenceCategoryItemMiddle {
                 Preference(
