@@ -14,12 +14,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -50,17 +52,19 @@ fun APKExtractorBottomNavigation(
     onNavigate: () -> Unit
 ) {
     AnimatedContent(targetState = isActionMode, transitionSpec = {
-        slideInVertically(animationSpec = tween(
-            durationMillis = 100,
-            delayMillis = 100,
-        ), initialOffsetY = { it }) + fadeIn(
+        slideInVertically(
+            animationSpec = tween(
+                durationMillis = 100,
+                delayMillis = 100,
+            ), initialOffsetY = { it }) + fadeIn(
             animationSpec = tween(
                 durationMillis = 100,
                 delayMillis = 100,
             )
-        ) togetherWith slideOutVertically(animationSpec = tween(
-            durationMillis = 100, easing = LinearOutSlowInEasing
-        ), targetOffsetY = { it }) + fadeOut(
+        ) togetherWith slideOutVertically(
+            animationSpec = tween(
+                durationMillis = 100, easing = LinearOutSlowInEasing
+            ), targetOffsetY = { it }) + fadeOut(
             animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
         )
     }, label = "Bottom Navigation Content") { actionMode ->
@@ -87,7 +91,8 @@ private fun DefaultBottomNavigation(
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         items.forEach { item ->
-            NavigationBarItem(icon = {
+            NavigationBarItem(
+                icon = {
                 Icon(
                     imageVector = item.icon, contentDescription = null
                 )
@@ -131,9 +136,9 @@ private fun ActionModeBar(modifier: Modifier = Modifier, items: List<BottomBarIt
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .navigationBarsPadding()
-                .defaultMinSize(minHeight = 80.dp)
-
+                .windowInsetsPadding(insets = NavigationBarDefaults.windowInsets)
+                .defaultMinSize(minHeight = 80.0.dp)
+                .selectableGroup(),
         ) {
             items.forEach { item ->
                 OutlinedButton(

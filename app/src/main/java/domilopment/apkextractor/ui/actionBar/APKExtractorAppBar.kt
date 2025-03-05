@@ -9,7 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -115,7 +116,8 @@ private fun DefaultAppBar(
         }
     }
 
-    TopAppBar(title = {
+    TopAppBar(
+        title = {
         Text(
             text = stringResource(id = appBarState.title),
             overflow = TextOverflow.Ellipsis,
@@ -163,7 +165,8 @@ private fun ActionModeBar(
     onTriggerActionMode: () -> Unit,
     onCheckAllItems: (Boolean) -> Unit
 ) {
-    TopAppBar(title = {
+    TopAppBar(
+        title = {
         Text(
             text = stringResource(
                 id = R.string.action_mode_title, selectedApplicationsCount
@@ -197,6 +200,7 @@ private fun ActionModeBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchBar(
     modifier: Modifier = Modifier,
@@ -213,9 +217,9 @@ private fun SearchBar(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .height(64.dp),
+                .windowInsetsPadding(insets = TopAppBarDefaults.windowInsets)
+                .clipToBounds()
+                .height(height = TopAppBarDefaults.TopAppBarExpandedHeight),
             contentAlignment = Alignment.CenterStart
         ) {
             TextField(
