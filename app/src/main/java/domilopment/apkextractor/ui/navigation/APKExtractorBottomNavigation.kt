@@ -10,10 +10,15 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -42,6 +47,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.data.AppBarState
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun APKExtractorBottomNavigation(
     items: List<Screen>,
@@ -69,6 +75,7 @@ fun APKExtractorBottomNavigation(
         )
     }, label = "Bottom Navigation Content") { actionMode ->
         when {
+            WindowInsets.isImeVisible -> Spacer(modifier = Modifier.imePadding())
             actionMode && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(items = appBarState.actionModeActions)
             appBarState.hasBottomNavigation -> DefaultBottomNavigation(
                 items = items,
