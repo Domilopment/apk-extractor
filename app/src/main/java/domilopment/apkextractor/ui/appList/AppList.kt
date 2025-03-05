@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
@@ -43,7 +42,6 @@ import domilopment.apkextractor.utils.Utils.getAnnotatedString
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppList(
     appList: List<ApplicationModel>,
@@ -84,7 +82,8 @@ fun AppList(
                 isSwipeActionCustomThreshold,
                 swipeActionThresholdModifier,
             ) {
-                SwipeToDismissBoxState(initialValue = SwipeToDismissBoxValue.Settled,
+                SwipeToDismissBoxState(
+                    initialValue = SwipeToDismissBoxValue.Settled,
                     density = density,
                     confirmValueChange = {
                         if (it == SwipeToDismissBoxValue.EndToStart) {
@@ -291,7 +290,8 @@ private fun AppListPreview() {
             Button(onClick = { actionMode = false }) {
                 Text(text = "Stop ActionMode")
             }
-            AppList(appList = apps,
+            AppList(
+                appList = apps,
                 isSwipeToDismiss = !actionMode,
                 searchString = "",
                 updateApp = { app ->

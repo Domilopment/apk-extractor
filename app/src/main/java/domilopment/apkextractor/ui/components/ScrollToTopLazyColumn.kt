@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import domilopment.apkextractor.ui.add
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -71,7 +72,7 @@ fun ScrollToTopLazyColumn(
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState(),
     scope: CoroutineScope = rememberCoroutineScope(),
-    contentPadding: PaddingValues = PaddingValues(bottom = 64.dp),
+    contentPadding: PaddingValues = PaddingValues(bottom = 0.dp),
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical = if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
@@ -89,7 +90,7 @@ fun ScrollToTopLazyColumn(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = state,
-            contentPadding = contentPadding,
+            contentPadding = contentPadding.add(paddingValues = PaddingValues(bottom = 64.dp)),
             reverseLayout = reverseLayout,
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
@@ -99,7 +100,10 @@ fun ScrollToTopLazyColumn(
         )
 
         ScrollToTopButton(
-            visible = scrollToTop, modifier = Modifier.align(Alignment.BottomCenter),
+            visible = scrollToTop,
+            modifier = Modifier
+                .padding(contentPadding)
+                .align(Alignment.BottomCenter),
         ) {
             scope.launch { state.animateScrollToItem(0) }
         }

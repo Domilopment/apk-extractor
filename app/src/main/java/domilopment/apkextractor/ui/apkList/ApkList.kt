@@ -340,7 +340,8 @@ private fun ApkListPreview() {
 
     MaterialTheme {
         Column {
-            ApkList(apkList = apks,
+            ApkList(
+                apkList = apks,
                 totalSpace = 6L * 1000 * 1000 * 1000,
                 takenSpace = space,
                 freeSpace = 4L * 1000 * 1000 * 1000,
