@@ -2,8 +2,10 @@ package domilopment.apkextractor.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
@@ -110,8 +112,8 @@ fun SettingsContent(
     LazyColumn(
         modifier = Modifier.testTag("SettingsLazyColumn"),
         state = rememberLazyListState(),
-        contentPadding = WindowInsets.navigationBars.union(WindowInsets(left = 8.dp, right = 8.dp))
-            .asPaddingValues()
+        contentPadding = WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)
+            .union(WindowInsets(left = 8.dp, right = 8.dp)).asPaddingValues()
     ) {
         item {
             if (appUpdateInfo != null) Preference(

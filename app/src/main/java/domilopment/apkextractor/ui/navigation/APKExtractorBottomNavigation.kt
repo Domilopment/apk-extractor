@@ -17,10 +17,11 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Icon
@@ -75,8 +76,14 @@ fun APKExtractorBottomNavigation(
         )
     }, label = "Bottom Navigation Content") { actionMode ->
         when {
-            WindowInsets.isImeVisible -> Spacer(modifier = Modifier.imePadding())
-            actionMode && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(items = appBarState.actionModeActions)
+            actionMode && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(
+                items = appBarState.actionModeActions
+            )
+
+            WindowInsets.isImeVisible -> Spacer(
+                modifier = Modifier.windowInsetsBottomHeight(WindowInsets.ime)
+            )
+
             appBarState.hasBottomNavigation -> DefaultBottomNavigation(
                 items = items,
                 navController = navController,
