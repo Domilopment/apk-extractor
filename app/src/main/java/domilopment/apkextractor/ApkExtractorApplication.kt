@@ -30,7 +30,6 @@ class ApkExtractorApplication : Application() {
         super.onCreate()
 
         Timber.plant(logger)
-        Timber.tag("ApkExtractorApplication").e("onCreate")
 
         runBlocking {
             // Set UI Mode
