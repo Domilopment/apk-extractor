@@ -47,6 +47,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.data.AppBarState
+import domilopment.apkextractor.data.UiState
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -54,11 +55,11 @@ fun APKExtractorBottomNavigation(
     items: List<Screen>,
     navController: NavHostController,
     appBarState: AppBarState,
-    isActionMode: Boolean,
+    uiState: UiState,
     modifier: Modifier = Modifier,
     onNavigate: () -> Unit
 ) {
-    AnimatedContent(targetState = isActionMode, transitionSpec = {
+    AnimatedContent(targetState = uiState, transitionSpec = {
         slideInVertically(
             animationSpec = tween(
                 durationMillis = 100,
@@ -74,17 +75,17 @@ fun APKExtractorBottomNavigation(
             ), targetOffsetY = { it }) + fadeOut(
             animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
         )
-    }, label = "Bottom Navigation Content") { actionMode ->
+    }, label = "Bottom Navigation Content") { state ->
         when {
-            actionMode && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(
+            state is UiState.ActionMode && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(
                 items = appBarState.actionModeActions
             )
 
-            WindowInsets.isImeVisible -> Spacer(
+            state is UiState.Search && WindowInsets.isImeVisible -> Spacer(
                 modifier = Modifier.windowInsetsBottomHeight(WindowInsets.ime)
             )
 
-            appBarState.hasBottomNavigation -> DefaultBottomNavigation(
+            state is UiState.Default && appBarState.hasBottomNavigation -> DefaultBottomNavigation(
                 items = items,
                 navController = navController,
                 modifier = modifier,

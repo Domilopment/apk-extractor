@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.ActionModeState
 import domilopment.apkextractor.data.MainScreenState
-import domilopment.apkextractor.data.UiMode
+import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.data.repository.analytics.AnalyticsRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,12 +55,12 @@ class MainViewModel @Inject constructor(
     }
 
     fun setSearchBarState() {
-        mainScreenState = mainScreenState.copy(uiMode = UiMode.Search)
+        mainScreenState = mainScreenState.copy(uiState = UiState.Search)
     }
 
     fun setActionModeState() {
         mainScreenState =
-            mainScreenState.copy(uiMode = UiMode.Action(prevMode = mainScreenState.uiMode))
+            mainScreenState.copy(uiState = UiState.ActionMode(previousState = mainScreenState.uiState))
     }
 
     fun resetAppBarState() {
@@ -73,7 +73,7 @@ class MainViewModel @Inject constructor(
     ) {
         if (selectedItems == 0) {
             mainScreenState = mainScreenState.copy(
-                uiMode = (mainScreenState.uiMode as UiMode.Action).prevMode
+                uiState = (mainScreenState.uiState as UiState.ActionMode).previousState
             )
             actionModeState = ActionModeState()
         } else actionModeState = actionModeState.copy(
@@ -83,14 +83,14 @@ class MainViewModel @Inject constructor(
 
     fun onReturnUiMode() {
         mainScreenState = mainScreenState.copy(
-            uiMode = when (mainScreenState.uiMode) {
-                UiMode.Search -> UiMode.Home
-                is UiMode.Action -> {
+            uiState = when (mainScreenState.uiState) {
+                UiState.Search -> UiState.Default
+                is UiState.ActionMode -> {
                     actionModeState = ActionModeState()
-                    (mainScreenState.uiMode as UiMode.Action).prevMode
+                    (mainScreenState.uiState as UiState.ActionMode).previousState
                 }
 
-                else -> mainScreenState.uiMode
+                else -> mainScreenState.uiState
             }
         )
     }

@@ -52,13 +52,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.AppBarState
-import domilopment.apkextractor.data.UiMode
+import domilopment.apkextractor.data.UiState
 
 @Composable
 fun APKExtractorAppBar(
     appBarState: AppBarState,
     modifier: Modifier = Modifier,
-    uiMode: UiMode,
+    uiState: UiState,
     searchText: String,
     isAllItemsChecked: Boolean,
     onSearchQueryChanged: (String) -> Unit,
@@ -68,22 +68,22 @@ fun APKExtractorAppBar(
     selectedApplicationsCount: Int
 ) {
     Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)) {
-        AnimatedContent(targetState = uiMode, transitionSpec = {
+        AnimatedContent(targetState = uiState, transitionSpec = {
             fadeIn() togetherWith fadeOut()
         }, label = "Actionbar Content") { uiMode ->
             when (uiMode) {
-                UiMode.Home -> DefaultAppBar(
+                UiState.Default -> DefaultAppBar(
                     appBarState = appBarState, modifier, onActionSearch = onTriggerSearch
                 )
 
-                UiMode.Search -> SearchBar(
+                UiState.Search -> SearchBar(
                     text = searchText,
                     onTextChange = onSearchQueryChanged,
                     onCloseClicked = onReturnUiMode,
                     onSearchClicked = onSearchQueryChanged
                 )
 
-                is UiMode.Action -> ActionModeBar(
+                is UiState.ActionMode -> ActionModeBar(
                     modifier,
                     isAllItemsChecked,
                     selectedApplicationsCount,

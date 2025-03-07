@@ -57,7 +57,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.InAppUpdateResult
 import domilopment.apkextractor.data.InAppUpdateResultType
-import domilopment.apkextractor.data.UiMode
+import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.data.rememberAppBarState
 import domilopment.apkextractor.data.repository.analytics.AnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
@@ -124,8 +124,8 @@ class MainActivity : AppCompatActivity() {
                 mutableStateOf(false)
             }
 
-            val isActionModeActive = remember(key1 = mainScreenState.uiMode) {
-                mainScreenState.uiMode is UiMode.Action
+            val isActionModeActive = remember(key1 = mainScreenState.uiState) {
+                mainScreenState.uiState is UiState.ActionMode
             }
 
             var inAppUpdateResult: InAppUpdateResult? by remember {
@@ -182,7 +182,7 @@ class MainActivity : AppCompatActivity() {
                             APKExtractorAppBar(
                                 appBarState = appBarState,
                                 modifier = Modifier.fillMaxWidth(),
-                                uiMode = mainScreenState.uiMode,
+                                uiState = mainScreenState.uiState,
                                 searchText = mainScreenState.appBarSearchText,
                                 isAllItemsChecked = actionModeState.selectAllItemsCheck,
                                 onSearchQueryChanged = model::updateSearchQuery,
@@ -198,7 +198,7 @@ class MainActivity : AppCompatActivity() {
                                 ),
                                 navController = navController,
                                 appBarState = appBarState,
-                                isActionMode = isActionModeActive,
+                                uiState = mainScreenState.uiState,
                                 onNavigate = model::resetAppBarState
                             )
                         }, snackbarHost = {
