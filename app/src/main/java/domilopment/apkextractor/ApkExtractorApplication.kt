@@ -22,11 +22,15 @@ class ApkExtractorApplication : Application() {
     @Inject
     lateinit var prefs: PreferenceRepository
 
+    @Inject
+    lateinit var logger: Timber.Tree
+
     @SuppressLint("DiscouragedPrivateApi")
     override fun onCreate() {
         super.onCreate()
 
-        Timber.plant(TimberTree())
+        Timber.plant(logger)
+        Timber.tag("ApkExtractorApplication").e("onCreate")
 
         runBlocking {
             // Set UI Mode

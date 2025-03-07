@@ -1,16 +1,16 @@
-package domilopment.apkextractor
+package domilopment.apkextractor.data.repository.logger
 
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.setCustomKeys
 import timber.log.Timber
 
-class TimberTree : Timber.Tree() {
+class CrashlyticsLogger : Timber.Tree() {
     private val crashlytics = FirebaseCrashlytics.getInstance()
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        when(priority) {
-            Log.VERBOSE,Log.DEBUG, Log.INFO -> return
+        when (priority) {
+            Log.VERBOSE, Log.DEBUG, Log.INFO -> return
         }
 
         crashlytics.setCustomKeys {
