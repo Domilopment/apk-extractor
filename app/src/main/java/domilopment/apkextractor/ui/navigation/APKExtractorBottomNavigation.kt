@@ -49,6 +49,10 @@ import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 
+private const val CONTENT_KEY_ACTION = "Action"
+private const val CONTENT_KEY_SEARCH = "Search"
+private const val CONTENT_KEY_DEFAULT = "Default"
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun APKExtractorBottomNavigation(
@@ -59,6 +63,7 @@ fun APKExtractorBottomNavigation(
     modifier: Modifier = Modifier,
     onNavigate: () -> Unit
 ) {
+    val isImeVisible = WindowInsets.isImeVisible
     AnimatedContent(targetState = uiState, transitionSpec = {
         slideInVertically(
             animationSpec = tween(
@@ -75,17 +80,23 @@ fun APKExtractorBottomNavigation(
             ), targetOffsetY = { it }) + fadeOut(
             animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
         )
-    }, label = "Bottom Navigation Content") { state ->
+    }, label = "Bottom Navigation Content", contentKey = { state ->
+        when (state) {
+            is UiState.ActionMode -> CONTENT_KEY_ACTION
+            is UiState.Search -> if (isImeVisible) CONTENT_KEY_SEARCH else CONTENT_KEY_DEFAULT
+            is UiState.Default -> CONTENT_KEY_DEFAULT
+        }
+    }) { state ->
         when {
             state is UiState.ActionMode && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(
                 items = appBarState.actionModeActions
             )
 
-            state is UiState.Search && WindowInsets.isImeVisible -> Spacer(
+            state is UiState.Search && isImeVisible -> Spacer(
                 modifier = Modifier.windowInsetsBottomHeight(WindowInsets.ime)
             )
 
-            state is UiState.Default && appBarState.hasBottomNavigation -> DefaultBottomNavigation(
+            (state is UiState.Default || state is UiState.Search) && appBarState.hasBottomNavigation -> DefaultBottomNavigation(
                 items = items,
                 navController = navController,
                 modifier = modifier,
