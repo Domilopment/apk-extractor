@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.navigation
 
+import android.os.Build
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -83,7 +84,7 @@ fun APKExtractorBottomNavigation(
     }, label = "Bottom Navigation Content", contentKey = { state ->
         when (state) {
             is UiState.ActionMode -> CONTENT_KEY_ACTION
-            is UiState.Search -> if (isImeVisible) CONTENT_KEY_SEARCH else CONTENT_KEY_DEFAULT
+            is UiState.Search -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && isImeVisible) CONTENT_KEY_SEARCH else CONTENT_KEY_DEFAULT
             is UiState.Default -> CONTENT_KEY_DEFAULT
         }
     }) { state ->
@@ -92,7 +93,7 @@ fun APKExtractorBottomNavigation(
                 items = appBarState.actionModeActions
             )
 
-            state is UiState.Search && isImeVisible -> Spacer(
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && state is UiState.Search && isImeVisible -> Spacer(
                 modifier = Modifier.windowInsetsBottomHeight(WindowInsets.ime)
             )
 
