@@ -96,7 +96,7 @@ fun APKExtractorBottomNavigation(
                 modifier = Modifier.windowInsetsBottomHeight(WindowInsets.ime)
             )
 
-            (state is UiState.Default || state is UiState.Search) && appBarState.hasBottomNavigation -> DefaultBottomNavigation(
+            appBarState.hasBottomNavigation -> DefaultBottomNavigation(
                 items = items,
                 navController = navController,
                 modifier = modifier,
