@@ -17,15 +17,16 @@ import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FolderZip
-import androidx.compose.material.icons.filled.HourglassDisabled
-import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.LocalLibrary
 import androidx.compose.material.icons.filled.ModeNight
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material.icons.filled.SwipeLeft
 import androidx.compose.material.icons.filled.SwipeRight
+import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.SyncDisabled
 import androidx.compose.material.icons.filled.TextFormat
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.UpdateDisabled
@@ -54,6 +55,8 @@ import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBo
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMiddle
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
 import domilopment.apkextractor.utils.FileUtil
+import domilopment.apkextractor.utils.settings.Spacer
+import domilopment.apkextractor.utils.settings.getNameResId
 
 @Composable
 fun SettingsContent(
@@ -63,6 +66,8 @@ fun SettingsContent(
     onChooseSaveDir: () -> Unit,
     appSaveName: Set<String>,
     onAppSaveName: (Set<String>) -> Unit,
+    appSaveNameSpacer: String,
+    onAppSaveNameSpacer: (String) -> Unit,
     isBackupModeXapk: Boolean,
     onBackupModeXapk: (Boolean) -> Unit,
     autoBackupService: Boolean,
@@ -151,18 +156,20 @@ fun SettingsContent(
                 )
             }
             preferenceCategoryItemMiddle {
-                SwitchPreferenceCompat(
-                    icon = Icons.Default.FolderZip,
-                    name = R.string.backup_mode_xapk,
-                    summary = if (isBackupModeXapk) R.string.backup_mode_xapk_summary_active else R.string.backup_mode_xapk_summary_inactive,
-                    state = isBackupModeXapk,
-                    onClick = onBackupModeXapk
+                ListPreference(
+                    name = stringResource(id = R.string.app_save_name_part_separator),
+                    summary = stringResource(id = R.string.app_save_name_part_separator_summary),
+                    entries = Spacer.entries.map { "${stringResource(it.getNameResId())} (\"${it.symbol}\")" }
+                        .toTypedArray(),
+                    entryValues = Spacer.entries.map { it.name }.toTypedArray(),
+                    state = appSaveNameSpacer,
+                    onClick = onAppSaveNameSpacer
                 )
             }
             preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
                     name = R.string.auto_backup,
-                    icon = if (autoBackupService) Icons.Default.HourglassEmpty else Icons.Default.HourglassDisabled,
+                    icon = if (autoBackupService) Icons.Default.Sync else Icons.Default.SyncDisabled,
                     summary = R.string.auto_backup_summary,
                     state = autoBackupService,
                     onClick = onAutoBackupService
@@ -266,7 +273,17 @@ fun SettingsContent(
 
         preferenceCategory(title = R.string.advanced) {
             preferenceCategoryItemTop {
+                SwitchPreferenceCompat(
+                    icon = Icons.Default.FolderZip,
+                    name = R.string.backup_mode_xapk,
+                    summary = if (isBackupModeXapk) R.string.backup_mode_xapk_summary_active else R.string.backup_mode_xapk_summary_inactive,
+                    state = isBackupModeXapk,
+                    onClick = onBackupModeXapk
+                )
+            }
+            preferenceCategoryItemMiddle {
                 ListPreference(
+                    enabled = isBackupModeXapk,
                     name = stringResource(id = R.string.backup_apk_bundle_file_ending_title),
                     summary = stringResource(id = R.string.backup_apk_bundle_file_ending_summary),
                     entries = arrayOf(FileUtil.FileInfo.APKS.name, FileUtil.FileInfo.XAPK.name),
@@ -371,6 +388,7 @@ fun SettingsContent(
             preferenceCategoryItemMiddle {
                 Preference(
                     name = stringResource(id = R.string.oss_dependencies_title),
+                    icon = Icons.Default.LocalLibrary,
                     onClick = ossDependencies
                 )
             }

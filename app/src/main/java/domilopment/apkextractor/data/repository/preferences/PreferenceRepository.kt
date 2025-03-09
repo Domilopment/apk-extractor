@@ -20,6 +20,7 @@ import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_LIST_FAVORITES
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_RIGHT_SWIPE_ACTION
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SAVE_NAME
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SAVE_NAME_SPACER
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SORT_ASC
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SORT_FAVORITES
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SORT_ORDER
@@ -44,6 +45,7 @@ import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.settings.ApkSortOptions
 import domilopment.apkextractor.utils.settings.AppSortOptions
 import domilopment.apkextractor.utils.settings.SettingsManager
+import domilopment.apkextractor.utils.settings.Spacer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -82,6 +84,7 @@ interface PreferenceRepository {
         val DATA_COLLECTION_CRASHLYTICS = booleanPreferencesKey("data_collection_crashlytics")
         val DATA_COLLECTION_PERF = booleanPreferencesKey("data_collection_perf")
         val BUNDLE_FILE_INFO = stringPreferencesKey("bundle_file_info")
+        val APP_SAVE_NAME_SPACER = stringPreferencesKey("app_save_name_spacer")
     }
 
     val saveDir: Flow<Uri?>
@@ -167,6 +170,9 @@ interface PreferenceRepository {
 
     val bundleFileInfo: Flow<FileUtil.FileInfo>
     suspend fun setBundleFileInfo(value: FileUtil.FileInfo)
+
+    val appSaveNameSpacer: Flow<Spacer>
+    suspend fun setAppSaveNameSpacer(value: Spacer)
 }
 
 class MyPreferenceRepository @Inject constructor(
@@ -358,4 +364,10 @@ class MyPreferenceRepository @Inject constructor(
     override suspend fun setBundleFileInfo(value: FileUtil.FileInfo) {
         setPreference(BUNDLE_FILE_INFO, value.suffix)
     }
+
+    override val appSaveNameSpacer: Flow<Spacer> =
+        getPreference(APP_SAVE_NAME_SPACER).map { it?.let { Spacer.fromName(it) } ?: Spacer.SPACE }
+
+    override suspend fun setAppSaveNameSpacer(value: Spacer) =
+        setPreference(APP_SAVE_NAME_SPACER, value.name)
 }

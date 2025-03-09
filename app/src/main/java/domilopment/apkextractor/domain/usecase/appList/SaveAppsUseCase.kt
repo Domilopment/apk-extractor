@@ -41,6 +41,7 @@ class SaveAppsUseCaseImpl @Inject constructor(
 
         val backupMode = settingsRepository.backupModeXapk.first()
         val appNameConfig = settingsRepository.appSaveName.first()
+        val appNameSpacer = settingsRepository.appSaveNameSpacer.first()
         val saveDir = settingsRepository.saveDir.first()
         val bundleFileInfo = settingsRepository.bundleFileInfo.first()
         var application: ApplicationModel? = null
@@ -65,7 +66,9 @@ class SaveAppsUseCaseImpl @Inject constructor(
             val packageInfo =
                 Utils.getPackageInfo(context.packageManager, app.applicationInfo.packageName)
             val appName = packageInfo.let {
-                ApplicationUtil.appName(context.packageManager, it, appNameConfig)
+                ApplicationUtil.appName(
+                    context.packageManager, it, appNameConfig, appNameSpacer.symbol
+                )
             }
 
             trySend(ExtractionResult.Progress(application, 0))

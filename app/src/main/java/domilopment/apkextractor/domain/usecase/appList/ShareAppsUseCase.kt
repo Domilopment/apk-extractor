@@ -53,7 +53,10 @@ class ShareAppsUseCaseImpl @Inject constructor(
             val name =
                 Utils.getPackageInfo(context.packageManager, app.applicationInfo.packageName).let {
                     ApplicationUtil.appName(
-                        context.packageManager, it, settings.appSaveName.first()
+                        context.packageManager,
+                        it,
+                        settings.appSaveName.first(),
+                        settings.appSaveNameSpacer.first().symbol
                     )
                 }
 

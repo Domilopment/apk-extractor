@@ -16,6 +16,7 @@ import domilopment.apkextractor.domain.usecase.appList.IsAppInstalledUseCase
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.AppSortOptions
 import domilopment.apkextractor.utils.settings.ApplicationUtil
+import domilopment.apkextractor.utils.settings.Spacer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -74,6 +75,11 @@ class SettingsScreenViewModel @Inject constructor(
         viewModelScope.launch {
             settings.appSaveName.collect {
                 _uiState.update { state -> state.copy(saveName = it) }
+            }
+        }
+        viewModelScope.launch {
+            settings.appSaveNameSpacer.collect {
+                _uiState.update { state -> state.copy(saveNameSpacer = it) }
             }
         }
         viewModelScope.launch {
@@ -152,6 +158,16 @@ class SettingsScreenViewModel @Inject constructor(
         viewModelScope.launch { settings.setAppSaveName(set) }
     }
 
+    fun setAppSaveNameSpacer(spacer: String) {
+        viewModelScope.launch {
+            spacer.let {
+                Spacer.fromName(it) ?: Spacer.SPACE
+            }.let {
+                settings.setAppSaveNameSpacer(it)
+            }
+        }
+    }
+
     fun setAutoBackupService(b: Boolean) {
         viewModelScope.launch { settings.setAutoBackupService(b) }
     }
@@ -217,11 +233,13 @@ class SettingsScreenViewModel @Inject constructor(
         }
     }
 
-    fun setBundleFileInfo(s: String) {
+    fun setBundleFileInfo(suffix: String) {
         viewModelScope.launch {
-            settings.setBundleFileInfo(s.let {
-                FileUtil.FileInfo.fromSuffix(s) ?: FileUtil.FileInfo.APKS
-            })
+            suffix.let {
+                FileUtil.FileInfo.fromSuffix(it) ?: FileUtil.FileInfo.APKS
+            }.let {
+                settings.setBundleFileInfo(it)
+            }
         }
     }
 }

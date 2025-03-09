@@ -164,6 +164,8 @@ fun SettingsScreen(
         },
         appSaveName = uiState.saveName,
         onAppSaveName = model::setAppSaveName,
+        appSaveNameSpacer = uiState.saveNameSpacer.name,
+        onAppSaveNameSpacer = model::setAppSaveNameSpacer,
         isBackupModeXapk = uiState.backupModeXapk,
         onBackupModeXapk = model::setBackupModeXapk,
         autoBackupService = uiState.autoBackupService,

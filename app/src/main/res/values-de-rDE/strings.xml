@@ -134,6 +134,13 @@
     <string name="app_save_name_datetime">Datum</string>
     <string name="app_save_name_toast">Bitte wähle mindestens App oder Paket Namen</string>
 
+    <string name="app_save_name_part_separator">APK Namensteil-Trennzeichen</string>
+    <string name="app_save_name_part_separator_summary">Wählen Sie das Zeichen aus, das verwendet wird, um die Teile des APK Dateinamens miteinander zu verbinden. Dies wird beim Erstellen der APK-Sicherungsdatei verwendet.</string>
+    <string name="app_save_name_part_separator_space">Leerzeichen</string>
+    <string name="app_save_name_part_separator_underscore">Unterstrich</string>
+    <string name="app_save_name_part_separator_hyphen">Bindestrich</string>
+    <string name="app_save_name_part_separator_dot">Punkt</string>
+
     <string name="locale_list_title">Sprache</string>
     <string name="locale_list_summary">%s</string>
     <string name="locale_list_default">System Standartsprache</string>

@@ -136,6 +136,13 @@
     <string name="app_save_name_datetime">Date</string>
     <string name="app_save_name_toast">Please select at Least App or Package Name</string>
 
+    <string name="app_save_name_part_separator">APK Name Part Separator</string>
+    <string name="app_save_name_part_separator_summary">Choose the character to use when joining apk name parts together. This is used when creating the apk file.</string>
+    <string name="app_save_name_part_separator_space">Space</string>
+    <string name="app_save_name_part_separator_underscore">Underscore</string>
+    <string name="app_save_name_part_separator_hyphen">Hyphen</string>
+    <string name="app_save_name_part_separator_dot">Dot</string>
+
     <string name="locale_list_title">Language</string>
     <string name="locale_list_summary">%s</string>
     <string name="locale_list_default">System default</string>

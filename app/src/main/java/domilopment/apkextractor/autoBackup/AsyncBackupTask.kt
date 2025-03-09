@@ -33,6 +33,7 @@ class AsyncBackupTask(
     private val pendingResult: BroadcastReceiver.PendingResult,
     private val context: Context,
     private val appName: Set<String>,
+    private val appNameSpacer: Char,
     private val saveDir: Uri,
     private val extractXapk: Boolean,
     private val bundleFileInfo: FileUtil.FileInfo,
@@ -62,7 +63,7 @@ class AsyncBackupTask(
         val splits = arrayListOf(appInfo.sourceDir)
         if (!appInfo.splitSourceDirs.isNullOrEmpty() && extractXapk) splits.addAll(appInfo.splitSourceDirs!!)
 
-        val name = ApplicationUtil.appName(context.packageManager, appInfo, appName)
+        val name = ApplicationUtil.appName(context.packageManager, appInfo, appName, appNameSpacer)
         return if (splits.size == 1) {
             ApplicationUtil.saveApk(context, appInfo.sourceDir, saveDir, name)
         } else {

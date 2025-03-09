@@ -32,6 +32,9 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                 val appSaveName = runBlocking {
                     preferenceRepository.appSaveName.first()
                 }
+                val appNameSpacer = runBlocking {
+                    preferenceRepository.appSaveNameSpacer.first()
+                }
                 val saveDir = runBlocking {
                     preferenceRepository.saveDir.first()
                 }
@@ -48,6 +51,7 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                         pendingResult,
                         context,
                         appSaveName,
+                        appNameSpacer.symbol,
                         saveDir,
                         extractXapk,
                         bundleFileInfo,

@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
+import domilopment.apkextractor.utils.settings.Spacer
 
 data class SettingsScreenState(
     val autoBackupAppsListState: SettingsScreenAppAutoBackUpListState = SettingsScreenAppAutoBackUpListState(
@@ -11,6 +12,7 @@ data class SettingsScreenState(
     ),
     val saveDir: Uri? = null,
     val saveName: Set<String> = setOf("0:name"),
+    val saveNameSpacer: Spacer = Spacer.SPACE,
     val autoBackupService: Boolean = false,
     val autoBackupList: Set<String> = emptySet(),
     val nightMode: Int = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,

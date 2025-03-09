@@ -31,7 +31,7 @@ object ApplicationUtil {
      * @return String of the name after the APK should be named
      */
     fun appName(
-        packageManager: PackageManager, packageInfo: PackageInfo, set: Set<String>
+        packageManager: PackageManager, packageInfo: PackageInfo, set: Set<String>, spacer: Char
     ): String {
         val appName =
             packageInfo.applicationInfo?.loadLabel(packageManager) ?: packageInfo.packageName
@@ -51,17 +51,20 @@ object ApplicationUtil {
             processedPrefs.also {
                 if (it.isEmpty()) append(appName)
                 else it.forEach { v ->
-                    append(" ${names[v]}")
+                    append("$spacer${names[v]}")
                 }
             }
-        }.removePrefix(" ").toString()
+        }.removePrefix(spacer.toString()).toString()
     }
 
     fun appName(
-        packageManager: PackageManager, applicationInfo: ApplicationInfo, set: Set<String>
+        packageManager: PackageManager,
+        applicationInfo: ApplicationInfo,
+        set: Set<String>,
+        spacer: Char
     ): String {
         val packageInfo = Utils.getPackageInfo(packageManager, applicationInfo.packageName)
-        return appName(packageManager, packageInfo, set)
+        return appName(packageManager, packageInfo, set, spacer)
     }
 
     /**
