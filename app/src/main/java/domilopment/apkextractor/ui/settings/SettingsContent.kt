@@ -17,14 +17,15 @@ import androidx.compose.material.icons.filled.BatteryStd
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FolderZip
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.LocalLibrary
 import androidx.compose.material.icons.filled.ModeNight
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Shop
+import androidx.compose.material.icons.filled.SpaceBar
 import androidx.compose.material.icons.filled.SwipeLeft
 import androidx.compose.material.icons.filled.SwipeRight
 import androidx.compose.material.icons.filled.Sync
@@ -159,6 +160,7 @@ fun SettingsContent(
             }
             preferenceCategoryItemMiddle {
                 ListPreference(
+                    icon = Icons.Default.SpaceBar,
                     name = stringResource(id = R.string.app_save_name_part_separator),
                     summary = stringResource(id = R.string.app_save_name_part_separator_summary),
                     entries = Spacer.entries.map { "${stringResource(it.getNameResId())} (\"${it.symbol}\")" }
@@ -392,7 +394,7 @@ fun SettingsContent(
             preferenceCategoryItemMiddle {
                 Preference(
                     name = stringResource(id = R.string.oss_dependencies_title),
-                    icon = Icons.Default.LocalLibrary,
+                    icon = Icons.Default.Code,
                     onClick = ossDependencies
                 )
             }
