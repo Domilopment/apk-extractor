@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.navigation
 
+import android.app.Activity
 import android.os.Build
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -34,9 +35,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -103,6 +107,17 @@ fun APKExtractorBottomNavigation(
                 modifier = modifier,
                 onNavigate = onNavigate
             )
+        }
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val view = LocalView.current
+            if (!view.isInEditMode) {
+                val color = if (state is UiState.ActionMode) MaterialTheme.colorScheme.primary else NavigationBarDefaults.containerColor
+                SideEffect {
+                    val window = (view.context as Activity).window
+                    window.navigationBarColor = color.toArgb()
+                }
+            }
         }
     }
 }
