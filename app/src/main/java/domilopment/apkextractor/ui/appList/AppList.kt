@@ -185,7 +185,7 @@ private fun AppListItemSwipeLeft(
             modifier = Modifier
                 .padding(6.dp)
                 .fillMaxHeight()
-                .width(48.dp),
+                .width(40.dp),
             tint = MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
@@ -206,7 +206,7 @@ private fun AppListItemSwipeRight(
             modifier = Modifier
                 .padding(6.dp)
                 .fillMaxHeight()
-                .width(48.dp),
+                .width(40.dp),
             tint = MaterialTheme.colorScheme.onPrimaryContainer
         )
         Text(
