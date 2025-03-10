@@ -12,7 +12,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.BatteryStd
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Folder
@@ -325,6 +327,7 @@ fun SettingsContent(
         preferenceCategory(title = R.string.data_collection_header) {
             preferenceCategoryItemTop {
                 SwitchPreferenceCompat(
+                    icon = Icons.Default.Analytics,
                     name = R.string.data_collection_analytics,
                     summary = R.string.data_collection_analytics_summary,
                     state = analytics,
@@ -333,6 +336,7 @@ fun SettingsContent(
             }
             preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
+                    icon = Icons.Default.BugReport,
                     name = R.string.data_collection_crashlytics,
                     summary = R.string.data_collection_crashlytics_summary,
                     state = crashlytics,
