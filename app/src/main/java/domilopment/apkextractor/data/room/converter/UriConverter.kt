@@ -1,6 +1,7 @@
 package domilopment.apkextractor.data.room.converter
 
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.room.TypeConverter
 
 class UriConverter {
@@ -11,6 +12,6 @@ class UriConverter {
 
     @TypeConverter
     fun toUri(uriString: String): Uri {
-        return  Uri.parse(uriString)
+        return uriString.toUri()
     }
 }

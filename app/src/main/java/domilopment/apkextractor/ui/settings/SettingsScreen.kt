@@ -58,6 +58,7 @@ import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.util.Locale
+import androidx.core.net.toUri
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -145,7 +146,8 @@ fun SettingsScreen(
         }.launchIn(this)
     }
 
-    SettingsContent(appUpdateInfo = appUpdateInfo,
+    SettingsContent(
+        appUpdateInfo = appUpdateInfo,
         isUpdateAvailable = isUpdateAvailable,
         onUpdateAvailable = {
             appUpdateManager.startUpdateFlowForResult(
@@ -269,9 +271,7 @@ fun SettingsScreen(
         },
         onDeleteFirebaseInstallationsId = model::onDeleteFirebaseInstallationsId,
         onGitHub = {
-            CustomTabsIntent.Builder().build().launchUrl(
-                context, Uri.parse(Constants.GITHUB_URL)
-            )
+            CustomTabsIntent.Builder().build().launchUrl(context, Constants.GITHUB_URL.toUri())
         },
         onGooglePlay = {
             try {
@@ -285,7 +285,7 @@ fun SettingsScreen(
                         // If Play Store is not installed
                     }
                     data =
-                        Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+                        "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}".toUri()
                 }.also {
                     context.startActivity(it)
                 }
@@ -293,23 +293,22 @@ fun SettingsScreen(
                 context.startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+                        "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}".toUri()
                     )
                 )
             }
         },
         onPrivacyPolicy = {
-            CustomTabsIntent.Builder().build().launchUrl(
-                context, Uri.parse(Constants.PRIVACY_POLICY_URL)
-            )
+            CustomTabsIntent.Builder().build()
+                .launchUrl(context, Constants.PRIVACY_POLICY_URL.toUri())
         },
         onTerms = {
-            CustomTabsIntent.Builder().build().launchUrl(
-                context, Uri.parse(Constants.TERMS_URL)
-            )
+            CustomTabsIntent.Builder().build().launchUrl(context, Constants.TERMS_URL.toUri())
         },
         ossDependencies = {
-            context.startActivity(Intent(context.applicationContext, OssLicensesMenuActivity::class.java))
+            context.startActivity(
+                Intent(context.applicationContext, OssLicensesMenuActivity::class.java)
+            )
         })
 }
 
@@ -320,14 +319,16 @@ fun SettingsScreen(
  * @param newValue boolean of service should be running
  */
 private fun handleAutoBackupService(newValue: Boolean, context: Context) {
-    if (newValue and !AutoBackupService.isRunning) context.startForegroundService(Intent(
-        context, AutoBackupService::class.java
-    ).apply {
-        action = AutoBackupService.Actions.START.name
-    })
-    else if (!newValue and AutoBackupService.isRunning) context.startService(Intent(
-        context, AutoBackupService::class.java
-    ).apply {
-        action = AutoBackupService.Actions.STOP.name
-    })
+    if (newValue and !AutoBackupService.isRunning) context.startForegroundService(
+        Intent(
+            context, AutoBackupService::class.java
+        ).apply {
+            action = AutoBackupService.Actions.START.name
+        })
+    else if (!newValue and AutoBackupService.isRunning) context.startService(
+        Intent(
+            context, AutoBackupService::class.java
+        ).apply {
+            action = AutoBackupService.Actions.STOP.name
+        })
 }

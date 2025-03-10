@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.apkList
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +17,7 @@ import domilopment.apkextractor.ui.components.PullToRefreshBox
 import domilopment.apkextractor.utils.FileUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +58,7 @@ private fun ApkListScreenPreview() {
     val apks = remember {
         mutableStateListOf(
             PackageArchiveEntity(
-                fileUri = Uri.parse("test"),
+                fileUri = "test".toUri(),
                 fileName = "test.apk",
                 fileType = FileUtil.FileInfo.APK.mimeType,
                 fileLastModified = 0L,
@@ -71,7 +71,7 @@ private fun ApkListScreenPreview() {
                 appMinSdkVersion = 28,
                 appTargetSdkVersion = 33,
             ), PackageArchiveEntity(
-                fileUri = Uri.parse("test2"),
+                fileUri = "test2".toUri(),
                 fileName = "test2.apk",
                 fileType = FileUtil.FileInfo.APK.mimeType,
                 fileLastModified = 0L,
@@ -84,7 +84,7 @@ private fun ApkListScreenPreview() {
                 appMinSdkVersion = 28,
                 appTargetSdkVersion = 33,
             ), PackageArchiveEntity(
-                fileUri = Uri.parse("test (2)"),
+                fileUri = "test (2)".toUri(),
                 fileName = "test (2).apk",
                 fileType = FileUtil.FileInfo.APK.mimeType,
                 fileLastModified = 0L,
@@ -102,7 +102,7 @@ private fun ApkListScreenPreview() {
     val refreshScope = rememberCoroutineScope()
     var refreshing by remember { mutableStateOf(false) }
     val apkToAdd = PackageArchiveEntity(
-        fileUri = Uri.parse("test (3)"),
+        fileUri = "test (3)".toUri(),
         fileName = "test (3).apk",
         fileType = FileUtil.FileInfo.APK.mimeType,
         fileLastModified = 0L,

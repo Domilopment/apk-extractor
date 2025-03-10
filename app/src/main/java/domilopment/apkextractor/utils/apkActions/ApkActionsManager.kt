@@ -18,6 +18,7 @@ import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import java.io.File
+import androidx.core.net.toUri
 
 class ApkActionsManager(private val context: Context, private val app: ApplicationModel) {
     /**
@@ -118,7 +119,7 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
         app.installationSource?.also {
             try {
                 val shopIntent = Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse(Utils.listOfKnownStores.getValue(it) + app.appPackageName)
+                    data = "${Utils.listOfKnownStores.getValue(it)}${app.appPackageName}".toUri()
                     if (it in Utils.listOfKnownStores) setPackage(it)
                 }
                 context.startActivity(shopIntent)

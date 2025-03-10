@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.apkList
 
-import android.net.Uri
 import android.text.format.Formatter
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -49,6 +48,7 @@ import domilopment.apkextractor.ui.components.ScrollToTopLazyColumn
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
 import timber.log.Timber
+import androidx.core.net.toUri
 
 @Composable
 fun ApkList(
@@ -292,7 +292,7 @@ private fun ApkListPreview() {
     val apks = remember {
         mutableStateListOf(
             PackageArchiveEntity(
-                fileUri = Uri.parse("test"),
+                fileUri = "test".toUri(),
                 fileName = "test.apk",
                 fileType = FileUtil.FileInfo.APK.mimeType,
                 fileLastModified = 0L,
@@ -305,7 +305,7 @@ private fun ApkListPreview() {
                 appMinSdkVersion = 28,
                 appTargetSdkVersion = 33,
             ), PackageArchiveEntity(
-                fileUri = Uri.parse("test2"),
+                fileUri = "test2".toUri(),
                 fileName = "test2.apk",
                 fileType = FileUtil.FileInfo.APK.mimeType,
                 fileLastModified = 0L,
@@ -318,7 +318,7 @@ private fun ApkListPreview() {
                 appMinSdkVersion = 28,
                 appTargetSdkVersion = 33,
             ), PackageArchiveEntity(
-                fileUri = Uri.parse("test (2)"),
+                fileUri = "test (2)".toUri(),
                 fileName = "test (2).apk",
                 fileType = FileUtil.FileInfo.APK.mimeType,
                 fileLastModified = 0L,

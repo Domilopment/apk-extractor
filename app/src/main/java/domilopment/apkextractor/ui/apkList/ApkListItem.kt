@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.apkList
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +34,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.utils.FileUtil
+import androidx.core.net.toUri
 
 @Composable
 fun ApkListItem(
@@ -113,7 +113,7 @@ private fun ApkListItemPreview() {
     val apk by remember {
         mutableStateOf(
             PackageArchiveEntity(
-                fileUri = Uri.parse("test"),
+                fileUri = "test".toUri(),
                 fileName = "test.apk",
                 fileType = FileUtil.FileInfo.APK.mimeType,
                 fileLastModified = 0L,

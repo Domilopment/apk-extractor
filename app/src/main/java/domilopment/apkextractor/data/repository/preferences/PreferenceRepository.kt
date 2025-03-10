@@ -51,6 +51,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 interface PreferenceRepository {
     object PreferencesKeys {
@@ -199,7 +200,7 @@ class MyPreferenceRepository @Inject constructor(
         }
     }
 
-    override val saveDir: Flow<Uri?> = getPreference(SAVE_DIR).map { it?.let { Uri.parse(it) } }
+    override val saveDir: Flow<Uri?> = getPreference(SAVE_DIR).map { it?.toUri() }
     override suspend fun setSaveDir(uri: Uri) = setPreference(SAVE_DIR, uri.toString())
 
     override val updatedSysApps: Flow<Boolean> =

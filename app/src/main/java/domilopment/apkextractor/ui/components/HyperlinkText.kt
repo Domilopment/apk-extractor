@@ -1,7 +1,6 @@
 package domilopment.apkextractor.ui.components
 
 import android.content.Context
-import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.material3.LocalTextStyle
@@ -24,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import androidx.core.net.toUri
 
 data class Link(
     val text: String, val href: String
@@ -70,9 +70,7 @@ fun HyperlinkText(
                     )
                 ) {
                     val url = (it as LinkAnnotation.Url).url
-                    CustomTabsIntent.Builder().build().launchUrl(
-                        context, Uri.parse(url)
-                    )
+                    CustomTabsIntent.Builder().build().launchUrl(context, url.toUri())
                 }, start = startIndex, end = endIndex
             )
         }
