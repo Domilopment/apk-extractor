@@ -232,6 +232,7 @@
 
     <!-- Auto Backup Tile Service -->
     <string name="auto_backup_tile_service_start_foreground_error">Error: Open the App to start the Service</string>
+    <string name="auto_backup_tile_service_notifications_disabled">Please grant Notification permission, before starting the Service.</string>
 
     <!-- App Options Bottom Sheet -->
     <string name="info_bottom_sheet_source_directory">Source APK</string>

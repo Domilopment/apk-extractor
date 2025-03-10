@@ -228,6 +228,7 @@
 
     <!-- Auto Backup Tile Service -->
     <string name="auto_backup_tile_service_start_foreground_error">Fehler: Öffne die App um den Dienst zu starten</string>
+    <string name="auto_backup_tile_service_notifications_disabled">Bitte erteilen Sie die Berechtigung für Benachrichtigungen, bevor Sie den Dienst starten.</string>
 
     <!-- App Options Bottom Sheet -->
     <string name="info_bottom_sheet_source_directory">APK Quellverzeichnis</string>
