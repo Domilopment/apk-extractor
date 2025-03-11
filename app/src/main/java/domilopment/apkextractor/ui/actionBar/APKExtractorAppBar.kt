@@ -4,11 +4,13 @@ import android.app.Activity
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -19,8 +21,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,11 +56,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun APKExtractorAppBar(
     appBarState: AppBarState,
@@ -72,11 +76,13 @@ fun APKExtractorAppBar(
     onCheckAllItems: (Boolean) -> Unit,
     selectedApplicationsCount: Int
 ) {
-    Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)) {
+    Column(modifier = Modifier.background(color = TopAppBarDefaults.topAppBarColors().containerColor)) {
         AnimatedContent(targetState = uiState, transitionSpec = {
-            fadeIn() togetherWith fadeOut()
-        }, label = "Actionbar Content") { uiMode ->
-            when (uiMode) {
+            fadeIn(
+                animationSpec = tween(durationMillis = 220, delayMillis = 90)
+            ) togetherWith fadeOut(animationSpec = tween(durationMillis = 90))
+        }, label = "Actionbar Content") { state ->
+            when (state) {
                 UiState.Default -> DefaultAppBar(
                     appBarState = appBarState, modifier, onActionSearch = onTriggerSearch
                 )
@@ -96,16 +102,19 @@ fun APKExtractorAppBar(
                     onCheckAllItems
                 )
             }
+        }
+        HorizontalDivider(
+            thickness = Dp.Hairline, color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+        )
+    }
 
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                val view = LocalView.current
-                if (!view.isInEditMode) {
-                    val color = MaterialTheme .colorScheme.primary
-                    SideEffect {
-                        val window = (view.context as Activity).window
-                        window.statusBarColor = color.toArgb()
-                    }
-                }
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        val view = LocalView.current
+        if (!view.isInEditMode) {
+            val color = TopAppBarDefaults.topAppBarColors().containerColor
+            SideEffect {
+                val window = (view.context as Activity).window
+                window.statusBarColor = color.toArgb()
             }
         }
     }
@@ -132,8 +141,7 @@ private fun DefaultAppBar(
         }
     }
 
-    TopAppBar(
-        title = {
+    TopAppBar(title = {
         Text(
             text = stringResource(id = appBarState.title),
             overflow = TextOverflow.Ellipsis,
@@ -141,23 +149,17 @@ private fun DefaultAppBar(
         )
     }, modifier = modifier.onGloballyPositioned {
         barWidth = with(localDensity) { it.size.width.toDp() }
-    }, colors = TopAppBarDefaults.topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        titleContentColor = MaterialTheme.colorScheme.onPrimary
-    ), navigationIcon = {
+    }, navigationIcon = {
         if (appBarState.isBackArrow) IconButton(onClick = appBarState.onBackArrowClick!!) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary
             )
         }
     }, actions = {
         if (appBarState.isSearchable) IconButton(onClick = onActionSearch) {
             Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary
+                imageVector = Icons.Default.Search, contentDescription = null
             )
         }
         appBarState.actions.takeIf { it.isNotEmpty() }?.let { action ->
@@ -181,33 +183,21 @@ private fun ActionModeBar(
     onTriggerActionMode: () -> Unit,
     onCheckAllItems: (Boolean) -> Unit
 ) {
-    TopAppBar(
-        title = {
+    TopAppBar(title = {
         Text(
             text = stringResource(
                 id = R.string.action_mode_title, selectedApplicationsCount
             )
         )
-    }, modifier = modifier, colors = TopAppBarDefaults.topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        titleContentColor = MaterialTheme.colorScheme.onPrimary
-    ), navigationIcon = {
+    }, modifier = modifier, navigationIcon = {
         IconButton(onClick = onTriggerActionMode) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null
             )
         }
     }, actions = {
         Checkbox(
-            checked = allItemsChecked,
-            onCheckedChange = onCheckAllItems,
-            colors = CheckboxDefaults.colors(
-                checkedColor = MaterialTheme.colorScheme.onPrimary,
-                uncheckedColor = MaterialTheme.colorScheme.onPrimary,
-                checkmarkColor = MaterialTheme.colorScheme.primary
-            )
+            checked = allItemsChecked, onCheckedChange = onCheckAllItems
         )
     })
 
@@ -229,7 +219,7 @@ private fun SearchBar(
     val keyboard = LocalSoftwareKeyboardController.current
 
     Surface(
-        modifier = modifier, color = MaterialTheme.colorScheme.primary
+        modifier = modifier, color = TopAppBarDefaults.topAppBarColors().containerColor
     ) {
         Box(
             modifier = Modifier
@@ -249,11 +239,11 @@ private fun SearchBar(
                 placeholder = {
                     Text(
                         text = stringResource(id = R.string.menu_search),
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+                        color = TopAppBarDefaults.topAppBarColors().titleContentColor.copy(alpha = 0.6f)
                     )
                 },
                 textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = TopAppBarDefaults.topAppBarColors().titleContentColor,
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
                     textDecoration = TextDecoration.Underline
                 ),
@@ -262,7 +252,9 @@ private fun SearchBar(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search Icon",
-                        tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+                        tint = TopAppBarDefaults.topAppBarColors().navigationIconContentColor.copy(
+                            alpha = 0.6f
+                        )
                     )
                 },
                 trailingIcon = {
@@ -276,7 +268,7 @@ private fun SearchBar(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close Icon",
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            tint = TopAppBarDefaults.topAppBarColors().actionIconContentColor
                         )
                     }
                 },
@@ -290,7 +282,9 @@ private fun SearchBar(
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    cursorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                    cursorColor = TopAppBarDefaults.topAppBarColors().titleContentColor.copy(alpha = 0.6f),
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
                 )
             )
         }

@@ -7,7 +7,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -66,25 +65,16 @@ fun ActionsMenu(
 
     menuItems.alwaysShownItems.forEach { item ->
         IconButton(onClick = item.onClick) {
-            Icon(
-                imageVector = item.icon,
-                contentDescription = item.contentDescription,
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
+            Icon(imageVector = item.icon, contentDescription = item.contentDescription)
         }
     }
 
     if (menuItems.overflowItems.isNotEmpty()) {
         Box {
             IconButton(
-                onClick = { onToggleOverflow(true) },
-                modifier = Modifier.testTag("ActionsMoreVert")
+                onClick = { onToggleOverflow(true) }, modifier = Modifier.testTag("ActionsMoreVert")
             ) {
-                Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    contentDescription = "Overflow",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "Overflow")
             }
             DropdownMenu(
                 expanded = isOpen,
