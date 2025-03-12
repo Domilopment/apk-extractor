@@ -180,19 +180,19 @@ private fun DefaultAppBar(
     }, actions = {
         if (appBarState.isSearchable) with(sharedTransitionScope) {
             IconButton(
-                onClick = onActionSearch, modifier = Modifier
-                    .sharedBounds(
-                        rememberSharedContentState(key = "search_icon_bounds"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                    )
-                    .sharedElement(
+                onClick = onActionSearch, modifier = Modifier.sharedBounds(
+                    rememberSharedContentState(key = "search_icon_bounds"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    modifier = Modifier.sharedElement(
                         rememberSharedContentState(key = "search_icon"),
                         animatedVisibilityScope = animatedVisibilityScope
                     )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search, contentDescription = null
                 )
             }
         }
