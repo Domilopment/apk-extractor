@@ -4,6 +4,10 @@ import android.app.Activity
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -67,7 +71,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun APKExtractorAppBar(
     appBarState: AppBarState,
@@ -82,30 +86,38 @@ fun APKExtractorAppBar(
     selectedApplicationsCount: Int
 ) {
     Column(modifier = Modifier.background(color = TopAppBarDefaults.topAppBarColors().containerColor)) {
-        AnimatedContent(targetState = uiState, transitionSpec = {
-            fadeIn(
-                animationSpec = tween(durationMillis = 220, delayMillis = 90)
-            ) togetherWith fadeOut(animationSpec = tween(durationMillis = 90))
-        }, label = "Actionbar Content") { state ->
-            when (state) {
-                UiState.Default -> DefaultAppBar(
-                    appBarState = appBarState, modifier, onActionSearch = onTriggerSearch
-                )
+        SharedTransitionLayout {
+            AnimatedContent(targetState = uiState, transitionSpec = {
+                fadeIn(
+                    animationSpec = tween(durationMillis = 220, delayMillis = 90)
+                ) togetherWith fadeOut(animationSpec = tween(durationMillis = 90))
+            }, label = "Actionbar Content") { state ->
+                when (state) {
+                    UiState.Default -> DefaultAppBar(
+                        appBarState = appBarState,
+                        modifier,
+                        onActionSearch = onTriggerSearch,
+                        animatedVisibilityScope = this@AnimatedContent,
+                        sharedTransitionScope = this@SharedTransitionLayout
+                    )
 
-                UiState.Search -> SearchBar(
-                    text = searchText,
-                    onTextChange = onSearchQueryChanged,
-                    onCloseClicked = onReturnUiMode,
-                    onSearchClicked = onSearchQueryChanged
-                )
+                    UiState.Search -> SearchBar(
+                        text = searchText,
+                        onTextChange = onSearchQueryChanged,
+                        onCloseClicked = onReturnUiMode,
+                        onSearchClicked = onSearchQueryChanged,
+                        animatedVisibilityScope = this@AnimatedContent,
+                        sharedTransitionScope = this@SharedTransitionLayout
+                    )
 
-                is UiState.ActionMode -> ActionModeBar(
-                    modifier,
-                    isAllItemsChecked,
-                    selectedApplicationsCount,
-                    onReturnUiMode,
-                    onCheckAllItems
-                )
+                    is UiState.ActionMode -> ActionModeBar(
+                        modifier,
+                        isAllItemsChecked,
+                        selectedApplicationsCount,
+                        onReturnUiMode,
+                        onCheckAllItems
+                    )
+                }
             }
         }
         HorizontalDivider(
@@ -125,10 +137,14 @@ fun APKExtractorAppBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun DefaultAppBar(
-    appBarState: AppBarState, modifier: Modifier = Modifier, onActionSearch: () -> Unit
+    appBarState: AppBarState,
+    modifier: Modifier = Modifier,
+    onActionSearch: () -> Unit,
+    animatedVisibilityScope: AnimatedContentScope,
+    sharedTransitionScope: SharedTransitionScope
 ) {
     val localDensity = LocalDensity.current
 
@@ -162,10 +178,23 @@ private fun DefaultAppBar(
             )
         }
     }, actions = {
-        if (appBarState.isSearchable) IconButton(onClick = onActionSearch) {
-            Icon(
-                imageVector = Icons.Default.Search, contentDescription = null
-            )
+        if (appBarState.isSearchable) with(sharedTransitionScope) {
+            IconButton(
+                onClick = onActionSearch, modifier = Modifier
+                    .sharedBounds(
+                        rememberSharedContentState(key = "search_icon_bounds"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                    )
+                    .sharedElement(
+                        rememberSharedContentState(key = "search_icon"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search, contentDescription = null
+                )
+            }
         }
         appBarState.actions.takeIf { it.isNotEmpty() }?.let { action ->
             ActionsMenu(
@@ -211,88 +240,102 @@ private fun ActionModeBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun SearchBar(
     modifier: Modifier = Modifier,
     text: String,
     onTextChange: (String) -> Unit,
     onCloseClicked: () -> Unit,
-    onSearchClicked: (String) -> Unit
+    onSearchClicked: (String) -> Unit,
+    animatedVisibilityScope: AnimatedContentScope,
+    sharedTransitionScope: SharedTransitionScope
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
     val interactionSource = remember { MutableInteractionSource() }
 
-    Surface(
-        modifier = modifier, color = TopAppBarDefaults.topAppBarColors().containerColor
-    ) {
-        Box(
-            modifier = Modifier
-                .windowInsetsPadding(insets = TopAppBarDefaults.windowInsets)
-                .clipToBounds()
-                .heightIn(max = TopAppBarDefaults.TopAppBarExpandedHeight),
-            contentAlignment = Alignment.CenterStart
+    with(sharedTransitionScope) {
+        Surface(
+            modifier = modifier, color = TopAppBarDefaults.topAppBarColors().containerColor
         ) {
-            Surface(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                shape = RoundedCornerShape(64.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerHigh
+            Box(
+                modifier = Modifier
+                    .windowInsetsPadding(insets = TopAppBarDefaults.windowInsets)
+                    .clipToBounds()
+                    .heightIn(max = TopAppBarDefaults.TopAppBarExpandedHeight),
+                contentAlignment = Alignment.CenterStart
             ) {
-                BasicTextField(
-                    value = text,
-                    onValueChange = onTextChange,
+                Surface(
                     modifier = Modifier
-                        .clickable { focusRequester.requestFocus() }
-                        .focusRequester(focusRequester)
-                        .fillMaxWidth(),
-                    singleLine = true,
-                    textStyle = LocalTextStyle.current.copy(color = LocalContentColor.current),
-                    cursorBrush = SolidColor(LocalContentColor.current.copy(alpha = 0.6f)),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions(onSearch = {
-                        onSearchClicked(text)
-                        keyboard?.hide()
-                    }),
-                    interactionSource = interactionSource,
-                    decorationBox = { innerTextField ->
-                        TextFieldDefaults.DecorationBox(
-                            value = text,
-                            innerTextField = innerTextField,
-                            enabled = true,
-                            singleLine = true,
-                            visualTransformation = VisualTransformation.None,
-                            interactionSource = interactionSource,
-                            placeholder = {
-                                Text(
-                                    text = stringResource(id = R.string.menu_search),
-                                    color = LocalContentColor.current.copy(alpha = 0.6f)
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = "Search Icon",
-                                    tint = LocalContentColor.current.copy(alpha = 0.6f)
-                                )
-                            },
-                            trailingIcon = {
-                                IconButton(onClick = {
-                                    if (text.isNotEmpty()) {
-                                        onTextChange("")
-                                    } else {
-                                        onCloseClicked()
-                                    }
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = "Close Icon"
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .sharedBounds(
+                            rememberSharedContentState(key = "search_icon_bounds"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                        ),
+                    shape = RoundedCornerShape(64.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh
+                ) {
+                    BasicTextField(
+                        value = text,
+                        onValueChange = onTextChange,
+                        modifier = Modifier
+                            .clickable { focusRequester.requestFocus() }
+                            .focusRequester(focusRequester)
+                            .fillMaxWidth(),
+                        singleLine = true,
+                        textStyle = LocalTextStyle.current.copy(color = LocalContentColor.current),
+                        cursorBrush = SolidColor(LocalContentColor.current.copy(alpha = 0.6f)),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(onSearch = {
+                            onSearchClicked(text)
+                            keyboard?.hide()
+                        }),
+                        interactionSource = interactionSource,
+                        decorationBox = { innerTextField ->
+                            TextFieldDefaults.DecorationBox(
+                                value = text,
+                                innerTextField = innerTextField,
+                                enabled = true,
+                                singleLine = true,
+                                visualTransformation = VisualTransformation.None,
+                                interactionSource = interactionSource,
+                                placeholder = {
+                                    Text(
+                                        text = stringResource(id = R.string.menu_search),
+                                        color = LocalContentColor.current.copy(alpha = 0.6f)
                                     )
-                                }
-                            },
-                            container = {},
-                        )
-                    })
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Search,
+                                        contentDescription = "Search Icon",
+                                        modifier = Modifier.sharedElement(
+                                            rememberSharedContentState(key = "search_icon"),
+                                            animatedVisibilityScope = animatedVisibilityScope
+                                        ),
+                                        tint = LocalContentColor.current.copy(alpha = 0.6f)
+                                    )
+                                },
+                                trailingIcon = {
+                                    IconButton(onClick = {
+                                        if (text.isNotEmpty()) {
+                                            onTextChange("")
+                                        } else {
+                                            onCloseClicked()
+                                        }
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = "Close Icon"
+                                        )
+                                    }
+                                },
+                                container = {},
+                            )
+                        })
+                }
             }
         }
     }
