@@ -9,11 +9,16 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -25,10 +30,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -45,16 +51,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -217,6 +222,7 @@ private fun SearchBar(
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
+    val interactionSource = remember { MutableInteractionSource() }
 
     Surface(
         modifier = modifier, color = TopAppBarDefaults.topAppBarColors().containerColor
@@ -225,81 +231,82 @@ private fun SearchBar(
             modifier = Modifier
                 .windowInsetsPadding(insets = TopAppBarDefaults.windowInsets)
                 .clipToBounds()
-                .height(height = TopAppBarDefaults.TopAppBarExpandedHeight),
+                .heightIn(max = TopAppBarDefaults.TopAppBarExpandedHeight),
             contentAlignment = Alignment.CenterStart
         ) {
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
-                value = text,
-                onValueChange = {
-                    onTextChange(it)
-                },
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.menu_search),
-                        color = TopAppBarDefaults.topAppBarColors().titleContentColor.copy(alpha = 0.6f)
-                    )
-                },
-                textStyle = TextStyle(
-                    color = TopAppBarDefaults.topAppBarColors().titleContentColor,
-                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                    textDecoration = TextDecoration.Underline
-                ),
-                singleLine = true,
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search Icon",
-                        tint = TopAppBarDefaults.topAppBarColors().navigationIconContentColor.copy(
-                            alpha = 0.6f
+            Surface(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                shape = RoundedCornerShape(64.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh
+            ) {
+                BasicTextField(
+                    value = text,
+                    onValueChange = onTextChange,
+                    modifier = Modifier
+                        .clickable { focusRequester.requestFocus() }
+                        .focusRequester(focusRequester)
+                        .fillMaxWidth(),
+                    singleLine = true,
+                    textStyle = LocalTextStyle.current.copy(color = LocalContentColor.current),
+                    cursorBrush = SolidColor(LocalContentColor.current.copy(alpha = 0.6f)),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = {
+                        onSearchClicked(text)
+                        keyboard?.hide()
+                    }),
+                    interactionSource = interactionSource,
+                    decorationBox = { innerTextField ->
+                        TextFieldDefaults.DecorationBox(
+                            value = text,
+                            innerTextField = innerTextField,
+                            enabled = true,
+                            singleLine = true,
+                            visualTransformation = VisualTransformation.None,
+                            interactionSource = interactionSource,
+                            placeholder = {
+                                Text(
+                                    text = stringResource(id = R.string.menu_search),
+                                    color = LocalContentColor.current.copy(alpha = 0.6f)
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = "Search Icon",
+                                    tint = LocalContentColor.current.copy(alpha = 0.6f)
+                                )
+                            },
+                            trailingIcon = {
+                                IconButton(onClick = {
+                                    if (text.isNotEmpty()) {
+                                        onTextChange("")
+                                    } else {
+                                        onCloseClicked()
+                                    }
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Close Icon"
+                                    )
+                                }
+                            },
+                            container = {},
                         )
-                    )
-                },
-                trailingIcon = {
-                    IconButton(onClick = {
-                        if (text.isNotEmpty()) {
-                            onTextChange("")
-                        } else {
-                            onCloseClicked()
-                        }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close Icon",
-                            tint = TopAppBarDefaults.topAppBarColors().actionIconContentColor
-                        )
-                    }
-                },
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Search
-                ),
-                keyboardActions = KeyboardActions(onSearch = {
-                    onSearchClicked(text)
-                    keyboard?.hide()
-                }),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    cursorColor = TopAppBarDefaults.topAppBarColors().titleContentColor.copy(alpha = 0.6f),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                )
-            )
-        }
-
-        LaunchedEffect(focusRequester) {
-            focusRequester.requestFocus()
-            keyboard?.show()
-        }
-
-        BackHandler {
-            if (text.isNotEmpty()) {
-                onTextChange("")
-            } else {
-                onCloseClicked()
+                    })
             }
+        }
+    }
+
+    LaunchedEffect(focusRequester) {
+        focusRequester.requestFocus()
+        keyboard?.show()
+    }
+
+    BackHandler {
+        if (text.isNotEmpty()) {
+            onTextChange("")
+        } else {
+            onCloseClicked()
         }
     }
 }
