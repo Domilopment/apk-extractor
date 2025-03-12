@@ -10,41 +10,29 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.isImeVisible
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -112,7 +100,8 @@ fun APKExtractorBottomNavigation(
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             val view = LocalView.current
             if (!view.isInEditMode) {
-                val color = if (state is UiState.ActionMode) MaterialTheme.colorScheme.primary else NavigationBarDefaults.containerColor
+                val color =
+                    if (state is UiState.ActionMode) BottomAppBarDefaults.containerColor else NavigationBarDefaults.containerColor
                 SideEffect {
                     val window = (view.context as Activity).window
                     window.navigationBarColor = color.toArgb()
@@ -170,35 +159,14 @@ private fun DefaultBottomNavigation(
 
 @Composable
 private fun ActionModeBar(modifier: Modifier = Modifier, items: List<BottomBarItem>) {
-    Surface(
-        modifier = modifier, color = MaterialTheme.colorScheme.primary
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(insets = NavigationBarDefaults.windowInsets)
-                .defaultMinSize(minHeight = 80.0.dp)
-                .selectableGroup(),
-        ) {
+    BottomAppBar(
+        actions = {
             items.forEach { item ->
-                OutlinedButton(
-                    onClick = item.onClick,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .weight(1f)
-                        .padding(horizontal = 16.dp),
-                    border = BorderStroke(width = 2.dp, MaterialTheme.colorScheme.onPrimary)
-                ) {
-                    Icon(
-                        imageVector = item.icon,
-                        contentDescription = null,
-                        modifier = Modifier.size(42.dp),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
+                IconButton(onClick = item.onClick) {
+                    Icon(item.icon, contentDescription = null)
                 }
             }
-        }
-    }
+        },
+        modifier = modifier,
+    )
 }
