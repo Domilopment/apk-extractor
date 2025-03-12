@@ -28,9 +28,12 @@ fun LazyListScope.preferenceCategory(
     stickyHeader(key, contentType) {
         Column(
             Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(top = 8.dp, bottom = 8.dp)
+                .background(
+                    MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(bottomEnd = 8.dp)
+                )
+                .padding(vertical = 8.dp)
+                .padding(end = 8.dp)
         ) {
             Text(text = stringResource(id = title))
         }
