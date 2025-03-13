@@ -35,11 +35,11 @@ class AppBarState(
     val title: Int
         get() = currentScreen?.appBarTitleRes ?: R.string.app_name
 
-    val isBackArrow: Boolean
-        get() = currentScreen?.appBarOnNavIconClick != null
+    val hasNavigationIcon: Boolean
+        get() = currentScreen?.appBarNavIcon != null
 
-    val onBackArrowClick: (() -> Unit)?
-        get() = currentScreen?.appBarOnNavIconClick
+    val navigationIcon: Screen.NavigationIcon?
+        get() = currentScreen?.appBarNavIcon
 
     val isSearchable: Boolean
         get() = currentScreen?.isSearchable ?: false

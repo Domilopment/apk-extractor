@@ -34,6 +34,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -171,9 +172,15 @@ private fun DefaultAppBar(
     }, modifier = modifier.onGloballyPositioned {
         barWidth = with(localDensity) { it.size.width.toDp() }
     }, navigationIcon = {
-        if (appBarState.isBackArrow) IconButton(onClick = appBarState.onBackArrowClick!!) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+        if (appBarState.hasNavigationIcon) IconButton(
+            onClick = appBarState.navigationIcon!!.onClick ?: {},
+            enabled = appBarState.navigationIcon!!.onClick != null,
+            colors = IconButtonDefaults.iconButtonColors(
+                disabledContentColor = LocalContentColor.current
+            ),
+        ) {
+            domilopment.apkextractor.ui.Icon(
+                iconResource = appBarState.navigationIcon!!.icon,
                 contentDescription = null,
             )
         }
