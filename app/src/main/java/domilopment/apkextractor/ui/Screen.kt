@@ -52,7 +52,6 @@ sealed interface Screen {
         override val hasBottomBar = true
         override val appBarActions = listOf(
             ActionMenuItem.IconMenuItem.ShownIfRoom(
-            ), ActionMenuItem.IconMenuItem.ShownIfRoom(
                 titleRes = R.string.filter_title,
                 onClick = { _buttons.tryEmit(ScreenActions.FilterList) },
                 icon = Icons.Default.FilterList,
