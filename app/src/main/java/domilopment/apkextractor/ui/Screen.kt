@@ -89,7 +89,7 @@ sealed interface Screen {
         override val routeNameRes = R.string.menu_show_save_dir
         override val icon = Icons.Default.Folder
         override val appBarNavIcon =
-            NavigationIcon(icon = IconResource.DrawableIcon(R.drawable.notification_icon))
+            NavigationIcon(icon = IconResource.DrawableIcon(R.drawable.app_bar_icon))
         override val appBarTitleRes = R.string.app_name
         override val isSearchable = true
         override val hasBottomBar = true
