@@ -179,14 +179,14 @@ class AsyncBackupTask(
                     R.string.auto_backup_broadcast_receiver_backup_success,
                     appInfo.loadLabel(context.packageManager)
                 )
-            ).setSmallIcon(R.drawable.ic_small_notification_icon_24)
+            ).setSmallIcon(R.drawable.notification_icon)
             .setColor(context.getColor(R.color.notificationColor)).setContentIntent(pendingIntent)
             .addAction(
-                R.drawable.ic_small_notification_icon_24,
+                R.drawable.notification_icon,
                 context.getString(R.string.action_bottom_sheet_share),
                 sharePendingIntent
             ).addAction(
-                R.drawable.ic_small_notification_icon_24,
+                R.drawable.notification_icon,
                 context.getString(R.string.alert_apk_selected_delete),
                 deletePendingIntent
             ).setAutoCancel(true)
@@ -214,7 +214,7 @@ class AsyncBackupTask(
                     R.string.auto_backup_broadcast_receiver_backup_failed,
                     appInfo.loadLabel(context.packageManager)
                 )
-            ).setSmallIcon(R.drawable.ic_small_notification_icon_24)
+            ).setSmallIcon(R.drawable.notification_icon)
             .setColor(context.getColor(R.color.notificationColor)).setContentIntent(pendingIntent)
             .setAutoCancel(true)
     }

@@ -94,7 +94,7 @@
         <service
             android:name=".autoBackup.AutoBackupTileService"
             android:exported="true"
-            android:icon="@drawable/ic_small_notification_icon_24"
+            android:icon="@drawable/notification_icon"
             android:label="@string/auto_backup"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>

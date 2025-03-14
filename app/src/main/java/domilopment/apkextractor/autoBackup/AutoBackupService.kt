@@ -10,7 +10,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.R
-import java.lang.IllegalArgumentException
 import java.util.concurrent.atomic.AtomicInteger
 
 class AutoBackupService : Service() {
@@ -138,10 +137,10 @@ class AutoBackupService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.auto_backup_notification_title))
             .setContentText(getString(R.string.auto_backup_notification_content_text))
-            .setSmallIcon(R.drawable.ic_small_notification_icon_24)
+            .setSmallIcon(R.drawable.notification_icon)
             .setColor(getColor(R.color.notificationColor)).setContentIntent(pendingIntent)
             .addAction(
-                R.drawable.ic_small_notification_icon_24,
+                R.drawable.notification_icon,
                 getString(R.string.auto_backup_notification_action_stop),
                 stopPendingIntent
             ).setOngoing(true).build()
