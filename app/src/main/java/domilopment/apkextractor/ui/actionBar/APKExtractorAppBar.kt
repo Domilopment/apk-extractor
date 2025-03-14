@@ -78,6 +78,17 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 
+private const val boundsAnimationDurationMillis = AnimationConstants.DefaultDurationMillis
+
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalAnimationSpecApi::class)
+private val searchBarBoundsTransform = BoundsTransform { initialBounds, targetBounds ->
+    keyframes {
+        durationMillis = boundsAnimationDurationMillis
+        initialBounds at 0 using ArcMode.ArcLinear using LinearOutSlowInEasing
+        targetBounds at boundsAnimationDurationMillis
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun APKExtractorAppBar(
@@ -144,11 +155,7 @@ fun APKExtractorAppBar(
     }
 }
 
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalSharedTransitionApi::class,
-    ExperimentalAnimationSpecApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun DefaultAppBar(
     appBarState: AppBarState,
@@ -200,13 +207,7 @@ private fun DefaultAppBar(
                 onClick = onActionSearch, modifier = Modifier.sharedBounds(
                     rememberSharedContentState(key = "search_icon_bounds"),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = BoundsTransform { initialBounds, targetBounds ->
-                        keyframes {
-                            durationMillis = AnimationConstants.DefaultDurationMillis
-                            initialBounds at 0 using ArcMode.ArcLinear using LinearOutSlowInEasing
-                            targetBounds at durationMillis
-                        }
-                    },
+                    boundsTransform = searchBarBoundsTransform,
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
             ) {
@@ -264,11 +265,7 @@ private fun ActionModeBar(
     }
 }
 
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalSharedTransitionApi::class,
-    ExperimentalAnimationSpecApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun SearchBar(
     modifier: Modifier = Modifier,
@@ -300,13 +297,7 @@ private fun SearchBar(
                         .sharedBounds(
                             rememberSharedContentState(key = "search_icon_bounds"),
                             animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = BoundsTransform { initialBounds, targetBounds ->
-                                keyframes {
-                                    durationMillis = AnimationConstants.DefaultDurationMillis
-                                    initialBounds at 0 using ArcMode.ArcLinear using LinearOutSlowInEasing
-                                    targetBounds at durationMillis
-                                }
-                            },
+                            boundsTransform = searchBarBoundsTransform,
                             resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                         ),
                     shape = RoundedCornerShape(64.dp),
