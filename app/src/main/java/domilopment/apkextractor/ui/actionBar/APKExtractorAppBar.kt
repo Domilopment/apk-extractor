@@ -5,9 +5,15 @@ import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.core.ArcMode
+import androidx.compose.animation.core.ExperimentalAnimationSpecApi
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -138,7 +144,11 @@ fun APKExtractorAppBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalSharedTransitionApi::class,
+    ExperimentalAnimationSpecApi::class
+)
 @Composable
 private fun DefaultAppBar(
     appBarState: AppBarState,
@@ -190,7 +200,14 @@ private fun DefaultAppBar(
                 onClick = onActionSearch, modifier = Modifier.sharedBounds(
                     rememberSharedContentState(key = "search_icon_bounds"),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                    boundsTransform = BoundsTransform { initialBounds, targetBounds ->
+                        keyframes {
+                            durationMillis = AnimationConstants.DefaultDurationMillis
+                            initialBounds at 0 using ArcMode.ArcLinear using LinearOutSlowInEasing
+                            targetBounds at durationMillis
+                        }
+                    },
+                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
             ) {
                 Icon(
@@ -247,7 +264,11 @@ private fun ActionModeBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalSharedTransitionApi::class,
+    ExperimentalAnimationSpecApi::class
+)
 @Composable
 private fun SearchBar(
     modifier: Modifier = Modifier,
@@ -279,7 +300,14 @@ private fun SearchBar(
                         .sharedBounds(
                             rememberSharedContentState(key = "search_icon_bounds"),
                             animatedVisibilityScope = animatedVisibilityScope,
-                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                            boundsTransform = BoundsTransform { initialBounds, targetBounds ->
+                                keyframes {
+                                    durationMillis = AnimationConstants.DefaultDurationMillis
+                                    initialBounds at 0 using ArcMode.ArcLinear using LinearOutSlowInEasing
+                                    targetBounds at durationMillis
+                                }
+                            },
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                         ),
                     shape = RoundedCornerShape(64.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerHigh
