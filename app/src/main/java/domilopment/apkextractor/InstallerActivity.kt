@@ -105,7 +105,7 @@ class InstallerActivity : ComponentActivity() {
 
         intent.data?.let { uri ->
             when (uri.scheme) {
-                "content", "file" -> model.installXAPK(uri)
+                "content", "file" -> model.installApkBundle(uri)
                 "package" -> model.uninstallApp(uri)
                 else -> super.finish()
             }

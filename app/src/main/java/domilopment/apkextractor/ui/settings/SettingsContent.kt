@@ -71,8 +71,8 @@ fun SettingsContent(
     onAppSaveName: (Set<String>) -> Unit,
     appSaveNameSpacer: String,
     onAppSaveNameSpacer: (String) -> Unit,
-    isBackupModeXapk: Boolean,
-    onBackupModeXapk: (Boolean) -> Unit,
+    isBackupModeApkBundle: Boolean,
+    onBackupModeApkBundle: (Boolean) -> Unit,
     autoBackupService: Boolean,
     onAutoBackupService: (Boolean) -> Unit,
     isSelectAutoBackupApps: Boolean,
@@ -279,15 +279,15 @@ fun SettingsContent(
             preferenceCategoryItemTop {
                 SwitchPreferenceCompat(
                     icon = Icons.Default.FolderZip,
-                    name = R.string.backup_mode_xapk,
-                    summary = if (isBackupModeXapk) R.string.backup_mode_xapk_summary_active else R.string.backup_mode_xapk_summary_inactive,
-                    state = isBackupModeXapk,
-                    onClick = onBackupModeXapk
+                    name = R.string.backup_mode_split_apk,
+                    summary = if (isBackupModeApkBundle) R.string.backup_mode_split_apk_summary_active else R.string.backup_mode_split_apk_summary_inactive,
+                    state = isBackupModeApkBundle,
+                    onClick = onBackupModeApkBundle
                 )
             }
             preferenceCategoryItemMiddle {
                 ListPreference(
-                    enabled = isBackupModeXapk,
+                    enabled = isBackupModeApkBundle,
                     name = stringResource(id = R.string.backup_apk_bundle_file_ending_title),
                     summary = stringResource(id = R.string.backup_apk_bundle_file_ending_summary),
                     entries = arrayOf(FileUtil.FileInfo.APKS.name, FileUtil.FileInfo.XAPK.name),

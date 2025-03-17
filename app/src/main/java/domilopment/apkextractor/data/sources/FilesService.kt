@@ -24,7 +24,7 @@ class FilesService(private val context: Context) {
             )
             progressCallback(file)
             newApk
-        } else ApplicationUtil.saveXapk(
+        } else ApplicationUtil.saveApkBundle(
             context, splits.toTypedArray(), saveDir, saveName, mimeType, suffix
         ) {
             progressCallback(it)

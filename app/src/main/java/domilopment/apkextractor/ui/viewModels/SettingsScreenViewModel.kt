@@ -128,8 +128,8 @@ class SettingsScreenViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            settings.backupModeXapk.collect {
-                _uiState.update { state -> state.copy(backupModeXapk = it) }
+            settings.backupModeApkBundle.collect {
+                _uiState.update { state -> state.copy(backupModeApkBundle = it) }
             }
         }
         viewModelScope.launch {
@@ -204,8 +204,8 @@ class SettingsScreenViewModel @Inject constructor(
         viewModelScope.launch { settings.setCheckUpdateOnStart(b) }
     }
 
-    fun setBackupModeXapk(b: Boolean) {
-        viewModelScope.launch { settings.setBackupModeXapk(b) }
+    fun setBackupModeApkBundle(b: Boolean) {
+        viewModelScope.launch { settings.setBackupModeApkBundle(b) }
     }
 
     fun onDeleteFirebaseInstallationsId() {

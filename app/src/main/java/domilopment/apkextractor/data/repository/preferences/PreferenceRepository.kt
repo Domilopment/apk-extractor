@@ -27,7 +27,7 @@ import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SWIPE_ACTION_CUSTOM_THRESHOLD
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.APP_SWIPE_ACTION_THRESHOLD_MODIFIER
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.AUTO_BACKUP_SERVICE
-import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.BACKUP_MODE_XAPK
+import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.BACKUP_MODE_SPLIT_APK
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.BUNDLE_FILE_INFO
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.CHECK_UPDATE_ON_START
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository.PreferencesKeys.DATA_COLLECTION_ANALYTICS
@@ -79,7 +79,7 @@ interface PreferenceRepository {
         val AUTO_BACKUP_SERVICE = booleanPreferencesKey("auto_backup")
         val MATERIAL_YOU = booleanPreferencesKey("use_material_you")
         val NIGHT_MODE = stringPreferencesKey("list_preference_ui_mode")
-        val BACKUP_MODE_XAPK = booleanPreferencesKey("backup_mode_xapk")
+        val BACKUP_MODE_SPLIT_APK = booleanPreferencesKey("backup_mode_xapk")
         val FIRST_LAUNCH = booleanPreferencesKey("first_launch_0")
         val DATA_COLLECTION_ANALYTICS = booleanPreferencesKey("data_collection_analytics")
         val DATA_COLLECTION_CRASHLYTICS = booleanPreferencesKey("data_collection_crashlytics")
@@ -154,8 +154,8 @@ interface PreferenceRepository {
     val nightMode: Flow<Int>
     suspend fun setNightMode(value: Int)
 
-    val backupModeXapk: Flow<Boolean>
-    suspend fun setBackupModeXapk(value: Boolean)
+    val backupModeApkBundle: Flow<Boolean>
+    suspend fun setBackupModeApkBundle(value: Boolean)
 
     val firstLaunch: Flow<Boolean>
     suspend fun setFirstLaunch(value: Boolean)
@@ -333,9 +333,9 @@ class MyPreferenceRepository @Inject constructor(
 
     override suspend fun setNightMode(value: Int) = setPreference(NIGHT_MODE, value.toString())
 
-    override val backupModeXapk: Flow<Boolean> = getPreference(BACKUP_MODE_XAPK).map { it ?: true }
+    override val backupModeApkBundle: Flow<Boolean> = getPreference(BACKUP_MODE_SPLIT_APK).map { it ?: true }
 
-    override suspend fun setBackupModeXapk(value: Boolean) = setPreference(BACKUP_MODE_XAPK, value)
+    override suspend fun setBackupModeApkBundle(value: Boolean) = setPreference(BACKUP_MODE_SPLIT_APK, value)
 
     override val firstLaunch: Flow<Boolean> = getPreference(FIRST_LAUNCH).map { it ?: true }
 

@@ -30,7 +30,7 @@ class InstallerActivityViewModel @Inject constructor(
 ) : ViewModel() {
     var uiState by mutableStateOf(
         ProgressDialogUiState(
-            title = UiText(R.string.progress_dialog_title_install, "XAPK"),
+            title = UiText(R.string.progress_dialog_title_install),
             process = null,
             progress = 0F,
             tasks = 100,
@@ -53,7 +53,7 @@ class InstallerActivityViewModel @Inject constructor(
         uiState = uiState.copy(process = packageName, progress = progress * 100)
     }
 
-    fun installXAPK(fileUri: Uri) {
+    fun installApkBundle(fileUri: Uri) {
         task = viewModelScope.launch {
             installUseCase(fileUri, InstallerActivity::class.java).collect {
                 when (it) {

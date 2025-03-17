@@ -35,7 +35,7 @@ class AsyncBackupTask(
     private val appName: Set<String>,
     private val appNameSpacer: Char,
     private val saveDir: Uri,
-    private val extractXapk: Boolean,
+    private val extractSplitApks: Boolean,
     private val bundleFileInfo: FileUtil.FileInfo,
     packageName: String
 ) : CoroutineScope by GlobalScope {
@@ -61,13 +61,13 @@ class AsyncBackupTask(
 
     private suspend fun backup(): SaveApkResult {
         val splits = arrayListOf(appInfo.sourceDir)
-        if (!appInfo.splitSourceDirs.isNullOrEmpty() && extractXapk) splits.addAll(appInfo.splitSourceDirs!!)
+        if (!appInfo.splitSourceDirs.isNullOrEmpty() && extractSplitApks) splits.addAll(appInfo.splitSourceDirs!!)
 
         val name = ApplicationUtil.appName(context.packageManager, appInfo, appName, appNameSpacer)
         return if (splits.size == 1) {
             ApplicationUtil.saveApk(context, appInfo.sourceDir, saveDir, name)
         } else {
-            ApplicationUtil.saveXapk(
+            ApplicationUtil.saveApkBundle(
                 context,
                 splits.toTypedArray(),
                 saveDir,

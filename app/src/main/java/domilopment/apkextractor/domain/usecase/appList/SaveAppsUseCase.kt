@@ -39,7 +39,7 @@ class SaveAppsUseCaseImpl @Inject constructor(
             close()
         }
 
-        val backupMode = settingsRepository.backupModeXapk.first()
+        val backupMode = settingsRepository.backupModeApkBundle.first()
         val appNameConfig = settingsRepository.appSaveName.first()
         val appNameSpacer = settingsRepository.appSaveNameSpacer.first()
         val saveDir = settingsRepository.saveDir.first()

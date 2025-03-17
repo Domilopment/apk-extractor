@@ -25,6 +25,6 @@ data class SettingsScreenState(
     val crashlytics: Boolean = false,
     val performance: Boolean = false,
     val checkUpdateOnStart: Boolean = true,
-    val backupModeXapk: Boolean = true,
+    val backupModeApkBundle: Boolean = true,
     val bundleFileInfo: FileUtil.FileInfo = FileUtil.FileInfo.APKS,
 )

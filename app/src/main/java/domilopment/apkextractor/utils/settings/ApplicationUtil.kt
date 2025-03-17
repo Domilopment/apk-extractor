@@ -175,7 +175,7 @@ object ApplicationUtil {
         }
     }
 
-    suspend fun saveXapk(
+    suspend fun saveApkBundle(
         context: Context,
         files: Array<String>,
         to: Uri,
@@ -225,7 +225,7 @@ object ApplicationUtil {
             return@withContext FileUtil.createShareUriForFile(context, outFile)
         }
 
-    suspend fun shareXapk(
+    suspend fun shareApkBundle(
         context: Context,
         app: ApplicationModel,
         appName: String,

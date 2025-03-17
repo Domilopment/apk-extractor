@@ -28,9 +28,9 @@
     <string name="auto_backup_app_list">Wähle Apps für das Auto Backup</string>
     <string name="auto_backup_app_list_summary">Wähle Apps aus von denen ein automatisches Backup nach dem aktualisieren erzeugt werden soll</string>
 
-    <string name="backup_mode_xapk">Backup geteilte Ressourcen APKs</string>
-    <string name="backup_mode_xapk_summary_active">Backup base.apk + geteilte apks als APK Bundle (kann zur \'.zip\' unbenannt und als solche verwendet werden).</string>
-    <string name="backup_mode_xapk_summary_inactive">Speichere nur base.apk (Warnung: Eine App nur von einer base.apk zu installieren könnte zum crash dieser führen, aufgrund fehlender Ressourcen).</string>
+    <string name="backup_mode_split_apk">Backup geteilte Ressourcen APKs</string>
+    <string name="backup_mode_split_apk_summary_active">Backup base.apk + geteilte apks als APK Bundle (kann zur \'.zip\' unbenannt und als solche verwendet werden).</string>
+    <string name="backup_mode_split_apk_summary_inactive">Speichere nur base.apk (Warnung: Eine App nur von einer base.apk zu installieren könnte zum crash dieser führen, aufgrund fehlender Ressourcen).</string>
 
     <!-- Preferences Apps -->
     <string name="app_type_system">System</string>
@@ -284,7 +284,7 @@
     <string name="progress_dialog_value">%d/%d</string>
     <string name="progress_dialog_title_save">Speichere APKs</string>
     <string name="progress_dialog_title_share">Vorbereite zum Teilen</string>
-    <string name="progress_dialog_title_install">Installiere %s</string>
+    <string name="progress_dialog_title_install">Installiere APKs</string>
 
     <!-- Installation Result Dialog -->
     <string name="installation_result_dialog_success_title">Installation Erfolgreich!</string>

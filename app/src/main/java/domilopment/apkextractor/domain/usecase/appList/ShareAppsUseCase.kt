@@ -31,7 +31,7 @@ class ShareAppsUseCaseImpl @Inject constructor(
         }
 
         val files = ArrayList<Uri>()
-        val backupMode = settings.backupModeXapk.first()
+        val backupMode = settings.backupModeApkBundle.first()
         val bundleFileInfo = settings.bundleFileInfo.first()
 
         val tasks =
@@ -64,7 +64,7 @@ class ShareAppsUseCaseImpl @Inject constructor(
                 val shareUri = ApplicationUtil.shareApk(context, appInfo, name)
                 trySend(ShareResult.Progress)
                 shareUri
-            } else ApplicationUtil.shareXapk(
+            } else ApplicationUtil.shareApkBundle(
                 context, appInfo, name, bundleFileInfo.suffix
             ) { trySend(ShareResult.Progress) }
             files.add(uri)

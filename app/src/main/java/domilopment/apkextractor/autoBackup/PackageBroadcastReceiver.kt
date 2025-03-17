@@ -38,8 +38,8 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                 val saveDir = runBlocking {
                     preferenceRepository.saveDir.first()
                 }
-                val extractXapk = runBlocking {
-                    preferenceRepository.backupModeXapk.first()
+                val extractApkBundle = runBlocking {
+                    preferenceRepository.backupModeApkBundle.first()
                 }
                 val bundleFileInfo = runBlocking {
                     preferenceRepository.bundleFileInfo.first()
@@ -53,7 +53,7 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
                         appSaveName,
                         appNameSpacer.symbol,
                         saveDir,
-                        extractXapk,
+                        extractApkBundle,
                         bundleFileInfo,
                         packageName
                     )

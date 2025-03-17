@@ -168,8 +168,8 @@ fun SettingsScreen(
         onAppSaveName = model::setAppSaveName,
         appSaveNameSpacer = uiState.saveNameSpacer.name,
         onAppSaveNameSpacer = model::setAppSaveNameSpacer,
-        isBackupModeXapk = uiState.backupModeXapk,
-        onBackupModeXapk = model::setBackupModeXapk,
+        isBackupModeApkBundle = uiState.backupModeApkBundle,
+        onBackupModeApkBundle = model::setBackupModeApkBundle,
         autoBackupService = uiState.autoBackupService,
         onAutoBackupService = func@{
             if (allowNotifications != null) {

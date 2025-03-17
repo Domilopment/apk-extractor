@@ -99,8 +99,8 @@ class InstallationService private constructor(@ApplicationContext private val co
                     }
 
                 "application/octet-stream" -> contentResolver.openInputStream(fileUri)
-                    ?.use { xApkStream ->
-                        ZipInputStream(BufferedInputStream(xApkStream)).use { input ->
+                    ?.use { splitApkStream ->
+                        ZipInputStream(BufferedInputStream(splitApkStream)).use { input ->
                             var currentProcess = 1
                             generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
                                 .forEach { entry ->
