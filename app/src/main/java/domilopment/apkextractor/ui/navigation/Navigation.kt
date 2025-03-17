@@ -129,7 +129,7 @@ fun ApkExtractorNavHost(
                     showSnackbar = showSnackbar,
                     onBackClicked = {
                         navController.popBackStack(
-                            Screen.Settings, inclusive = true, saveState = true
+                            Graph.Settings, inclusive = true, saveState = true
                         )
                     },
                     chooseSaveDir = chooseSaveDir,
