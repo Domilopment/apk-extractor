@@ -122,7 +122,7 @@ sealed interface Screen {
     }
 
     @Serializable
-    data object Settings : Screen {
+    data object SettingsHome : Screen {
         override val routeNameRes = R.string.title_activity_settings
         override val icon = Icons.Default.Settings
         override val appBarNavIcon =
@@ -143,7 +143,7 @@ sealed interface Screen {
         fun getScreen(route: String?): Screen? = when (route) {
             AppList.serializer().descriptor.serialName -> AppList
             ApkList.serializer().descriptor.serialName -> ApkList
-            Settings.serializer().descriptor.serialName -> Settings
+            SettingsHome.serializer().descriptor.serialName -> SettingsHome
             else -> null
         }
     }

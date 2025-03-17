@@ -138,7 +138,7 @@ fun SettingsScreen(
     })
 
     LaunchedEffect(key1 = Unit) {
-        Screen.Settings.buttons.onEach { button ->
+        Screen.SettingsHome.buttons.onEach { button ->
             when (button) {
                 Screen.ScreenActions.NavigationIcon -> onBackClicked()
                 else -> Unit

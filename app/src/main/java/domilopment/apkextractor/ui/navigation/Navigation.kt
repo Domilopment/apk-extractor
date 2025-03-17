@@ -120,8 +120,8 @@ fun ApkExtractorNavHost(
             }, showSnackbar = { showSnackbar(it) })
         }
 
-        navigation<Graph.Settings>(startDestination = Screen.Settings) {
-            composable<Screen.Settings> {
+        navigation<Graph.Settings>(startDestination = Screen.SettingsHome) {
+            composable<Screen.SettingsHome> {
                 val model = hiltViewModel<SettingsScreenViewModel>()
 
                 SettingsScreen(
