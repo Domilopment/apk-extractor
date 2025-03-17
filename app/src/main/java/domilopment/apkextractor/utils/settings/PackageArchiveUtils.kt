@@ -8,6 +8,7 @@ import android.os.Build
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.utils.FileUtil
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -62,6 +63,9 @@ object PackageArchiveUtils {
             return if (apkFile.length() != 0L) apkFile else null
         } catch (_: IOException) {
             // No Space left on Device, ...
+            return null
+        } catch (_: FileNotFoundException) {
+            // File seems to not exist
             return null
         }
     }
