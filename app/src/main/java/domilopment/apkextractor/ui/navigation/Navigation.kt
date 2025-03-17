@@ -20,10 +20,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import com.google.android.play.core.appupdate.AppUpdateManager
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.logScreenView
+import domilopment.apkextractor.ui.Graph
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
@@ -58,9 +60,10 @@ fun ApkExtractorNavHost(
         onDispose {
             navController.removeOnDestinationChangedListener(listener)
         }
-
     }
-    NavHost(navController = navController, startDestination = Screen.AppList, popEnterTransition = {
+
+    NavHost(
+        navController = navController, startDestination = Screen.AppList, popEnterTransition = {
         scaleIn(
             animationSpec = tween(
                 durationMillis = 100,
@@ -95,7 +98,7 @@ fun ApkExtractorNavHost(
                 searchString = searchQuery,
                 isActionMode = isActionMode,
                 onNavigate = {
-                    navController.navigate(Screen.Settings) {
+                    navController.navigate(Graph.Settings) {
                         launchSingleTop = true
                         restoreState = true
                     }
@@ -110,27 +113,30 @@ fun ApkExtractorNavHost(
             val model = hiltViewModel<ApkListViewModel>()
 
             ApkListScreen(model = model, searchString = searchQuery, onNavigate = {
-                navController.navigate(Screen.Settings) {
+                navController.navigate(Graph.Settings) {
                     launchSingleTop = true
                     restoreState = true
                 }
             }, showSnackbar = { showSnackbar(it) })
         }
-        composable<Screen.Settings> {
-            val model = hiltViewModel<SettingsScreenViewModel>()
 
-            SettingsScreen(
-                model = model,
-                showSnackbar = showSnackbar,
-                onBackClicked = {
-                    navController.popBackStack(
-                        Screen.Settings, inclusive = true, saveState = true
-                    )
-                },
-                chooseSaveDir = chooseSaveDir,
-                appUpdateManager = appUpdateManager,
-                inAppUpdateResultLauncher = inAppUpdateResultLauncher
-            )
+        navigation<Graph.Settings>(startDestination = Screen.Settings) {
+            composable<Screen.Settings> {
+                val model = hiltViewModel<SettingsScreenViewModel>()
+
+                SettingsScreen(
+                    model = model,
+                    showSnackbar = showSnackbar,
+                    onBackClicked = {
+                        navController.popBackStack(
+                            Screen.Settings, inclusive = true, saveState = true
+                        )
+                    },
+                    chooseSaveDir = chooseSaveDir,
+                    appUpdateManager = appUpdateManager,
+                    inAppUpdateResultLauncher = inAppUpdateResultLauncher
+                )
+            }
         }
     }
 }

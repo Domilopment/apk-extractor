@@ -68,6 +68,7 @@ import domilopment.apkextractor.ui.dialogs.AskForSaveDirDialog
 import domilopment.apkextractor.ui.dialogs.InAppUpdateDialog
 import domilopment.apkextractor.ui.navigation.APKExtractorBottomNavigation
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost
+import domilopment.apkextractor.ui.navigation.toTopLevelRoute
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.FileUtil
@@ -194,7 +195,7 @@ class MainActivity : AppCompatActivity() {
                         }, bottomBar = {
                             APKExtractorBottomNavigation(
                                 items = listOf(
-                                    Screen.AppList, Screen.ApkList
+                                    Screen.AppList.toTopLevelRoute(), Screen.ApkList.toTopLevelRoute()
                                 ),
                                 navController = navController,
                                 appBarState = appBarState,
@@ -275,11 +276,12 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.autoBackup.collect {
-                    if (it) startForegroundService(Intent(
-                        this@MainActivity, AutoBackupService::class.java
-                    ).apply {
-                        action = AutoBackupService.Actions.START.name
-                    })
+                    if (it) startForegroundService(
+                        Intent(
+                            this@MainActivity, AutoBackupService::class.java
+                        ).apply {
+                            action = AutoBackupService.Actions.START.name
+                        })
                 }
             }
         }

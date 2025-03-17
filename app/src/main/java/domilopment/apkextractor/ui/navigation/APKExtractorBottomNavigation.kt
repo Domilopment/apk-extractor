@@ -38,7 +38,6 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 
@@ -49,7 +48,7 @@ private const val CONTENT_KEY_DEFAULT = "Default"
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun APKExtractorBottomNavigation(
-    items: List<Screen>,
+    items: List<TopLevelRoute<out Any>>,
     navController: NavHostController,
     appBarState: AppBarState,
     uiState: UiState,
@@ -113,7 +112,7 @@ fun APKExtractorBottomNavigation(
 
 @Composable
 private fun DefaultBottomNavigation(
-    items: List<Screen>,
+    items: List<TopLevelRoute<out Any>>,
     navController: NavHostController,
     modifier: Modifier = Modifier,
     onNavigate: () -> Unit
@@ -130,16 +129,16 @@ private fun DefaultBottomNavigation(
             },
                 label = {
                     Text(
-                        text = stringResource(id = item.routeNameRes),
+                        text = stringResource(id = item.nameResId),
                         textAlign = TextAlign.Center,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2
                     )
                 },
-                selected = currentDestination?.hierarchy?.any { it.hasRoute(item::class) } == true,
+                selected = currentDestination?.hierarchy?.any { it.hasRoute(item.route::class) } == true,
                 onClick = {
                     onNavigate()
-                    navController.navigate(item) {
+                    navController.navigate(item.route) {
                         // Pop up to the start destination of the graph to
                         // avoid building up a large stack of destinations
                         // on the back stack as users select items
