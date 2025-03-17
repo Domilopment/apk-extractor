@@ -36,6 +36,19 @@ object Utils {
         else packageInfo.versionCode.toLong()
     }
 
+    fun getInstallationSourceOrNull(
+        packageManager: PackageManager, applicationInfo: ApplicationInfo
+    ): String? {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) packageManager.getInstallSourceInfo(
+                applicationInfo.packageName
+            ).installingPackageName
+            else packageManager.getInstallerPackageName(applicationInfo.packageName)
+        } catch (_: PackageManager.NameNotFoundException) {
+            null
+        }
+    }
+
     val listOfKnownStores: Map<String, String> = mapOf(
         "com.android.vending" to "https://play.google.com/store/apps/details?id=",
         "com.sec.android.app.samsungapps" to "samsungapps://ProductDetail/",
@@ -54,7 +67,7 @@ object Utils {
         return try {
             getPackageInfo(packageManager, packageName)
             true
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
             false
         }
     }
@@ -65,7 +78,7 @@ object Utils {
      * App to check
      */
     fun isSystemApp(app: ApplicationModel): Boolean {
-        return app.appFlags?.and(ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM
+        return app.appFlags.and(ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM
     }
 
     /**

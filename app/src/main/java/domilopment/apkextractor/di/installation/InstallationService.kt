@@ -114,6 +114,7 @@ class InstallationService private constructor(@ApplicationContext private val co
                                     if (isActive) InstallationUtil.addFileToSession(
                                         session, input, entry.name, entry.size
                                     )
+                                    input.closeEntry()
 
                                     send(
                                         InstallApkResult.OnProgress(
@@ -123,12 +124,11 @@ class InstallationService private constructor(@ApplicationContext private val co
                                     )
 
                                     currentProcess += 1
-                                    input.closeEntry()
                                 }
                         }
                     }
             }
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             // Thrown if Session is abandoned
         }
 

@@ -2,7 +2,6 @@ package domilopment.apkextractor.domain.mapper
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.os.Build
 import domilopment.apkextractor.data.model.appList.AppModel
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.utils.FileUtil
@@ -38,10 +37,9 @@ class AppModelToApplicationModelMapper(val packageManager: PackageManager) :
                 *(from.applicationInfo.splitSourceDirs ?: emptyArray())
             ).sumOf { File(it).length() }.let { FileUtil.getBytesSizeInMB(it) },
             launchIntent = packageManager.getLaunchIntentForPackage(from.applicationInfo.packageName),
-            installationSource = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) packageManager.getInstallSourceInfo(
-                from.applicationInfo.packageName
-            ).installingPackageName
-            else packageManager.getInstallerPackageName(from.applicationInfo.packageName),
+            installationSource = Utils.getInstallationSourceOrNull(
+                packageManager, from.applicationInfo
+            ),
         )
     }
 }
