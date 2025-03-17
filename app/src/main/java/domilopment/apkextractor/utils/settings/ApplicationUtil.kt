@@ -35,6 +35,9 @@ object ApplicationUtil {
     ): String {
         val appName =
             packageInfo.applicationInfo?.loadLabel(packageManager) ?: packageInfo.packageName
+
+        if (set.isEmpty()) return appName.toString()
+
         val names = mapOf(
             "name" to appName,
             "package" to packageInfo.packageName,
@@ -42,19 +45,18 @@ object ApplicationUtil {
             "version_number" to "v${Utils.versionCode(packageInfo)}",
             "datetime" to SimpleDateFormat.getDateTimeInstance().format(Date())
         )
-        return StringBuilder().apply {
-            val processedPrefs = try {
-                set.toSortedSet(compareBy { it[0].digitToInt() }).map { it.removeRange(0, 2) }
-            } catch (e: Exception) {
-                set
-            }
-            processedPrefs.also {
-                if (it.isEmpty()) append(appName)
-                else it.forEach { v ->
-                    append("$spacer${names[v]}")
-                }
-            }
-        }.removePrefix(spacer.toString()).toString()
+
+        val sortedPrefs = try {
+            set.toSortedSet(compareBy { it[0].digitToInt() })
+        } catch (_: IllegalArgumentException) {
+            set
+        }
+
+        val sb = StringBuilder()
+        sortedPrefs.joinTo(buffer = sb, separator = spacer.toString()) {
+            names[it.substringAfter(':')].toString()
+        }
+        return sb.toString()
     }
 
     fun appName(
