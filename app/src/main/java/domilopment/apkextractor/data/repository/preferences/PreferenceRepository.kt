@@ -278,7 +278,7 @@ class MyPreferenceRepository @Inject constructor(
     override suspend fun setAppSaveName(set: Set<String>) = setPreference(APP_SAVE_NAME, set)
 
     override val apkSortOrder: Flow<ApkSortOptions> = getPreference(APK_SORT_ORDER).map {
-        it?.let { ApkSortOptions[it] } ?: ApkSortOptions.SORT_BY_FILE_SIZE_DESC
+        it?.let { ApkSortOptions[it] } ?: ApkSortOptions.SORT_BY_LAST_MODIFIED_DESC
     }
 
     override suspend fun setApkSortOrder(value: String) = setPreference(APK_SORT_ORDER, value)
