@@ -434,7 +434,6 @@ object SegmentedColumnButtonDefaults {
             else -> RectangleShape
         }
     }
-     */
 }
 
 /**
