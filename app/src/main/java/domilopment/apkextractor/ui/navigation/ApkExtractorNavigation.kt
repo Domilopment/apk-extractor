@@ -34,7 +34,7 @@ fun ApkExtractorNavigation(
         navigationItems = navigationItems,
         navController = navController,
         modifier = modifier,
-        showNavigationSuite = uiState !is UiState.ActionMode && appBarState.hasNavigation,
+        showNavigationSuite = uiState is UiState.Default && appBarState.hasNavigation,
         onNavigate = onNavigate,
         content = content
     )
