@@ -20,24 +20,11 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 
@@ -47,16 +34,11 @@ private const val CONTENT_KEY_DEFAULT = "Default"
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun APKExtractorBottomNavigation(
-    items: List<TopLevelRoute<out Any>>,
-    navController: NavHostController,
-    appBarState: AppBarState,
-    uiState: UiState,
-    modifier: Modifier = Modifier,
-    onNavigate: () -> Unit
+fun ApkExtractorBottomBar(
+    appBarState: AppBarState, uiState: UiState, modifier: Modifier = Modifier
 ) {
     val isImeVisible = WindowInsets.isImeVisible
-    AnimatedContent(targetState = uiState, transitionSpec = {
+    AnimatedContent(targetState = uiState, modifier = modifier, transitionSpec = {
         slideInVertically(
             animationSpec = tween(
                 durationMillis = 100,
@@ -87,71 +69,17 @@ fun APKExtractorBottomNavigation(
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && state is UiState.Search && isImeVisible -> Spacer(
                 modifier = Modifier.windowInsetsBottomHeight(WindowInsets.ime)
             )
-
-            appBarState.hasBottomNavigation -> DefaultBottomNavigation(
-                items = items,
-                navController = navController,
-                modifier = modifier,
-                onNavigate = onNavigate
-            )
         }
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             val view = LocalView.current
             if (!view.isInEditMode) {
-                val color =
-                    if (state is UiState.ActionMode) BottomAppBarDefaults.containerColor else NavigationBarDefaults.containerColor
+                val color = BottomAppBarDefaults.containerColor
                 SideEffect {
                     val window = (view.context as Activity).window
                     window.navigationBarColor = color.toArgb()
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun DefaultBottomNavigation(
-    items: List<TopLevelRoute<out Any>>,
-    navController: NavHostController,
-    modifier: Modifier = Modifier,
-    onNavigate: () -> Unit
-) {
-    NavigationBar(modifier = modifier) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
-        items.forEach { item ->
-            NavigationBarItem(
-                icon = {
-                Icon(
-                    imageVector = item.icon, contentDescription = null
-                )
-            },
-                label = {
-                    Text(
-                        text = stringResource(id = item.nameResId),
-                        textAlign = TextAlign.Center,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 2
-                    )
-                },
-                selected = currentDestination?.hierarchy?.any { it.hasRoute(item.route::class) } == true,
-                onClick = {
-                    onNavigate()
-                    navController.navigate(item.route) {
-                        // Pop up to the start destination of the graph to
-                        // avoid building up a large stack of destinations
-                        // on the back stack as users select items
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
-                        launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
-                        restoreState = true
-                    }
-                })
         }
     }
 }

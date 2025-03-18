@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.ui.components.SegmentedButton
+import domilopment.apkextractor.ui.components.SegmentedColumnButtonDefaults
 import domilopment.apkextractor.ui.components.SingleChoiceSegmentedButtonColumn
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
@@ -305,7 +306,7 @@ private fun AppFilterSort(
                         sortApps(AppSortOptions.SORT_BY_NAME.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
+                    shape = SegmentedColumnButtonDefaults.itemShape(
                         index = 0, count = 5
                     ),
                 ) {
@@ -320,7 +321,7 @@ private fun AppFilterSort(
                         sortApps(AppSortOptions.SORT_BY_PACKAGE.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
+                    shape = SegmentedColumnButtonDefaults.itemShape(
                         index = 1, count = 5
                     ),
                 ) {
@@ -335,7 +336,7 @@ private fun AppFilterSort(
                         sortApps(AppSortOptions.SORT_BY_INSTALL_TIME.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
+                    shape = SegmentedColumnButtonDefaults.itemShape(
                         index = 2, count = 5
                     ),
                 ) {
@@ -350,7 +351,7 @@ private fun AppFilterSort(
                         sortApps(AppSortOptions.SORT_BY_UPDATE_TIME.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
+                    shape = SegmentedColumnButtonDefaults.itemShape(
                         index = 3, count = 5
                     ),
                 ) {
@@ -365,7 +366,7 @@ private fun AppFilterSort(
                         sortApps(AppSortOptions.SORT_BY_APK_SIZE.ordinal)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = domilopment.apkextractor.ui.components.SegmentedButtonDefaults.itemShape(
+                    shape = SegmentedColumnButtonDefaults.itemShape(
                         index = 4, count = 5
                     ),
                 ) {

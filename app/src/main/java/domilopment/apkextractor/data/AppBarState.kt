@@ -44,7 +44,7 @@ class AppBarState(
     val isSearchable: Boolean
         get() = currentScreen?.isSearchable ?: false
 
-    val hasBottomNavigation: Boolean
+    val hasNavigation: Boolean
         get() = currentScreen?.hasBottomBar ?: false
 
     val actions: List<ActionMenuItem>

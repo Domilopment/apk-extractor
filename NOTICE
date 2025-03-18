@@ -1,0 +1,8 @@
+This project includes code derived from the Android Open Source Project (AOSP).
+
+The following files or sections of code in this project are derived from AOSP and are subject to the Apache License, Version 2.0:
+
+- app/src/main/java/domilopment/apkextractor/ui/components/SegmentedButton.kt (portions of the layout)
+- app/src/main/java/domilopment/apkextractor/ui/components/AnimatedNavigationSuiteScaffold.kt (portions of the layout and measurement logic)
+
+The original AOSP code is Copyright (C) 2023 The Android Open Source Project.

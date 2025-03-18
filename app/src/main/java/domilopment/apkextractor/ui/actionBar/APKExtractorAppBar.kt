@@ -22,7 +22,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -37,7 +36,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -72,7 +70,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.AppBarState
@@ -103,7 +100,7 @@ fun APKExtractorAppBar(
     onCheckAllItems: (Boolean) -> Unit,
     selectedApplicationsCount: Int
 ) {
-    Column(modifier = Modifier.background(color = TopAppBarDefaults.topAppBarColors().containerColor)) {
+    Box(modifier = Modifier.background(color = TopAppBarDefaults.topAppBarColors().containerColor)) {
         SharedTransitionLayout {
             AnimatedContent(targetState = uiState, transitionSpec = {
                 fadeIn(
@@ -138,9 +135,6 @@ fun APKExtractorAppBar(
                 }
             }
         }
-        HorizontalDivider(
-            thickness = Dp.Hairline, color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-        )
     }
 
     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
