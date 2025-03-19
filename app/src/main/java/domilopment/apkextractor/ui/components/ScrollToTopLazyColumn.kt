@@ -9,7 +9,12 @@ import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -25,6 +30,9 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -87,10 +95,11 @@ fun ScrollToTopLazyColumn(
     }
 
     Box(modifier = modifier) {
+        val calculateContentPadding = calculateContentPadding(contentPadding, WindowInsetsSides.Bottom)
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = state,
-            contentPadding = contentPadding.add(paddingValues = PaddingValues(bottom = 64.dp)),
+            contentPadding = calculateContentPadding.add(paddingValues = PaddingValues(bottom = 64.dp)),
             reverseLayout = reverseLayout,
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
@@ -102,11 +111,25 @@ fun ScrollToTopLazyColumn(
         ScrollToTopButton(
             visible = scrollToTop,
             modifier = Modifier
-                .padding(contentPadding)
+                .padding(calculateContentPadding)
                 .align(Alignment.BottomCenter),
         ) {
             scope.launch { state.animateScrollToItem(0) }
         }
+    }
+}
+
+@Composable
+private fun calculateContentPadding(
+    contentPadding: PaddingValues,
+    windowInsetsSides: WindowInsetsSides = WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical
+): PaddingValues {
+    val navType =
+        NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
+    return if (navType == NavigationSuiteType.NavigationBar) {
+        contentPadding
+    } else {
+        contentPadding.add(WindowInsets.navigationBars.only(windowInsetsSides).asPaddingValues())
     }
 }
 
