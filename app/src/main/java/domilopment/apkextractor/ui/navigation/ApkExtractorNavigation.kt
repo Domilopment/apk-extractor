@@ -1,8 +1,12 @@
 package domilopment.apkextractor.ui.navigation
 
+import android.os.Build
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -25,7 +29,7 @@ import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.ui.components.AnimatedNavigationSuiteScaffold
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ApkExtractorNavigation(
     navigationItems: List<TopLevelRoute<out Any>>,
@@ -36,11 +40,15 @@ fun ApkExtractorNavigation(
     onNavigate: () -> Unit,
     content: @Composable (() -> Unit),
 ) {
+    val showOnSearch =
+        uiState is UiState.Search && if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) !WindowInsets.isImeVisible else true
+    val isNotNavigationBar =
+        NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo()) != NavigationSuiteType.NavigationBar
     ApkExtractorNavigationSuiteScaffold(
         navigationItems = navigationItems,
         navController = navController,
         modifier = modifier,
-        showNavigationSuite = uiState is UiState.Default && appBarState.hasNavigation,
+        showNavigationSuite = (uiState is UiState.Default || showOnSearch || isNotNavigationBar) && appBarState.hasNavigation,
         onNavigate = onNavigate,
         navigationRailHeader = {
             Spacer(modifier = Modifier.height(TopAppBarDefaults.TopAppBarExpandedHeight))
