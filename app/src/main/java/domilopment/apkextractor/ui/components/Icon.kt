@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui
+package domilopment.apkextractor.ui.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor

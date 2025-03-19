@@ -11,6 +11,9 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.IconResource
@@ -38,14 +41,19 @@ sealed interface Screen {
         NavigationIcon, Refresh, Settings, FilterList, Sort, OpenExplorer, Share, Save
     }
 
-    data class NavigationIcon(val icon: IconResource, val onClick: (() -> Unit)? = null)
+    data class NavigationIcon(
+        val icon: IconResource,
+        val tint: @Composable (() -> Color)? = null,
+        val onClick: (() -> Unit)? = null
+    )
 
     @Serializable
     data object AppList : Screen {
         override val routeNameRes = R.string.menu_show_app_list
         override val icon = Icons.Default.Apps
-        override val appBarNavIcon =
-            NavigationIcon(icon = IconResource.DrawableIcon(R.drawable.app_bar_icon))
+        override val appBarNavIcon = NavigationIcon(
+            icon = IconResource.DrawableIcon(R.drawable.app_bar_icon),
+            tint = { MaterialTheme.colorScheme.primary })
         override val appBarTitleRes = R.string.app_name
         override val isSearchable = true
         override val hasBottomBar = true
@@ -61,22 +69,26 @@ sealed interface Screen {
                 onClick = {
                     _buttons.tryEmit(ScreenActions.Refresh)
                 },
-                icon = Icons.Default.Refresh, contentDescription = null,
+                icon = Icons.Default.Refresh,
+                contentDescription = null,
             ),
             ActionMenuItem.IconMenuItem.ShownIfRoom(
                 titleRes = R.string.action_settings,
                 onClick = {
                     _buttons.tryEmit(ScreenActions.Settings)
                 },
-                icon = Icons.Default.Settings, contentDescription = null,
+                icon = Icons.Default.Settings,
+                contentDescription = null,
             ),
         )
         override val bottomBarActions = listOf(
             BottomBarItem(
-                icon = Icons.Default.Save, onClick = { _buttons.tryEmit(ScreenActions.Save) },
+                icon = Icons.Default.Save,
+                onClick = { _buttons.tryEmit(ScreenActions.Save) },
             ),
             BottomBarItem(
-                icon = Icons.Default.Share, onClick = { _buttons.tryEmit(ScreenActions.Share) },
+                icon = Icons.Default.Share,
+                onClick = { _buttons.tryEmit(ScreenActions.Share) },
             ),
         )
 
@@ -88,8 +100,9 @@ sealed interface Screen {
     data object ApkList : Screen {
         override val routeNameRes = R.string.menu_show_save_dir
         override val icon = Icons.Default.Folder
-        override val appBarNavIcon =
-            NavigationIcon(icon = IconResource.DrawableIcon(R.drawable.app_bar_icon))
+        override val appBarNavIcon = NavigationIcon(
+            icon = IconResource.DrawableIcon(R.drawable.app_bar_icon),
+            tint = { MaterialTheme.colorScheme.primary })
         override val appBarTitleRes = R.string.app_name
         override val isSearchable = true
         override val hasBottomBar = true
@@ -97,22 +110,26 @@ sealed interface Screen {
             ActionMenuItem.IconMenuItem.ShownIfRoom(
                 titleRes = R.string.menu_sort_apk,
                 onClick = { _buttons.tryEmit(ScreenActions.Sort) },
-                icon = Icons.AutoMirrored.Filled.Sort, contentDescription = null,
+                icon = Icons.AutoMirrored.Filled.Sort,
+                contentDescription = null,
             ),
             ActionMenuItem.IconMenuItem.ShownIfRoom(
                 titleRes = R.string.menu_show_open_documents,
                 onClick = { _buttons.tryEmit(ScreenActions.OpenExplorer) },
-                icon = Icons.Default.Folder, contentDescription = null,
+                icon = Icons.Default.Folder,
+                contentDescription = null,
             ),
             ActionMenuItem.IconMenuItem.ShownIfRoom(
                 titleRes = R.string.menu_refresh_apk_list,
                 onClick = { _buttons.tryEmit(ScreenActions.Refresh) },
-                icon = Icons.Default.Refresh, contentDescription = null,
+                icon = Icons.Default.Refresh,
+                contentDescription = null,
             ),
             ActionMenuItem.IconMenuItem.ShownIfRoom(
                 titleRes = R.string.action_settings,
                 onClick = { _buttons.tryEmit(ScreenActions.Settings) },
-                icon = Icons.Default.Settings, contentDescription = null,
+                icon = Icons.Default.Settings,
+                contentDescription = null,
             ),
         )
         override val bottomBarActions = emptyList<BottomBarItem>()

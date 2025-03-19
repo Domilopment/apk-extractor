@@ -1,7 +1,12 @@
 package domilopment.apkextractor.ui.navigation
 
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -20,6 +25,7 @@ import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.ui.components.AnimatedNavigationSuiteScaffold
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ApkExtractorNavigation(
     navigationItems: List<TopLevelRoute<out Any>>,
@@ -36,6 +42,9 @@ fun ApkExtractorNavigation(
         modifier = modifier,
         showNavigationSuite = uiState is UiState.Default && appBarState.hasNavigation,
         onNavigate = onNavigate,
+        navigationRailHeader = {
+            Spacer(modifier = Modifier.height(TopAppBarDefaults.TopAppBarExpandedHeight))
+        },
         content = content
     )
 }
@@ -46,6 +55,7 @@ fun ApkExtractorNavigationSuiteScaffold(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     showNavigationSuite: Boolean = true,
+    navigationRailHeader: @Composable (ColumnScope.() -> Unit)? = null,
     onNavigate: () -> Unit,
     content: @Composable (() -> Unit),
 ) {
@@ -94,6 +104,7 @@ fun ApkExtractorNavigationSuiteScaffold(
         } else {
             NavigationSuiteType.None
         },
+        navigationRailHeader = navigationRailHeader,
         content = content,
     )
 

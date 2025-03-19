@@ -41,6 +41,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -70,6 +71,8 @@ import androidx.compose.runtime.collection.MutableVector
 import androidx.compose.runtime.collection.mutableVectorOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
@@ -106,45 +109,46 @@ import androidx.compose.ui.util.fastFirst
 fun AnimatedNavigationSuiteScaffold(
     navigationSuiteItems: NavigationSuiteScope.() -> Unit,
     modifier: Modifier = Modifier,
-    layoutType: NavigationSuiteType =
-        NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(WindowAdaptiveInfoDefault),
+    layoutType: NavigationSuiteType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
+        WindowAdaptiveInfoDefault
+    ),
     navigationSuiteColors: NavigationSuiteColors = NavigationSuiteDefaults.colors(),
     containerColor: Color = NavigationSuiteScaffoldDefaults.containerColor,
     contentColor: Color = NavigationSuiteScaffoldDefaults.contentColor,
+    navigationRailHeader: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable () -> Unit = {},
 ) {
     Surface(modifier = modifier, color = containerColor, contentColor = contentColor) {
-        AnimatedNavigationSuiteScaffoldLayout(
-            navigationSuite = {
-                AnimatedNavigationSuite(
-                    layoutType = layoutType,
-                    colors = navigationSuiteColors,
-                    content = navigationSuiteItems
-                )
-            },
-            layoutType = layoutType,
-            content = {
-                Box(
-                    Modifier
-                        .consumeWindowInsets(
-                            when (layoutType) {
-                                NavigationSuiteType.NavigationBar ->
-                                    NavigationBarDefaults.windowInsets.only(WindowInsetsSides.Bottom)
-
-                                NavigationSuiteType.NavigationRail ->
-                                    NavigationRailDefaults.windowInsets.only(WindowInsetsSides.Start)
-
-                                NavigationSuiteType.NavigationDrawer ->
-                                    DrawerDefaults.windowInsets.only(WindowInsetsSides.Start)
-
-                                else -> NoWindowInsets
-                            }
+        AnimatedNavigationSuiteScaffoldLayout(navigationSuite = {
+            AnimatedNavigationSuite(
+                layoutType = layoutType,
+                colors = navigationSuiteColors,
+                navigationRailHeader = navigationRailHeader,
+                content = navigationSuiteItems
+            )
+        }, layoutType = layoutType, content = {
+            Box(
+                Modifier.consumeWindowInsets(
+                    when (layoutType) {
+                        NavigationSuiteType.NavigationBar -> NavigationBarDefaults.windowInsets.only(
+                            WindowInsetsSides.Bottom
                         )
-                ) {
-                    content()
-                }
+
+                        NavigationSuiteType.NavigationRail -> NavigationRailDefaults.windowInsets.only(
+                            WindowInsetsSides.Start
+                        )
+
+                        NavigationSuiteType.NavigationDrawer -> DrawerDefaults.windowInsets.only(
+                            WindowInsetsSides.Start
+                        )
+
+                        else -> NoWindowInsets
+                    }
+                )
+            ) {
+                content()
             }
-        )
+        })
     }
 }
 
@@ -153,7 +157,7 @@ fun AnimatedNavigationSuiteScaffold(
  * the [navigationSuite] component according to the given [layoutType].
  *
  * The usage of this function is recommended when you need some customization that is not viable via
- * the use of [NavigationSuiteScaffold]. Example usage:
+ * the use of [AnimatedNavigationSuiteScaffold]. Example usage:
  *
  * @sample androidx.compose.material3.adaptive.navigationsuite.samples.NavigationSuiteScaffoldCustomNavigationRail
  *
@@ -165,8 +169,9 @@ fun AnimatedNavigationSuiteScaffold(
 @Composable
 fun AnimatedNavigationSuiteScaffoldLayout(
     navigationSuite: @Composable () -> Unit,
-    layoutType: NavigationSuiteType =
-        NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(WindowAdaptiveInfoDefault),
+    layoutType: NavigationSuiteType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
+        WindowAdaptiveInfoDefault
+    ),
     content: @Composable () -> Unit = {}
 ) {
     Layout({
@@ -178,37 +183,31 @@ fun AnimatedNavigationSuiteScaffoldLayout(
         val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
         // Find the navigation suite composable through it's layoutId tag
         val navigationPlaceable =
-            measurables
-                .fastFirst { it.layoutId == NavigationSuiteLayoutIdTag }
+            measurables.fastFirst { it.layoutId == NavigationSuiteLayoutIdTag }
                 .measure(looseConstraints)
         val isNavigationBar = layoutType == NavigationSuiteType.NavigationBar
         val isNavigation = layoutType != NavigationSuiteType.None
         val layoutHeight = constraints.maxHeight
         val layoutWidth = constraints.maxWidth
         // Find the content composable through it's layoutId tag
-        val contentPlaceable =
-            measurables
-                .fastFirst { it.layoutId == ContentLayoutIdTag }
-                .measure(
-                    if (isNavigationBar) {
-                        val height = layoutHeight - navigationPlaceable.height
-                        constraints.copy(
-                            minHeight = height,
-                            maxHeight = height
-                        )
-                    } else if (isNavigation) {
-                        val width = layoutWidth - navigationPlaceable.width
-                        constraints.copy(
-                            minWidth = width,
-                            maxWidth = width
-                        )
-                    } else constraints.copy(
-                        minWidth = layoutWidth,
-                        maxWidth = layoutWidth,
-                        minHeight = layoutHeight,
-                        maxHeight = layoutHeight
-                    )
+        val contentPlaceable = measurables.fastFirst { it.layoutId == ContentLayoutIdTag }.measure(
+            if (isNavigationBar) {
+                val height = layoutHeight - navigationPlaceable.height
+                constraints.copy(
+                    minHeight = height, maxHeight = height
                 )
+            } else if (isNavigation) {
+                val width = layoutWidth - navigationPlaceable.width
+                constraints.copy(
+                    minWidth = width, maxWidth = width
+                )
+            } else constraints.copy(
+                minWidth = layoutWidth,
+                maxWidth = layoutWidth,
+                minHeight = layoutHeight,
+                maxHeight = layoutHeight
+            )
+        )
 
         layout(layoutWidth, layoutHeight) {
             if (isNavigationBar) {
@@ -248,9 +247,11 @@ fun AnimatedNavigationSuiteScaffoldLayout(
 @Composable
 fun AnimatedNavigationSuite(
     modifier: Modifier = Modifier,
-    layoutType: NavigationSuiteType =
-        NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(WindowAdaptiveInfoDefault),
+    layoutType: NavigationSuiteType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
+        WindowAdaptiveInfoDefault
+    ),
     colors: NavigationSuiteColors = NavigationSuiteDefaults.colors(),
+    navigationRailHeader: @Composable (ColumnScope.() -> Unit)? = null,
     content: NavigationSuiteScope.() -> Unit
 ) {
     val scope by rememberStateOfItems(content)
@@ -258,8 +259,11 @@ fun AnimatedNavigationSuite(
     // default for the colors param of the NavigationSuiteScope.item non-composable function.
     val defaultItemColors = NavigationSuiteDefaults.itemColors()
 
+    // Save previous state to correctly play Out animations
+    var previousState by remember { mutableStateOf(layoutType) }
+
     AnimatedContent(targetState = layoutType, modifier = modifier, transitionSpec = {
-        if (layoutType == NavigationSuiteType.NavigationBar) {
+        if (layoutType == NavigationSuiteType.NavigationBar || previousState == NavigationSuiteType.NavigationBar) {
             slideInVertically(
                 animationSpec = tween(
                     durationMillis = 100,
@@ -308,9 +312,8 @@ fun AnimatedNavigationSuite(
                             enabled = it.enabled,
                             label = it.label,
                             alwaysShowLabel = it.alwaysShowLabel,
-                            colors =
-                                it.colors?.navigationBarItemColors
-                                    ?: defaultItemColors.navigationBarItemColors,
+                            colors = it.colors?.navigationBarItemColors
+                                ?: defaultItemColors.navigationBarItemColors,
                             interactionSource = it.interactionSource
                         )
                     }
@@ -320,7 +323,8 @@ fun AnimatedNavigationSuite(
             NavigationSuiteType.NavigationRail -> {
                 NavigationRail(
                     containerColor = colors.navigationRailContainerColor,
-                    contentColor = colors.navigationRailContentColor
+                    contentColor = colors.navigationRailContentColor,
+                    header = navigationRailHeader
                 ) {
                     scope.itemList.forEach {
                         NavigationRailItem(
@@ -331,9 +335,8 @@ fun AnimatedNavigationSuite(
                             enabled = it.enabled,
                             label = it.label,
                             alwaysShowLabel = it.alwaysShowLabel,
-                            colors =
-                                it.colors?.navigationRailItemColors
-                                    ?: defaultItemColors.navigationRailItemColors,
+                            colors = it.colors?.navigationRailItemColors
+                                ?: defaultItemColors.navigationRailItemColors,
                             interactionSource = it.interactionSource
                         )
                     }
@@ -353,9 +356,8 @@ fun AnimatedNavigationSuite(
                             icon = it.icon,
                             badge = it.badge,
                             label = { it.label?.invoke() ?: Text("") },
-                            colors =
-                                it.colors?.navigationDrawerItemColors
-                                    ?: defaultItemColors.navigationDrawerItemColors,
+                            colors = it.colors?.navigationDrawerItemColors
+                                ?: defaultItemColors.navigationDrawerItemColors,
                             interactionSource = it.interactionSource
                         )
                     }
@@ -366,6 +368,7 @@ fun AnimatedNavigationSuite(
                 /* Do nothing. */
             }
         }
+        previousState = type
     }
 }
 

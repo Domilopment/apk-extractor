@@ -180,47 +180,46 @@ class MainActivity : AppCompatActivity() {
                             .semantics { testTagsAsResourceId = true },
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        Scaffold(topBar = {
-                            APKExtractorAppBar(
-                                appBarState = appBarState,
-                                modifier = Modifier.fillMaxWidth(),
-                                uiState = mainScreenState.uiState,
-                                searchText = mainScreenState.appBarSearchText,
-                                isAllItemsChecked = actionModeState.selectAllItemsCheck,
-                                onSearchQueryChanged = model::updateSearchQuery,
-                                onTriggerSearch = model::setSearchBarState,
-                                onReturnUiMode = model::onReturnUiMode,
-                                onCheckAllItems = { model.updateActionMode(selectAllItems = it) },
-                                selectedApplicationsCount = actionModeState.selectedItemCount
-                            )
-                        }, bottomBar = {
-                            ApkExtractorBottomBar(
-                                appBarState = appBarState, uiState = mainScreenState.uiState
-                            )
-                        }, snackbarHost = {
-                            SnackbarHost(
-                                hostState = snackbarHostState, snackbar = { snackbarData ->
-                                    val visuals = snackbarData.visuals as MySnackbarVisuals
-                                    Snackbar(
-                                        snackbarData = snackbarData,
-                                        contentColor = visuals.messageColor
-                                            ?: SnackbarDefaults.contentColor
-                                    )
-                                })
-                        }) { contentPadding ->
-                            ApkExtractorNavigation(
-                                navigationItems = listOf(
-                                    Screen.AppList.toTopLevelRoute(),
-                                    Screen.ApkList.toTopLevelRoute()
-                                ),
-                                appBarState = appBarState,
-                                uiState = mainScreenState.uiState,
-                                modifier = Modifier.padding(contentPadding),
-                                navController = navController,
-                                onNavigate = model::resetAppBarState
-                            ) {
+                        ApkExtractorNavigation(
+                            navigationItems = listOf(
+                                Screen.AppList.toTopLevelRoute(), Screen.ApkList.toTopLevelRoute()
+                            ),
+                            appBarState = appBarState,
+                            uiState = mainScreenState.uiState,
+                            navController = navController,
+                            onNavigate = model::resetAppBarState
+                        ) {
+                            Scaffold(topBar = {
+                                APKExtractorAppBar(
+                                    appBarState = appBarState,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    uiState = mainScreenState.uiState,
+                                    searchText = mainScreenState.appBarSearchText,
+                                    isAllItemsChecked = actionModeState.selectAllItemsCheck,
+                                    onSearchQueryChanged = model::updateSearchQuery,
+                                    onTriggerSearch = model::setSearchBarState,
+                                    onReturnUiMode = model::onReturnUiMode,
+                                    onCheckAllItems = { model.updateActionMode(selectAllItems = it) },
+                                    selectedApplicationsCount = actionModeState.selectedItemCount
+                                )
+                            }, bottomBar = {
+                                ApkExtractorBottomBar(
+                                    appBarState = appBarState, uiState = mainScreenState.uiState
+                                )
+                            }, snackbarHost = {
+                                SnackbarHost(
+                                    hostState = snackbarHostState, snackbar = { snackbarData ->
+                                        val visuals = snackbarData.visuals as MySnackbarVisuals
+                                        Snackbar(
+                                            snackbarData = snackbarData,
+                                            contentColor = visuals.messageColor
+                                                ?: SnackbarDefaults.contentColor
+                                        )
+                                    })
+                            }) { contentPadding ->
                                 val haptic = LocalHapticFeedback.current
                                 ApkExtractorNavHost(
+                                    modifier = Modifier.padding(contentPadding),
                                     navController = navController,
                                     showSnackbar = {
                                         scope.launch {

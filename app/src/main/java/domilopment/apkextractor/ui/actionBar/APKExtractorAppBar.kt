@@ -184,15 +184,16 @@ private fun DefaultAppBar(
         barWidth = with(localDensity) { it.size.width.toDp() }
     }, navigationIcon = {
         if (appBarState.hasNavigationIcon) IconButton(
-            onClick = appBarState.navigationIcon!!.onClick ?: {},
-            enabled = appBarState.navigationIcon!!.onClick != null,
+            onClick = appBarState.navigationIcon?.onClick ?: {},
+            enabled = appBarState.navigationIcon?.onClick != null,
             colors = IconButtonDefaults.iconButtonColors(
                 disabledContentColor = LocalContentColor.current
             ),
         ) {
-            domilopment.apkextractor.ui.Icon(
+            domilopment.apkextractor.ui.components.Icon(
                 iconResource = appBarState.navigationIcon!!.icon,
                 contentDescription = null,
+                tint = appBarState.navigationIcon?.tint?.invoke() ?: LocalContentColor.current,
             )
         }
     }, actions = {
