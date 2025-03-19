@@ -107,7 +107,7 @@ fun ApkList(
 
             val versionName =
                 if (apk.appVersionName != null && apk.appVersionCode != null) stringResource(
-                    id = R.string.apk_holder_version, apk.appVersionName!!, apk.appVersionCode!!
+                    id = R.string.apk_holder_version, apk.appVersionName, apk.appVersionCode
                 ) else null
 
             val versionInfo = remember(versionName, searchString) {
