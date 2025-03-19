@@ -14,8 +14,11 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -121,8 +124,8 @@ fun ApkExtractorNavHost(
         }
 
         navigation<Graph.Settings>(startDestination = Screen.SettingsHome) {
-            composable<Screen.SettingsHome> {
-                val model = hiltViewModel<SettingsScreenViewModel>()
+            composable<Screen.SettingsHome> { backStackEntry ->
+                val model = backStackEntry.sharedViewModel<SettingsScreenViewModel>(navController)
 
                 SettingsScreen(
                     model = model,
@@ -139,4 +142,13 @@ fun ApkExtractorNavHost(
             }
         }
     }
+}
+
+@Composable
+private inline fun <reified VM : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): VM {
+    val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
+    val parentEntry = remember(this) {
+        navController.getBackStackEntry(navGraphRoute)
+    }
+    return hiltViewModel(parentEntry)
 }
