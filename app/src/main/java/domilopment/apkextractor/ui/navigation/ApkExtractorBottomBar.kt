@@ -20,6 +20,9 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
@@ -61,8 +64,10 @@ fun ApkExtractorBottomBar(
             is UiState.Default -> CONTENT_KEY_DEFAULT
         }
     }) { state ->
+        val navType =
+            NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
         when {
-            state is UiState.ActionMode && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(
+            state is UiState.ActionMode && navType == NavigationSuiteType.NavigationBar && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(
                 items = appBarState.actionModeActions
             )
 

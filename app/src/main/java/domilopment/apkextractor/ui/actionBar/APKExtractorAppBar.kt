@@ -47,6 +47,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -100,7 +103,7 @@ fun APKExtractorAppBar(
     onCheckAllItems: (Boolean) -> Unit,
     selectedApplicationsCount: Int
 ) {
-    Box(modifier = Modifier.background(color = TopAppBarDefaults.topAppBarColors().containerColor)) {
+    Box(modifier = modifier.background(color = TopAppBarDefaults.topAppBarColors().containerColor)) {
         SharedTransitionLayout {
             AnimatedContent(targetState = uiState, transitionSpec = {
                 fadeIn(
@@ -110,7 +113,6 @@ fun APKExtractorAppBar(
                 when (state) {
                     UiState.Default -> DefaultAppBar(
                         appBarState = appBarState,
-                        modifier,
                         onActionSearch = onTriggerSearch,
                         animatedVisibilityScope = this@AnimatedContent,
                         sharedTransitionScope = this@SharedTransitionLayout
@@ -126,11 +128,11 @@ fun APKExtractorAppBar(
                     )
 
                     is UiState.ActionMode -> ActionModeBar(
-                        modifier,
-                        isAllItemsChecked,
-                        selectedApplicationsCount,
-                        onReturnUiMode,
-                        onCheckAllItems
+                        appBarState = appBarState,
+                        allItemsChecked = isAllItemsChecked,
+                        selectedApplicationsCount = selectedApplicationsCount,
+                        onTriggerActionMode = onReturnUiMode,
+                        onCheckAllItems = onCheckAllItems
                     )
                 }
             }
@@ -231,6 +233,7 @@ private fun DefaultAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ActionModeBar(
+    appBarState: AppBarState,
     modifier: Modifier = Modifier,
     allItemsChecked: Boolean,
     selectedApplicationsCount: Int,
@@ -250,6 +253,13 @@ private fun ActionModeBar(
             )
         }
     }, actions = {
+        val navType =
+            NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
+        if (navType != NavigationSuiteType.NavigationBar) appBarState.actionModeActions.forEach { item ->
+            IconButton(onClick = item.onClick) {
+                Icon(item.icon, contentDescription = null)
+            }
+        }
         Checkbox(
             checked = allItemsChecked, onCheckedChange = onCheckAllItems
         )
