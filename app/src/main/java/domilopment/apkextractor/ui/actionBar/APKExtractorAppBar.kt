@@ -47,9 +47,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -77,6 +74,7 @@ import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
+import domilopment.apkextractor.ui.DeviceTypeUtils
 
 private const val boundsAnimationDurationMillis = AnimationConstants.DefaultDurationMillis
 
@@ -253,9 +251,8 @@ private fun ActionModeBar(
             )
         }
     }, actions = {
-        val navType =
-            NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
-        if (navType != NavigationSuiteType.NavigationBar) appBarState.actionModeActions.forEach { item ->
+        val isTablet = DeviceTypeUtils.getDeviceType() == DeviceTypeUtils.DeviceType.TABLET
+        if (isTablet) appBarState.actionModeActions.forEach { item ->
             IconButton(onClick = item.onClick) {
                 Icon(item.icon, contentDescription = null)
             }

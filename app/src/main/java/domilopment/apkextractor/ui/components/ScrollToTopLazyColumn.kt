@@ -30,9 +30,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -43,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import domilopment.apkextractor.ui.DeviceTypeUtils
 import domilopment.apkextractor.ui.add
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -95,7 +93,8 @@ fun ScrollToTopLazyColumn(
     }
 
     Box(modifier = modifier) {
-        val calculateContentPadding = calculateContentPadding(contentPadding, WindowInsetsSides.Bottom)
+        val calculateContentPadding =
+            calculateContentPadding(contentPadding, WindowInsetsSides.Bottom)
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = state,
@@ -124,9 +123,8 @@ private fun calculateContentPadding(
     contentPadding: PaddingValues,
     windowInsetsSides: WindowInsetsSides = WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical
 ): PaddingValues {
-    val navType =
-        NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
-    return if (navType == NavigationSuiteType.NavigationBar) {
+    val isPhone = DeviceTypeUtils.getDeviceType() == DeviceTypeUtils.DeviceType.PHONE
+    return if (isPhone) {
         contentPadding
     } else {
         contentPadding.add(WindowInsets.navigationBars.only(windowInsetsSides).asPaddingValues())

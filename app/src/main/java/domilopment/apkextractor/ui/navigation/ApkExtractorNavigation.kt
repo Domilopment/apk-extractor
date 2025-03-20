@@ -27,6 +27,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
+import domilopment.apkextractor.ui.DeviceTypeUtils
 import domilopment.apkextractor.ui.components.AnimatedNavigationSuiteScaffold
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -42,13 +43,12 @@ fun ApkExtractorNavigation(
 ) {
     val showOnSearch =
         uiState is UiState.Search && if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) !WindowInsets.isImeVisible else true
-    val isNotNavigationBar =
-        NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo()) != NavigationSuiteType.NavigationBar
+    val isTablet = DeviceTypeUtils.getDeviceType() == DeviceTypeUtils.DeviceType.TABLET
     ApkExtractorNavigationSuiteScaffold(
         navigationItems = navigationItems,
         navController = navController,
         modifier = modifier,
-        showNavigationSuite = (uiState is UiState.Default || showOnSearch || isNotNavigationBar) && appBarState.hasNavigation,
+        showNavigationSuite = (uiState is UiState.Default || showOnSearch || isTablet) && appBarState.hasNavigation,
         onNavigate = onNavigate,
         navigationRailHeader = {
             Spacer(modifier = Modifier.height(TopAppBarDefaults.TopAppBarExpandedHeight))

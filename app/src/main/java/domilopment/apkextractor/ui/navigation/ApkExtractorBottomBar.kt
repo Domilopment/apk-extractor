@@ -20,9 +20,6 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
@@ -30,6 +27,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
+import domilopment.apkextractor.ui.DeviceTypeUtils
 
 private const val CONTENT_KEY_ACTION = "Action"
 private const val CONTENT_KEY_SEARCH = "Search"
@@ -64,10 +62,9 @@ fun ApkExtractorBottomBar(
             is UiState.Default -> CONTENT_KEY_DEFAULT
         }
     }) { state ->
-        val navType =
-            NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
+        val deviceType = DeviceTypeUtils.getDeviceType()
         when {
-            state is UiState.ActionMode && navType == NavigationSuiteType.NavigationBar && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(
+            state is UiState.ActionMode && deviceType == DeviceTypeUtils.DeviceType.PHONE && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(
                 items = appBarState.actionModeActions
             )
 
