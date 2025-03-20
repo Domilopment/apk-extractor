@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui
 
+import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.window.core.layout.WindowHeightSizeClass
@@ -7,12 +8,10 @@ import androidx.window.core.layout.WindowWidthSizeClass
 
 object DeviceTypeUtils {
     enum class DeviceType {
-        PHONE, TABLET
+        PHONE, TABLET, NONE
     }
 
-    @Composable
-    fun getDeviceType(): DeviceType {
-        val adaptiveInfo = currentWindowAdaptiveInfo()
+    fun getDeviceBarType(adaptiveInfo: WindowAdaptiveInfo): DeviceType {
         return with(adaptiveInfo) {
             if (windowPosture.isTabletop || windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
                 DeviceType.PHONE
@@ -23,4 +22,8 @@ object DeviceTypeUtils {
             }
         }
     }
+
+    val isPhoneBars @Composable get() = getDeviceBarType(currentWindowAdaptiveInfo()) == DeviceType.PHONE
+
+    val isTabletBars @Composable get() = getDeviceBarType(currentWindowAdaptiveInfo()) == DeviceType.TABLET
 }

@@ -62,9 +62,8 @@ fun ApkExtractorBottomBar(
             is UiState.Default -> CONTENT_KEY_DEFAULT
         }
     }) { state ->
-        val deviceType = DeviceTypeUtils.getDeviceType()
         when {
-            state is UiState.ActionMode && deviceType == DeviceTypeUtils.DeviceType.PHONE && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(
+            state is UiState.ActionMode && DeviceTypeUtils.isPhoneBars && appBarState.actionModeActions.isNotEmpty() -> ActionModeBar(
                 items = appBarState.actionModeActions
             )
 

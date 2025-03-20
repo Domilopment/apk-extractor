@@ -43,12 +43,11 @@ fun ApkExtractorNavigation(
 ) {
     val showOnSearch =
         uiState is UiState.Search && if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) !WindowInsets.isImeVisible else true
-    val isTablet = DeviceTypeUtils.getDeviceType() == DeviceTypeUtils.DeviceType.TABLET
     ApkExtractorNavigationSuiteScaffold(
         navigationItems = navigationItems,
         navController = navController,
         modifier = modifier,
-        showNavigationSuite = (uiState is UiState.Default || showOnSearch || isTablet) && appBarState.hasNavigation,
+        showNavigationSuite = (uiState is UiState.Default || showOnSearch || DeviceTypeUtils.isTabletBars) && appBarState.hasNavigation,
         onNavigate = onNavigate,
         navigationRailHeader = {
             Spacer(modifier = Modifier.height(TopAppBarDefaults.TopAppBarExpandedHeight))

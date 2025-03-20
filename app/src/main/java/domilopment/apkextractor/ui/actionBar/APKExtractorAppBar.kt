@@ -251,8 +251,7 @@ private fun ActionModeBar(
             )
         }
     }, actions = {
-        val isTablet = DeviceTypeUtils.getDeviceType() == DeviceTypeUtils.DeviceType.TABLET
-        if (isTablet) appBarState.actionModeActions.forEach { item ->
+        if (DeviceTypeUtils.isTabletBars) appBarState.actionModeActions.forEach { item ->
             IconButton(onClick = item.onClick) {
                 Icon(item.icon, contentDescription = null)
             }

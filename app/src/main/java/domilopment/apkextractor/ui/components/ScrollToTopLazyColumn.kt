@@ -123,8 +123,7 @@ private fun calculateContentPadding(
     contentPadding: PaddingValues,
     windowInsetsSides: WindowInsetsSides = WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical
 ): PaddingValues {
-    val isPhone = DeviceTypeUtils.getDeviceType() == DeviceTypeUtils.DeviceType.PHONE
-    return if (isPhone) {
+    return if (DeviceTypeUtils.isPhoneBars) {
         contentPadding
     } else {
         contentPadding.add(WindowInsets.navigationBars.only(windowInsetsSides).asPaddingValues())
