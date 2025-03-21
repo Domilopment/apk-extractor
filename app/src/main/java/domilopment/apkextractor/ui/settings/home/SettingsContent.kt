@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.settings
+package domilopment.apkextractor.ui.settings.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,27 +12,27 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.BatteryStd
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.FolderZip
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.ModeNight
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Shop
-import androidx.compose.material.icons.filled.SpaceBar
 import androidx.compose.material.icons.filled.SwipeLeft
 import androidx.compose.material.icons.filled.SwipeRight
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SyncDisabled
-import androidx.compose.material.icons.filled.TextFormat
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.UpdateDisabled
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -46,7 +46,6 @@ import com.google.android.play.core.appupdate.AppUpdateInfo
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
-import domilopment.apkextractor.ui.settings.preferences.APKNamePreference
 import domilopment.apkextractor.ui.settings.preferences.DialogPreference
 import domilopment.apkextractor.ui.settings.preferences.ListPreference
 import domilopment.apkextractor.ui.settings.preferences.MultiSelectListPreference
@@ -57,9 +56,6 @@ import domilopment.apkextractor.ui.settings.preferences.SwitchPreferenceCompat
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBottom
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMiddle
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
-import domilopment.apkextractor.utils.FileUtil
-import domilopment.apkextractor.utils.settings.Spacer
-import domilopment.apkextractor.utils.settings.getNameResId
 
 @Composable
 fun SettingsContent(
@@ -67,12 +63,7 @@ fun SettingsContent(
     isUpdateAvailable: Boolean,
     onUpdateAvailable: () -> Unit,
     onChooseSaveDir: () -> Unit,
-    appSaveName: Set<String>,
-    onAppSaveName: (Set<String>) -> Unit,
-    appSaveNameSpacer: String,
-    onAppSaveNameSpacer: (String) -> Unit,
-    isBackupModeApkBundle: Boolean,
-    onBackupModeApkBundle: (Boolean) -> Unit,
+    onSaveFileSettings: () -> Unit,
     autoBackupService: Boolean,
     onAutoBackupService: (Boolean) -> Unit,
     isSelectAutoBackupApps: Boolean,
@@ -95,8 +86,6 @@ fun SettingsContent(
     onSwipeActionCustomThreshold: (Boolean) -> Unit,
     swipeActionThresholdMod: Float,
     onSwipeActionThresholdMod: (Float) -> Unit,
-    bundleFileInfo: String,
-    onBundleFileInfo: (String) -> Unit,
     batteryOptimization: Boolean,
     onBatteryOptimization: (Boolean) -> Unit,
     checkUpdateOnStart: Boolean,
@@ -148,27 +137,13 @@ fun SettingsContent(
                 )
             }
             preferenceCategoryItemMiddle {
-                APKNamePreference(
-                    name = R.string.app_save_name,
-                    icon = Icons.Default.TextFormat,
-                    summary = R.string.app_save_name_summary,
-                    entries = R.array.app_save_name_names,
-                    entryValues = R.array.app_save_name_values,
-                    state = appSaveName,
-                    onClick = onAppSaveName
-                )
-            }
-            preferenceCategoryItemMiddle {
-                ListPreference(
-                    icon = Icons.Default.SpaceBar,
-                    name = stringResource(id = R.string.app_save_name_part_separator),
-                    summary = stringResource(id = R.string.app_save_name_part_separator_summary),
-                    entries = Spacer.entries.map { "${stringResource(it.getNameResId())} (\"${it.symbol}\")" }
-                        .toTypedArray(),
-                    entryValues = Spacer.entries.map { it.name }.toTypedArray(),
-                    state = appSaveNameSpacer,
-                    onClick = onAppSaveNameSpacer
-                )
+                Preference(
+                    name = R.string.title_screen_save_file_settings,
+                    icon = Icons.AutoMirrored.Default.InsertDriveFile,
+                    onClick = onSaveFileSettings
+                ) {
+                    Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
+                }
             }
             preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
@@ -277,28 +252,6 @@ fun SettingsContent(
 
         preferenceCategory(title = R.string.advanced) {
             preferenceCategoryItemTop {
-                SwitchPreferenceCompat(
-                    icon = Icons.Default.FolderZip,
-                    name = R.string.backup_mode_split_apk,
-                    summary = if (isBackupModeApkBundle) R.string.backup_mode_split_apk_summary_active else R.string.backup_mode_split_apk_summary_inactive,
-                    state = isBackupModeApkBundle,
-                    onClick = onBackupModeApkBundle
-                )
-            }
-            preferenceCategoryItemMiddle {
-                ListPreference(
-                    enabled = isBackupModeApkBundle,
-                    name = stringResource(id = R.string.backup_apk_bundle_file_ending_title),
-                    summary = stringResource(id = R.string.backup_apk_bundle_file_ending_summary),
-                    entries = arrayOf(FileUtil.FileInfo.APKS.name, FileUtil.FileInfo.XAPK.name),
-                    entryValues = arrayOf(
-                        FileUtil.FileInfo.APKS.suffix, FileUtil.FileInfo.XAPK.suffix
-                    ),
-                    state = bundleFileInfo,
-                    onClick = onBundleFileInfo
-                )
-            }
-            preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
                     name = R.string.ignore_battery_optimization_title,
                     summary = R.string.ignore_battery_optimization_summary,

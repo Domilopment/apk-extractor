@@ -32,7 +32,8 @@ import domilopment.apkextractor.ui.Graph
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
-import domilopment.apkextractor.ui.settings.SettingsScreen
+import domilopment.apkextractor.ui.settings.home.SettingsScreen
+import domilopment.apkextractor.ui.settings.safeFile.SettingsSaveFileScreen
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
@@ -135,10 +136,21 @@ fun ApkExtractorNavHost(
                             Graph.Settings, inclusive = true, saveState = true
                         )
                     },
+                    onSaveFileSettings = {
+                        navController.navigate(Screen.SettingsSaveFile)
+                    },
                     chooseSaveDir = chooseSaveDir,
                     appUpdateManager = appUpdateManager,
                     inAppUpdateResultLauncher = inAppUpdateResultLauncher
                 )
+            }
+
+            composable<Screen.SettingsSaveFile> { backStackEntry ->
+                val model = backStackEntry.sharedViewModel<SettingsScreenViewModel>(navController)
+
+                SettingsSaveFileScreen(model = model, onBackClicked = {
+                    navController.popBackStack()
+                })
             }
         }
     }

@@ -156,11 +156,30 @@ sealed interface Screen {
         val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
     }
 
+    @Serializable
+    data object SettingsSaveFile : Screen {
+        override val routeNameRes = R.string.title_screen_save_file_settings
+        override val icon = Icons.Default.Settings
+        override val appBarNavIcon =
+            NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
+                _buttons.tryEmit(ScreenActions.NavigationIcon)
+            }
+        override val appBarTitleRes = R.string.title_screen_save_file_settings
+        override val isSearchable = false
+        override val hasBottomBar = false
+        override val appBarActions = emptyList<ActionMenuItem>()
+        override val bottomBarActions = emptyList<BottomBarItem>()
+
+        private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+        val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
+
     companion object {
         fun getScreen(route: String?): Screen? = when (route) {
             AppList.serializer().descriptor.serialName -> AppList
             ApkList.serializer().descriptor.serialName -> ApkList
             SettingsHome.serializer().descriptor.serialName -> SettingsHome
+            SettingsSaveFile.serializer().descriptor.serialName -> SettingsSaveFile
             else -> null
         }
     }

@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.settings
+package domilopment.apkextractor.ui.settings.home
 
 import android.Manifest
 import android.app.NotificationManager
@@ -66,6 +66,7 @@ fun SettingsScreen(
     model: SettingsScreenViewModel,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     onBackClicked: () -> Unit,
+    onSaveFileSettings: () -> Unit,
     chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
     context: Context = LocalContext.current,
     appUpdateManager: AppUpdateManager,
@@ -164,12 +165,7 @@ fun SettingsScreen(
             }
             chooseSaveDir.launch(pickerInitialUri)
         },
-        appSaveName = uiState.saveName,
-        onAppSaveName = model::setAppSaveName,
-        appSaveNameSpacer = uiState.saveNameSpacer.name,
-        onAppSaveNameSpacer = model::setAppSaveNameSpacer,
-        isBackupModeApkBundle = uiState.backupModeApkBundle,
-        onBackupModeApkBundle = model::setBackupModeApkBundle,
+        onSaveFileSettings = onSaveFileSettings,
         autoBackupService = uiState.autoBackupService,
         onAutoBackupService = func@{
             if (allowNotifications != null) {
@@ -226,8 +222,6 @@ fun SettingsScreen(
             model.setSwipeActionThresholdMod(it)
             analytics.logItemClick("SeekBarPreference", "SwipeActionCustomMod")
         },
-        bundleFileInfo = uiState.bundleFileInfo.suffix,
-        onBundleFileInfo = model::setBundleFileInfo,
         batteryOptimization = batteryOptimization,
         onBatteryOptimization = {
             val isIgnoringBatteryOptimization =
@@ -281,7 +275,7 @@ fun SettingsScreen(
                             context.packageManager, "com.android.vending"
                         )
                         setPackage(packageInfo.packageName)
-                    } catch (e: PackageManager.NameNotFoundException) {
+                    } catch (_: PackageManager.NameNotFoundException) {
                         // If Play Store is not installed
                     }
                     data =
