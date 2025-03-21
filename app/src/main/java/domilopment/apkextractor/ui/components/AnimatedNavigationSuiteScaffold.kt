@@ -23,12 +23,15 @@
  * - Changed NavigationSuite to use AnimatedContent with NavigationSuiteType
  * - Changed measurement of content and bars in NavigationSuiteScaffoldLayout
  * - Changed name of components to use Animated* at the start
+ * - Removed NavigationDrawer implementation
  * - Fixed Crash when measuring the width with NavigationSuiteType.NavigationDrawer and Animations.
  */
 
 package domilopment.apkextractor.ui.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -58,7 +61,6 @@ import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.PermanentDrawerSheet
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteColors
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
@@ -279,7 +281,7 @@ fun AnimatedNavigationSuite(
                 ), targetOffsetY = { it }) + fadeOut(
                 animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
             )
-        } else {
+        } else if (layoutType == NavigationSuiteType.NavigationRail || previousState == NavigationSuiteType.NavigationRail) {
             slideInHorizontally(
                 animationSpec = tween(
                     durationMillis = 100,
@@ -295,6 +297,8 @@ fun AnimatedNavigationSuite(
                 ), targetOffsetX = { it }) + fadeOut(
                 animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
             )
+        } else {
+            EnterTransition.None togetherWith ExitTransition.None
         }
     }) { type ->
         when (type) {
@@ -343,28 +347,7 @@ fun AnimatedNavigationSuite(
                 }
             }
 
-            NavigationSuiteType.NavigationDrawer -> {
-                PermanentDrawerSheet(
-                    drawerContainerColor = colors.navigationDrawerContainerColor,
-                    drawerContentColor = colors.navigationDrawerContentColor
-                ) {
-                    scope.itemList.forEach {
-                        NavigationDrawerItem(
-                            modifier = it.modifier,
-                            selected = it.selected,
-                            onClick = it.onClick,
-                            icon = it.icon,
-                            badge = it.badge,
-                            label = { it.label?.invoke() ?: Text("") },
-                            colors = it.colors?.navigationDrawerItemColors
-                                ?: defaultItemColors.navigationDrawerItemColors,
-                            interactionSource = it.interactionSource
-                        )
-                    }
-                }
-            }
-
-            NavigationSuiteType.None -> {
+            else -> {
                 /* Do nothing. */
             }
         }
