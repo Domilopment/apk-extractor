@@ -46,20 +46,20 @@ fun ExpandableColumn(
 
     Column(
         modifier = Modifier.border(
-            1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp)
+            1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(8.dp)
         )
     ) {
         Row(modifier = Modifier
             .clickable { expanded = !expanded }
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.outlineVariant,
                 shape = RoundedCornerShape(8.dp)
             )
             .fillMaxWidth()
             .height(IntrinsicSize.Max)
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(8.dp)
+                color = MaterialTheme.colorScheme.surfaceContainerHigh, shape = RoundedCornerShape(8.dp)
             )
             .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -95,7 +95,7 @@ fun ExpandableColumn(
             ) {
                 VerticalDivider(
                     modifier = Modifier.padding(horizontal = 8.dp),
-                    color = MaterialTheme.colorScheme.outline
+                    color = MaterialTheme.colorScheme.outlineVariant
                 )
                 Icon(
                     imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
