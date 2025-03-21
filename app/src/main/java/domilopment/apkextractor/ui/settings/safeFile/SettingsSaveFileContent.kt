@@ -13,8 +13,6 @@ import androidx.compose.material.icons.filled.FolderZip
 import androidx.compose.material.icons.filled.SpaceBar
 import androidx.compose.material.icons.filled.TextFormat
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
@@ -40,7 +38,6 @@ fun SettingsSaveFileContent(
     onBundleFileInfo: (String) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier.testTag("SettingsLazyColumn"),
         state = rememberLazyListState(),
         contentPadding = WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)
             .union(WindowInsets(left = 8.dp, right = 8.dp)).asPaddingValues()
