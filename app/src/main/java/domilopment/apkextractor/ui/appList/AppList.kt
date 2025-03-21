@@ -105,7 +105,7 @@ fun AppList(
                     val color by animateColorAsState(
                         when (state.dismissDirection) {
                             SwipeToDismissBoxValue.Settled -> Color.Transparent
-                            SwipeToDismissBoxValue.StartToEnd, SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.primaryContainer
+                            SwipeToDismissBoxValue.StartToEnd, SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.surfaceContainerLow
                         }, label = ""
                     )
 
@@ -175,7 +175,7 @@ private fun AppListItemSwipeLeft(
         Text(
             text = stringResource(id = leftSwipeAction.title),
             modifier = Modifier.padding(vertical = 6.dp),
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 20.sp,
             maxLines = 1
         )
@@ -186,7 +186,7 @@ private fun AppListItemSwipeLeft(
                 .padding(6.dp)
                 .fillMaxHeight()
                 .width(40.dp),
-            tint = MaterialTheme.colorScheme.onPrimaryContainer
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -207,12 +207,12 @@ private fun AppListItemSwipeRight(
                 .padding(6.dp)
                 .fillMaxHeight()
                 .width(40.dp),
-            tint = MaterialTheme.colorScheme.onPrimaryContainer
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
             text = stringResource(id = rightSwipeAction.title),
             modifier = Modifier.padding(vertical = 6.dp),
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 20.sp,
             maxLines = 1
         )
