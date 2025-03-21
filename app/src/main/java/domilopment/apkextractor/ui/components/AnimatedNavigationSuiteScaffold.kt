@@ -50,12 +50,10 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.only
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.NavigationRailItem
@@ -137,10 +135,6 @@ fun AnimatedNavigationSuiteScaffold(
                         )
 
                         NavigationSuiteType.NavigationRail -> NavigationRailDefaults.windowInsets.only(
-                            WindowInsetsSides.Start
-                        )
-
-                        NavigationSuiteType.NavigationDrawer -> DrawerDefaults.windowInsets.only(
                             WindowInsetsSides.Start
                         )
 
@@ -363,20 +357,17 @@ sealed interface NavigationSuiteScope {
      * Navigation Suite Scaffold. The item is called in [AnimatedNavigationSuite], according to the current
      * [NavigationSuiteType].
      *
-     * For specifics about each item component, see [NavigationBarItem], [NavigationRailItem], and
-     * [NavigationDrawerItem].
+     * For specifics about each item component, see [NavigationBarItem], [NavigationRailItem].
      *
      * @param selected whether this item is selected
      * @param onClick called when this item is clicked
      * @param icon icon for this item, typically an [Icon]
      * @param modifier the [Modifier] to be applied to this item
      * @param enabled controls the enabled state of this item. When `false`, this component will not
-     *   respond to user input, and it will appear visually disabled and disabled to accessibility
-     *   services. Note: as of now, for [NavigationDrawerItem], this is always `true`.
+     *   respond to user input, and it will appear visually disabled and disabled to accessibility services.
      * @param label the text label for this item
      * @param alwaysShowLabel whether to always show the label for this item. If `false`, the label
-     *   will only be shown when this item is selected. Note: for [NavigationDrawerItem] this is
-     *   always `true`
+     *   will only be shown when this item is selected.
      * @param badge optional badge to show on this item
      * @param colors [NavigationSuiteItemColors] that will be used to resolve the colors used for
      *   this item in different states. If null, [NavigationSuiteDefaults.itemColors] will be used.
