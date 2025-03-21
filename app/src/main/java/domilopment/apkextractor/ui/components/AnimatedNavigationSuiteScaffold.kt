@@ -265,7 +265,7 @@ fun AnimatedNavigationSuite(
     var previousState by remember { mutableStateOf(layoutType) }
 
     AnimatedContent(targetState = layoutType, modifier = modifier, transitionSpec = {
-        if (layoutType == NavigationSuiteType.NavigationBar || previousState == NavigationSuiteType.NavigationBar) {
+        if ((layoutType == NavigationSuiteType.NavigationBar && previousState == NavigationSuiteType.None) || (targetState == NavigationSuiteType.None && previousState == NavigationSuiteType.NavigationBar)) {
             slideInVertically(
                 animationSpec = tween(
                     durationMillis = 100,
@@ -281,12 +281,12 @@ fun AnimatedNavigationSuite(
                 ), targetOffsetY = { it }) + fadeOut(
                 animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
             )
-        } else if (layoutType == NavigationSuiteType.NavigationRail || previousState == NavigationSuiteType.NavigationRail) {
+        } else if ((layoutType == NavigationSuiteType.NavigationRail && previousState == NavigationSuiteType.None) || (layoutType == NavigationSuiteType.None && previousState == NavigationSuiteType.NavigationRail)) {
             slideInHorizontally(
                 animationSpec = tween(
                     durationMillis = 100,
                     delayMillis = 100,
-                ), initialOffsetX = { it }) + fadeIn(
+                ), initialOffsetX = { -it }) + fadeIn(
                 animationSpec = tween(
                     durationMillis = 100,
                     delayMillis = 100,
@@ -294,7 +294,7 @@ fun AnimatedNavigationSuite(
             ) togetherWith slideOutHorizontally(
                 animationSpec = tween(
                     durationMillis = 100, easing = LinearOutSlowInEasing
-                ), targetOffsetX = { it }) + fadeOut(
+                ), targetOffsetX = { -it }) + fadeOut(
                 animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
             )
         } else {
