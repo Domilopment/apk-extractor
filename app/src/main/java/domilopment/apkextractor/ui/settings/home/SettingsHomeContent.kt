@@ -58,7 +58,7 @@ import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMi
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
 
 @Composable
-fun SettingsContent(
+fun SettingsHomeContent(
     appUpdateInfo: AppUpdateInfo?,
     isUpdateAvailable: Boolean,
     onUpdateAvailable: () -> Unit,

@@ -62,7 +62,7 @@ import androidx.core.net.toUri
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun SettingsScreen(
+fun SettingsHomeScreen(
     model: SettingsScreenViewModel,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     onBackClicked: () -> Unit,
@@ -147,7 +147,7 @@ fun SettingsScreen(
         }.launchIn(this)
     }
 
-    SettingsContent(
+    SettingsHomeContent(
         appUpdateInfo = appUpdateInfo,
         isUpdateAvailable = isUpdateAvailable,
         onUpdateAvailable = {

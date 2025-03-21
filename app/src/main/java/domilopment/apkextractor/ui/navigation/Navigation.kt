@@ -32,7 +32,7 @@ import domilopment.apkextractor.ui.Graph
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
-import domilopment.apkextractor.ui.settings.home.SettingsScreen
+import domilopment.apkextractor.ui.settings.home.SettingsHomeScreen
 import domilopment.apkextractor.ui.settings.safeFile.SettingsSaveFileScreen
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
@@ -128,7 +128,7 @@ fun ApkExtractorNavHost(
             composable<Screen.SettingsHome> { backStackEntry ->
                 val model = backStackEntry.sharedViewModel<SettingsScreenViewModel>(navController)
 
-                SettingsScreen(
+                SettingsHomeScreen(
                     model = model,
                     showSnackbar = showSnackbar,
                     onBackClicked = {
