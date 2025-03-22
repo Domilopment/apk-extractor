@@ -23,7 +23,9 @@ object DeviceTypeUtils {
         }
     }
 
-    val isPhoneBars @Composable get() = getDeviceBarType(currentWindowAdaptiveInfo()) == DeviceType.PHONE
+    val isPhoneBars: Boolean
+        @Composable get() = getDeviceBarType(currentWindowAdaptiveInfo()) == DeviceType.PHONE
 
-    val isTabletBars @Composable get() = getDeviceBarType(currentWindowAdaptiveInfo()) == DeviceType.TABLET
+    val isTabletBars: Boolean
+        @Composable get() = getDeviceBarType(currentWindowAdaptiveInfo()) == DeviceType.TABLET
 }
