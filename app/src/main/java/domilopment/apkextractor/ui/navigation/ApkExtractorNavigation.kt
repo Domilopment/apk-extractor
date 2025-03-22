@@ -42,7 +42,8 @@ fun ApkExtractorNavigation(
     content: @Composable (() -> Unit),
 ) {
     val showOnSearch =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) uiState is UiState.Search && !WindowInsets.isImeVisible else true
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) uiState is UiState.Search && !WindowInsets.isImeVisible
+        else uiState is UiState.Search
     ApkExtractorNavigationSuiteScaffold(
         navigationItems = navigationItems,
         navController = navController,
