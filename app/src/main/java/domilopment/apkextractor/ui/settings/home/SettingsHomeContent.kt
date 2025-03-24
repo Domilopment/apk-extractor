@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.BatteryStd
 import androidx.compose.material.icons.filled.BugReport
@@ -317,7 +318,9 @@ fun SettingsHomeContent(
                     icon = ImageVector.vectorResource(id = R.drawable.github_mark_white),
                     summary = R.string.github_summary,
                     onClick = onGitHub
-                )
+                ) {
+                    Icon(imageVector = Icons.AutoMirrored.Default.OpenInNew, contentDescription = null)
+                }
             }
             preferenceCategoryItemMiddle {
                 Preference(
@@ -325,7 +328,9 @@ fun SettingsHomeContent(
                     icon = Icons.Default.Shop,
                     summary = R.string.googleplay_summary,
                     onClick = onGooglePlay
-                )
+                ) {
+                    Icon(imageVector = Icons.AutoMirrored.Default.OpenInNew, contentDescription = null)
+                }
             }
             preferenceCategoryItemBottom {
                 Preference(

@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -41,12 +43,16 @@ fun SettingsAboutContent(
                 name = R.string.privacy_policy_title,
                 icon = Icons.Default.PrivacyTip,
                 onClick = onPrivacyPolicy
-            )
+            ) {
+                Icon(imageVector = Icons.AutoMirrored.Default.OpenInNew, contentDescription = null)
+            }
         }
         preferenceCategoryItemMiddle {
             Preference(
                 name = R.string.terms_title, icon = Icons.Default.Info, onClick = onTerms
-            )
+            ) {
+                Icon(imageVector = Icons.AutoMirrored.Default.OpenInNew, contentDescription = null)
+            }
         }
         preferenceCategoryItemMiddle {
             Preference(
