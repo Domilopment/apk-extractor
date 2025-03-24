@@ -35,7 +35,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.color.DynamicColors
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -66,6 +65,7 @@ fun SettingsHomeScreen(
     model: SettingsScreenViewModel,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     onSaveFileSettings: () -> Unit,
+    onAboutSettings: () -> Unit,
     chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
     context: Context = LocalContext.current,
     appUpdateManager: AppUpdateManager,
@@ -290,18 +290,7 @@ fun SettingsHomeScreen(
                 )
             }
         },
-        onPrivacyPolicy = {
-            CustomTabsIntent.Builder().build()
-                .launchUrl(context, Constants.PRIVACY_POLICY_URL.toUri())
-        },
-        onTerms = {
-            CustomTabsIntent.Builder().build().launchUrl(context, Constants.TERMS_URL.toUri())
-        },
-        ossDependencies = {
-            context.startActivity(
-                Intent(context.applicationContext, OssLicensesMenuActivity::class.java)
-            )
-        })
+        onAboutSettings = onAboutSettings)
 }
 
 /**

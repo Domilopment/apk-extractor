@@ -19,12 +19,10 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CleaningServices
-import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.ModeNight
-import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material.icons.filled.SwipeLeft
 import androidx.compose.material.icons.filled.SwipeRight
@@ -43,7 +41,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.google.android.play.core.appupdate.AppUpdateInfo
-import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
 import domilopment.apkextractor.ui.settings.preferences.DialogPreference
@@ -102,9 +99,7 @@ fun SettingsHomeContent(
     onDeleteFirebaseInstallationsId: () -> Unit,
     onGitHub: () -> Unit,
     onGooglePlay: () -> Unit,
-    onPrivacyPolicy: () -> Unit,
-    onTerms: () -> Unit,
-    ossDependencies: () -> Unit,
+    onAboutSettings: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.testTag("SettingsLazyColumn"),
@@ -332,33 +327,14 @@ fun SettingsHomeContent(
                     onClick = onGooglePlay
                 )
             }
-            preferenceCategoryItemMiddle {
-                Preference(
-                    name = R.string.privacy_policy_title,
-                    icon = Icons.Default.PrivacyTip,
-                    onClick = onPrivacyPolicy
-                )
-            }
-            preferenceCategoryItemMiddle {
-                Preference(
-                    name = R.string.terms_title, icon = Icons.Default.Info, onClick = onTerms
-                )
-            }
-            preferenceCategoryItemMiddle {
-                Preference(
-                    name = stringResource(id = R.string.oss_dependencies_title),
-                    icon = Icons.Default.Code,
-                    onClick = ossDependencies
-                )
-            }
             preferenceCategoryItemBottom {
                 Preference(
-                    name = stringResource(
-                        id = R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE
-                    ),
-                    enabled = false,
-                    onClick = {},
-                )
+                    name = stringResource(id = R.string.title_screen_about_settings),
+                    icon = Icons.Default.Info,
+                    onClick = onAboutSettings
+                ) {
+                    Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
+                }
             }
         }
     }

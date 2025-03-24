@@ -10,7 +10,8 @@
     <string name="apk_action_uninstall_app">Uninstall app</string>
 
     <string name="title_activity_settings">Settings</string>
-    <string name="title_screen_save_file_settings">APK Save file options</string>"
+    <string name="title_screen_save_file_settings">APK Save file options</string>
+    <string name="title_screen_about_settings">About</string>
 
     <!-- Preference Header -->
     <string name="save_header">Save Options</string>
