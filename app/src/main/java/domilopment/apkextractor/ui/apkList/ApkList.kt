@@ -153,7 +153,7 @@ private fun StorageInfo(
         modifier = modifier
             .zIndex(1f)
             .clickable(onClick = onStorageInfoClick),
-        shape = RoundedCornerShape(bottomEnd = 8.dp, bottomStart = 8.dp),
+        shape = RoundedCornerShape(8.dp),
         color = MaterialTheme.colorScheme.surfaceContainer
     ) {
         var width by remember {
