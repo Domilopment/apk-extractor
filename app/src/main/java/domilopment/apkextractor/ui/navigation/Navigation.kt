@@ -29,7 +29,7 @@ import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.logScreenView
 import domilopment.apkextractor.ui.Graph
-import domilopment.apkextractor.ui.Screen
+import domilopment.apkextractor.ui.Route
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
 import domilopment.apkextractor.ui.settings.home.SettingsHomeScreen
@@ -67,7 +67,7 @@ fun ApkExtractorNavHost(
     }
 
     NavHost(
-        navController = navController, startDestination = Screen.AppList, popEnterTransition = {
+        navController = navController, startDestination = Route.AppList, popEnterTransition = {
         scaleIn(
             animationSpec = tween(
                 durationMillis = 100,
@@ -94,50 +94,35 @@ fun ApkExtractorNavHost(
         ) + slideOutHorizontally(targetOffsetX = { it + (it / 2) })
     }, modifier = modifier
     ) {
-        composable<Screen.AppList> {
+        composable<Route.AppList> {
             val model = hiltViewModel<AppListViewModel>()
 
             AppListScreen(
                 model = model,
                 searchString = searchQuery,
                 isActionMode = isActionMode,
-                onNavigate = {
-                    navController.navigate(Graph.Settings) {
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
                 showSnackbar = showSnackbar,
                 onTriggerActionMode = onTriggerActionMode,
                 isActionModeAllItemsSelected = isActionModeAllItemsSelected,
                 onAppSelection = onAppSelection
             )
         }
-        composable<Screen.ApkList> {
+        composable<Route.ApkList> {
             val model = hiltViewModel<ApkListViewModel>()
 
-            ApkListScreen(model = model, searchString = searchQuery, onNavigate = {
-                navController.navigate(Graph.Settings) {
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }, showSnackbar = { showSnackbar(it) })
+            ApkListScreen(
+                model = model, searchString = searchQuery, showSnackbar = { showSnackbar(it) })
         }
 
-        navigation<Graph.Settings>(startDestination = Screen.SettingsHome) {
-            composable<Screen.SettingsHome> { backStackEntry ->
+        navigation<Graph.Settings>(startDestination = Route.SettingsHome) {
+            composable<Route.SettingsHome> { backStackEntry ->
                 val model = backStackEntry.sharedViewModel<SettingsScreenViewModel>(navController)
 
                 SettingsHomeScreen(
                     model = model,
                     showSnackbar = showSnackbar,
-                    onBackClicked = {
-                        navController.popBackStack(
-                            Graph.Settings, inclusive = true, saveState = true
-                        )
-                    },
                     onSaveFileSettings = {
-                        navController.navigate(Screen.SettingsSaveFile)
+                        navController.navigate(Route.SettingsSaveFile)
                     },
                     chooseSaveDir = chooseSaveDir,
                     appUpdateManager = appUpdateManager,
@@ -145,7 +130,7 @@ fun ApkExtractorNavHost(
                 )
             }
 
-            composable<Screen.SettingsSaveFile> { backStackEntry ->
+            composable<Route.SettingsSaveFile> { backStackEntry ->
                 val model = backStackEntry.sharedViewModel<SettingsScreenViewModel>(navController)
 
                 SettingsSaveFileScreen(model = model, onBackClicked = {

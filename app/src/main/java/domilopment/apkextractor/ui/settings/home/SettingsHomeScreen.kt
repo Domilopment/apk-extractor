@@ -47,7 +47,6 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.logItemClick
-import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.components.HyperlinkText
 import domilopment.apkextractor.ui.components.Link
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
@@ -59,13 +58,13 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.util.Locale
 import androidx.core.net.toUri
+import domilopment.apkextractor.ui.Route
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingsHomeScreen(
     model: SettingsScreenViewModel,
     showSnackbar: (MySnackbarVisuals) -> Unit,
-    onBackClicked: () -> Unit,
     onSaveFileSettings: () -> Unit,
     chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
     context: Context = LocalContext.current,
@@ -139,9 +138,8 @@ fun SettingsHomeScreen(
     })
 
     LaunchedEffect(key1 = Unit) {
-        Screen.SettingsHome.buttons.onEach { button ->
+        Route.SettingsHome.buttons.onEach { button ->
             when (button) {
-                Screen.ScreenActions.NavigationIcon -> onBackClicked()
                 else -> Unit
             }
         }.launchIn(this)

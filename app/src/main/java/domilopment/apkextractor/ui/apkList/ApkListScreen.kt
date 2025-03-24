@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
+import domilopment.apkextractor.ui.Route
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet
 import domilopment.apkextractor.ui.dialogs.ApkSortMenu
@@ -35,7 +36,6 @@ import kotlinx.coroutines.flow.onEach
 fun ApkListScreen(
     model: ApkListViewModel,
     searchString: String,
-    onNavigate: () -> Unit,
     showSnackbar: (MySnackbarVisuals) -> Unit
 ) {
     val context = LocalContext.current
@@ -85,12 +85,11 @@ fun ApkListScreen(
     }
 
     LaunchedEffect(key1 = Unit) {
-        Screen.ApkList.buttons.onEach { button ->
+        Route.ApkList.buttons.onEach { button ->
             when (button) {
                 Screen.ScreenActions.Sort -> sortDialog = true
                 Screen.ScreenActions.OpenExplorer -> selectApk.launch(arrayOf(FileUtil.FileInfo.APK.mimeType))
                 Screen.ScreenActions.Refresh -> model.updatePackageArchives()
-                Screen.ScreenActions.Settings -> onNavigate()
 
                 else -> Unit
             }

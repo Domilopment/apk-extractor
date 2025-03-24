@@ -25,6 +25,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.data.model.appList.ShareResult
+import domilopment.apkextractor.ui.Route
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
 import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
 import domilopment.apkextractor.ui.dialogs.ExtractionResultDialog
@@ -42,7 +43,6 @@ import kotlinx.coroutines.flow.onEach
 fun AppListScreen(
     model: AppListViewModel,
     searchString: String,
-    onNavigate: () -> Unit,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     isActionMode: Boolean,
     onTriggerActionMode: () -> Unit,
@@ -190,11 +190,10 @@ fun AppListScreen(
 
     LaunchedEffect(key1 = Unit) {
         // all actions inside Appbar or Bottombar the user can trigger in this screen
-        Screen.AppList.buttons.onEach { button ->
+        Route.AppList.buttons.onEach { button ->
             when (button) {
                 Screen.ScreenActions.FilterList -> showFilter = true
                 Screen.ScreenActions.Refresh -> model.updateApps()
-                Screen.ScreenActions.Settings -> onNavigate()
                 Screen.ScreenActions.Save -> model.saveSelectedApps()
                 Screen.ScreenActions.Share -> model.createShareUrisForSelectedApps()
 

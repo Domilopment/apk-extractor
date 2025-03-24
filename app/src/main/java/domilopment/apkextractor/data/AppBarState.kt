@@ -24,8 +24,7 @@ class AppBarState(
 ) {
     init {
         navController.currentBackStackEntryFlow.distinctUntilChanged().onEach { backStackEntry ->
-            val route = backStackEntry.destination.route?.substringBefore('?')?.substringBefore('/')
-            currentScreen = Screen.getScreen(route)
+            currentScreen = Screen.getScreen(backStackEntry.destination)
         }.launchIn(scope)
     }
 
@@ -45,7 +44,7 @@ class AppBarState(
         get() = currentScreen?.isSearchable ?: false
 
     val hasNavigation: Boolean
-        get() = currentScreen?.hasBottomBar ?: false
+        get() = currentScreen?.hasNavigationBar ?: false
 
     val actions: List<ActionMenuItem>
         get() = currentScreen?.appBarActions.orEmpty()

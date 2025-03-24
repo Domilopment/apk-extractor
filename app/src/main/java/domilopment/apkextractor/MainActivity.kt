@@ -61,7 +61,6 @@ import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.data.rememberAppBarState
 import domilopment.apkextractor.data.repository.analytics.AnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
-import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.actionBar.APKExtractorAppBar
 import domilopment.apkextractor.ui.dialogs.AnalyticsDialog
 import domilopment.apkextractor.ui.dialogs.AskForSaveDirDialog
@@ -69,7 +68,7 @@ import domilopment.apkextractor.ui.dialogs.InAppUpdateDialog
 import domilopment.apkextractor.ui.navigation.ApkExtractorBottomBar
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavigation
-import domilopment.apkextractor.ui.navigation.toTopLevelRoute
+import domilopment.apkextractor.ui.navigation.TOP_LEVEL_ROUTES
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.FileUtil
@@ -181,9 +180,7 @@ class MainActivity : AppCompatActivity() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         ApkExtractorNavigation(
-                            navigationItems = listOf(
-                                Screen.AppList.toTopLevelRoute(), Screen.ApkList.toTopLevelRoute()
-                            ),
+                            navigationItems = TOP_LEVEL_ROUTES,
                             appBarState = appBarState,
                             uiState = mainScreenState.uiState,
                             navController = navController,
