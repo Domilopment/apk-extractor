@@ -25,7 +25,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.data.model.appList.ShareResult
-import domilopment.apkextractor.ui.Route
+import domilopment.apkextractor.ui.navigation.Route
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
 import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
 import domilopment.apkextractor.ui.dialogs.ExtractionResultDialog

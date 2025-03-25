@@ -5,7 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import domilopment.apkextractor.ui.Route
+import domilopment.apkextractor.ui.navigation.Route
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import kotlinx.coroutines.flow.launchIn

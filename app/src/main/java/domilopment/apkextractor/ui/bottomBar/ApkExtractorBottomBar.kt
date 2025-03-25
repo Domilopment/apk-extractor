@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.navigation
+package domilopment.apkextractor.ui.bottomBar
 
 import android.app.Activity
 import android.os.Build
@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalView
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.ui.DeviceTypeUtils
+import domilopment.apkextractor.ui.bottomBar.BottomBarItem
 
 private const val CONTENT_KEY_ACTION = "Action"
 private const val CONTENT_KEY_SEARCH = "Search"

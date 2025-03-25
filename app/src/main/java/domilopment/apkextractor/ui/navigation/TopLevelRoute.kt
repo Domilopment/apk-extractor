@@ -7,8 +7,8 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import domilopment.apkextractor.R
-import domilopment.apkextractor.ui.Graph
-import domilopment.apkextractor.ui.Route
+import domilopment.apkextractor.ui.navigation.Graph
+import domilopment.apkextractor.ui.navigation.Route
 
 data class TopLevelRoute<T : Any>(
     @StringRes val nameResId: Int, val route: T, val icon: ImageVector

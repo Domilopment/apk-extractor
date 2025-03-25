@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui
+package domilopment.apkextractor.ui.navigation
 
 import androidx.annotation.Keep
 import androidx.compose.material.icons.Icons
@@ -12,10 +12,11 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.MaterialTheme
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.IconResource
+import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.Screen.NavigationIcon
 import domilopment.apkextractor.ui.Screen.ScreenActions
 import domilopment.apkextractor.ui.actionBar.ActionMenuItem
-import domilopment.apkextractor.ui.navigation.BottomBarItem
+import domilopment.apkextractor.ui.bottomBar.BottomBarItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

@@ -12,7 +12,7 @@ import domilopment.apkextractor.utils.Constants
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import androidx.core.net.toUri
-import domilopment.apkextractor.ui.Route
+import domilopment.apkextractor.ui.navigation.Route
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable

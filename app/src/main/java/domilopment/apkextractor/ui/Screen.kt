@@ -7,10 +7,11 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import domilopment.apkextractor.data.IconResource
 import domilopment.apkextractor.ui.actionBar.ActionMenuItem
-import domilopment.apkextractor.ui.navigation.BottomBarItem
+import domilopment.apkextractor.ui.bottomBar.BottomBarItem
+import domilopment.apkextractor.ui.navigation.Route
 import kotlin.reflect.full.companionObjectInstance
 
-sealed interface Screen {
+interface Screen {
     val appBarNavIcon: NavigationIcon?
     @get:StringRes
     val appBarTitleRes: Int

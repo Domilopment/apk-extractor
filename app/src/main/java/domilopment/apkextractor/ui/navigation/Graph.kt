@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui
+package domilopment.apkextractor.ui.navigation
 
 import kotlinx.serialization.Serializable
 

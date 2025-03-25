@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
-import domilopment.apkextractor.ui.Route
+import domilopment.apkextractor.ui.navigation.Route
 import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet
 import domilopment.apkextractor.ui.dialogs.ApkSortMenu

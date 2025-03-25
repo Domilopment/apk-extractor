@@ -65,7 +65,7 @@ import domilopment.apkextractor.ui.actionBar.APKExtractorAppBar
 import domilopment.apkextractor.ui.dialogs.AnalyticsDialog
 import domilopment.apkextractor.ui.dialogs.AskForSaveDirDialog
 import domilopment.apkextractor.ui.dialogs.InAppUpdateDialog
-import domilopment.apkextractor.ui.navigation.ApkExtractorBottomBar
+import domilopment.apkextractor.ui.bottomBar.ApkExtractorBottomBar
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavigation
 import domilopment.apkextractor.ui.navigation.TOP_LEVEL_ROUTES

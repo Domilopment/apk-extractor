@@ -28,8 +28,6 @@ import com.google.android.play.core.appupdate.AppUpdateManager
 import domilopment.apkextractor.MainActivity
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.logScreenView
-import domilopment.apkextractor.ui.Graph
-import domilopment.apkextractor.ui.Route
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
 import domilopment.apkextractor.ui.settings.about.SettingsAboutScreen

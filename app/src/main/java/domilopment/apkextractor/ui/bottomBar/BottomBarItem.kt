@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.navigation
+package domilopment.apkextractor.ui.bottomBar
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
