@@ -41,6 +41,20 @@ fun LazyListScope.preferenceCategory(
     items()
 }
 
+fun LazyListScope.preferenceCategoryItemSingle(
+    key: Any? = null, contentType: Any? = null, item: @Composable LazyItemScope.() -> Unit
+) {
+    item(key, contentType) {
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceContainer,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            item()
+        }
+    }
+}
+
 fun LazyListScope.preferenceCategoryItemTop(
     key: Any? = null, contentType: Any? = null, item: @Composable LazyItemScope.() -> Unit
 ) {

@@ -3,6 +3,7 @@
     <string name="title_activity_settings">Einstellungen</string>
     <string name="title_screen_save_file_settings">APK-Speicherdatei Optionen</string>
     <string name="title_screen_about_settings">Über</string>
+    <string name="title_screen_interactions">Interaktion</string>
 
     <!-- Apk Options -->
     <string name="apk_action_share">Teilen</string>
@@ -77,7 +78,8 @@
     <string name="use_material_you">Aktiviere Material You</string>
     <string name="use_material_you_summary">Benutze die Dynamische Farbpalette, welche durch das ändern des Hintergrundes ab Android 12 Bereitgestellt wird.</string>
 
-    <string name="apk_swipe_actions">Swipe Actions</string>
+    <string name="swipe_actions">Swipe Actions</string>
+    <string name="app_list_swipe_actions">Apps Liste Swipe Actions</string>
 
     <string name="apk_swipe_action_right_title">Wischaktion nach rechts</string>
     <string name="apk_swipe_action_right_summary">Suche aus, was passiert, wenn du auf einem Eintrag in der App-Liste nach rechts wischst</string>

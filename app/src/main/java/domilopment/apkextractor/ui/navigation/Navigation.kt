@@ -32,6 +32,7 @@ import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
 import domilopment.apkextractor.ui.settings.about.SettingsAboutScreen
 import domilopment.apkextractor.ui.settings.home.SettingsHomeScreen
+import domilopment.apkextractor.ui.settings.interactions.SettingsInteractionsScreen
 import domilopment.apkextractor.ui.settings.safeFile.SettingsSaveFileScreen
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
@@ -106,6 +107,7 @@ fun ApkExtractorNavHost(
                 onAppSelection = onAppSelection
             )
         }
+
         composable<Route.ApkList> {
             val model = hiltViewModel<ApkListViewModel>()
 
@@ -123,6 +125,9 @@ fun ApkExtractorNavHost(
                     onSaveFileSettings = {
                         navController.navigate(Route.SettingsSaveFile)
                     },
+                    onSwipeActionSettings = {
+                        navController.navigate(Route.SettingsInteractions)
+                    },
                     onAboutSettings = {
                         navController.navigate(Route.SettingsAbout)
                     },
@@ -136,6 +141,14 @@ fun ApkExtractorNavHost(
                 val model = backStackEntry.sharedViewModel<SettingsScreenViewModel>(navController)
 
                 SettingsSaveFileScreen(model = model, onBackClicked = {
+                    navController.popBackStack()
+                })
+            }
+
+            composable<Route.SettingsInteractions> { backStackEntry ->
+                val model = backStackEntry.sharedViewModel<SettingsScreenViewModel>(navController)
+
+                SettingsInteractionsScreen(model = model, onBackClicked = {
                     navController.popBackStack()
                 })
             }

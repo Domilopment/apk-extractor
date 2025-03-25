@@ -1,16 +1,13 @@
 package domilopment.apkextractor.ui.settings.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
@@ -25,14 +22,12 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.ModeNight
 import androidx.compose.material.icons.filled.Shop
-import androidx.compose.material.icons.filled.SwipeLeft
-import androidx.compose.material.icons.filled.SwipeRight
+import androidx.compose.material.icons.filled.Swipe
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SyncDisabled
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.UpdateDisabled
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -49,10 +44,10 @@ import domilopment.apkextractor.ui.settings.preferences.ListPreference
 import domilopment.apkextractor.ui.settings.preferences.MultiSelectListPreference
 import domilopment.apkextractor.ui.settings.preferences.Preference
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategory
-import domilopment.apkextractor.ui.settings.preferences.SeekBarPreference
 import domilopment.apkextractor.ui.settings.preferences.SwitchPreferenceCompat
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBottom
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMiddle
+import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemSingle
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
 
 @Composable
@@ -76,14 +71,7 @@ fun SettingsHomeContent(
     language: String,
     languageLocaleDisplayName: String,
     onLanguage: (String) -> Unit,
-    rightSwipeAction: String,
-    onRightSwipeAction: (String) -> Unit,
-    leftSwipeAction: String,
-    onLeftSwipeAction: (String) -> Unit,
-    swipeActionCustomThreshold: Boolean,
-    onSwipeActionCustomThreshold: (Boolean) -> Unit,
-    swipeActionThresholdMod: Float,
-    onSwipeActionThresholdMod: (Float) -> Unit,
+    onSwipeActionSettings: () -> Unit,
     batteryOptimization: Boolean,
     onBatteryOptimization: (Boolean) -> Unit,
     checkUpdateOnStart: Boolean,
@@ -108,15 +96,9 @@ fun SettingsHomeContent(
         contentPadding = WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)
             .union(WindowInsets(left = 8.dp, right = 8.dp)).asPaddingValues()
     ) {
-        item {
-            if (appUpdateInfo != null) Preference(
+        if (appUpdateInfo != null) preferenceCategoryItemSingle {
+            Preference(
                 name = R.string.update_available_title,
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceContainer,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(top = 8.dp),
                 summary = R.string.update_available_summary,
                 isPreferenceVisible = isUpdateAvailable,
                 onClick = onUpdateAvailable
@@ -200,49 +182,15 @@ fun SettingsHomeContent(
             }
         }
 
-        preferenceCategory(title = R.string.apk_swipe_actions) {
-            preferenceCategoryItemTop {
-                ListPreference(
-                    name = R.string.apk_swipe_action_right_title,
-                    icon = Icons.Default.SwipeRight,
-                    summary = R.string.apk_swipe_action_right_summary,
-                    entries = R.array.apk_swipe_options_entries,
-                    entryValues = R.array.apk_swipe_options_values,
-                    state = rightSwipeAction,
-                    onClick = onRightSwipeAction
-                )
-            }
-            preferenceCategoryItemMiddle {
-                ListPreference(
-                    name = R.string.apk_swipe_action_left_title,
-                    icon = Icons.Default.SwipeLeft,
-                    summary = R.string.apk_swipe_action_left_summary,
-                    entries = R.array.apk_swipe_options_entries,
-                    entryValues = R.array.apk_swipe_options_values,
-                    state = leftSwipeAction,
-                    onClick = onLeftSwipeAction
-                )
-            }
-            preferenceCategoryItemMiddle {
-                SwitchPreferenceCompat(
-                    name = R.string.apk_swipe_action_custom_threshold_title,
-                    summary = R.string.apk_swipe_action_custom_threshold_summary,
-                    state = swipeActionCustomThreshold,
-                    onClick = onSwipeActionCustomThreshold
-                )
-            }
-            preferenceCategoryItemBottom {
-                SeekBarPreference(
-                    enabled = swipeActionCustomThreshold,
-                    name = R.string.apk_swipe_action_threshold_title,
-                    summary = R.string.apk_swipe_action_threshold_summary,
-                    min = 0f,
-                    max = 100f,
-                    steps = 100,
-                    showValue = true,
-                    state = swipeActionThresholdMod,
-                    onValueChanged = onSwipeActionThresholdMod,
-                )
+        preferenceCategory(title = R.string.title_screen_interactions) {
+            preferenceCategoryItemSingle {
+                Preference(
+                    name = stringResource(id = R.string.swipe_actions),
+                    icon = Icons.Default.Swipe,
+                    onClick = onSwipeActionSettings
+                ) {
+                    Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
+                }
             }
         }
 
@@ -319,7 +267,10 @@ fun SettingsHomeContent(
                     summary = R.string.github_summary,
                     onClick = onGitHub
                 ) {
-                    Icon(imageVector = Icons.AutoMirrored.Default.OpenInNew, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.OpenInNew,
+                        contentDescription = null
+                    )
                 }
             }
             preferenceCategoryItemMiddle {
@@ -329,7 +280,10 @@ fun SettingsHomeContent(
                     summary = R.string.googleplay_summary,
                     onClick = onGooglePlay
                 ) {
-                    Icon(imageVector = Icons.AutoMirrored.Default.OpenInNew, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.OpenInNew,
+                        contentDescription = null
+                    )
                 }
             }
             preferenceCategoryItemBottom {

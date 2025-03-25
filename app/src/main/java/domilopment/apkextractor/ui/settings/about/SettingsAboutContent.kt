@@ -15,8 +15,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.BuildConfig
@@ -33,7 +31,6 @@ fun SettingsAboutContent(
     ossDependencies: () -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier.testTag("SettingsLazyColumn"),
         state = rememberLazyListState(),
         contentPadding = WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)
             .union(WindowInsets(left = 8.dp, right = 8.dp)).asPaddingValues()

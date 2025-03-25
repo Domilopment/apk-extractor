@@ -45,7 +45,6 @@ import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
-import domilopment.apkextractor.data.repository.analytics.logItemClick
 import domilopment.apkextractor.ui.components.HyperlinkText
 import domilopment.apkextractor.ui.components.Link
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
@@ -65,6 +64,7 @@ fun SettingsHomeScreen(
     model: SettingsScreenViewModel,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     onSaveFileSettings: () -> Unit,
+    onSwipeActionSettings: () -> Unit,
     onAboutSettings: () -> Unit,
     chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
     context: Context = LocalContext.current,
@@ -206,20 +206,7 @@ fun SettingsHomeScreen(
             language = it
             SettingsManager.setLocale(it)
         },
-        rightSwipeAction = uiState.rightSwipeAction,
-        onRightSwipeAction = model::setRightSwipeAction,
-        leftSwipeAction = uiState.leftSwipeAction,
-        onLeftSwipeAction = model::setLeftSwipeAction,
-        swipeActionCustomThreshold = uiState.swipeActionCustomThreshold,
-        onSwipeActionCustomThreshold = {
-            model.setSwipeActionCustomThreshold(it)
-            analytics.logItemClick("SwitchPreference", "SwipeActionCustomThreshold")
-        },
-        swipeActionThresholdMod = uiState.swipeActionThresholdMod,
-        onSwipeActionThresholdMod = {
-            model.setSwipeActionThresholdMod(it)
-            analytics.logItemClick("SeekBarPreference", "SwipeActionCustomMod")
-        },
+        onSwipeActionSettings = onSwipeActionSettings,
         batteryOptimization = batteryOptimization,
         onBatteryOptimization = {
             val isIgnoringBatteryOptimization =
