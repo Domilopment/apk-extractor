@@ -13,7 +13,8 @@
     <string name="title_screen_save_file_settings">Save file format</string>
     <string name="title_screen_auto_backup_settings">Auto Backup</string>
     <string name="title_screen_about_settings">About</string>
-    <string name="title_screen_interactions">Gestures &amp; Interactions</string>
+    <string name="title_screen_interactions_settings">Gestures &amp; Interactions</string>
+    <string name="title_screen_data_collection_settings">Data Collection</string>
 
     <!-- Preference Header -->
     <string name="save_header">Storage &amp; Backup</string>

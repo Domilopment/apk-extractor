@@ -4,7 +4,8 @@
     <string name="title_screen_save_file_settings">Speicherdatei Format</string>
     <string name="title_screen_auto_backup_settings">Automatische Backups</string>
     <string name="title_screen_about_settings">Über</string>
-    <string name="title_screen_interactions">Gesten &amp; Interaktion</string>
+    <string name="title_screen_interactions_settings">Gesten &amp; Interaktion</string>
+    <string name="title_screen_data_collection_settings">Datenerfassung</string>
 
     <!-- Apk Options -->
     <string name="apk_action_share">Teilen</string>

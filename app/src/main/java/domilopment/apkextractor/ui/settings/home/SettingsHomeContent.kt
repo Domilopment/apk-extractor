@@ -11,10 +11,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.DataUsage
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
@@ -66,12 +65,7 @@ fun SettingsHomeContent(
     onCheckUpdateOnStart: (Boolean) -> Unit,
     cacheSize: String,
     onClearCache: () -> Unit,
-    analytics: Boolean,
-    onAnalytics: (Boolean) -> Unit,
-    crashlytics: Boolean,
-    onCrashlytics: (Boolean) -> Unit,
-    performance: Boolean,
-    onPerformance: (Boolean) -> Unit,
+    onDataCollectionSettings: () -> Unit,
     dataCollectionDeleteDialogContent: @Composable (() -> Unit),
     onDeleteFirebaseInstallationsId: () -> Unit,
     onGitHub: () -> Unit,
@@ -158,7 +152,7 @@ fun SettingsHomeContent(
             }
         }
 
-        preferenceCategory(title = R.string.title_screen_interactions) {
+        preferenceCategory(title = R.string.title_screen_interactions_settings) {
             preferenceCategoryItemSingle {
                 Preference(
                     name = stringResource(id = R.string.swipe_actions),
@@ -192,30 +186,13 @@ fun SettingsHomeContent(
 
         preferenceCategory(title = R.string.data_collection_header) {
             preferenceCategoryItemTop {
-                SwitchPreferenceCompat(
-                    icon = Icons.Default.Analytics,
-                    name = R.string.data_collection_analytics,
-                    summary = R.string.data_collection_analytics_summary,
-                    state = analytics,
-                    onClick = onAnalytics
-                )
-            }
-            preferenceCategoryItemMiddle {
-                SwitchPreferenceCompat(
-                    icon = Icons.Default.BugReport,
-                    name = R.string.data_collection_crashlytics,
-                    summary = R.string.data_collection_crashlytics_summary,
-                    state = crashlytics,
-                    onClick = onCrashlytics
-                )
-            }
-            preferenceCategoryItemMiddle {
-                SwitchPreferenceCompat(
-                    name = R.string.data_collection_perf,
-                    summary = R.string.data_collection_perf_summary,
-                    state = performance,
-                    onClick = onPerformance
-                )
+                Preference(
+                    name = R.string.title_screen_data_collection_settings,
+                    icon = Icons.Default.DataUsage,
+                    onClick = onDataCollectionSettings
+                ) {
+                    Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
+                }
             }
             preferenceCategoryItemBottom {
                 DialogPreference(

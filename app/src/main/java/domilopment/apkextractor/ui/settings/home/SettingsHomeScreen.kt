@@ -54,6 +54,7 @@ fun SettingsHomeScreen(
     onSaveFileSettings: () -> Unit,
     onAutoBackupSettings: () -> Unit,
     onSwipeActionSettings: () -> Unit,
+    onDataCollectionSettings: () -> Unit,
     onAboutSettings: () -> Unit,
     chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
     context: Context = LocalContext.current,
@@ -151,12 +152,7 @@ fun SettingsHomeScreen(
                 context, context.getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT
             ).show()
         },
-        analytics = uiState.analytics,
-        onAnalytics = model::setAnalytics,
-        crashlytics = uiState.crashlytics,
-        onCrashlytics = model::setCrashlytics,
-        performance = uiState.performance,
-        onPerformance = model::setPerformance,
+        onDataCollectionSettings = onDataCollectionSettings,
         dataCollectionDeleteDialogContent = {
             HyperlinkText(
                 text = stringResource(id = R.string.data_collection_delete_summary),
