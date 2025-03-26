@@ -40,12 +40,11 @@ fun ApkExtractorNavigation(
     onNavigate: () -> Unit,
     content: @Composable (() -> Unit),
 ) {
-    val showOnSearch = uiState is UiState.Search && !WindowInsets.isImeVisible
     ApkExtractorNavigationSuiteScaffold(
         navigationItems = navigationItems,
         navController = navController,
         modifier = modifier,
-        showNavigationSuite = (uiState is UiState.Default || showOnSearch || DeviceTypeUtils.isTabletBars) && appBarState.hasNavigation,
+        showNavigationSuite = ((uiState !is UiState.ActionMode && !WindowInsets.isImeVisible) || DeviceTypeUtils.isTabletBars) && appBarState.hasNavigation,
         onNavigate = onNavigate,
         navigationRailHeader = {
             Spacer(modifier = Modifier.height(TopAppBarDefaults.TopAppBarExpandedHeight))
