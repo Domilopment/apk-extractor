@@ -7,6 +7,7 @@ import android.os.Binder
 import android.os.Bundle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,6 +15,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -98,6 +100,7 @@ class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         splashScreen.apply {
             var keepOnScreen = true
@@ -176,6 +179,7 @@ class MainActivity : AppCompatActivity() {
                     Surface(
                         modifier = Modifier
                             .fillMaxSize()
+                            .imePadding()
                             .semantics { testTagsAsResourceId = true },
                         color = MaterialTheme.colorScheme.background
                     ) {

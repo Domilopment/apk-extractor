@@ -1,7 +1,5 @@
 package domilopment.apkextractor.ui.actionBar
 
-import android.app.Activity
-import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
@@ -49,7 +47,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,11 +58,9 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
@@ -133,17 +128,6 @@ fun APKExtractorAppBar(
                         onCheckAllItems = onCheckAllItems
                     )
                 }
-            }
-        }
-    }
-
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        val view = LocalView.current
-        if (!view.isInEditMode) {
-            val color = TopAppBarDefaults.topAppBarColors().containerColor
-            SideEffect {
-                val window = (view.context as Activity).window
-                window.statusBarColor = color.toArgb()
             }
         }
     }

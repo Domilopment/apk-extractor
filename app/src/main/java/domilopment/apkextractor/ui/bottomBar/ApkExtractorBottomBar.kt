@@ -1,7 +1,5 @@
 package domilopment.apkextractor.ui.bottomBar
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -11,28 +9,20 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.isImeVisible
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.ui.DeviceTypeUtils
-import domilopment.apkextractor.ui.bottomBar.BottomBarItem
 
-private const val CONTENT_KEY_ACTION = "Action"
-private const val CONTENT_KEY_SEARCH = "Search"
-private const val CONTENT_KEY_DEFAULT = "Default"
+private enum class BottomBarContentKeys {
+    CONTENT_KEY_ACTION, CONTENT_KEY_SEARCH, CONTENT_KEY_DEFAULT
+}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -58,9 +48,9 @@ fun ApkExtractorBottomBar(
         )
     }, label = "Bottom Navigation Content", contentKey = { state ->
         when (state) {
-            is UiState.ActionMode -> CONTENT_KEY_ACTION
-            is UiState.Search -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && isImeVisible) CONTENT_KEY_SEARCH else CONTENT_KEY_DEFAULT
-            is UiState.Default -> CONTENT_KEY_DEFAULT
+            is UiState.ActionMode -> BottomBarContentKeys.CONTENT_KEY_ACTION
+            is UiState.Search -> if (isImeVisible) BottomBarContentKeys.CONTENT_KEY_SEARCH else BottomBarContentKeys.CONTENT_KEY_DEFAULT
+            is UiState.Default -> BottomBarContentKeys.CONTENT_KEY_DEFAULT
         }
     }) { state ->
         when {
@@ -68,20 +58,7 @@ fun ApkExtractorBottomBar(
                 items = appBarState.actionModeActions
             )
 
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && state is UiState.Search && isImeVisible -> Spacer(
-                modifier = Modifier.windowInsetsBottomHeight(WindowInsets.ime)
-            )
-        }
-
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val view = LocalView.current
-            if (!view.isInEditMode) {
-                val color = BottomAppBarDefaults.containerColor
-                SideEffect {
-                    val window = (view.context as Activity).window
-                    window.navigationBarColor = color.toArgb()
-                }
-            }
+            else -> Unit
         }
     }
 }

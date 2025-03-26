@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.navigation
 
-import android.os.Build
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
@@ -41,9 +40,7 @@ fun ApkExtractorNavigation(
     onNavigate: () -> Unit,
     content: @Composable (() -> Unit),
 ) {
-    val showOnSearch =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) uiState is UiState.Search && !WindowInsets.isImeVisible
-        else uiState is UiState.Search
+    val showOnSearch = uiState is UiState.Search && !WindowInsets.isImeVisible
     ApkExtractorNavigationSuiteScaffold(
         navigationItems = navigationItems,
         navController = navController,
