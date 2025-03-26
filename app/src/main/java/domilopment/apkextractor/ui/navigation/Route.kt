@@ -130,6 +130,23 @@ sealed interface Route {
 
     @Keep
     @Serializable
+    data object SettingsAutoBackup : Route, Screen {
+        override val appBarNavIcon =
+            NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
+                _buttons.tryEmit(ScreenActions.NavigationIcon)
+            }
+        override val appBarTitleRes = R.string.title_screen_auto_backup_settings
+        override val isSearchable = false
+        override val hasNavigationBar = true
+        override val appBarActions = emptyList<ActionMenuItem>()
+        override val bottomBarActions = emptyList<BottomBarItem>()
+
+        private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+        val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
+
+    @Keep
+    @Serializable
     data object SettingsInteractions : Route, Screen {
         override val appBarNavIcon =
             NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {

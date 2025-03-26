@@ -31,6 +31,7 @@ import domilopment.apkextractor.data.repository.analytics.logScreenView
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
 import domilopment.apkextractor.ui.settings.about.SettingsAboutScreen
+import domilopment.apkextractor.ui.settings.autoBackup.SettingsAutoBackupScreen
 import domilopment.apkextractor.ui.settings.home.SettingsHomeScreen
 import domilopment.apkextractor.ui.settings.interactions.SettingsInteractionsScreen
 import domilopment.apkextractor.ui.settings.safeFile.SettingsSaveFileScreen
@@ -125,6 +126,9 @@ fun ApkExtractorNavHost(
                     onSaveFileSettings = {
                         navController.navigate(Route.SettingsSaveFile)
                     },
+                    onAutoBackupSettings = {
+                       navController.navigate(Route.SettingsAutoBackup)
+                    },
                     onSwipeActionSettings = {
                         navController.navigate(Route.SettingsInteractions)
                     },
@@ -143,6 +147,15 @@ fun ApkExtractorNavHost(
                 SettingsSaveFileScreen(model = model, onBackClicked = {
                     navController.popBackStack()
                 })
+            }
+
+            composable<Route.SettingsAutoBackup> { backStackEntry ->
+                val model = backStackEntry.sharedViewModel<SettingsScreenViewModel>(navController)
+
+                SettingsAutoBackupScreen(
+                    model = model, showSnackbar = showSnackbar, onBackClicked = {
+                        navController.popBackStack()
+                    })
             }
 
             composable<Route.SettingsInteractions> { backStackEntry ->

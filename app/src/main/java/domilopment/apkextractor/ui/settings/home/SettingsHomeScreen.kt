@@ -1,26 +1,18 @@
 package domilopment.apkextractor.ui.settings.home
 
-import android.Manifest
-import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
-import android.os.PowerManager
 import android.provider.DocumentsContract
-import android.provider.Settings
 import android.text.format.Formatter
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -33,8 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.material.color.DynamicColors
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -43,8 +33,6 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
-import domilopment.apkextractor.autoBackup.AutoBackupService
-import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
 import domilopment.apkextractor.ui.components.HyperlinkText
 import domilopment.apkextractor.ui.components.Link
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
@@ -64,6 +52,7 @@ fun SettingsHomeScreen(
     model: SettingsScreenViewModel,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     onSaveFileSettings: () -> Unit,
+    onAutoBackupSettings: () -> Unit,
     onSwipeActionSettings: () -> Unit,
     onAboutSettings: () -> Unit,
     chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
@@ -71,23 +60,10 @@ fun SettingsHomeScreen(
     appUpdateManager: AppUpdateManager,
     inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
-    val analytics = LocalAnalyticsHelper.current
-    val pm = remember { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
-
     val uiState by model.uiState.collectAsStateWithLifecycle()
-
-    var batteryOptimization by remember {
-        mutableStateOf(pm.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID))
-    }
 
     var appUpdateInfo: AppUpdateInfo? by remember {
         mutableStateOf(null)
-    }
-
-    val isSelectAutoBackupApps by remember {
-        derivedStateOf {
-            uiState.autoBackupService && uiState.autoBackupAppsListState.isNotEmpty()
-        }
     }
 
     val isUpdateAvailable by remember {
@@ -105,31 +81,6 @@ fun SettingsHomeScreen(
     var cacheSize by remember {
         mutableLongStateOf(context.cacheDir.walkTopDown().map { it.length() }.sum())
     }
-
-    val ignoreBatteryOptimizationResult =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val isIgnoringBatteryOptimization =
-                (context.getSystemService(Context.POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(
-                    BuildConfig.APPLICATION_ID
-                )
-            batteryOptimization = isIgnoringBatteryOptimization
-        }
-
-    val allowNotifications = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS) { isPermissionGranted ->
-            if (isPermissionGranted) {
-                handleAutoBackupService(true, context)
-                model.setAutoBackupService(true)
-            } else {
-                showSnackbar(
-                    MySnackbarVisuals(
-                        duration = SnackbarDuration.Short,
-                        message = context.getString(R.string.auto_backup_notification_permission_request_rejected)
-                    )
-                )
-            }
-        }
-    } else null
 
     LaunchedEffect(key1 = appUpdateManager, block = {
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
@@ -164,27 +115,7 @@ fun SettingsHomeScreen(
             chooseSaveDir.launch(pickerInitialUri)
         },
         onSaveFileSettings = onSaveFileSettings,
-        autoBackupService = uiState.autoBackupService,
-        onAutoBackupService = func@{
-            if (allowNotifications != null) {
-                if (it && !allowNotifications.status.isGranted) {
-                    allowNotifications.launchPermissionRequest()
-                    return@func
-                }
-            }
-
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-            handleAutoBackupService(
-                it && notificationManager.areNotificationsEnabled(), context
-            )
-            model.setAutoBackupService(it && notificationManager.areNotificationsEnabled())
-        },
-        isSelectAutoBackupApps = isSelectAutoBackupApps,
-        autoBackupListApps = uiState.autoBackupAppsListState,
-        autoBackupList = uiState.autoBackupList,
-        onAutoBackupList = model::setAutoBackupList,
+        onAutoBackupSettings = onAutoBackupSettings,
         nightMode = uiState.nightMode,
         onNightMode = {
             model.setNightMode(it)
@@ -207,14 +138,6 @@ fun SettingsHomeScreen(
             SettingsManager.setLocale(it)
         },
         onSwipeActionSettings = onSwipeActionSettings,
-        batteryOptimization = batteryOptimization,
-        onBatteryOptimization = {
-            val isIgnoringBatteryOptimization =
-                pm.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
-            if ((!isIgnoringBatteryOptimization and it) or (isIgnoringBatteryOptimization and !it)) {
-                ignoreBatteryOptimizationResult.launch(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-            }
-        },
         checkUpdateOnStart = uiState.checkUpdateOnStart,
         onCheckUpdateOnStart = model::setCheckUpdateOnStart,
         cacheSize = Formatter.formatFileSize(context, cacheSize),
@@ -278,25 +201,4 @@ fun SettingsHomeScreen(
             }
         },
         onAboutSettings = onAboutSettings)
-}
-
-/**
- * Manage auto backup service start and stop behaviour
- * Start, if it should be running and isn't
- * Stop, if it is running and shouldn't be
- * @param newValue boolean of service should be running
- */
-private fun handleAutoBackupService(newValue: Boolean, context: Context) {
-    if (newValue and !AutoBackupService.isRunning) context.startForegroundService(
-        Intent(
-            context, AutoBackupService::class.java
-        ).apply {
-            action = AutoBackupService.Actions.START.name
-        })
-    else if (!newValue and AutoBackupService.isRunning) context.startService(
-        Intent(
-            context, AutoBackupService::class.java
-        ).apply {
-            action = AutoBackupService.Actions.STOP.name
-        })
 }

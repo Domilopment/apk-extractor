@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_activity_settings">Einstellungen</string>
-    <string name="title_screen_save_file_settings">APK-Speicherdatei Optionen</string>
-    <string name="title_screen_about_settings">Über</string>
-    <string name="title_screen_interactions">Interaktion</string>
+    <string name="title_screen_save_file_settings">Speicherdatei Format</string>
+    <string name="title_screen_auto_backup_settings">Automatische Backups</string>
+    <string name="title_screen_about_settings">Über &amp; Support</string>
+    <string name="title_screen_interactions">Gesten &amp; Interaktion</string>
 
     <!-- Apk Options -->
     <string name="apk_action_share">Teilen</string>
@@ -13,7 +14,7 @@
     <string name="apk_action_uninstall_app">App deinstallieren</string>
 
     <!-- Preference Header -->
-    <string name="save_header">Speicher Optionen</string>
+    <string name="save_header">Speicher &amp; Backup</string>
     <string name="app_type_header">Apps</string>
     <string name="info_header">Info</string>
 
@@ -41,7 +42,7 @@
     <string name="app_type_user">Benutzer</string>
 
     <!-- Preference Data Collection -->
-    <string name="data_collection_header">Datenerfassung und -nutzung</string>
+    <string name="data_collection_header">Privatsphäre &amp; Datenerfassung</string>
     <string name="data_collection_analytics">Analysen</string>
     <string name="data_collection_analytics_summary">Erfassung von Benutzerdaten, wie App-Interaktionen und Bildschirmansichten, um das Benutzerverhalten zu verstehen und die App-Leistung zu optimieren.</string>
     <string name="data_collection_crashlytics">Absturzberichte</string>
@@ -68,7 +69,7 @@
 
     <string name="version">Version: %s (%d)</string>
 
-    <string name="appearance">Erscheinungsbild</string>
+    <string name="appearance">Erscheinungsbild &amp; Design</string>
     <string name="ui_mode">Nacht Modus</string>
     <string name="ui_mode_summary">Ändere das Erscheinungsbild der App</string>
     <string name="ui_follow_os">System einstellungen</string>

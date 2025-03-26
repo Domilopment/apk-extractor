@@ -12,9 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.BatteryStd
 import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Folder
@@ -24,7 +22,6 @@ import androidx.compose.material.icons.filled.ModeNight
 import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material.icons.filled.Swipe
 import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material.icons.filled.SyncDisabled
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.UpdateDisabled
 import androidx.compose.material3.Icon
@@ -38,10 +35,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.SettingsScreenAppAutoBackUpListState
 import domilopment.apkextractor.ui.settings.preferences.DialogPreference
 import domilopment.apkextractor.ui.settings.preferences.ListPreference
-import domilopment.apkextractor.ui.settings.preferences.MultiSelectListPreference
 import domilopment.apkextractor.ui.settings.preferences.Preference
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategory
 import domilopment.apkextractor.ui.settings.preferences.SwitchPreferenceCompat
@@ -57,12 +52,7 @@ fun SettingsHomeContent(
     onUpdateAvailable: () -> Unit,
     onChooseSaveDir: () -> Unit,
     onSaveFileSettings: () -> Unit,
-    autoBackupService: Boolean,
-    onAutoBackupService: (Boolean) -> Unit,
-    isSelectAutoBackupApps: Boolean,
-    autoBackupListApps: SettingsScreenAppAutoBackUpListState,
-    autoBackupList: Set<String>,
-    onAutoBackupList: (Set<String>) -> Unit,
+    onAutoBackupSettings: () -> Unit,
     nightMode: Int,
     onNightMode: (Int) -> Unit,
     dynamicColors: Boolean,
@@ -72,8 +62,6 @@ fun SettingsHomeContent(
     languageLocaleDisplayName: String,
     onLanguage: (String) -> Unit,
     onSwipeActionSettings: () -> Unit,
-    batteryOptimization: Boolean,
-    onBatteryOptimization: (Boolean) -> Unit,
     checkUpdateOnStart: Boolean,
     onCheckUpdateOnStart: (Boolean) -> Unit,
     cacheSize: String,
@@ -123,26 +111,14 @@ fun SettingsHomeContent(
                     Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
                 }
             }
-            preferenceCategoryItemMiddle {
-                SwitchPreferenceCompat(
-                    name = R.string.auto_backup,
-                    icon = if (autoBackupService) Icons.Default.Sync else Icons.Default.SyncDisabled,
-                    summary = R.string.auto_backup_summary,
-                    state = autoBackupService,
-                    onClick = onAutoBackupService
-                )
-            }
             preferenceCategoryItemBottom {
-                MultiSelectListPreference(
-                    icon = Icons.Default.Checklist,
-                    name = stringResource(id = R.string.auto_backup_app_list),
-                    enabled = isSelectAutoBackupApps,
-                    entries = autoBackupListApps.entries,
-                    entryValues = autoBackupListApps.entryValues,
-                    summary = stringResource(id = R.string.auto_backup_app_list_summary),
-                    state = autoBackupList,
-                    onClick = onAutoBackupList
-                )
+                Preference(
+                    name = R.string.title_screen_auto_backup_settings,
+                    icon = Icons.Default.Sync,
+                    onClick = onAutoBackupSettings
+                ) {
+                    Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
+                }
             }
         }
 
@@ -196,15 +172,6 @@ fun SettingsHomeContent(
 
         preferenceCategory(title = R.string.advanced) {
             preferenceCategoryItemTop {
-                SwitchPreferenceCompat(
-                    name = R.string.ignore_battery_optimization_title,
-                    summary = R.string.ignore_battery_optimization_summary,
-                    icon = Icons.Default.BatteryStd,
-                    state = batteryOptimization,
-                    onClick = onBatteryOptimization
-                )
-            }
-            preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
                     name = R.string.check_update_on_start_title,
                     icon = if (checkUpdateOnStart) Icons.Default.Update else Icons.Default.UpdateDisabled,

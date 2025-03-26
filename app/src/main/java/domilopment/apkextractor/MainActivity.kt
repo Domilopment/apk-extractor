@@ -243,7 +243,6 @@ class MainActivity : AppCompatActivity() {
                                     inAppUpdateResultLauncher = activityResultLauncher
                                 )
                             }
-
                         }
 
                         inAppUpdateResult?.let {
