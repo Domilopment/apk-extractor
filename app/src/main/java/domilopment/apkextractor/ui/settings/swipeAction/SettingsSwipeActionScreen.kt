@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.logItemClick
+import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.navigation.Route
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -21,9 +22,10 @@ fun SettingsSwipeActionScreen(
     val uiState by model.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit) {
-        Route.SettingsInteractions.buttons.onEach { button ->
+        Route.SettingsSwipeAction.buttons.onEach { button ->
             when (button) {
-                else -> onBackClicked()
+                Screen.ScreenActions.NavigationIcon -> onBackClicked()
+                else -> Unit
             }
         }.launchIn(this)
     }

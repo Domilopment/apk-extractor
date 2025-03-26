@@ -131,7 +131,7 @@ fun ApkExtractorNavHost(
                         navController.navigate(Route.SettingsAutoBackup)
                     },
                     onSwipeActionSettings = {
-                        navController.navigate(Route.SettingsInteractions)
+                        navController.navigate(Route.SettingsSwipeAction)
                     },
                     onDataCollectionSettings = {
                         navController.navigate(Route.SettingsDataCollection)
@@ -162,7 +162,7 @@ fun ApkExtractorNavHost(
                     })
             }
 
-            composable<Route.SettingsInteractions> { backStackEntry ->
+            composable<Route.SettingsSwipeAction> { backStackEntry ->
                 val model = backStackEntry.sharedViewModel<SettingsScreenViewModel>(navController)
 
                 SettingsSwipeActionScreen(model = model, onBackClicked = {

@@ -147,7 +147,7 @@ sealed interface Route {
 
     @Keep
     @Serializable
-    data object SettingsInteractions : Route, Screen {
+    data object SettingsSwipeAction : Route, Screen {
         override val appBarNavIcon =
             NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
                 _buttons.tryEmit(ScreenActions.NavigationIcon)

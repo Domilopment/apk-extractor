@@ -25,6 +25,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.autoBackup.AutoBackupService
+import domilopment.apkextractor.ui.Screen
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import kotlinx.coroutines.flow.launchIn
@@ -81,7 +82,8 @@ fun SettingsAutoBackupScreen(
     LaunchedEffect(key1 = Unit) {
         Route.SettingsAutoBackup.buttons.onEach { button ->
             when (button) {
-                else -> onBackClicked()
+                Screen.ScreenActions.NavigationIcon -> onBackClicked()
+                else -> Unit
             }
         }.launchIn(this)
     }
