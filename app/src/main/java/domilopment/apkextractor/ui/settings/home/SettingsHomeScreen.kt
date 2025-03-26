@@ -187,7 +187,7 @@ fun SettingsHomeScreen(
                 }.also {
                     context.startActivity(it)
                 }
-            } catch (e: ActivityNotFoundException) { // If Play Store is Installed, but deactivated
+            } catch (_: ActivityNotFoundException) { // If Play Store is Installed, but deactivated
                 context.startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
