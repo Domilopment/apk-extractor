@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.settings.interactions
+package domilopment.apkextractor.ui.settings.swipeAction
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @Composable
-fun SettingsInteractionsScreen(
+fun SettingsSwipeActionScreen(
     model: SettingsScreenViewModel,
     onBackClicked: () -> Unit,
 ) {
@@ -28,7 +28,7 @@ fun SettingsInteractionsScreen(
         }.launchIn(this)
     }
 
-    SettingsInteractionsContent(
+    SettingsSwipeActionContent(
         rightSwipeAction = uiState.rightSwipeAction,
         onRightSwipeAction = model::setRightSwipeAction,
         leftSwipeAction = uiState.leftSwipeAction,

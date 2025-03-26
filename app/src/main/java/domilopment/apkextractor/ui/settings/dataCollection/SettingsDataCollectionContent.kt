@@ -34,34 +34,31 @@ fun SettingsDataCollectionContent(
         contentPadding = WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)
             .union(WindowInsets(left = 8.dp, right = 8.dp)).asPaddingValues()
     ) {
-
-        preferenceCategory(title = R.string.data_collection_header) {
-            preferenceCategoryItemTop {
-                SwitchPreferenceCompat(
-                    icon = Icons.Default.Analytics,
-                    name = R.string.data_collection_analytics,
-                    summary = R.string.data_collection_analytics_summary,
-                    state = analytics,
-                    onClick = onAnalytics
-                )
-            }
-            preferenceCategoryItemMiddle {
-                SwitchPreferenceCompat(
-                    icon = Icons.Default.BugReport,
-                    name = R.string.data_collection_crashlytics,
-                    summary = R.string.data_collection_crashlytics_summary,
-                    state = crashlytics,
-                    onClick = onCrashlytics
-                )
-            }
-            preferenceCategoryItemBottom {
-                SwitchPreferenceCompat(
-                    name = R.string.data_collection_perf,
-                    summary = R.string.data_collection_perf_summary,
-                    state = performance,
-                    onClick = onPerformance
-                )
-            }
+        preferenceCategoryItemTop {
+            SwitchPreferenceCompat(
+                icon = Icons.Default.Analytics,
+                name = R.string.data_collection_analytics,
+                summary = R.string.data_collection_analytics_summary,
+                state = analytics,
+                onClick = onAnalytics
+            )
+        }
+        preferenceCategoryItemMiddle {
+            SwitchPreferenceCompat(
+                icon = Icons.Default.BugReport,
+                name = R.string.data_collection_crashlytics,
+                summary = R.string.data_collection_crashlytics_summary,
+                state = crashlytics,
+                onClick = onCrashlytics
+            )
+        }
+        preferenceCategoryItemBottom {
+            SwitchPreferenceCompat(
+                name = R.string.data_collection_perf,
+                summary = R.string.data_collection_perf_summary,
+                state = performance,
+                onClick = onPerformance
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.settings.interactions
+package domilopment.apkextractor.ui.settings.swipeAction
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -23,7 +23,7 @@ import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMi
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
 
 @Composable
-fun SettingsInteractionsContent(
+fun SettingsSwipeActionContent(
     rightSwipeAction: String,
     onRightSwipeAction: (String) -> Unit,
     leftSwipeAction: String,

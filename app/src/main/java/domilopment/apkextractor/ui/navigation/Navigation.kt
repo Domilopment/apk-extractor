@@ -34,7 +34,7 @@ import domilopment.apkextractor.ui.settings.about.SettingsAboutScreen
 import domilopment.apkextractor.ui.settings.autoBackup.SettingsAutoBackupScreen
 import domilopment.apkextractor.ui.settings.dataCollection.SettingsDataCollectionScreen
 import domilopment.apkextractor.ui.settings.home.SettingsHomeScreen
-import domilopment.apkextractor.ui.settings.interactions.SettingsInteractionsScreen
+import domilopment.apkextractor.ui.settings.swipeAction.SettingsSwipeActionScreen
 import domilopment.apkextractor.ui.settings.safeFile.SettingsSaveFileScreen
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
@@ -165,7 +165,7 @@ fun ApkExtractorNavHost(
             composable<Route.SettingsInteractions> { backStackEntry ->
                 val model = backStackEntry.sharedViewModel<SettingsScreenViewModel>(navController)
 
-                SettingsInteractionsScreen(model = model, onBackClicked = {
+                SettingsSwipeActionScreen(model = model, onBackClicked = {
                     navController.popBackStack()
                 })
             }
