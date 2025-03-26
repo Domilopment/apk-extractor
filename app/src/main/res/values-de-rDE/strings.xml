@@ -3,7 +3,7 @@
     <string name="title_activity_settings">Einstellungen</string>
     <string name="title_screen_save_file_settings">Speicherdatei Format</string>
     <string name="title_screen_auto_backup_settings">Automatische Backups</string>
-    <string name="title_screen_about_settings">Über &amp; Support</string>
+    <string name="title_screen_about_settings">Über</string>
     <string name="title_screen_interactions">Gesten &amp; Interaktion</string>
 
     <!-- Apk Options -->
@@ -16,7 +16,7 @@
     <!-- Preference Header -->
     <string name="save_header">Speicher &amp; Backup</string>
     <string name="app_type_header">Apps</string>
-    <string name="info_header">Info</string>
+    <string name="info_header">Info &amp; Support</string>
 
     <!-- Preference update avalible -->
     <string name="update_available_title">Update Verfügbar</string>
