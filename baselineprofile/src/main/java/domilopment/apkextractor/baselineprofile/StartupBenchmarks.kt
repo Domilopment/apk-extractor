@@ -102,7 +102,6 @@ class StartupBenchmarks {
                     // Onboarding already done.
                 }
 
-                device.findObject(By.res("ActionsMoreVert")).clickAndWait(Until.newWindow(), 1_000)
                 device.findObject(By.text("Settings")).clickAndWait(Until.newWindow(), 1_000)
                 device.findObject(By.res("SettingsLazyColumn")).also {
                     it.fling(Direction.DOWN)
