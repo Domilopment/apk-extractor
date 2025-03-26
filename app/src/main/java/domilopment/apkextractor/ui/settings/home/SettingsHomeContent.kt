@@ -170,7 +170,7 @@ fun SettingsHomeContent(
             }
         }
 
-        preferenceCategory(title = R.string.advanced) {
+        preferenceCategory(title = R.string.app_options_header) {
             preferenceCategoryItemTop {
                 SwitchPreferenceCompat(
                     name = R.string.check_update_on_start_title,

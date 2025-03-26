@@ -95,7 +95,7 @@
     <string name="apk_swipe_action_threshold_title">Wischaktion Schwellwert-Modifier</string>
     <string name="apk_swipe_action_threshold_summary">Ändere die Prozenzahl des, Positionsabhängigen Swellwertes um die Swipe Wischaktionen einfacher auszulösen.</string>
 
-    <string name="advanced">Erweiterte Einstellungen</string>
+    <string name="app_options_header">App optionen</string>
 
     <string name="favorites">Favoriten</string>
     <string name="sort_favorites">Sortiere Favoriten nach oben</string>
