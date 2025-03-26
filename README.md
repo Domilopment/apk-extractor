@@ -11,9 +11,19 @@ This means to save the install file from the Version on your device to your Syst
 
 ### Smartphone
 
-| ![](images/1.png "App list light")  | ![](images/2.png "App list dark")   | ![](images/3.png "App details")      | ![](images/4.png "App list multiselect") |
-|-------------------------------------|-------------------------------------|--------------------------------------|------------------------------------------|
-| ![](images/5.png "App list filter") | ![](images/6.png "App list search") | ![](images/7.png "Apk list details") | ![](images/8.png "Settings")             |
+|                                                |                                                |                                                 |                                                     |
+|------------------------------------------------|------------------------------------------------|-------------------------------------------------|-----------------------------------------------------|
+| ![](images/smartphone/1.png "App list light")  | ![](images/smartphone/2.png "App list dark")   | ![](images/smartphone/3.png "App details")      | ![](images/smartphone/4.png "App list multiselect") |
+| ![](images/smartphone/5.png "App list filter") | ![](images/smartphone/6.png "App list search") | ![](images/smartphone/7.png "Apk list details") | ![](images/smartphone/8.png "Settings")             |
+
+### Tablet
+
+|                                             |                                                 |
+|---------------------------------------------|-------------------------------------------------|
+| ![](images/tablet/1.png "App list light")   | ![](images/tablet/2.png "App list dark")        |
+| ![](images/tablet/3.png "App details")      | ![](images/tablet/4.png "App list multiselect") |
+| ![](images/tablet/5.png "App list filter")  | ![](images/tablet/6.png "App list search")      |
+| ![](images/tablet/7.png "Apk list details") | ![](images/tablet/8.png "Settings")             |
 
 ## Highlights
 
