@@ -93,6 +93,7 @@
     <string name="apk_swipe_action_custom_threshold_title">Activate swipe action custom threshold</string>
     <string name="apk_swipe_action_custom_threshold_summary">Use the swipe action threshold modifier instead of the default one of 56dp.</string>
 
+    <string name="advanced_swipe_action_header">Advanced Swipe Action Settings</string>
     <string name="apk_swipe_action_threshold_title">Swipe Action Threshold Modifier</string>
     <string name="apk_swipe_action_threshold_summary">Change the percentage of the Positional Threshold to trigger the swipe action more easy.</string>
 

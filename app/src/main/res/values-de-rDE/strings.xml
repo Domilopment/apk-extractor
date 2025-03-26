@@ -91,6 +91,7 @@
     <string name="apk_swipe_action_custom_threshold_title">Aktiviere personalisierten Wischaktion Schwellwert</string>
     <string name="apk_swipe_action_custom_threshold_summary">Benutze den Schwellwert-Modifer anstelle des standart Wertes von 56dp.</string>
 
+    <string name="advanced_swipe_action_header">AErweiterte Swipe Action Einstellungen</string>
     <string name="apk_swipe_action_threshold_title">Wischaktion Schwellwert-Modifier</string>
     <string name="apk_swipe_action_threshold_summary">Ändere die Prozenzahl des, Positionsabhängigen Swellwertes um die Swipe Wischaktionen einfacher auszulösen.</string>
 

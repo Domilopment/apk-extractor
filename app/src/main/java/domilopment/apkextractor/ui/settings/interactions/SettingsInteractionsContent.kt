@@ -62,7 +62,7 @@ fun SettingsInteractionsContent(
                 )
             }
         }
-        preferenceCategory(title = R.string.advanced) {
+        preferenceCategory(title = R.string.advanced_swipe_action_header) {
             preferenceCategoryItemMiddle {
                 SwitchPreferenceCompat(
                     name = R.string.apk_swipe_action_custom_threshold_title,
