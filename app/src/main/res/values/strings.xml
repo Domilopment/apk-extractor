@@ -13,7 +13,7 @@
     <string name="title_screen_save_file_settings">Save file format</string>
     <string name="title_screen_auto_backup_settings">Auto Backup</string>
     <string name="title_screen_about_settings">About</string>
-    <string name="title_screen_interactions_settings">Gestures &amp; Interactions</string>
+    <string name="title_screen_swipe_action_settings">Swipe Actions</string>
     <string name="title_screen_data_collection_settings">Data Collection</string>
 
     <!-- Preference Header -->
@@ -82,7 +82,7 @@
     <string name="use_material_you">Use Material You</string>
     <string name="use_material_you_summary">Use Dynamic Color Theme, provided by Wallpaper colors in Android 12 und upwards</string>
 
-    <string name="swipe_actions">Swipe Actions</string>
+    <string name="gestures_and_interactions">Gestures &amp; Interactions</string>
     <string name="app_list_swipe_actions">App List Swipe Actions</string>
 
     <string name="apk_swipe_action_right_title">Right swipe action</string>

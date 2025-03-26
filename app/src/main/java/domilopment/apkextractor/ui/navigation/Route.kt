@@ -152,7 +152,7 @@ sealed interface Route {
             NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
                 _buttons.tryEmit(ScreenActions.NavigationIcon)
             }
-        override val appBarTitleRes = R.string.swipe_actions
+        override val appBarTitleRes = R.string.title_screen_swipe_action_settings
         override val isSearchable = false
         override val hasNavigationBar = true
         override val appBarActions = emptyList<ActionMenuItem>()

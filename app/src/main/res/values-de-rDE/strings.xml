@@ -4,7 +4,7 @@
     <string name="title_screen_save_file_settings">Speicherdatei Format</string>
     <string name="title_screen_auto_backup_settings">Automatische Backups</string>
     <string name="title_screen_about_settings">Über</string>
-    <string name="title_screen_interactions_settings">Gesten &amp; Interaktion</string>
+    <string name="title_screen_swipe_action_settings">Swipe Actions</string>
     <string name="title_screen_data_collection_settings">Datenerfassung</string>
 
     <!-- Apk Options -->
@@ -80,7 +80,7 @@
     <string name="use_material_you">Aktiviere Material You</string>
     <string name="use_material_you_summary">Benutze die Dynamische Farbpalette, welche durch das ändern des Hintergrundes ab Android 12 Bereitgestellt wird.</string>
 
-    <string name="swipe_actions">Swipe Actions</string>
+    <string name="gestures_and_interactions">Gesten &amp; Interaktion</string>
     <string name="app_list_swipe_actions">Apps Liste Swipe Actions</string>
 
     <string name="apk_swipe_action_right_title">Wischaktion nach rechts</string>

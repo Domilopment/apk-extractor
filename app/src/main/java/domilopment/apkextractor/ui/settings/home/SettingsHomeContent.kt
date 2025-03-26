@@ -152,10 +152,10 @@ fun SettingsHomeContent(
             }
         }
 
-        preferenceCategory(title = R.string.title_screen_interactions_settings) {
+        preferenceCategory(title = R.string.gestures_and_interactions) {
             preferenceCategoryItemSingle {
                 Preference(
-                    name = stringResource(id = R.string.swipe_actions),
+                    name = stringResource(id = R.string.title_screen_swipe_action_settings),
                     icon = Icons.Default.Swipe,
                     onClick = onSwipeActionSettings
                 ) {
