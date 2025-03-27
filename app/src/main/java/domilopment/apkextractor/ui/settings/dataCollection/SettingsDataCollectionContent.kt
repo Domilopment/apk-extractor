@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
-import domilopment.apkextractor.ui.settings.preferences.preferenceCategory
 import domilopment.apkextractor.ui.settings.preferences.SwitchPreferenceCompat
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBottom
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMiddle
