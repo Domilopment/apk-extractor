@@ -1,10 +1,7 @@
 package domilopment.apkextractor.ui.settings.home
 
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -43,6 +40,7 @@ import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBo
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMiddle
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemSingle
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
+import domilopment.apkextractor.ui.tabletLazyListInsets
 
 @Composable
 fun SettingsHomeContent(
@@ -75,8 +73,9 @@ fun SettingsHomeContent(
     LazyColumn(
         modifier = Modifier.testTag("SettingsLazyColumn"),
         state = rememberLazyListState(),
-        contentPadding = WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)
-            .union(WindowInsets(left = 8.dp, right = 8.dp)).asPaddingValues()
+        contentPadding = WindowInsets.tabletLazyListInsets.union(
+            WindowInsets(left = 8.dp, right = 8.dp)
+        ).asPaddingValues()
     ) {
         if (appUpdateInfo != null) preferenceCategoryItemSingle {
             Preference(

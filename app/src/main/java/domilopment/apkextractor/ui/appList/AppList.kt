@@ -4,15 +4,11 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
@@ -41,9 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.model.appList.ApplicationModel
-import domilopment.apkextractor.ui.DeviceTypeUtils
 import domilopment.apkextractor.ui.attrColorResource
 import domilopment.apkextractor.ui.components.ScrollToTopLazyColumn
+import domilopment.apkextractor.ui.tabletLazyListInsets
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.Utils.getAnnotatedString
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
@@ -71,9 +67,7 @@ fun AppList(
     ScrollToTopLazyColumn(
         state = rememberLazyListState(),
         modifier = Modifier.fillMaxSize(),
-        contentPadding = if (DeviceTypeUtils.isTabletBars) WindowInsets.navigationBars.only(
-            WindowInsetsSides.Bottom
-        ).asPaddingValues() else PaddingValues(0.dp),
+        contentPadding = WindowInsets.tabletLazyListInsets.asPaddingValues(),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         items(items = appList, key = { it.appPackageName }) { app ->

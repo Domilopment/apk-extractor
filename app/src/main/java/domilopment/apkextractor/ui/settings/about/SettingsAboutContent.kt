@@ -1,10 +1,7 @@
 package domilopment.apkextractor.ui.settings.about
 
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -23,6 +20,7 @@ import domilopment.apkextractor.ui.settings.preferences.Preference
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBottom
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMiddle
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
+import domilopment.apkextractor.ui.tabletLazyListInsets
 
 @Composable
 fun SettingsAboutContent(
@@ -31,9 +29,9 @@ fun SettingsAboutContent(
     ossDependencies: () -> Unit,
 ) {
     LazyColumn(
-        state = rememberLazyListState(),
-        contentPadding = WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)
-            .union(WindowInsets(left = 8.dp, right = 8.dp)).asPaddingValues()
+        state = rememberLazyListState(), contentPadding = WindowInsets.tabletLazyListInsets.union(
+            WindowInsets(left = 8.dp, right = 8.dp)
+        ).asPaddingValues()
     ) {
         preferenceCategoryItemTop {
             Preference(
