@@ -7,10 +7,16 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -49,6 +55,7 @@ import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
 import timber.log.Timber
 import androidx.core.net.toUri
+import domilopment.apkextractor.ui.DeviceTypeUtils
 
 @Composable
 fun ApkList(
@@ -70,6 +77,9 @@ fun ApkList(
     ScrollToTopLazyColumn(
         state = rememberLazyListState(),
         modifier = Modifier.fillMaxSize(),
+        contentPadding = if (DeviceTypeUtils.isTabletBars) WindowInsets.navigationBars.only(
+            WindowInsetsSides.Bottom
+        ).asPaddingValues() else PaddingValues(0.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         item {

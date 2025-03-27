@@ -72,7 +72,7 @@ fun ScrollToTopLazyColumn(
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState(),
     scope: CoroutineScope = rememberCoroutineScope(),
-    contentPadding: PaddingValues = PaddingValues(bottom = 0.dp),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical = if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
