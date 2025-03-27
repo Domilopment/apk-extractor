@@ -19,7 +19,6 @@ import domilopment.apkextractor.ui.settings.preferences.SeekBarPreference
 import domilopment.apkextractor.ui.settings.preferences.SwitchPreferenceCompat
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategory
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBottom
-import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMiddle
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
 
 @Composable
@@ -50,7 +49,7 @@ fun SettingsSwipeActionContent(
                     onClick = onRightSwipeAction
                 )
             }
-            preferenceCategoryItemMiddle {
+            preferenceCategoryItemBottom {
                 ListPreference(
                     name = R.string.apk_swipe_action_left_title,
                     icon = Icons.Default.SwipeLeft,
@@ -63,7 +62,7 @@ fun SettingsSwipeActionContent(
             }
         }
         preferenceCategory(title = R.string.advanced_swipe_action_header) {
-            preferenceCategoryItemMiddle {
+            preferenceCategoryItemTop {
                 SwitchPreferenceCompat(
                     name = R.string.apk_swipe_action_custom_threshold_title,
                     summary = R.string.apk_swipe_action_custom_threshold_summary,
