@@ -144,32 +144,36 @@ fun ApkSheetActions(
             .horizontalScroll(scrollState)
             .padding(8.dp, 0.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        AssistChip(onClick = onActionShare,
+        AssistChip(
+            onClick = onActionShare,
             label = { Text(text = stringResource(id = R.string.alert_apk_selected_share)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Share, contentDescription = null
                 )
             })
-        AssistChip(onClick = onActionInstall,
+        AssistChip(
+            onClick = onActionInstall,
             label = { Text(text = stringResource(id = R.string.alert_apk_selected_install)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Android, contentDescription = null
                 )
             })
-        AssistChip(onClick = onActionDelete,
+        AssistChip(
+            onClick = onActionDelete,
             label = { Text(text = stringResource(id = R.string.alert_apk_selected_delete)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Delete, contentDescription = null
                 )
             })
-        AssistChip(onClick = onActionUninstall,
-            label = { Text(text = stringResource(id = R.string.apk_action_uninstall_app)) },
-            enabled = packageName != null && Utils.isPackageInstalled(
+        if (packageName != null && Utils.isPackageInstalled(
                 LocalContext.current.packageManager, packageName
-            ),
+            )
+        ) AssistChip(
+            onClick = onActionUninstall,
+            label = { Text(text = stringResource(id = R.string.apk_action_uninstall_app)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Clear, contentDescription = null

@@ -136,7 +136,8 @@ fun AppOptionsBottomSheet(
             onFavoriteChanged = onFavoriteChanged
         )
         HorizontalDivider(modifier = Modifier.padding(4.dp))
-        AppSheetInfo(modifier = Modifier.weight(1f, fill = false),
+        AppSheetInfo(
+            modifier = Modifier.weight(1f, fill = false),
             sourceDirectory = app.appSourceDirectory.toString(),
             splitDirectories = app.appSplitSourceDirectories,
             apkSize = app.apkSize,
@@ -154,7 +155,8 @@ fun AppOptionsBottomSheet(
                 }
             })
         HorizontalDivider(modifier = Modifier.padding(4.dp))
-        AppSheetActions(app = app,
+        AppSheetActions(
+            app = app,
             onActionSave = onActionSave,
             onActionShare = onActionShare,
             onActionSaveImage = label@{
@@ -193,42 +195,47 @@ private fun AppSheetActions(
             .horizontalScroll(scrollState)
             .padding(8.dp, 0.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        AssistChip(onClick = onActionSave,
+        AssistChip(
+            onClick = onActionSave,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_save)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Save, contentDescription = null
                 )
             })
-        AssistChip(onClick = onActionShare,
+        AssistChip(
+            onClick = onActionShare,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_share)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Share, contentDescription = null
                 )
             })
-        AssistChip(onClick = onActionSaveImage,
+        AssistChip(
+            onClick = onActionSaveImage,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_save_image)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Image, contentDescription = null
                 )
             })
-        if (app.launchIntent != null) AssistChip(onClick = onActionOpenApp,
+        if (app.launchIntent != null) AssistChip(
+            onClick = onActionOpenApp,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_open)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Android, contentDescription = null
                 )
             })
-        AssistChip(onClick = onActionOpenSettings,
+        AssistChip(
+            onClick = onActionOpenSettings,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_settings)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Settings, contentDescription = null
                 )
             })
-        if ((app.appFlags?.and(ApplicationInfo.FLAG_SYSTEM) != ApplicationInfo.FLAG_SYSTEM) || (app.appUpdateTime > app.appInstallTime)) AssistChip(
+        if ((app.appFlags and ApplicationInfo.FLAG_SYSTEM != ApplicationInfo.FLAG_SYSTEM) || (app.appUpdateTime > app.appInstallTime)) AssistChip(
             onClick = onActionUninstall,
             label = { Text(text = stringResource(id = R.string.action_bottom_sheet_uninstall)) },
             leadingIcon = {
