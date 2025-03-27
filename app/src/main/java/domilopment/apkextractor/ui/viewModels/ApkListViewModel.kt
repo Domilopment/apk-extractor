@@ -48,7 +48,7 @@ class ApkListViewModel @Inject constructor(
     val sortOrder = preferenceRepository.apkSortOrder.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-        ApkSortOptions.SORT_BY_FILE_SIZE_DESC
+        ApkSortOptions.SORT_BY_LAST_MODIFIED_DESC
     )
 
     init {
