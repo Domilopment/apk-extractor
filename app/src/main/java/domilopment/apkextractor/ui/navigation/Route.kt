@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.serialization.Serializable
 
-
 sealed interface Route {
     sealed interface Graph: Route {
         @Serializable
