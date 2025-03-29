@@ -22,7 +22,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
-import domilopment.apkextractor.ui.Screen
+import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.ui.navigation.Route
@@ -190,12 +190,12 @@ fun AppListScreen(
 
     LaunchedEffect(key1 = Unit) {
         // all actions inside Appbar or Bottombar the user can trigger in this screen
-        Route.AppList.buttons.onEach { button ->
+        Route.Screen.AppList.buttons.onEach { button ->
             when (button) {
-                Screen.ScreenActions.FilterList -> showFilter = true
-                Screen.ScreenActions.Refresh -> model.updateApps()
-                Screen.ScreenActions.Save -> model.saveSelectedApps()
-                Screen.ScreenActions.Share -> model.createShareUrisForSelectedApps()
+                ScreenConfig.ScreenActions.FilterList -> showFilter = true
+                ScreenConfig.ScreenActions.Refresh -> model.updateApps()
+                ScreenConfig.ScreenActions.Save -> model.saveSelectedApps()
+                ScreenConfig.ScreenActions.Share -> model.createShareUrisForSelectedApps()
 
                 else -> Unit
             }

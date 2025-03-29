@@ -12,7 +12,7 @@ import domilopment.apkextractor.utils.Constants
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import androidx.core.net.toUri
-import domilopment.apkextractor.ui.Screen
+import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.ui.navigation.Route
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -21,9 +21,9 @@ fun SettingsAboutScreen(
     onBackClicked: () -> Unit, context: Context = LocalContext.current
 ) {
     LaunchedEffect(key1 = Unit) {
-        Route.SettingsAbout.buttons.onEach { button ->
+        Route.Screen.SettingsAbout.buttons.onEach { button ->
             when (button) {
-                Screen.ScreenActions.NavigationIcon -> onBackClicked()
+                ScreenConfig.ScreenActions.NavigationIcon -> onBackClicked()
                 else -> Unit
             }
         }.launchIn(this)

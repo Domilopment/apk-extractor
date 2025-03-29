@@ -90,7 +90,7 @@ fun SettingsHomeScreen(
     })
 
     LaunchedEffect(key1 = Unit) {
-        Route.SettingsHome.buttons.onEach { button ->
+        Route.Screen.SettingsHome.buttons.onEach { button ->
             when (button) {
                 else -> Unit
             }

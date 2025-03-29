@@ -22,7 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.navigation.Route
-import domilopment.apkextractor.ui.Screen
+import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet
 import domilopment.apkextractor.ui.dialogs.ApkSortMenu
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
@@ -85,11 +85,11 @@ fun ApkListScreen(
     }
 
     LaunchedEffect(key1 = Unit) {
-        Route.ApkList.buttons.onEach { button ->
+        Route.Screen.ApkList.buttons.onEach { button ->
             when (button) {
-                Screen.ScreenActions.Sort -> sortDialog = true
-                Screen.ScreenActions.OpenExplorer -> selectApk.launch(arrayOf(FileUtil.FileInfo.APK.mimeType))
-                Screen.ScreenActions.Refresh -> model.updatePackageArchives()
+                ScreenConfig.ScreenActions.Sort -> sortDialog = true
+                ScreenConfig.ScreenActions.OpenExplorer -> selectApk.launch(arrayOf(FileUtil.FileInfo.APK.mimeType))
+                ScreenConfig.ScreenActions.Refresh -> model.updatePackageArchives()
 
                 else -> Unit
             }

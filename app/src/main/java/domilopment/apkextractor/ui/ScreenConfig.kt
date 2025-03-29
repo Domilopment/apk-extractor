@@ -8,10 +8,10 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import domilopment.apkextractor.data.IconResource
 import domilopment.apkextractor.ui.actionBar.ActionMenuItem
 import domilopment.apkextractor.ui.bottomBar.BottomBarItem
-import domilopment.apkextractor.ui.navigation.Route
+import domilopment.apkextractor.ui.navigation.Route.Screen
 import kotlin.reflect.full.companionObjectInstance
 
-interface Screen {
+interface ScreenConfig {
     val appBarNavIcon: NavigationIcon?
     @get:StringRes
     val appBarTitleRes: Int
@@ -31,8 +31,8 @@ interface Screen {
     )
 
     companion object {
-        fun getScreen(navDestination: NavDestination): Screen? =
-            Route::class.sealedSubclasses.find { navDestination.hasRoute(it) }
-                ?.let { it.objectInstance ?: it.companionObjectInstance } as? Screen
+        fun getScreenConfig(navDestination: NavDestination): ScreenConfig? =
+            Screen::class.sealedSubclasses.find { navDestination.hasRoute(it) }
+                ?.let { it.objectInstance ?: it.companionObjectInstance } as? ScreenConfig
     }
 }
