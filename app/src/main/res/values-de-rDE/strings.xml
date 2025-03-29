@@ -165,7 +165,7 @@
     <string name="menu_sort_app_install">Zuletzt installiert</string>
     <string name="menu_sort_app_update">Zuletzt aktualisiert</string>
     <string name="menu_sort_app_apk_size">APK größe</string>
-    <string name="menu_show_save_dir">Gespeicherte APKs</string>
+    <string name="menu_show_save_dir">APK Sicherungen</string>
     <string name="action_settings">Einstellungen</string>
     <string name="menu_show_app_list">Installierte Apps</string>
     <string name="menu_refresh_app_list">Aktualisieren</string>
