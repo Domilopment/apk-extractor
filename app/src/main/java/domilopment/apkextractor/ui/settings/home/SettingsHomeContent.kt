@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Swipe
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.UpdateDisabled
+import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -68,7 +69,8 @@ fun SettingsHomeContent(
     onDeleteFirebaseInstallationsId: () -> Unit,
     onGitHub: () -> Unit,
     onGooglePlay: () -> Unit,
-    onAboutSettings: () -> Unit
+    onAboutSettings: () -> Unit,
+    onDonationSettings: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.testTag("SettingsLazyColumn"),
@@ -229,11 +231,20 @@ fun SettingsHomeContent(
                     )
                 }
             }
-            preferenceCategoryItemBottom {
+            preferenceCategoryItemMiddle {
                 Preference(
                     name = stringResource(id = R.string.title_screen_about_settings),
                     icon = Icons.Default.Info,
                     onClick = onAboutSettings
+                ) {
+                    Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
+                }
+            }
+            preferenceCategoryItemBottom {
+                Preference(
+                    name = R.string.donations_page_title,
+                    icon = Icons.Default.VolunteerActivism,
+                    onClick = onDonationSettings
                 ) {
                     Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
                 }

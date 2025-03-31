@@ -56,6 +56,7 @@ fun SettingsHomeScreen(
     onSwipeActionSettings: () -> Unit,
     onDataCollectionSettings: () -> Unit,
     onAboutSettings: () -> Unit,
+    onDonationSettings: () -> Unit,
     chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
     context: Context = LocalContext.current,
     appUpdateManager: AppUpdateManager,
@@ -196,5 +197,7 @@ fun SettingsHomeScreen(
                 )
             }
         },
-        onAboutSettings = onAboutSettings)
+        onAboutSettings = onAboutSettings,
+        onDonationSettings = onDonationSettings
+    )
 }

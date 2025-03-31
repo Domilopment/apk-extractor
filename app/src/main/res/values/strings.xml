@@ -340,4 +340,11 @@
 
     <string name="double_back_press_first_press_toast_text">Click again to close the App</string>
 
+    <!-- Donations -->
+    <string name="donations_page_title">Donations</string>
+    <string name="donations_page_header">Thank You for Using APK Extractor! 🎉</string>
+    <string name="donations_page_text">If you enjoy the app, you can support its development with a voluntary donation. Your contribution helps improve the app and keeps it ad-free for everyone.\n\nEvery contribution, big or small, makes a difference. Your generosity helps to:\n• Maintain and improve app features\n• Keep the service Ad-/free for those who need it\n• Develop new and exciting updates</string>
+    <string name="donations_github_sponsors">GitHub Sponsors</string>
+    <string name="donations_bmc">Buy me a Coffee</string>
+
 </resources>

@@ -12,10 +12,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -30,7 +26,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.google.android.play.core.appupdate.AppUpdateManager
 import domilopment.apkextractor.MainActivity
-import domilopment.apkextractor.R
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.logScreenView
 import domilopment.apkextractor.ui.apkList.ApkListScreen
@@ -38,6 +33,7 @@ import domilopment.apkextractor.ui.appList.AppListScreen
 import domilopment.apkextractor.ui.settings.about.SettingsAboutScreen
 import domilopment.apkextractor.ui.settings.autoBackup.SettingsAutoBackupScreen
 import domilopment.apkextractor.ui.settings.dataCollection.SettingsDataCollectionScreen
+import domilopment.apkextractor.ui.settings.donation.SettingsDonationScreen
 import domilopment.apkextractor.ui.settings.home.SettingsHomeScreen
 import domilopment.apkextractor.ui.settings.swipeAction.SettingsSwipeActionScreen
 import domilopment.apkextractor.ui.settings.safeFile.SettingsSaveFileScreen
@@ -148,6 +144,9 @@ fun ApkExtractorNavHost(
                     onAboutSettings = {
                         navController.navigate(Route.Screen.SettingsAbout)
                     },
+                    onDonationSettings = {
+                        navController.navigate(Route.Screen.SettingsDonation)
+                    },
                     chooseSaveDir = chooseSaveDir,
                     appUpdateManager = appUpdateManager,
                     inAppUpdateResultLauncher = inAppUpdateResultLauncher
@@ -189,6 +188,12 @@ fun ApkExtractorNavHost(
 
             composable<Route.Screen.SettingsAbout> {
                 SettingsAboutScreen(onBackClicked = {
+                    navController.popBackStack()
+                })
+            }
+
+            composable<Route.Screen.SettingsDonation> {
+                SettingsDonationScreen(onBackClicked = {
                     navController.popBackStack()
                 })
             }
