@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Favorite
@@ -38,60 +36,55 @@ fun SettingsDonationContent(
     onGithubSponsors: () -> Unit,
     onBuyMeACoffee: () -> Unit,
 ) {
-    Column {
-        Column(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth()
-                .verticalScroll(state = rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                tint = Color.Red
-            )
-            Text(
-                text = stringResource(id = R.string.donations_page_header),
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = stringResource(id = R.string.donations_page_text),
-                textAlign = TextAlign.Center,
-            )
-        }
-
-        LazyColumn(
-            state = rememberLazyListState(),
-            contentPadding = WindowInsets.tabletLazyListInsets.union(
-                WindowInsets(left = 8.dp, right = 8.dp)
-            ).asPaddingValues()
-        ) {
-            preferenceCategoryItemTop {
-                Preference(
-                    name = R.string.donations_github_sponsors,
-                    icon = ImageVector.vectorResource(id = R.drawable.github_mark_white),
-                    onClick = onGithubSponsors
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.OpenInNew,
-                        contentDescription = null
-                    )
-                }
+    LazyColumn(
+        state = rememberLazyListState(), contentPadding = WindowInsets.tabletLazyListInsets.union(
+            WindowInsets(left = 8.dp, right = 8.dp)
+        ).asPaddingValues()
+    ) {
+        item {
+            Column(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = Color.Red
+                )
+                Text(
+                    text = stringResource(id = R.string.donations_page_header),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = stringResource(id = R.string.donations_page_text),
+                    textAlign = TextAlign.Center,
+                )
             }
-            preferenceCategoryItemBottom {
-                Preference(
-                    name = R.string.donations_bmc,
-                    icon = ImageVector.vectorResource(id = R.drawable.bmc_logo),
-                    onClick = onBuyMeACoffee
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.OpenInNew,
-                        contentDescription = null
-                    )
-                }
+        }
+        preferenceCategoryItemTop {
+            Preference(
+                name = R.string.donations_github_sponsors,
+                icon = ImageVector.vectorResource(id = R.drawable.github_mark_white),
+                onClick = onGithubSponsors
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.OpenInNew, contentDescription = null
+                )
+            }
+        }
+        preferenceCategoryItemBottom {
+            Preference(
+                name = R.string.donations_bmc,
+                icon = ImageVector.vectorResource(id = R.drawable.bmc_logo),
+                onClick = onBuyMeACoffee
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.OpenInNew, contentDescription = null
+                )
             }
         }
     }
