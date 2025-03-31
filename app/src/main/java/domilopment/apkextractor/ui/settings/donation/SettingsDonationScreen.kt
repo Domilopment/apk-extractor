@@ -32,6 +32,9 @@ fun SettingsDonationScreen(
             CustomTabsIntent.Builder().build()
                 .launchUrl(context, Constants.GITHUB_SPONSORS_URL.toUri())
         },
+        onPatreon = {
+            CustomTabsIntent.Builder().build().launchUrl(context, Constants.PATREON_URL.toUri())
+        },
         onBuyMeACoffee = {
             CustomTabsIntent.Builder().build()
                 .launchUrl(context, Constants.BUY_ME_A_COFFEE_URL.toUri())
