@@ -346,7 +346,7 @@ fun AnimatedNavigationSuite(
                             interactionSource = it.interactionSource
                         )
                     }
-                    Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.weight(3f))
                 }
             }
 
