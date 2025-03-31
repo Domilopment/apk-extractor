@@ -2,14 +2,11 @@ package domilopment.apkextractor.ui.navigation
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -46,9 +43,6 @@ fun ApkExtractorNavigation(
         modifier = modifier,
         showNavigationSuite = ((uiState !is UiState.ActionMode && !WindowInsets.isImeVisible) || DeviceTypeUtils.isTabletBars) && appBarState.hasNavigation,
         onNavigate = onNavigate,
-        navigationRailHeader = {
-            Spacer(modifier = Modifier.height(TopAppBarDefaults.TopAppBarExpandedHeight))
-        },
         content = content
     )
 }

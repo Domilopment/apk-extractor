@@ -45,6 +45,7 @@ import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -255,11 +256,8 @@ fun AnimatedNavigationSuite(
     // default for the colors param of the NavigationSuiteScope.item non-composable function.
     val defaultItemColors = NavigationSuiteDefaults.itemColors()
 
-    // Save previous state to correctly play Out animations
-    var previousState by remember { mutableStateOf(layoutType) }
-
     AnimatedContent(targetState = layoutType, modifier = modifier, transitionSpec = {
-        if ((layoutType == NavigationSuiteType.NavigationBar && previousState == NavigationSuiteType.None) || (targetState == NavigationSuiteType.None && previousState == NavigationSuiteType.NavigationBar)) {
+        val enterTransition = if (targetState == NavigationSuiteType.NavigationBar) {
             slideInVertically(
                 animationSpec = tween(
                     durationMillis = 100,
@@ -269,13 +267,8 @@ fun AnimatedNavigationSuite(
                     durationMillis = 100,
                     delayMillis = 100,
                 )
-            ) togetherWith slideOutVertically(
-                animationSpec = tween(
-                    durationMillis = 100, easing = LinearOutSlowInEasing
-                ), targetOffsetY = { it }) + fadeOut(
-                animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
             )
-        } else if ((layoutType == NavigationSuiteType.NavigationRail && previousState == NavigationSuiteType.None) || (layoutType == NavigationSuiteType.None && previousState == NavigationSuiteType.NavigationRail)) {
+        } else if (targetState == NavigationSuiteType.NavigationRail) {
             slideInHorizontally(
                 animationSpec = tween(
                     durationMillis = 100,
@@ -285,15 +278,29 @@ fun AnimatedNavigationSuite(
                     durationMillis = 100,
                     delayMillis = 100,
                 )
-            ) togetherWith slideOutHorizontally(
+            )
+        } else {
+            EnterTransition.None
+        }
+        val exitTransition = if (initialState == NavigationSuiteType.NavigationBar) {
+            slideOutVertically(
+                animationSpec = tween(
+                    durationMillis = 100, easing = LinearOutSlowInEasing
+                ), targetOffsetY = { it }) + fadeOut(
+                animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
+            )
+        } else if (initialState == NavigationSuiteType.NavigationRail) {
+            slideOutHorizontally(
                 animationSpec = tween(
                     durationMillis = 100, easing = LinearOutSlowInEasing
                 ), targetOffsetX = { -it }) + fadeOut(
                 animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
             )
         } else {
-            EnterTransition.None togetherWith ExitTransition.None
+            ExitTransition.None
         }
+
+        enterTransition togetherWith exitTransition
     }) { type ->
         when (type) {
             NavigationSuiteType.NavigationBar -> {
@@ -324,6 +331,7 @@ fun AnimatedNavigationSuite(
                     contentColor = colors.navigationRailContentColor,
                     header = navigationRailHeader
                 ) {
+                    Spacer(modifier = Modifier.weight(1f))
                     scope.itemList.forEach {
                         NavigationRailItem(
                             modifier = it.modifier,
@@ -338,6 +346,7 @@ fun AnimatedNavigationSuite(
                             interactionSource = it.interactionSource
                         )
                     }
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
 
@@ -345,7 +354,6 @@ fun AnimatedNavigationSuite(
                 /* Do nothing. */
             }
         }
-        previousState = type
     }
 }
 
