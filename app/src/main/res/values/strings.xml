@@ -300,6 +300,9 @@
     <string name="progress_dialog_title_install">Install APKs</string>
     <string name="progress_dialog_title_placeholder" translatable="false">Progress Dialog</string>
 
+    <!-- Installation Activity -->
+    <string name="installation_activity_placeholder_text">Please wait</string>
+
     <!-- Installation Result Dialog -->
     <string name="installation_result_dialog_success_title">Installation Succeeded!</string>
     <string name="installation_result_dialog_success_message">Installation of %s succeeded</string>

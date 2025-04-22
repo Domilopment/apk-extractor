@@ -8,21 +8,22 @@ import android.os.IBinder
 import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.IntentSanitizer
-import androidx.core.util.Consumer
 import dagger.hilt.android.AndroidEntryPoint
-import domilopment.apkextractor.data.ApkInstallationResult
 import domilopment.apkextractor.data.InstallationResultType
 import domilopment.apkextractor.data.repository.analytics.AnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
@@ -42,24 +43,10 @@ class InstallerActivity : ComponentActivity() {
     lateinit var analyticsHelper: AnalyticsHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
             val uiState = model.uiState
-            var installationResult: ApkInstallationResult? by remember {
-                mutableStateOf(null)
-            }
-
-            DisposableEffect(Unit) {
-                val listener = Consumer<Intent> { intent ->
-                    onNewIntent(intent) { resultType ->
-                        installationResult = ApkInstallationResult(resultType)
-                    }
-                }
-                addOnNewIntentListener(listener)
-                onDispose {
-                    removeOnNewIntentListener(listener)
-                }
-            }
 
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                 APKExtractorTheme(dynamicColor = true) {
@@ -67,26 +54,37 @@ class InstallerActivity : ComponentActivity() {
                         val analytics = LocalAnalyticsHelper.current
 
                         Box(contentAlignment = Alignment.Center) {
-                            if (uiState.shouldBeShown) ProgressDialog(state = uiState,
-                                onDismissRequest = {
-                                    model.cancel()
-                                    this@InstallerActivity.finish()
-                                },
-                                onCancel = {
-                                    model.cancel()
-                                    this@InstallerActivity.finish()
-                                },
-                                dismissOnBackPress = true,
-                                dismissOnClickOutside = true
-                            )
+                            Column(
+                                modifier = Modifier.padding(8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                CircularProgressIndicator()
+                                Text(text = stringResource(id = R.string.installation_activity_placeholder_text))
+                            }
 
-                            installationResult?.let {
-                                InstallationResultDialog(
+                            uiState.progressState?.let {
+                                ProgressDialog(
+                                    state = it,
                                     onDismissRequest = {
-                                        installationResult = null
+                                        model.cancel()
                                         this@InstallerActivity.finish()
                                     },
-                                    result = it.result,
+                                    onCancel = {
+                                        model.cancel()
+                                        this@InstallerActivity.finish()
+                                    },
+                                    dismissOnBackPress = true,
+                                    dismissOnClickOutside = true,
+                                )
+                            }
+
+                            uiState.result?.let {
+                                InstallationResultDialog(
+                                    onDismissRequest = {
+                                        model.showInstallationResult(null)
+                                        this@InstallerActivity.finish()
+                                    },
+                                    result = it,
                                 )
                             }
 
@@ -112,7 +110,7 @@ class InstallerActivity : ComponentActivity() {
         } ?: super.finish()
     }
 
-    private fun onNewIntent(intent: Intent, result: (InstallationResultType) -> Unit) {
+    override fun onNewIntent(intent: Intent) {
         if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION || intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
@@ -155,7 +153,7 @@ class InstallerActivity : ComponentActivity() {
                             }
                         } catch (e: SecurityException) {
                             Timber.tag("Pending User Action Security Exception").e(e)
-                            result(InstallationResultType.Failure.Security(e.message))
+                            model.showInstallationResult(InstallationResultType.Failure.Security(e.message))
                             null
                         }
                     }
@@ -167,10 +165,18 @@ class InstallerActivity : ComponentActivity() {
 
                     if (intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
                         packageName?.let { model.removeApp(packageName) }
-                        result(InstallationResultType.Success.Uninstalled(packageName))
+                        model.showInstallationResult(
+                            InstallationResultType.Success.Uninstalled(
+                                packageName
+                            )
+                        )
                     } else if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
                         packageName?.let { model.addApp(packageName) }
-                        result(InstallationResultType.Success.Installed(packageName))
+                        model.showInstallationResult(
+                            InstallationResultType.Success.Installed(
+                                packageName
+                            )
+                        )
                     }
                 }
 
@@ -181,13 +187,13 @@ class InstallerActivity : ComponentActivity() {
 
                     Timber.tag("Package Installer: ${intent.action}").e(Exception(errorMessage))
                     when (intent.action) {
-                        MainActivity.PACKAGE_UNINSTALLATION_ACTION -> result(
+                        MainActivity.PACKAGE_UNINSTALLATION_ACTION -> model.showInstallationResult(
                             InstallationResultType.Failure.Uninstall(
                                 packageName, errorMessage
                             )
                         )
 
-                        MainActivity.PACKAGE_INSTALLATION_ACTION -> result(
+                        MainActivity.PACKAGE_INSTALLATION_ACTION -> model.showInstallationResult(
                             InstallationResultType.Failure.Install(
                                 packageName, errorMessage
                             )
@@ -195,6 +201,6 @@ class InstallerActivity : ComponentActivity() {
                     }
                 }
             }
-        }
+        } else super.onNewIntent(intent)
     }
 }

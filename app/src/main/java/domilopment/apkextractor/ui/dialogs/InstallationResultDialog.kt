@@ -51,7 +51,7 @@ fun InstallationResultDialog(
         Text(
             text = stringResource(
                 id = message,
-                result.packageName.toString(),
+                result.packageName ?: "App",
                 if (result is InstallationResultType.Failure) result.errorMessage ?: "" else ""
             )
         )

@@ -11,5 +11,6 @@ sealed class InstallApkResult(open val packageName: String?) {
         InstallApkResult(packageName)
 
     data class OnSuccess(val app: ApplicationModel?) : InstallApkResult(app?.appPackageName)
-    data class OnFail(override val packageName: String?) : InstallApkResult(packageName)
+    data class OnFail(override val packageName: String?, val error: String? = null) :
+        InstallApkResult(packageName)
 }

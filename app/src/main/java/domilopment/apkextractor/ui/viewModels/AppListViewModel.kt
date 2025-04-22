@@ -49,9 +49,9 @@ class AppListViewModel @Inject constructor(
 
     private val _searchQuery: MutableStateFlow<String?> = MutableStateFlow(null)
 
-    private val _progressDialogState: MutableStateFlow<ProgressDialogUiState> =
-        MutableStateFlow(ProgressDialogUiState())
-    override val progressDialogState: StateFlow<ProgressDialogUiState> =
+    private val _progressDialogState: MutableStateFlow<ProgressDialogUiState?> =
+        MutableStateFlow(null)
+    override val progressDialogState: StateFlow<ProgressDialogUiState?> =
         _progressDialogState.asStateFlow()
 
     private val _extractionResult: MutableSharedFlow<ExtractionResult> = MutableSharedFlow()
@@ -116,7 +116,8 @@ class AppListViewModel @Inject constructor(
         viewModelScope.launch {
             appList(_searchQuery).collect { appList ->
                 _mainFragmentState.update { state ->
-                    state.copy(appList = appList,
+                    state.copy(
+                        appList = appList,
                         isRefreshing = false,
                         selectedApp = state.selectedApp?.let { sa ->
                             appList.find {
@@ -194,8 +195,9 @@ class AppListViewModel @Inject constructor(
 
     fun updateApp(app: ApplicationModel) {
         _mainFragmentState.update { state ->
-            state.copy(appList = state.appList.toMutableList()
-                .map { if (it.appPackageName == app.appPackageName) app else it })
+            state.copy(
+                appList = state.appList.toMutableList()
+                    .map { if (it.appPackageName == app.appPackageName) app else it })
         }
 
     }
@@ -257,15 +259,13 @@ class AppListViewModel @Inject constructor(
             when (it) {
                 ExtractionResult.None -> resetProgress()
                 is ExtractionResult.Init -> _progressDialogState.update { state ->
-                    state.copy(
-                        title = UiText(R.string.progress_dialog_title_save),
-                        tasks = it.tasks,
-                        shouldBeShown = true
+                    ProgressDialogUiState(
+                        title = UiText(R.string.progress_dialog_title_save), tasks = it.tasks
                     )
                 }
 
                 is ExtractionResult.Progress -> _progressDialogState.update { state ->
-                    state.copy(
+                    state?.copy(
                         process = it.app.appPackageName,
                         progress = state.progress + it.progressIncrement
                     )
@@ -297,15 +297,13 @@ class AppListViewModel @Inject constructor(
             when (it) {
                 ShareResult.None -> resetProgress()
                 is ShareResult.Init -> _progressDialogState.update { state ->
-                    state.copy(
-                        title = UiText(R.string.progress_dialog_title_share),
-                        tasks = it.tasks,
-                        shouldBeShown = true
+                    ProgressDialogUiState(
+                        title = UiText(R.string.progress_dialog_title_share), tasks = it.tasks
                     )
                 }
 
                 ShareResult.Progress -> _progressDialogState.update { state ->
-                    state.copy(
+                    state?.copy(
                         progress = state.progress + 1
                     )
                 }
@@ -321,6 +319,6 @@ class AppListViewModel @Inject constructor(
     override fun resetProgress() {
         runningTask?.cancel()
         runningTask = null
-        _progressDialogState.value = ProgressDialogUiState()
+        _progressDialogState.value = null
     }
 }

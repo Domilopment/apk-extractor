@@ -7,9 +7,11 @@ import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageInstaller.Session
 import domilopment.apkextractor.MainActivity
+import java.io.IOException
 import java.io.InputStream
 
 object InstallationUtil {
+    @Throws(IOException::class)
     fun createSession(context: Context): Pair<Session, Int> {
         val packageInstaller = context.applicationContext.packageManager.packageInstaller
         val params =

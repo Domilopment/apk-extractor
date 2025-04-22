@@ -30,7 +30,13 @@ class InstallationService private constructor(@ApplicationContext private val co
     ): Flow<InstallApkResult> = callbackFlow {
         val packageInstaller = context.packageManager.packageInstaller
         val contentResolver = context.applicationContext.contentResolver
-        val (session, initialSessionId) = InstallationUtil.createSession(context)
+        val (session, initialSessionId) = try {
+            InstallationUtil.createSession(context)
+        } catch (e: IOException) {
+            trySend(InstallApkResult.OnFail(null, e.message))
+            close()
+            return@callbackFlow
+        }
 
         val sessionCallback = object : PackageInstaller.SessionCallback() {
             private var packageName: String? = null

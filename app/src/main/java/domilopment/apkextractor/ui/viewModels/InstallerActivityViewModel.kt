@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
+import domilopment.apkextractor.data.InstallationResultType
+import domilopment.apkextractor.data.InstallationScreenState
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.data.UiText
 import domilopment.apkextractor.domain.usecase.appList.AddAppUseCase
@@ -28,15 +30,7 @@ class InstallerActivityViewModel @Inject constructor(
     private val uninstallUseCase: UninstallUseCase,
     private val removeAppUseCase: RemoveAppUseCase,
 ) : ViewModel() {
-    var uiState by mutableStateOf(
-        ProgressDialogUiState(
-            title = UiText(R.string.progress_dialog_title_install),
-            process = null,
-            progress = 0F,
-            tasks = 100,
-            shouldBeShown = false
-        )
-    )
+    var uiState by mutableStateOf(InstallationScreenState(null, null))
         private set
 
     private var session: PackageInstaller.Session? = null
@@ -48,9 +42,14 @@ class InstallerActivityViewModel @Inject constructor(
     }
 
     private fun updateState(
-        packageName: String? = uiState.process, progress: Float = uiState.progress / 100
+        packageName: String? = uiState.progressState?.process,
+        progress: Float = uiState.progressState?.progress?.div(100) ?: 0F
     ) {
-        uiState = uiState.copy(process = packageName, progress = progress * 100)
+        uiState = uiState.copy(
+            progressState = uiState.progressState?.copy(
+                process = packageName, progress = progress * 100
+            )
+        )
     }
 
     fun installApkBundle(fileUri: Uri) {
@@ -60,7 +59,12 @@ class InstallerActivityViewModel @Inject constructor(
                     is InstallApkResult.OnPrepare -> {
                         session = it.session
                         uiState = uiState.copy(
-                            process = it.packageName, progress = 0F, shouldBeShown = true
+                            progressState = ProgressDialogUiState(
+                                title = UiText(R.string.progress_dialog_title_install),
+                                process = it.packageName,
+                                progress = 0F,
+                                tasks = 100
+                            )
                         )
                     }
 
@@ -68,8 +72,15 @@ class InstallerActivityViewModel @Inject constructor(
                         packageName = it.packageName, progress = it.progress
                     )
 
-                    is InstallApkResult.OnSuccess, is InstallApkResult.OnFail -> uiState =
-                        uiState.copy(shouldBeShown = false)
+                    is InstallApkResult.OnSuccess -> uiState = uiState.copy(progressState = null)
+
+                    is InstallApkResult.OnFail -> {
+                        uiState = uiState.copy(
+                            progressState = null,
+                            result = it.takeIf { it.error != null }?.let {
+                                InstallationResultType.Failure.Install(it.packageName, it.error)
+                            } ?: uiState.result)
+                    }
                 }
             }
         }
@@ -99,5 +110,9 @@ class InstallerActivityViewModel @Inject constructor(
         viewModelScope.launch {
             addAppUseCase(packageName)
         }
+    }
+
+    fun showInstallationResult(result: InstallationResultType?) {
+        uiState = uiState.copy(progressState = null, result = result)
     }
 }

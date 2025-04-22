@@ -239,11 +239,11 @@ fun AppListScreen(
         setFilterOthers = model::setOtherFilter
     )
 
-    if (progressDialogState.shouldBeShown) ProgressDialog(
-        state = progressDialogState,
-        onDismissRequest = model::resetProgress,
-        onCancel = model::resetProgress
-    )
+    progressDialogState?.let {
+        ProgressDialog(
+            state = it, onDismissRequest = model::resetProgress, onCancel = model::resetProgress
+        )
+    }
 
     extractionError?.let { (app, errorMessage) ->
         ExtractionResultDialog(

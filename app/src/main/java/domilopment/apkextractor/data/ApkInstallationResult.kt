@@ -18,5 +18,3 @@ sealed class InstallationResultType(open val packageName: String?) {
         data class Security(override val errorMessage: String?) : Failure(null, errorMessage)
     }
 }
-
-data class ApkInstallationResult(val result: InstallationResultType)
