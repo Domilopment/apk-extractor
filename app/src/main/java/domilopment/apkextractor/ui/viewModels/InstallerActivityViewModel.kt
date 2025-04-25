@@ -72,14 +72,16 @@ class InstallerActivityViewModel @Inject constructor(
                         packageName = it.packageName, progress = it.progress
                     )
 
-                    is InstallApkResult.OnSuccess -> uiState = uiState.copy(progressState = null)
-
-                    is InstallApkResult.OnFail -> {
+                    is InstallApkResult.OnFinish -> {
                         uiState = uiState.copy(
                             progressState = null,
-                            result = it.takeIf { it.error != null }?.let {
-                                InstallationResultType.Failure.Install(it.packageName, it.error)
-                            } ?: uiState.result)
+                            result = when (it) {
+                                is InstallApkResult.OnFinish.OnError -> InstallationResultType.Failure.Install(
+                                    it.packageName, it.error
+                                )
+
+                                else -> uiState.result
+                            })
                     }
                 }
             }

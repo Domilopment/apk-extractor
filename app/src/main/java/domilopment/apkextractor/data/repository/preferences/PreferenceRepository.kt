@@ -333,9 +333,11 @@ class MyPreferenceRepository @Inject constructor(
 
     override suspend fun setNightMode(value: Int) = setPreference(NIGHT_MODE, value.toString())
 
-    override val backupModeApkBundle: Flow<Boolean> = getPreference(BACKUP_MODE_SPLIT_APK).map { it ?: true }
+    override val backupModeApkBundle: Flow<Boolean> =
+        getPreference(BACKUP_MODE_SPLIT_APK).map { it ?: true }
 
-    override suspend fun setBackupModeApkBundle(value: Boolean) = setPreference(BACKUP_MODE_SPLIT_APK, value)
+    override suspend fun setBackupModeApkBundle(value: Boolean) =
+        setPreference(BACKUP_MODE_SPLIT_APK, value)
 
     override val firstLaunch: Flow<Boolean> = getPreference(FIRST_LAUNCH).map { it ?: true }
 

@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.BufferedInputStream
 import java.io.IOException
 import java.util.zip.ZipInputStream
@@ -30,17 +31,22 @@ class InstallationService private constructor(@ApplicationContext private val co
     ): Flow<InstallApkResult> = callbackFlow {
         val packageInstaller = context.packageManager.packageInstaller
         val contentResolver = context.applicationContext.contentResolver
+
+        var packageName: String? = null
+
         val (session, initialSessionId) = try {
             InstallationUtil.createSession(context)
         } catch (e: IOException) {
-            trySend(InstallApkResult.OnFail(null, e.message))
+            trySend(
+                InstallApkResult.OnFinish.OnError(
+                    packageName, e.message ?: "Unknown create session IO Exception"
+                )
+            )
             close()
             return@callbackFlow
         }
 
         val sessionCallback = object : PackageInstaller.SessionCallback() {
-            private var packageName: String? = null
-
             override fun onCreated(sessionId: Int) {
                 if (sessionId != initialSessionId) return
                 packageName = packageInstaller.getSessionInfo(sessionId)?.appPackageName
@@ -72,9 +78,9 @@ class InstallationService private constructor(@ApplicationContext private val co
                     }?.let {
                         AppModelToApplicationModelMapper(context.packageManager).map(it)
                     }
-                    trySend(InstallApkResult.OnSuccess(app))
+                    trySend(InstallApkResult.OnFinish.OnSuccess(app))
                 } else {
-                    trySend(InstallApkResult.OnFail(packageName))
+                    trySend(InstallApkResult.OnFinish.OnFinished(packageName))
                 }
                 close()
             }
@@ -138,9 +144,20 @@ class InstallationService private constructor(@ApplicationContext private val co
             // Thrown if Session is abandoned
         }
 
-        if (isActive) InstallationUtil.finishSession(
-            context, session, initialSessionId, statusReceiver
-        )
+        if (isActive) try {
+            InstallationUtil.finishSession(
+                context, session, initialSessionId, statusReceiver
+            )
+        } catch (e: SecurityException) {
+            Timber.tag("InstallationService:finishSession-SecurityException").e(e)
+            trySend(
+                InstallApkResult.OnFinish.OnError(
+                    packageName, e.message ?: "Unknown finish session Security Exception"
+                )
+            )
+            session.abandon()
+            close()
+        }
 
         awaitClose {
             runBlocking {
