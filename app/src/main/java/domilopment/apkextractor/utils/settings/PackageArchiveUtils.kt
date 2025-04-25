@@ -67,6 +67,9 @@ object PackageArchiveUtils {
         } catch (_: FileNotFoundException) {
             // File seems to not exist
             return null
+        } catch (_: IllegalStateException) {
+            // File could not be found
+            return null
         }
     }
 

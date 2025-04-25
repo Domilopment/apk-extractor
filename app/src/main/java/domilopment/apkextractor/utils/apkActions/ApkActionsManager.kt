@@ -57,7 +57,11 @@ class ApkActionsManager(private val context: Context, private val app: Applicati
      * Launch App via Intent
      */
     fun actionOpenApp() {
-        context.startActivity(app.launchIntent)
+        try {
+            context.startActivity(app.launchIntent)
+        } catch (_: SecurityException) {
+            // Permission denial
+        }
     }
 
     /**
