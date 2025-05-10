@@ -119,7 +119,7 @@ fun ApkListScreen(
             onActionInstall = {
                 Intent(context, InstallerActivity::class.java).apply {
                     setDataAndType(it.fileUri, it.fileType)
-                    setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                 }.let { intent ->
                     context.startActivity(intent)
                 }
@@ -139,7 +139,7 @@ fun ApkListScreen(
             onActionUninstall = {
                 Intent(context, InstallerActivity::class.java).apply {
                     data = Uri.fromParts("package", it.appPackageName, null)
-                    setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                 }.let { intent ->
                     context.startActivity(intent)
                 }
