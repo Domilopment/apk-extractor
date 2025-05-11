@@ -16,6 +16,7 @@ import domilopment.apkextractor.utils.SaveApkResult
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
@@ -118,7 +119,7 @@ class SaveAppsUseCaseImpl @Inject constructor(
                         application, errorMessage
                     )
                 )
-                close()
+                cancel()
             }
         }
         if (list.size == 1) trySend(ExtractionResult.SuccessSingle(application!!))

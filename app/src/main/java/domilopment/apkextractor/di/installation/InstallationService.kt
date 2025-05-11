@@ -13,6 +13,7 @@ import domilopment.apkextractor.utils.InstallApkResult
 import domilopment.apkextractor.utils.InstallationUtil
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -42,7 +43,7 @@ class InstallationService private constructor(@ApplicationContext private val co
                     packageName, e.message ?: "Unknown create session IO Exception"
                 )
             )
-            close()
+            cancel()
             return@callbackFlow
         }
 
@@ -140,8 +141,19 @@ class InstallationService private constructor(@ApplicationContext private val co
                         }
                     }
             }
-        } catch (_: IOException) {
-            // Thrown if Session is abandoned
+        } catch (e: IOException) {
+            // Also thrown if Session is abandoned
+            if (isActive) {
+                Timber.tag("InstallationService:finishSession-SecurityException").e(e)
+                trySend(
+                    InstallApkResult.OnFinish.OnError(
+                        packageName, e.message ?: "Error while reading or adding installation file"
+                    )
+                )
+
+                session.abandon()
+                cancel()
+            }
         }
 
         if (isActive) try {
@@ -156,7 +168,7 @@ class InstallationService private constructor(@ApplicationContext private val co
                 )
             )
             session.abandon()
-            close()
+            cancel()
         }
 
         awaitClose {

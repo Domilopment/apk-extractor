@@ -21,6 +21,7 @@ import domilopment.apkextractor.domain.usecase.installer.UninstallUseCase
 import domilopment.apkextractor.utils.InstallApkResult
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -74,14 +75,17 @@ class InstallerActivityViewModel @Inject constructor(
 
                     is InstallApkResult.OnFinish -> {
                         uiState = uiState.copy(
-                            progressState = null,
-                            result = when (it) {
-                                is InstallApkResult.OnFinish.OnError -> InstallationResultType.Failure.Install(
-                                    it.packageName, it.error
-                                )
+                            progressState = null, result = when (it) {
+                                is InstallApkResult.OnFinish.OnError -> {
+                                    Timber.tag("InstallApkResult; ${it.packageName}").e(it.error)
+                                    InstallationResultType.Failure.Install(
+                                        it.packageName, it.error
+                                    )
+                                }
 
                                 else -> uiState.result
-                            })
+                            }
+                        )
                     }
                 }
             }

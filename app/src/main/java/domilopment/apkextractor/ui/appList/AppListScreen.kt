@@ -238,7 +238,7 @@ fun AppListScreen(
         setCategory = model::setCategory,
         setFilterOthers = model::setOtherFilter
     )
-
+    
     progressDialogState?.let {
         ProgressDialog(
             state = it, onDismissRequest = model::resetProgress, onCancel = model::resetProgress
