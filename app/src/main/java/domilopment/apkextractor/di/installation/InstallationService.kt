@@ -111,8 +111,9 @@ class InstallationService private constructor(@ApplicationContext private val co
                         )
                     }
 
-                "application/octet-stream" -> contentResolver.openInputStream(fileUri)
-                    ?.use { splitApkStream ->
+                FileUtil.FileInfo.APKS.mimeType, FileUtil.FileInfo.XAPK.mimeType -> contentResolver.openInputStream(
+                    fileUri
+                )?.use { splitApkStream ->
                         ZipInputStream(BufferedInputStream(splitApkStream)).use { input ->
                             var currentProcess = 1
                             generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
