@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">APK Extractor</string>
+
+    <!-- Apk Options -->
+    <string name="apk_action_share">Paylaş</string>
+    <string name="apk_action_delete">Sil</string>
+    <string name="apk_action_delete_success">APK silindi</string>
+    <string name="apk_action_delete_failed">APK silme işlemi başarısız</string>
+    <string name="apk_action_uninstall_app">Uygulamayı kaldır</string>
+
+    <string name="title_activity_settings">Ayarlar</string>
+    <string name="title_screen_save_file_settings">Dosya kaydetme formatı</string>
+    <string name="title_screen_auto_backup_settings">Otomatik Yedekleme</string>
+    <string name="title_screen_about_settings">Hakkında</string>
+    <string name="title_screen_swipe_action_settings">Kaydırma İşlemleri</string>
+    <string name="title_screen_data_collection_settings">Veri Toplama</string>
+
+    <!-- Preference Header -->
+    <string name="save_header">Depolama ve Yedekleme</string>
+    <string name="app_type_header">Uygulamalar</string>
+    <string name="info_header">Hakkında ve Destek</string>
+
+    <!-- Preference update available -->
+    <string name="update_available_title">Güncelleme Mevcut</string>
+    <string name="update_available_summary">Uygulama güncellemesini indirmek ve yüklemek için buraya tıklayın.</string>
+
+    <!-- Preferences Save Option -->
+    <string name="choose_save_dir">Kaydetme Dizinini Seç</string>
+    <string name="choose_save_dir_summary">APK\'ları kaydetmek için bir yol seçin veya değiştirin</string>
+
+    <string name="auto_backup">Otomatik Yedekleme Servisi</string>
+    <string name="auto_backup_summary">Uygulama güncellemelerinden sonra otomatik yedekleme</string>
+
+    <string name="auto_backup_app_list">Otomatik Yedekleme için Uygulamaları Seç</string>
+    <string name="auto_backup_app_list_summary">Güncelleme sonrası otomatik yedekleme yapılacak uygulamaları seçin</string>
+
+    <string name="backup_mode_split_apk">Bölünmüş Kaynak APK\'ları Yedekle</string>
+    <string name="backup_mode_split_apk_summary_active">Temel APK + bölünmüş APK\'ları APK paketi olarak yedekle (uzantısı \'.zip\' olarak değiştirilebilir ve bu şekilde kullanılabilir).</string>
+    <string name="backup_mode_split_apk_summary_inactive">Yalnızca temel APK\'yı yedekle (uyarı: Yalnızca temel APK\'dan uygulama yüklemek, eksik kaynaklar nedeniyle başlatmada çökmeye yol açabilir).</string>
+
+    <!-- Preferences Apps -->
+    <string name="app_type_system">Sistem</string>
+    <string name="app_type_system_updated">Sistem (güncellenmiş)</string>
+    <string name="app_type_user">Kullanıcı</string>
+
+    <!-- Preference Data Collection -->
+    <string name="data_collection_header">Gizlilik ve Veri Toplama</string>
+    <string name="data_collection_analytics">Analitik</string>
+    <string name="data_collection_analytics_summary">Uygulama etkileşimleri ve ekran görüntülemeleri gibi kullanıcı verilerinin toplanması, kullanıcı davranışlarını anlamak ve uygulama performansını optimize etmek için kullanılır.</string>
+    <string name="data_collection_crashlytics">Crashlytics</string>
+    <string name="data_collection_crashlytics_summary">Sorunları gidermek ve kararlılığı artırmak için çökme raporları ve sistemle ilgili verilerin toplanması.</string>
+    <string name="data_collection_perf">Performans</string>
+    <string name="data_collection_perf_summary">Uygulama başlangıç süresi ve ağ istekleri gibi performans metriklerinin toplanması, uygulama performansını optimize etmek için kullanılır.</string>
+    <string name="data_collection_delete">Kurulum Kimliğini Sil</string>
+    <string name="data_collection_delete_summary">Firebase kurulum kimlikleri, her uygulama kurulumunda farklıdır; aynı cihazda farklı uygulamalar için farklı Firebase kurulum kimlikleri bulunur. Firebase kurulum kimlikleri, uygulama kurulumlarını ve bu kurulumlarla ilişkili verileri tanımlar.\n\nKurulum kimliğini sildiğinizde, bu kimlikle ilişkili veriler, Firebase hizmetlerinin canlı ve yedek sistemlerinden 180 gün içinde kaldırılır. Bu süreç, Google\'ın silme ve saklama beyanında genel hatlarıyla açıklanmıştır.</string>
+    <string name="data_collection_delete_success">Firebase Kurulum Kimliği silindi</string>
+    <string name="data_collection_delete_failure">Firebase Kurulum Kimliği silinemedi, lütfen daha sonra tekrar deneyin veya geliştiriciyle iletişime geçin</string>
+
+    <!-- Preferences Info -->
+    <string name="github">GitHub</string>
+    <string name="github_summary">Kodu görüntüle veya sorun bildir, çekme isteği oluştur</string>
+
+    <string name="googleplay">Google Play</string>
+    <string name="googleplay_summary">Uygulamanın Play Store sayfasını görüntüle</string>
+
+    <string name="privacy_policy_title">Gizlilik Politikası</string>
+
+    <string name="terms_title">Şartlar ve Koşullar</string>
+
+    <string name="oss_dependencies_title">Kullanılan Kütüphaneler</string>
+
+    <string name="version">Sürüm: %s (%d)</string>
+
+    <string name="appearance">Görünüm ve Tema</string>
+    <string name="ui_mode">Gece Modu</string>
+    <string name="ui_mode_summary">Uygulama görünümünü değiştir</string>
+    <string name="ui_follow_os">Sistemi takip et</string>
+    <string name="ui_dark">Koyu</string>
+    <string name="ui_white">Açık</string>
+
+    <string name="use_material_you">Material You Kullan</string>
+    <string name="use_material_you_summary">Android 12 ve üzeri sürümlerde duvar kağıdı renklerinden sağlanan dinamik renk temasını kullan</string>
+
+    <string name="gestures_and_interactions">Hareketler ve Etkileşimler</string>
+    <string name="app_list_swipe_actions">Uygulama Listesi Kaydırma İşlemleri</string>
+
+    <string name="apk_swipe_action_right_title">Sağa kaydırma işlemi</string>
+    <string name="apk_swipe_action_right_summary">Uygulama listesindeki bir öğeyi sağa kaydırdığınızda ne olacağına karar verin</string>
+
+    <string name="apk_swipe_action_left_title">Sola kaydırma işlemi</string>
+    <string name="apk_swipe_action_left_summary">Uygulama listesindeki bir öğeyi sola kaydırdığınızda ne olacağına karar verin</string>
+
+    <string name="apk_swipe_action_custom_threshold_title">Özel kaydırma işlemi eşiğini etkinleştir</string>
+    <string name="apk_swipe_action_custom_threshold_summary">Varsayılan 56dp yerine kaydırma işlemi eşiği değiştiricisini kullan.</string>
+
+    <string name="advanced_swipe_action_header">Gelişmiş Kaydırma İşlemi Ayarları</string>
+    <string name="apk_swipe_action_threshold_title">Kaydırma İşlemi Eşiği Değiştiricisi</string>
+    <string name="apk_swipe_action_threshold_summary">Kaydırma işlemini daha kolay tetiklemek için konumsal eşiğin yüzdesini değiştirin.</string>
+
+    <string name="app_options_header">Uygulama Seçenekleri</string>
+
+    <string name="favorites">Favoriler</string>
+    <string name="sort_favorites">Favorileri en üstte sırala</string>
+
+    <string name="filter_title">Filtre</string>
+    <string name="all_sources">Tüm kaynaklar</string>
+    <string name="other_sources">Diğer kaynaklar</string>
+    <string name="filter_category_all">Tüm kategoriler</string>
+    <string name="filter_category_undefined">Tanımsız</string>
+    <string name="filter_category_games">Oyunlar</string>
+    <string name="filter_category_audio">Ses</string>
+    <string name="filter_category_video">Video</string>
+    <string name="filter_category_image">Görüntü</string>
+    <string name="filter_category_social">Sosyal</string>
+    <string name="filter_category_news">Haberler</string>
+    <string name="filter_category_maps">Haritalar</string>
+    <string name="filter_category_productivity">Verimlilik</string>
+    <string name="installation_sources">Kurulum Kaynağı</string>
+    <string name="app_categories">Kategori</string>
+    <string name="other_filter">Diğer Filtre</string>
+
+    <string name="backup_apk_bundle_file_ending_title">APK Paketi dosya uzantısı</string>
+    <string name="backup_apk_bundle_file_ending_summary">Bölünmüş APK dosyaları için varsayılan dosya uzantısını (sonek) ayarlayın.</string>
+
+    <string name="ignore_battery_optimization_title">Pil Optimizasyonunu Devre Dışı Bırak</string>
+    <string name="ignore_battery_optimization_summary">Otomatik Yedekleme Servisi arka planda kapanıyorsa ve yeniden başlamıyorsa, bu uygulamanın arka planda çalışmaya devam etmesi için pil optimizasyonunu devre dışı bırakmayı düşünebilirsiniz.</string>
+
+    <string name="check_update_on_start_title">Başlangıçta güncelleme kontrolü</string>
+    <string name="check_update_on_start_summary">Uygulama başlatıldığında yeni güncellemeleri kontrol et ve yüklemek için bir istem göster.</string>
+
+    <string name="clear_cache">Önbelleği temizle</string>
+    <string name="clear_cache_summary">Uygulama önbellek boyutu: %s</string>
+    <string name="clear_cache_success">Önbellek temizlendi</string>
+    <string name="clear_cache_failed">Önbellek temizlenemedi</string>
+
+    <string name="app_save_name">APK Adı</string>
+    <string name="app_save_name_summary">APK kaydetme adı bilgilerini yapılandırın, dosya adında konumunu değiştirmek için seçilen öğeleri sürükleyin.</string>
+    <string name="app_save_name_name">Uygulama Adı</string>
+    <string name="app_save_name_package">Paket Adı</string>
+    <string name="app_save_name_version_name">Uygulama Sürüm Adı</string>
+    <string name="app_save_name_version_number">Uygulama Sürüm Numarası</string>
+    <string name="app_save_name_datetime">Tarih</string>
+    <string name="app_save_name_toast">Lütfen en az Uygulama veya Paket Adı seçin</string>
+
+    <string name="app_save_name_part_separator">APK Adı Parça Ayırıcı</string>
+    <string name="app_save_name_part_separator_summary">APK adı parçalarını birleştirirken kullanılacak karakteri seçin. Bu, APK dosyası oluşturulurken kullanılır.</string>
+    <string name="app_save_name_part_separator_space">Boşluk</string>
+    <string name="app_save_name_part_separator_underscore">Alt çizgi</string>
+    <string name="app_save_name_part_separator_hyphen">Tire</string>
+    <string name="app_save_name_part_separator_dot">Nokta</string>
+
+    <string name="locale_list_title">Dil</string>
+    <string name="locale_list_summary">%s</string>
+    <string name="locale_list_default">Sistem varsayılanı</string>
+    <string name="locale_list_not_supported">Dil %s henüz desteklenmiyor</string>
+    <string name="locale_list_en" translatable="false">English</string>
+    <string name="locale_list_de_de" translatable="false">Deutsch (Deutschland)</string>
+
+    <!-- APK Name Preference Dialog -->
+    <string name="app_name_dialog_ok">Tamam</string>
+    <string name="app_name_dialog_cancel">İptal</string>
+
+    <!-- Menu -->
+    <string name="menu_search">Ara</string>
+    <string name="menu_sort_app">Sırala</string>
+    <string name="menu_sort_app_name">Uygulama Adı</string>
+    <string name="menu_sort_app_package">Paket Adı</string>
+    <string name="menu_sort_app_install">Son yüklenenler</string>
+    <string name="menu_sort_app_update">Son güncellenenler</string>
+    <string name="menu_sort_app_apk_size">APK boyutu</string>
+    <string name="menu_show_save_dir">Kaydedilen APK\'lar</string>
+    <string name="action_settings">Ayarlar</string>
+    <string name="menu_show_app_list">Yüklenen Uygulamalar</string>
+    <string name="menu_refresh_app_list">Yenile</string>
+
+    <string name="sort_order_asc">Artan</string>
+    <string name="sort_order_desc">Azalan</string>
+
+    <!-- Menu Multiselect -->
+    <string name="multiselect_select_all">Tümünü seç</string>
+
+    <!-- Menu ApkListFragment -->
+    <string name="menu_sort_apk">Sıralama ölçütü…</string>
+    <string name="menu_sort_apk_file_name_asc">Dosya adı (A\'dan Z\'ye)</string>
+    <string name="menu_sort_apk_file_name_desc">Dosya adı (Z\'den A\'ya)</string>
+    <string name="menu_sort_apk_file_size_asc">Boyut (küçükten büyüğe)</string>
+    <string name="menu_sort_apk_file_size_desc">Boyut (büyükten küçüğe)</string>
+    <string name="menu_sort_apk_file_mod_date_asc">Değiştirilme tarihi (eskiyen yeni)</string>
+    <string name="menu_sort_apk_file_mod_date_desc">Değiştirilme tarihi (yeniden eskiye)</string>
+    <string name="menu_show_open_documents">Diğer APK\'lar</string>
+    <string name="menu_refresh_apk_list">Yenile</string>
+
+    <!-- APK Selected Alert -->
+    <string name="alert_apk_selected_title">APK nasıl kullanılır</string>
+    <string name="alert_apk_selected_failed">Seçilen APK açılamadı</string>
+    <string name="alert_apk_selected_share">@string/apk_action_share</string>
+    <string name="alert_apk_selected_install">Yükle</string>
+    <string name="alert_apk_selected_delete">@string/apk_action_delete</string>
+
+    <!-- MainActivity -->
+    <string name="alert_save_path_title">Lütfen bir kaydetme dizini seçin</string>
+    <string name="alert_save_path_message">Çıkartılan APK\'ları kaydetmek için uygulamanın yazma iznine sahip olduğu bir dizin seçmeniz veya oluşturmanız gerekiyor.</string>
+    <string name="alert_save_path_ok">Tamam</string>
+    <string name="alert_save_path_error_title">Dosya Yöneticisi Gerekli!</string>
+    <string name="alert_save_path_error_message">Cihazınızda dizin seçimini yönetebilecek bir dosya yöneticisi uygulaması eksik gibi görünüyor. Uygulamanın doğru çalışması için buna ihtiyaç var.\n\nSorunu çözdükten sonra lütfen dizin seçimini tekrar deneyin.</string>
+    <string name="alert_save_path_error_ok">Yeniden Dene</string>
+    <string name="alert_save_path_error_cancel">İptal</string>
+
+    <string name="toast_save_apps">Kaydedilecek uygulamaları seçin</string>
+    <string name="snackbar_successful_extracted">%s başarıyla çıkartıldı</string>
+    <plurals name="snackbar_successful_extracted_multiple">
+        <item quantity="one">@string/snackbar_successful_extracted</item>
+        <item quantity="other">%s ve %d ek başarıyla çıkartıldı</item>
+    </plurals>
+    <string name="snackbar_extraction_failed">%s çıkartılması BAŞARISIZ</string>
+    <string name="snackbar_extraction_failed_message">Hata Mesajı:\n%s\n\nSorunu çözemezseniz, geliştiriciyle iletişime geçin.</string>
+    <string name="snackbar_extraction_failed_message_copy_to_clipboard">Panoya Kopyala</string>
+    <string name="snackbar_extraction_failed_message_dismiss">Kapat</string>
+    <string name="share_intent_title">Uygulama Paylaşımı</string>
+    <string name="toast_share_app">Paylaşılacak uygulamaları seçin</string>
+
+    <!-- Auto Backup Foreground Service -->
+    <string name="auto_backup_notification_title">Güncellemeleri İzliyor</string>
+    <string name="auto_backup_notification_content_text">Seçilen paketlerdeki güncellemeleri izliyor</string>
+    <string name="auto_backup_notification_action_stop">SERVİSİ DURDUR</string>
+    <string name="auto_backup_notification_permission_request_rejected">Lütfen uygulama ayarlarından bildirim iznini verin, aksi takdirde otomatik yedekleme servisi arka planda çalışıp çalışmadığını veya yedek oluşturduğunu bildiremez.</string>
+
+    <string name="auto_backup_broadcast_receiver_backup_success">%s başarıyla yedeklendi</string>
+    <string name="auto_backup_broadcast_receiver_backup_failed">%s yedeklemesi başarısız</string>
+    <string name="auto_backup_broadcast_receiver_notification_title">Otomatik Yedekleme</string>
+
+    <!-- Auto Backup Tile Service -->
+    <string name="auto_backup_tile_service_start_foreground_error">Hata: Servisi başlatmak için uygulamayı açın</string>
+    <string name="auto_backup_tile_service_notifications_disabled">Servisi başlatmadan önce lütfen bildirim iznini verin.</string>
+
+    <!-- App Options Bottom Sheet -->
+    <string name="info_bottom_sheet_source_directory">Kaynak APK</string>
+    <string name="info_bottom_sheet_split_sources">bölünmüş kaynaklar</string>
+    <string name="info_bottom_sheet_apk_size">APK boyutu: %.2f MB</string>
+    <string name="info_bottom_sheet_version_name">Sürüm adı: %s</string>
+    <string name="info_bottom_sheet_version_number">Sürüm numarası: %d</string>
+    <string name="info_bottom_sheet_min_sdk">Minimum SDK: %d | Android %s (%s)</string>
+    <string name="info_bottom_sheet_target_sdk">Hedef SDK: %d | Android %s (%s)</string>
+    <string name="info_bottom_sheet_category">Kategori: %s</string>
+    <string name="info_bottom_sheet_install_time">Yüklendi: %s</string>
+    <string name="info_bottom_sheet_update_time">Son güncelleme: %s</string>
+    <string name="info_bottom_sheet_installation_source">Kurulum kaynağı: %s</string>
+
+    <string name="action_bottom_sheet_save">Kaydet</string>
+    <string name="action_bottom_sheet_share">@string/apk_action_share</string>
+    <string name="action_bottom_sheet_save_image">Simgeyi kaydet</string>
+    <string name="action_bottom_sheet_open">Aç</string>
+    <string name="action_bottom_sheet_settings">Ayarlar</string>
+    <string name="action_bottom_sheet_uninstall">Kaldır</string>
+    <string name="snackbar_successful_save_image">Simge kaydedildi</string>
+    <string name="snackbar_need_permission_save_image">Görüntüleri kaydetmek için depolama izni gerekiyor</string>
+    <string name="snackbar_no_activity_for_market_intent">Mağaza sayfası açılamadı</string>
+
+    <string name="action_none">Hiçbiri</string>
+
+    <!-- Apk Options Bottom Sheet -->
+    <string name="apk_bottom_sheet_source_uri">APK Kaynak-URI: %s</string>
+    <string name="apk_bottom_sheet_file_name">APK dosya adı: %s</string>
+    <string name="apk_bottom_sheet_last_modified">Oluşturulma tarihi: %s</string>
+
+    <!-- App Multiselect Options Bottom Sheet -->
+    <string name="action_multiselect_bottom_sheet_save_description">APK\'ları kaydet</string>
+    <string name="action_multiselect_bottom_sheet_share_description">@string/apk_action_share</string>
+
+    <!-- App List Item -->
+    <string name="app_list_item_size">%.2f MB</string>
+
+    <!-- Apk List Adapter -->
+    <string name="apk_holder_version">Sürüm: %s (%d)</string>
+    <string name="apk_list_sum_backup_size_title">Yedeklemelerin kapladığı alan:</string>
+    <string name="apk_list_sum_backup_size_percentage">%.2f %%</string>
+    <string name="apk_list_sum_backup_size_info_backups">Çıkartılan Yedeklemeler</string>
+    <string name="apk_list_sum_backup_size_info_used">Cihazda kullanılan toplam alan</string>
+    <string name="apk_list_sum_backup_size_info_total">Cihazın toplam alanı</string>
+
+    <!-- App List Item -->
+    <string name="list_item_Image_description">Uygulama Simgesi</string>
+    <string name="list_item_title_placeholder" translatable="false">App Title</string>
+    <string name="list_item_package_placeholder" translatable="false">com.placeholder.application</string>
+    <string name="list_item_checkbox_description">Çoklu seçim onay kutusu</string>
+
+    <!-- App Extraction Progress Dialog -->
+    <string name="progress_dialog_percentage">%.2f %%</string>
+    <string name="progress_dialog_value">%d/%d</string>
+    <string name="progress_dialog_title_save">APK\'ları Kaydet</string>
+    <string name="progress_dialog_title_share">Paylaşmaya Hazırlan</string>
+    <string name="progress_dialog_title_install">APK\'ları Yükle</string>
+    <string name="progress_dialog_title_placeholder" translatable="false">Progress Dialog</string>
+
+    <!-- Installation Activity -->
+    <string name="installation_activity_placeholder_text">Lütfen bekleyin</string>
+
+    <!-- Installation Result Dialog -->
+    <string name="installation_result_dialog_success_title">Kurulum Başarılı!</string>
+    <string name="installation_result_dialog_success_message">%s kurulumu başarılı</string>
+    <string name="installation_result_dialog_failed_title">Kurulum Başarısız!</string>
+    <string name="installation_result_dialog_failed_message">%s kurulumu başarısız oldu, mesaj:\n%s\n\nMevcut yüklü sürümü kaldırıp tekrar deneyin.</string>
+    <string name="uninstallation_result_dialog_success_title">Başarıyla kaldırıldı!</string>
+    <string name="uninstallation_result_dialog_success_message">%s kaldırma işlemi başarılı</string>
+    <string name="uninstallation_result_dialog_failed_title">Kaldırma Başarısız!</string>
+    <string name="uninstallation_result_dialog_failed_message">%s kaldırma işlemi başarısız oldu, mesaj:\n%s</string>
+    <string name="pending_user_action_security_exception_dialog_title">Güvenlik Hatası!</string>
+    <string name="pending_user_action_security_exception_dialog_message">İşlem devam ettirilemedi, mesaj:\n\n%2$s\n\nGeliştiriciyle iletişime geçin.</string>
+    <string name="installation_result_dialog_ok">Tamam</string>
+
+    <!-- Action Mode -->
+    <string name="action_mode_title">%d Seçildi</string>
+
+    <!-- Check for App update -->
+    <string name="popup_snackbar_for_complete_update_text">Bir güncelleme yeni indirildi.</string>
+    <string name="popup_snackbar_for_complete_update_action">YENİDEN BAŞLAT</string>
+
+    <string name="popup_dialog_for_notify_about_update_title">Lütfen güncellemeyi düşünün</string>
+    <string name="popup_dialog_for_notify_about_update_text">Güncellemeleri atlarsanız, yeni özellikler, kullanıcı arayüzü ve performans iyileştirmeleri ile en önemlisi hata ve çökme düzeltmelerini kaçırırsınız.\n\nBaşlangıçta güncelleme kontrolü istemini ayarlar kısmından devre dışı bırakabilirsiniz.</string>
+    <string name="popup_dialog_for_notify_about_update_button_positive">Güncelle</string>
+    <string name="popup_dialog_for_notify_about_update_button_negative">Kapat</string>
+    <string name="popup_dialog_for_notify_about_update_button_neutral">Tekrar sorma</string>
+
+    <string name="popup_dialog_update_failed_title">Uygulama içi güncelleme başarısız</string>
+    <string name="popup_dialog_update_failed_text">Uygulama güncellenemedi, tekrar deneyin, doğrudan Play Store\'dan yükleyin veya uygulamayı bir sonraki açışınızda tekrar deneyin.</string>
+    <string name="popup_dialog_update_failed_button_positive">Tekrar Dene</string>
+    <string name="popup_dialog_update_failed_button_negative">Kapat</string>
+
+    <!-- User Consent Dialog -->
+    <string name="consent_dialog_header">Herkes hangi verilerin paylaşılacağına ve verilerin paylaşılıp paylaşılmayacağına kendisi karar verebilmelidir. Deneyiminizi iyileştirmek için Firebase Analytics, Crashlytics ve performans izleme kullanıyorum. Burada hangi verilerin toplanmasına izin verileceğini belirtebilirsiniz.</string>
+    <string name="consent_dialog_consent_notice">\"Seçimi Onayla\"ya dokunarak, yukarıda açıklanan şekilde verilerinizin toplanmasını ve işlenmesini kabul edersiniz. Onayınız olmadan, hataları ve sorunları tespit edip düzeltmek daha zor olabilir, bu da uygulama deneyiminizi etkileyebilir.</string>
+    <string name="consent_dialog_footer">Onayınızı istediğiniz zaman Ayarlar\'dan geri çekebilirsiniz. Daha fazla bilgi için lütfen %s ve %s okuyun.</string>
+    <string name="consent_dialog_confirm">Seçimi Onayla</string>
+    <string name="consent_dialog_dismiss">Tümünü Reddet</string>
+
+    <string name="double_back_press_first_press_toast_text">Uygulamayı kapatmak için tekrar tıklayın</string>
+
+    <!-- Donations -->
+    <string name="donations_page_title">Domilopment\'a Bağış Yap</string>
+    <string name="donations_page_header">APK Extractor\'ı Kullandığınız İçin Teşekkürler! 🎉</string>
+    <string name="donations_page_text">Uygulamadan memnunsanız, gönüllü bir bağışla gelişimini destekleyebilirsiniz. Katkınız, uygulamanın geliştirilmesine yardımcı olur ve herkes için reklamsız kalmasını sağlar.\n\nBüyük ya da küçük her katkı fark yaratır. Cömertliğiniz şu konularda yardımcı olur:\n• Uygulama özelliklerini sürdürmek ve iyileştirmek\n• Servisi reklamsız tutmak\n• Yeni ve heyecan verici güncellemeler geliştirmek</string>
+    <string name="donations_github_sponsors">GitHub Sponsorları</string>
+    <string name="donations_patreon">Patreon</string>
+    <string name="donations_bmc">Bana Kahve Al</string>
+
+</resources>
