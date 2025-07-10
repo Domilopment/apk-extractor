@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "domilopment.apkextractor.baselineprofile"
-    compileSdk = 35
+    compileSdk = 36
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -52,11 +52,13 @@ dependencies {
 }
 
 androidComponents {
-    onVariants { v ->
-        val artifactsLoader = v.artifacts.getBuiltArtifactsLoader()
-        v.instrumentationRunnerArguments.put(
+    onVariants { variant ->
+        val artifactsLoader = variant.artifacts.getBuiltArtifactsLoader()
+        variant.instrumentationRunnerArguments.put(
             "targetAppId",
-            v.testedApks.map { artifactsLoader.load(it)?.applicationId }
+            variant.testedApks.map { directory ->
+                artifactsLoader.load(directory)?.applicationId ?: "unknown"
+            }
         )
     }
 }
