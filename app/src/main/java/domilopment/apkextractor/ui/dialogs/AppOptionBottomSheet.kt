@@ -68,6 +68,7 @@ import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.ui.components.ExpandableColumn
 import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
+import domilopment.apkextractor.utils.AndroidVersion
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionsManager
@@ -290,7 +291,7 @@ private fun AppSheetInfo(
             )
         )
 
-        val minSdkInfo = Utils.AndroidVersions.fromApi(minSdk)
+        val minSdkInfo = AndroidVersion.fromApi(minSdk)
         InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_min_sdk,
@@ -300,11 +301,11 @@ private fun AppSheetInfo(
             )
         )
 
-        val targetSdkInfo = Utils.AndroidVersions.fromApi(targetSdk)
+        val targetSdkInfo = AndroidVersion.fromApi(targetSdk)
         InfoText(
             text = stringResource(
                 id = R.string.info_bottom_sheet_target_sdk,
-                targetSdk,
+                targetSdkInfo.api,
                 targetSdkInfo.version,
                 targetSdkInfo.codename
             )
