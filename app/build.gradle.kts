@@ -17,7 +17,7 @@ plugins {
 
 android {
     namespace = "domilopment.apkextractor"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "domilopment.apkextractor"
