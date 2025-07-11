@@ -127,13 +127,13 @@ class InstallerActivity : ComponentActivity() {
                                     "android.content.pm.extra.CALLBACK", Parcelable::class.java
                                 ).allowData { it.scheme == "package" }
                             } else if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
-                                allowAction("android.content.pm.action.CONFIRM_INSTALL").allowAction(
-                                    "android.content.pm.action.CONFIRM_PERMISSIONS"
-                                ).allowPackage(
-                                    "com.google.android.packageinstaller"
-                                ).allowExtra(
-                                    "android.content.pm.extra.SESSION_ID", Integer::class.java
-                                )
+                                allowAction("android.content.pm.action.CONFIRM_INSTALL")
+                                    .allowAction("android.content.pm.action.CONFIRM_PERMISSIONS")
+                                    .allowPackage("com.google.android.packageinstaller")
+                                    .allowPackage("com.android.packageinstaller")
+                                    .allowExtra(
+                                        "android.content.pm.extra.SESSION_ID", Integer::class.java
+                                    )
                             }
                         }
 
