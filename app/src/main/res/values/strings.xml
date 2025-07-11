@@ -156,6 +156,7 @@
     <string name="locale_list_not_supported">Locale %s not supported yet</string>
     <string name="locale_list_en" translatable="false">English</string>
     <string name="locale_list_de_de" translatable="false">Deutsch (Deutschland)</string>
+    <string name="locale_list_tr" translatable="false">Türkçe</string>
 
     <!-- APK Name Preference Dialog -->
     <string name="app_name_dialog_ok">OK</string>

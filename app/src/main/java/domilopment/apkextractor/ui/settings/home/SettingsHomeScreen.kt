@@ -131,6 +131,7 @@ fun SettingsHomeScreen(
             "default" -> context.getString(R.string.locale_list_default)
             Locale.ENGLISH.toLanguageTag() -> context.getString(R.string.locale_list_en)
             Locale.GERMANY.toLanguageTag() -> context.getString(R.string.locale_list_de_de)
+            "tr" -> context.getString(R.string.locale_list_tr)
             else -> context.getString(
                 R.string.locale_list_not_supported, Locale.forLanguageTag(language).displayName
             )

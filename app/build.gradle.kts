@@ -33,7 +33,7 @@ android {
     }
 
     androidResources {
-        localeFilters += setOf("en", "de-rDE")
+        localeFilters += setOf("en", "de-rDE", "tr")
     }
 
     buildTypes {

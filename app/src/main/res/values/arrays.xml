@@ -32,11 +32,13 @@
         <item>@string/locale_list_default</item>
         <item>@string/locale_list_en</item>
         <item>@string/locale_list_de_de</item>
+        <item>@string/locale_list_tr</item>
     </string-array>
     <string-array name="locale_list_values">
         <item>default</item>
         <item>en</item>
         <item>de-DE</item>
+        <item>tr</item>
     </string-array>
 
     <string-array name="apk_swipe_options_entries">
