@@ -73,6 +73,10 @@ object FileUtil {
         } catch (e: FileNotFoundException) {
             Timber.tag("FileUtil: deleteDocument").e(e)
             true
+        } catch (e: IllegalArgumentException) {
+            // Potential file not found exception
+            Timber.tag("FileUtil: deleteDocument").e(e)
+            true
         }
     }
 
