@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
+import androidx.core.database.getLongOrNull
+import androidx.core.database.getStringOrNull
 import domilopment.apkextractor.BuildConfig
 import timber.log.Timber
 import java.io.*
@@ -338,15 +340,14 @@ object FileUtil {
             val mimeTypeIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
 
             if (cursor.moveToFirst()) {
-                val documentId =
-                    if (documentIdIndex != -1) cursor.getString(documentIdIndex) else null
-                val name = if (displayNameIndex != -1) cursor.getString(displayNameIndex) else null
-                val lastModified =
-                    if (lastModifiedIndex != -1) cursor.getLong(lastModifiedIndex) else null
-                val size = if (sizeIndex != -1) cursor.getLong(sizeIndex) else null
-                val mimeType = if (mimeTypeIndex != -1) cursor.getString(mimeTypeIndex) else null
-
-                return DocumentFile(uri, documentId, name, lastModified, size, mimeType)
+                return DocumentFile(
+                    uri = uri,
+                    documentId = cursor.getStringOrNull(documentIdIndex),
+                    displayName = cursor.getStringOrNull(displayNameIndex),
+                    lastModified = cursor.getLongOrNull(lastModifiedIndex),
+                    size = cursor.getLongOrNull(sizeIndex),
+                    mimeType = cursor.getStringOrNull(mimeTypeIndex)
+                )
             }
         }
         return null
