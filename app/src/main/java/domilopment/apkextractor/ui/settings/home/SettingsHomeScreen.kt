@@ -165,6 +165,9 @@ fun SettingsHomeScreen(
                     ), Link(
                         text = "der Stellungnahme von Google zur Löschung und Aufbewahrung ausführlich beschrieben",
                         href = "https://policies.google.com/technologies/retention?hl=de"
+                    ), Link(
+                        text = "silme ve saklama beyanında",
+                        href = "https://policies.google.com/technologies/retention?hl=tr"
                     )
                 )
             )

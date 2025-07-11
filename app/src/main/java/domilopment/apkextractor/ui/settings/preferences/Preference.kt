@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,6 +44,40 @@ fun Preference(
     icon: ImageVector? = null,
     iconDesc: String? = null,
     summary: String? = null,
+    isPreferenceVisible: Boolean = true,
+    onClick: () -> Unit,
+    trailingContent: @Composable (() -> Unit)? = null
+) {
+    BasePreference(
+        name = {
+            Text(
+                text = name,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        modifier = modifier,
+        enabled = enabled,
+        icon = icon,
+        iconDesc = iconDesc,
+        summary = {
+            if (summary != null) Text(text = summary)
+        },
+        isPreferenceVisible = isPreferenceVisible,
+        onClick = onClick,
+        trailingContent = trailingContent
+    )
+}
+
+@Composable
+fun Preference(
+    name: AnnotatedString,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    icon: ImageVector? = null,
+    iconDesc: String? = null,
+    summary: AnnotatedString? = null,
     isPreferenceVisible: Boolean = true,
     onClick: () -> Unit,
     trailingContent: @Composable (() -> Unit)? = null

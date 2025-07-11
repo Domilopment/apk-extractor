@@ -68,6 +68,9 @@
 
     <string name="terms_title">Şartlar ve Koşullar</string>
 
+    <string name="thanks_translaton_title">Çevirmenler</string>
+    <string name="thanks_translaton_summary">mikropsoft (Türkçe)</string>
+
     <string name="oss_dependencies_title">Kullanılan Kütüphaneler</string>
 
     <string name="version">Sürüm: %s (%d)</string>

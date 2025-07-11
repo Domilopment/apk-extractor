@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.LinkInteractionListener
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextLinkStyles
@@ -52,28 +54,9 @@ fun HyperlinkText(
     style: TextStyle = LocalTextStyle.current,
     vararg links: Link = emptyArray(),
 ) {
-    val annotatedText = buildAnnotatedString {
-        append(text)
-
-        links.forEach { link ->
-            val startIndex = text.indexOf(link.text)
-            if (startIndex < 0) return@forEach
-            val endIndex = startIndex + link.text.length
-
-            addLink(
-                url = LinkAnnotation.Url(
-                    url = link.href, styles = TextLinkStyles(
-                        style = SpanStyle(
-                            color = MaterialTheme.colorScheme.primary,
-                            textDecoration = TextDecoration.Underline
-                        )
-                    )
-                ) {
-                    val url = (it as LinkAnnotation.Url).url
-                    CustomTabsIntent.Builder().build().launchUrl(context, url.toUri())
-                }, start = startIndex, end = endIndex
-            )
-        }
+    val annotatedText = buildHyperlinkAnnotationString(text, links = links) {
+        val url = (it as LinkAnnotation.Url).url
+        CustomTabsIntent.Builder().build().launchUrl(context, url.toUri())
     }
 
     Text(
@@ -96,4 +79,27 @@ fun HyperlinkText(
         onTextLayout = onTextLayout,
         style = style
     )
+}
+
+@Composable
+fun buildHyperlinkAnnotationString(
+    text: String, vararg links: Link, styles: TextLinkStyles = TextLinkStyles(
+        style = SpanStyle(
+            color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline
+        )
+    ), linkInteractionListener: LinkInteractionListener? = null
+): AnnotatedString = buildAnnotatedString {
+    append(text)
+
+    links.forEach { link ->
+        val startIndex = text.indexOf(link.text)
+        if (startIndex < 0) return@forEach
+        val endIndex = startIndex + link.text.length
+
+        addLink(
+            url = LinkAnnotation.Url(
+                url = link.href, styles = styles, linkInteractionListener = linkInteractionListener
+            ), start = startIndex, end = endIndex
+        )
+    }
 }

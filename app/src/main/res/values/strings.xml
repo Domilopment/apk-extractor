@@ -68,6 +68,9 @@
 
     <string name="terms_title">Terms &amp; Conditions</string>
 
+    <string name="thanks_translaton_title">Translators</string>
+    <string name="thanks_translaton_summary">mikropsoft (Turkish)</string>
+
     <string name="oss_dependencies_title">Used Libraries</string>
 
     <string name="version">Version: %s (%d)</string>
