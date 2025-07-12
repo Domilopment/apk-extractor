@@ -160,14 +160,8 @@ fun SettingsHomeScreen(
                 text = stringResource(id = R.string.data_collection_delete_summary),
                 links = arrayOf(
                     Link(
-                        text = "statement on deletion and retention",
-                        href = "https://policies.google.com/technologies/retention"
-                    ), Link(
-                        text = "der Stellungnahme von Google zur Löschung und Aufbewahrung ausführlich beschrieben",
-                        href = "https://policies.google.com/technologies/retention?hl=de"
-                    ), Link(
-                        text = "silme ve saklama beyanında",
-                        href = "https://policies.google.com/technologies/retention?hl=tr"
+                        text = stringResource(id = R.string.data_collection_delete_summary_hyperlink_text),
+                        href = stringResource(id = R.string.data_collection_delete_summary_hyperlink_url)
                     )
                 )
             )

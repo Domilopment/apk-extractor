@@ -54,6 +54,8 @@
     <string name="data_collection_perf_summary">Uygulama başlangıç süresi ve ağ istekleri gibi performans metriklerinin toplanması, uygulama performansını optimize etmek için kullanılır.</string>
     <string name="data_collection_delete">Kurulum Kimliğini Sil</string>
     <string name="data_collection_delete_summary">Firebase kurulum kimlikleri, her uygulama kurulumunda farklıdır; aynı cihazda farklı uygulamalar için farklı Firebase kurulum kimlikleri bulunur. Firebase kurulum kimlikleri, uygulama kurulumlarını ve bu kurulumlarla ilişkili verileri tanımlar.\n\nKurulum kimliğini sildiğinizde, bu kimlikle ilişkili veriler, Firebase hizmetlerinin canlı ve yedek sistemlerinden 180 gün içinde kaldırılır. Bu süreç, Google\'ın silme ve saklama beyanında genel hatlarıyla açıklanmıştır.</string>
+    <string name="data_collection_delete_summary_hyperlink_text">silme ve saklama beyanında</string>
+    <string name="data_collection_delete_summary_hyperlink_url">https://policies.google.com/technologies/retention?hl=tr/</string>
     <string name="data_collection_delete_success">Firebase Kurulum Kimliği silindi</string>
     <string name="data_collection_delete_failure">Firebase Kurulum Kimliği silinemedi, lütfen daha sonra tekrar deneyin veya geliştiriciyle iletişime geçin</string>
 

@@ -54,6 +54,8 @@
     <string name="data_collection_perf_summary">Collection of performance metrics, such as app startup time and network requests, to optimize app performance.</string>
     <string name="data_collection_delete">Delete Installations-ID</string>
     <string name="data_collection_delete_summary">Firebase installation IDs are different for every installation of every application; different applications on the same device have different Firebase installation IDs. Firebase installation IDs identify app installations and data tied to those app installations.\n\nWhen you delete an installation ID, the data tied to that installation ID is removed from live and backup systems of all Firebase services that use Firebase installation IDs to identify installations within 180 days. This process is described at a high level in Google’s statement on deletion and retention.</string>
+    <string name="data_collection_delete_summary_hyperlink_text">statement on deletion and retention</string>
+    <string name="data_collection_delete_summary_hyperlink_url">https://policies.google.com/technologies/retention</string>
     <string name="data_collection_delete_success">Firebase-Installation-ID deleted</string>
     <string name="data_collection_delete_failure">Unable to delete Firebase-Installation-ID, try again later or contact the developer</string>
 
