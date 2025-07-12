@@ -77,7 +77,7 @@ object FileUtil {
             true
         } catch (e: IllegalArgumentException) {
             Timber.tag("FileUtil: deleteDocument").e(e)
-            return doesDocumentExist(context, uri)
+            doesDocumentExist(context, uri)
         }
     }
 
