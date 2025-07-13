@@ -1,12 +1,16 @@
 package domilopment.apkextractor.utils
 
 import android.content.Context
+import android.database.sqlite.SQLiteException
 import android.net.Uri
+import android.os.RemoteException
 import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import domilopment.apkextractor.BuildConfig
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.*
 import java.util.zip.ZipEntry
@@ -66,19 +70,35 @@ object FileUtil {
      * @return
      * If document was deleted or not
      */
-    fun deleteDocument(context: Context, uri: Uri): Boolean {
-        return try {
-            DocumentsContract.deleteDocument(context.contentResolver, uri)
-        } catch (e: IllegalStateException) {
-            Timber.tag("FileUtil: deleteDocument").e(e)
-            false
-        } catch (e: FileNotFoundException) {
-            Timber.tag("FileUtil: deleteDocument").e(e)
-            true
+    suspend fun deleteDocument(context: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
+        if (!doesDocumentExist(context, uri)) return@withContext true
+
+        try {
+            return@withContext DocumentsContract.deleteDocument(context.contentResolver, uri)
+        } catch (_: FileNotFoundException) {
+            // File is already gone
+            return@withContext true
+        } catch (e: SecurityException) {
+            Timber.tag("FileUtil.deleteDocument : SecurityException").e(e)
         } catch (e: IllegalArgumentException) {
-            Timber.tag("FileUtil: deleteDocument").e(e)
-            doesDocumentExist(context, uri)
+            Timber.tag("FileUtil.deleteDocument : IllegalArgumentException").e(e)
+        } catch (e: UnsupportedOperationException) {
+            Timber.tag("FileUtil.deleteDocument : UnsupportedOperationException").e(e)
+        } catch (e: IllegalStateException) {
+            Timber.tag("FileUtil.deleteDocument : IllegalStateException").e(e)
+        } catch (e: NullPointerException) {
+            Timber.tag("FileUtil.deleteDocument : NullPointerException").e(e)
+        } catch (e: SQLiteException) {
+            Timber.tag("FileUtil.deleteDocument : SQLiteException").e(e)
+        } catch (e: RemoteException) {
+            Timber.tag("FileUtil.deleteDocument : RemoteException").e(e)
+        } catch (e: IOException) {
+            Timber.tag("FileUtil.deleteDocument : IOException").e(e)
+        } catch (e: Exception) {
+            Timber.tag("FileUtil.deleteDocument : Unexpected Exception").e(e)
         }
+
+        return@withContext false
     }
 
     /**
@@ -308,7 +328,7 @@ object FileUtil {
                 null,
                 null
             )?.use { cursor -> cursor.count > 0 } ?: false
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }

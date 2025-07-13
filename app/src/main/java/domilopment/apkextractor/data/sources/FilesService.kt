@@ -31,9 +31,7 @@ class FilesService(private val context: Context) {
         }
     }
 
-    suspend fun delete(data: Uri): Boolean = withContext(Dispatchers.IO) {
-        return@withContext FileUtil.deleteDocument(context, data)
-    }
+    suspend fun delete(data: Uri): Boolean = FileUtil.deleteDocument(context, data)
 
     suspend fun fileInfo(file: Uri, vararg projection: String): FileUtil.DocumentFile? =
         withContext(Dispatchers.IO) {

@@ -91,10 +91,12 @@ class PackageBroadcastReceiver : BroadcastReceiver() {
             // Delete Backup APK file
             ACTION_DELETE_APK -> {
                 intent.data?.let {
-                    val deleted = FileUtil.deleteDocument(context, it)
-                    if (deleted) with(NotificationManagerCompat.from(context)) {
-                        val id = intent.getIntExtra("ID", -1)
-                        if (id > 1) cancel(id)
+                    runBlocking {
+                        val deleted = FileUtil.deleteDocument(context, it)
+                        if (deleted) with(NotificationManagerCompat.from(context)) {
+                            val id = intent.getIntExtra("ID", -1)
+                            if (id > 1) cancel(id)
+                        }
                     }
                 }
             }

@@ -30,6 +30,7 @@ import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,16 +126,18 @@ fun ApkListScreen(
                 }
             },
             onActionDelete = {
-                FileUtil.deleteDocument(context, it.fileUri).let { deleted ->
-                    Toast.makeText(
-                        context, context.getString(
-                            if (deleted) {
-                                model.remove(it)
-                                R.string.apk_action_delete_success
-                            } else R.string.apk_action_delete_failed
-                        ), Toast.LENGTH_SHORT
-                    )
-                }.show()
+                runBlocking {
+                    FileUtil.deleteDocument(context, it.fileUri).let { deleted ->
+                        Toast.makeText(
+                            context, context.getString(
+                                if (deleted) {
+                                    model.remove(it)
+                                    R.string.apk_action_delete_success
+                                } else R.string.apk_action_delete_failed
+                            ), Toast.LENGTH_SHORT
+                        )
+                    }.show()
+                }
             },
             onActionUninstall = {
                 Intent(context, InstallerActivity::class.java).apply {
