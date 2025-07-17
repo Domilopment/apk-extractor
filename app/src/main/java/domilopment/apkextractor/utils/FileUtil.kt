@@ -71,34 +71,18 @@ object FileUtil {
      * If document was deleted or not
      */
     suspend fun deleteDocument(context: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
-        if (!doesDocumentExist(context, uri)) return@withContext true
-
-        try {
-            return@withContext DocumentsContract.deleteDocument(context.contentResolver, uri)
+        return@withContext try {
+            DocumentsContract.deleteDocument(context.contentResolver, uri)
         } catch (_: FileNotFoundException) {
-            // File is already gone
-            return@withContext true
-        } catch (e: SecurityException) {
-            Timber.tag("FileUtil.deleteDocument : SecurityException").e(e)
-        } catch (e: IllegalArgumentException) {
-            Timber.tag("FileUtil.deleteDocument : IllegalArgumentException").e(e)
-        } catch (e: UnsupportedOperationException) {
-            Timber.tag("FileUtil.deleteDocument : UnsupportedOperationException").e(e)
-        } catch (e: IllegalStateException) {
-            Timber.tag("FileUtil.deleteDocument : IllegalStateException").e(e)
-        } catch (e: NullPointerException) {
-            Timber.tag("FileUtil.deleteDocument : NullPointerException").e(e)
-        } catch (e: SQLiteException) {
-            Timber.tag("FileUtil.deleteDocument : SQLiteException").e(e)
-        } catch (e: RemoteException) {
-            Timber.tag("FileUtil.deleteDocument : RemoteException").e(e)
-        } catch (e: IOException) {
-            Timber.tag("FileUtil.deleteDocument : IOException").e(e)
+            // File is already gone, consider it successfully deleted
+            true
         } catch (e: Exception) {
-            Timber.tag("FileUtil.deleteDocument : Unexpected Exception").e(e)
-        }
+            // expected exception types: SecurityException, IllegalArgumentException, UnsupportedOperationException, IllegalStateException, NullPointerException, SQLiteException, RemoteException, IOException
+            Timber.tag("FileUtil.deleteDocument: ${e.javaClass.simpleName}").e(e)
 
-        return@withContext false
+            // Final check: if file doesn't exist after exception, consider it deleted
+            !doesDocumentExist(context, uri)
+        }
     }
 
     /**
