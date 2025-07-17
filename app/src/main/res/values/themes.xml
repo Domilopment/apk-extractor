@@ -75,8 +75,6 @@
         <item name="postSplashScreenTheme">@style/ActivityTheme</item>
     </style>
 
-    <style name="OSSActivityTheme" parent="Theme.Material3.DynamicColors.DayNight">
-        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
-    </style>
+    <style name="OSSActivityTheme" parent="Theme.Material3.DynamicColors.DayNight" />
 
 </resources>
