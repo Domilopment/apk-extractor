@@ -23,7 +23,7 @@ android {
     defaultConfig {
         applicationId = "domilopment.apkextractor"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 97
         versionName = "2.5.1-${VersionUtils.buildDate()}"
 
@@ -65,9 +65,7 @@ android {
         buildConfig = true
     }
     composeCompiler {
-        featureFlags = setOf(
-            ComposeFeatureFlag.OptimizeNonSkippingGroups,
-        )
+        featureFlags = setOf()
     }
     packaging {
         resources {
