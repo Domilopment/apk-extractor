@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">APK Extractor</string>
-
     <!-- Apk Options -->
     <string name="apk_action_share">Paylaş</string>
     <string name="apk_action_delete">Sil</string>
@@ -71,7 +69,6 @@
     <string name="terms_title">Şartlar ve Koşullar</string>
 
     <string name="thanks_translaton_title">Çevirmenler</string>
-    <string name="thanks_translaton_summary">mikropsoft (Türkçe)</string>
 
     <string name="oss_dependencies_title">Kullanılan Kütüphaneler</string>
 
@@ -159,8 +156,6 @@
     <string name="locale_list_summary">%s</string>
     <string name="locale_list_default">Sistem varsayılanı</string>
     <string name="locale_list_not_supported">Dil %s henüz desteklenmiyor</string>
-    <string name="locale_list_en" translatable="false">English</string>
-    <string name="locale_list_de_de" translatable="false">Deutsch (Deutschland)</string>
 
     <!-- APK Name Preference Dialog -->
     <string name="app_name_dialog_ok">Tamam</string>
@@ -286,8 +281,6 @@
 
     <!-- App List Item -->
     <string name="list_item_Image_description">Uygulama Simgesi</string>
-    <string name="list_item_title_placeholder" translatable="false">App Title</string>
-    <string name="list_item_package_placeholder" translatable="false">com.placeholder.application</string>
     <string name="list_item_checkbox_description">Çoklu seçim onay kutusu</string>
 
     <!-- App Extraction Progress Dialog -->
@@ -296,7 +289,6 @@
     <string name="progress_dialog_title_save">APK\'ları Kaydet</string>
     <string name="progress_dialog_title_share">Paylaşmaya Hazırlan</string>
     <string name="progress_dialog_title_install">APK\'ları Yükle</string>
-    <string name="progress_dialog_title_placeholder" translatable="false">Progress Dialog</string>
 
     <!-- Installation Activity -->
     <string name="installation_activity_placeholder_text">Lütfen bekleyin</string>

@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -129,9 +130,10 @@ fun SettingsHomeScreen(
         language = language,
         languageLocaleDisplayName = when (language) {
             "default" -> context.getString(R.string.locale_list_default)
-            Locale.ENGLISH.toLanguageTag() -> context.getString(R.string.locale_list_en)
-            Locale.GERMANY.toLanguageTag() -> context.getString(R.string.locale_list_de_de)
-            "tr" -> context.getString(R.string.locale_list_tr)
+            in stringArrayResource(id = R.array.locale_list_values) -> Locale.forLanguageTag(
+                language
+            ).displayName
+
             else -> context.getString(
                 R.string.locale_list_not_supported, Locale.forLanguageTag(language).displayName
             )

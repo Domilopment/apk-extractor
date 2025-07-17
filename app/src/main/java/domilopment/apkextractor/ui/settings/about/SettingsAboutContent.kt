@@ -26,6 +26,7 @@ import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMi
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
 import domilopment.apkextractor.ui.tabletLazyListInsets
 import domilopment.apkextractor.utils.Contributors
+import java.util.Locale
 
 @Composable
 fun SettingsAboutContent(
@@ -55,13 +56,15 @@ fun SettingsAboutContent(
             }
         }
         preferenceCategoryItemMiddle {
+            val translators = Contributors.getTranslators()
             Preference(
                 name = AnnotatedString(text = stringResource(id = R.string.thanks_translaton_title)),
                 icon = Icons.Default.Translate,
                 summary = buildHyperlinkAnnotationString(
-                    text = stringResource(id = R.string.thanks_translaton_summary), links = arrayOf(
-                        Link(Contributors.mikropsoft.first, Contributors.mikropsoft.second)
-                    )
+                    text = translators.joinToString {
+                        "${it.name} (${Locale.forLanguageTag(it.languageTag).displayName})\n"
+                    }.removeSuffix("\n"),
+                    links = translators.map { Link(it.name, it.url) }.toTypedArray()
                 ),
                 onClick = {},
             )
