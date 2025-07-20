@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -42,6 +41,8 @@ import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMi
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemSingle
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
 import domilopment.apkextractor.ui.tabletLazyListInsets
+import domilopment.apkextractor.utils.settings.Languages
+import domilopment.apkextractor.utils.settings.getDisplayString
 
 @Composable
 fun SettingsHomeContent(
@@ -139,14 +140,15 @@ fun SettingsHomeContent(
                 )
             }
             preferenceCategoryItemBottom {
+                val languages = Languages.entries
                 ListPreference(
                     name = stringResource(id = R.string.locale_list_title),
                     icon = Icons.Default.Language,
                     summary = stringResource(
                         id = R.string.locale_list_summary, languageLocaleDisplayName
                     ),
-                    entries = stringArrayResource(id = R.array.locale_list_names),
-                    entryValues = stringArrayResource(id = R.array.locale_list_values),
+                    entries = languages.map { it.getDisplayString() }.toTypedArray(),
+                    entryValues = languages.map { it.languageTag }.toTypedArray(),
                     state = language,
                     onClick = onLanguage
                 )

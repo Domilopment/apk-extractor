@@ -22,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -43,9 +42,11 @@ import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.SettingsManager
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import java.util.Locale
 import androidx.core.net.toUri
 import domilopment.apkextractor.ui.navigation.Route
+import domilopment.apkextractor.utils.settings.Languages
+import domilopment.apkextractor.utils.settings.getDisplayString
+import java.util.Locale
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -128,16 +129,10 @@ fun SettingsHomeScreen(
         isDynamicColors = remember { DynamicColors.isDynamicColorAvailable() },
         onDynamicColors = model::setUseMaterialYou,
         language = language,
-        languageLocaleDisplayName = when (language) {
-            "default" -> context.getString(R.string.locale_list_default)
-            in stringArrayResource(id = R.array.locale_list_values) -> Locale.forLanguageTag(
-                language
-            ).displayName
-
-            else -> context.getString(
-                R.string.locale_list_not_supported, Locale.forLanguageTag(language).displayName
-            )
-        },
+        languageLocaleDisplayName = Languages.getSupportedLanguageByTagOrNull(language)
+            ?.getDisplayString() ?: stringResource(
+            id = R.string.locale_list_not_supported, Locale.forLanguageTag(language).displayName
+        ),
         onLanguage = {
             language = it
             SettingsManager.setLocale(it)
