@@ -27,7 +27,7 @@ This means to save the install file from the Version on your device to your Syst
 
 ## Highlights
 
-Provided functions are:
+### Provided functions are:
 
 - **Fast and easy to use. (hopefully)**
 - **Extracts all application, including system applications.</br>
@@ -57,6 +57,40 @@ Provided functions are:
   Show an installation Dialog if you click on an apks/xapk file in your file explorer to install it (May depend on file explorer).
 
 Programmed with Love^^ ❤
+
+## Contributing
+
+Contributions are welcome! Whether you're fixing bugs, improving documentation, or adding new features or languages, your help is appreciated.
+
+### 🈳 Adding a New Language
+
+To add support for a new language, please follow these steps:
+
+1. **Translate strings**
+
+   * Copy and translate the [`strings.xml`](app/src/main/res/values/strings.xml) file into your target language.
+   * Save the translated file in a new directory using the appropriate locale code (e.g. `values-es/` for Spanish, `values-fr/` for French).
+
+2. **Register the language**
+
+   * Add an entry for the new language, including the locale and tag, in [`Languages.kt`](app/src/main/java/domilopment/apkextractor/utils/settings/Languages.kt).
+
+3. **Update locale filters**
+
+   * Add your language to the locale filter list in the build script at [`build.gradle.kts`](app/build.gradle.kts#L37).
+
+4. **Submit a pull request**
+
+   * Open a pull request with your changes.
+   * Include a brief description and request a review from the maintainers.
+
+### ✅ Tips
+
+* Make sure your locale code follows Android's [language and region standards](https://developer.android.com/guide/topics/resources/localization).
+* Test your language selection in the app to ensure everything displays correctly.
+* Keep translations consistent with the original tone and terminology.
+
+Thank you for helping make this project better for everyone!
 
 ## License
 
