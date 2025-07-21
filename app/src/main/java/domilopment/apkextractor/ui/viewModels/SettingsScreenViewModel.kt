@@ -30,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
     appsRepository: ApplicationRepository,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val settings: PreferenceRepository,
     private val analytics: AnalyticsRepository,
     private val isAppInstalled: IsAppInstalledUseCase,

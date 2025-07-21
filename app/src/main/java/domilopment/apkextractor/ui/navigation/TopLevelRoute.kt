@@ -4,5 +4,5 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class TopLevelRoute<T : Any>(
-    @StringRes val nameResId: Int, val route: T, val icon: ImageVector
+    @param:StringRes val nameResId: Int, val route: T, val icon: ImageVector
 )

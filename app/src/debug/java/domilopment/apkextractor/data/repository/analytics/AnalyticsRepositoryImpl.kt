@@ -6,7 +6,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class AnalyticsRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : AnalyticsRepository {
     override fun setAnalyticsCollectionEnabled(boolean: Boolean) {
         Timber.tag("AnalyticsRepository").d("Analytics enabled : $boolean")

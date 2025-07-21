@@ -24,7 +24,7 @@ interface PackageArchiveRepository {
 }
 
 class MyPackageArchiveRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val apkDao: ApkDao,
     private val packageArchiveService: ListOfAPKs,
     private val settings: PreferenceRepository,
