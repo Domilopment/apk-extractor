@@ -26,7 +26,7 @@ import java.io.BufferedInputStream
 import java.io.IOException
 import java.util.zip.ZipInputStream
 
-class InstallationService private constructor(@ApplicationContext private val context: Context) {
+class InstallationService private constructor(@param:ApplicationContext private val context: Context) {
     fun <T : Activity> install(
         fileUri: Uri, statusReceiver: Class<T>
     ): Flow<InstallApkResult> = callbackFlow {
