@@ -9,7 +9,10 @@ plugins {
 
 android {
     namespace = "domilopment.apkextractor.baselineprofile"
-    compileSdk = 36
+
+    compileSdk {
+        version = release(36)
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
