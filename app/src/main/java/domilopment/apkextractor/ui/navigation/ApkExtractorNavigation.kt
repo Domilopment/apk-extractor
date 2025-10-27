@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.navigation
 
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.isImeVisible
@@ -8,6 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
@@ -24,7 +24,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.ui.DeviceTypeUtils
-import domilopment.apkextractor.ui.components.AnimatedNavigationSuiteScaffold
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -53,13 +52,12 @@ fun ApkExtractorNavigationSuiteScaffold(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     showNavigationSuite: Boolean = true,
-    navigationRailHeader: @Composable (ColumnScope.() -> Unit)? = null,
     onNavigate: () -> Unit,
     content: @Composable (() -> Unit),
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    AnimatedNavigationSuiteScaffold(
+    NavigationSuiteScaffold(
         navigationSuiteItems = {
             navigationItems.forEach { navigationItem ->
                 item(
@@ -102,7 +100,6 @@ fun ApkExtractorNavigationSuiteScaffold(
         } else {
             NavigationSuiteType.None
         },
-        navigationRailHeader = navigationRailHeader,
         content = content,
     )
 

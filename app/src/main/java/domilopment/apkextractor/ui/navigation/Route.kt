@@ -42,13 +42,13 @@ sealed interface Route {
             override val hasNavigationBar = true
             override val appBarActions = listOf(
                 ActionMenuItem.IconMenuItem.ShownIfRoom(
-                    titleRes = R.string.filter_title,
+                    labelRes = R.string.filter_title,
                     onClick = { _buttons.tryEmit(ScreenActions.FilterList) },
                     icon = Icons.Default.FilterList,
                     contentDescription = null,
                 ),
                 ActionMenuItem.IconMenuItem.ShownIfRoom(
-                    titleRes = R.string.menu_refresh_app_list,
+                    labelRes = R.string.menu_refresh_app_list,
                     onClick = { _buttons.tryEmit(ScreenActions.Refresh) },
                     icon = Icons.Default.Refresh,
                     contentDescription = null,
@@ -58,10 +58,12 @@ sealed interface Route {
                 BottomBarItem(
                     icon = Icons.Default.Save,
                     onClick = { _buttons.tryEmit(ScreenActions.Save) },
+                    labelRes = R.string.action_bottom_sheet_save,
                 ),
                 BottomBarItem(
                     icon = Icons.Default.Share,
                     onClick = { _buttons.tryEmit(ScreenActions.Share) },
+                    labelRes = R.string.apk_action_share
                 ),
             )
 
@@ -80,19 +82,19 @@ sealed interface Route {
             override val hasNavigationBar = true
             override val appBarActions = listOf(
                 ActionMenuItem.IconMenuItem.ShownIfRoom(
-                    titleRes = R.string.menu_sort_apk,
+                    labelRes = R.string.menu_sort_apk,
                     onClick = { _buttons.tryEmit(ScreenActions.Sort) },
                     icon = Icons.AutoMirrored.Filled.Sort,
                     contentDescription = null,
                 ),
                 ActionMenuItem.IconMenuItem.ShownIfRoom(
-                    titleRes = R.string.menu_show_open_documents,
+                    labelRes = R.string.menu_show_open_documents,
                     onClick = { _buttons.tryEmit(ScreenActions.OpenExplorer) },
                     icon = Icons.Default.Folder,
                     contentDescription = null,
                 ),
                 ActionMenuItem.IconMenuItem.ShownIfRoom(
-                    titleRes = R.string.menu_refresh_apk_list,
+                    labelRes = R.string.menu_refresh_apk_list,
                     onClick = { _buttons.tryEmit(ScreenActions.Refresh) },
                     icon = Icons.Default.Refresh,
                     contentDescription = null,

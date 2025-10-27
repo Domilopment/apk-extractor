@@ -30,9 +30,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.AppBarRow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,6 +61,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -144,10 +147,6 @@ private fun DefaultAppBar(
 ) {
     val localDensity = LocalDensity.current
 
-    var menuExpanded by remember {
-        mutableStateOf(false)
-    }
-
     var barWidth by remember {
         mutableStateOf(0.dp)
     }
@@ -181,33 +180,42 @@ private fun DefaultAppBar(
             )
         }
     }, actions = {
-        if (appBarState.isSearchable) with(sharedTransitionScope) {
-            IconButton(
-                onClick = onActionSearch, modifier = Modifier.sharedBounds(
-                    rememberSharedContentState(key = "search_icon_bounds"),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = searchBarBoundsTransform,
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null,
-                    modifier = Modifier.sharedElement(
-                        rememberSharedContentState(key = "search_icon"),
-                        animatedVisibilityScope = animatedVisibilityScope
+        val context = LocalContext.current
+        with(sharedTransitionScope) {
+            AppBarRow(
+                maxItemCount = visibleItems.let {
+                    ActionMenuItem.calculateShownItems(
+                        appBarState.actions, maxVisibleItems = it
                     )
-                )
+                }) {
+                if (appBarState.isSearchable) clickableItem(onClick = onActionSearch, icon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .sharedBounds(
+                                rememberSharedContentState(key = "search_icon_bounds"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = searchBarBoundsTransform,
+                                resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                            )
+                            .sharedElement(
+                                rememberSharedContentState(key = "search_icon"),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                    )
+                }, label = "Search")
+                appBarState.actions.forEach { item ->
+                    clickableItem(
+                        onClick = item.onClick, icon = {
+                            if (item is ActionMenuItem.IconMenuItem) Icon(
+                                imageVector = item.icon,
+                                contentDescription = item.contentDescription
+                            )
+                        }, label = context.getString(item.labelRes)
+                    )
+                }
             }
-        }
-        appBarState.actions.takeIf { it.isNotEmpty() }?.let { action ->
-            ActionsMenu(
-                items = action,
-                hasSearchIcon = appBarState.isSearchable,
-                isOpen = menuExpanded,
-                onToggleOverflow = { menuExpanded = it },
-                maxVisibleItems = visibleItems,
-            )
         }
     })
 }
@@ -235,14 +243,21 @@ private fun ActionModeBar(
             )
         }
     }, actions = {
-        if (DeviceTypeUtils.isTabletBars) appBarState.actionModeActions.forEach { item ->
-            IconButton(onClick = item.onClick) {
-                Icon(item.icon, contentDescription = null)
+        val context = LocalContext.current
+        val isTabletBars = DeviceTypeUtils.isTabletBars
+        AppBarRow {
+            if (isTabletBars) appBarState.actionModeActions.forEach { item ->
+                clickableItem(onClick = item.onClick, icon = {
+                    Icon(imageVector = item.icon, contentDescription = null)
+                }, label = "")
             }
+            toggleableItem(checked = allItemsChecked, onCheckedChange = onCheckAllItems, icon = {
+                Icon(
+                    imageVector = if (allItemsChecked) Icons.Default.CheckBox else Icons.Default.CheckBoxOutlineBlank,
+                    contentDescription = null
+                )
+            }, label = "CheckBox")
         }
-        Checkbox(
-            checked = allItemsChecked, onCheckedChange = onCheckAllItems
-        )
     })
 
     BackHandler {
