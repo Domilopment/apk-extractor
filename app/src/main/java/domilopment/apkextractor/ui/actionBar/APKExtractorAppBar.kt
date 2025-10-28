@@ -185,7 +185,9 @@ private fun DefaultAppBar(
             AppBarRow(
                 maxItemCount = visibleItems.let {
                     ActionMenuItem.calculateShownItems(
-                        appBarState.actions, maxVisibleItems = it
+                        appBarState.actions,
+                        hasSearchIcon = appBarState.isSearchable,
+                        maxVisibleItems = it
                     )
                 }) {
                 if (appBarState.isSearchable) clickableItem(onClick = onActionSearch, icon = {
