@@ -7,6 +7,6 @@ interface AppFilter {
     val name: String?
     val ordinal: Int
 
-    fun getFilter(list: List<ApplicationModel>): List<ApplicationModel>
+    fun getFilter(list: List<ApplicationModel.ApplicationListModel>): List<ApplicationModel.ApplicationListModel>
     fun getTitleString(context: Context): CharSequence?
 }

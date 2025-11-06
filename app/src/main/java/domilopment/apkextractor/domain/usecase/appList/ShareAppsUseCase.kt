@@ -5,9 +5,6 @@ import android.net.Uri
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
-import domilopment.apkextractor.domain.mapper.AppModelToApplicationModelMapper
-import domilopment.apkextractor.domain.mapper.ApplicationModelToAppModelMapper
-import domilopment.apkextractor.domain.mapper.mapAll
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +19,9 @@ interface ShareAppsUseCase {
 }
 
 class ShareAppsUseCaseImpl @Inject constructor(
-    private val context: Context, private val settings: PreferenceRepository
+    private val context: Context,
+    private val settings: PreferenceRepository,
+    private val appDetailsUseCase: GetAppDetailsUseCase
 ) : ShareAppsUseCase {
     override operator fun invoke(list: List<ApplicationModel>) = callbackFlow {
         if (list.isEmpty()) {
@@ -34,24 +33,22 @@ class ShareAppsUseCaseImpl @Inject constructor(
         val backupMode = settings.backupModeApkBundle.first()
         val bundleFileInfo = settings.bundleFileInfo.first()
 
-        val tasks =
-            ApplicationModelToAppModelMapper(context.packageManager).mapAll(list).filterNotNull()
+        val tasks = list.mapNotNull { appDetailsUseCase.invoke(it) }
 
         val taskSize = if (backupMode) tasks.fold(0) { acc, applicationModel ->
-            acc + (applicationModel.applicationInfo.splitSourceDirs?.size ?: 0) + 1
+            acc + (applicationModel.appSplitSourceDirectories?.size ?: 0) + 1
         } else list.size
 
         trySend(ShareResult.Init(taskSize))
 
         tasks.forEach { app ->
-            val appInfo = AppModelToApplicationModelMapper(context.packageManager).map(app)
 
-            val splits = arrayListOf(app.applicationInfo.sourceDir)
-            if (!app.applicationInfo.splitSourceDirs.isNullOrEmpty() && backupMode) splits.addAll(
-                app.applicationInfo.splitSourceDirs!!
+            val splits = arrayListOf(app.appSourceDirectory)
+            if (!app.appSplitSourceDirectories.isNullOrEmpty() && backupMode) splits.addAll(
+                app.appSplitSourceDirectories
             )
             val name =
-                Utils.getPackageInfo(context.packageManager, app.applicationInfo.packageName).let {
+                Utils.getPackageInfo(context.packageManager, app.appPackageName).let {
                     ApplicationUtil.appName(
                         context.packageManager,
                         it,
@@ -61,11 +58,11 @@ class ShareAppsUseCaseImpl @Inject constructor(
                 }
 
             val uri = if (splits.size == 1) {
-                val shareUri = ApplicationUtil.shareApk(context, appInfo, name)
+                val shareUri = ApplicationUtil.shareApk(context, app, name)
                 trySend(ShareResult.Progress)
                 shareUri
             } else ApplicationUtil.shareApkBundle(
-                context, appInfo, name, bundleFileInfo.suffix
+                context, app, name, bundleFileInfo.suffix
             ) { trySend(ShareResult.Progress) }
             files.add(uri)
         }

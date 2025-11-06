@@ -174,16 +174,10 @@ private fun AppListItemPreview() {
     val context = LocalContext.current
     var app by remember {
         mutableStateOf(
-            ApplicationModel(
+            ApplicationModel.ApplicationListModel(
                 appPackageName = BuildConfig.APPLICATION_ID,
-                appName = "Apk Ectractor",
-                appSourceDirectory = "/data/app/${BuildConfig.APPLICATION_ID}/base.apk",
-                appSplitSourceDirectories = null,
+                appName = "Apk Extractor",
                 appIcon = context.packageManager.getApplicationIcon(BuildConfig.APPLICATION_ID),
-                appVersionName = "1.0",
-                appVersionCode = 1,
-                minSdkVersion = 39,
-                targetSdkVersion = 34,
                 appFlags = 0,
                 appCategory = 0,
                 appInstallTime = 0,

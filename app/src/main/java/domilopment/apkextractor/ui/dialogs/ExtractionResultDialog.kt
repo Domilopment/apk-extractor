@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import domilopment.apkextractor.R
 
 @Composable
-fun ExtractionResultDialog(onDismissRequest: () -> Unit, appName: String?, errorMessage: String?) {
+fun ExtractionResultDialog(onDismissRequest: () -> Unit, appName: String, errorMessage: String?) {
     val context = LocalContext.current
     AlertDialog(onDismissRequest = onDismissRequest, confirmButton = {
         TextButton(onClick = onDismissRequest) {
@@ -30,7 +30,7 @@ fun ExtractionResultDialog(onDismissRequest: () -> Unit, appName: String?, error
     }, title = {
         Text(
             text = stringResource(
-                id = R.string.snackbar_extraction_failed, appName ?: ""
+                id = R.string.snackbar_extraction_failed, appName
             )
         )
     }, text = {

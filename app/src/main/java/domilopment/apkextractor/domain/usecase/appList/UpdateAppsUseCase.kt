@@ -1,12 +1,13 @@
 package domilopment.apkextractor.domain.usecase.appList
 
 import domilopment.apkextractor.data.repository.applications.ApplicationRepository
+import javax.inject.Inject
 
 interface UpdateAppsUseCase {
     suspend operator fun invoke()
 }
 
-class UpdateAppsUseCaseImpl(private val repository: ApplicationRepository): UpdateAppsUseCase {
+class UpdateAppsUseCaseImpl @Inject constructor(private val repository: ApplicationRepository): UpdateAppsUseCase {
     override suspend fun invoke() {
         repository.updateApps()
     }

@@ -95,8 +95,8 @@ object ApplicationUtil {
      * @return List of Applications with correct favorite state
      */
     fun getFavorites(
-        apps: List<ApplicationModel>, favorites: Set<String>
-    ): List<ApplicationModel> {
+        apps: List<ApplicationModel.ApplicationListModel>, favorites: Set<String>
+    ): List<ApplicationModel.ApplicationListModel> {
         return apps.map {
             it.copy(isFavorite = it.appPackageName in favorites)
         }
@@ -108,11 +108,11 @@ object ApplicationUtil {
      * @return filtered list of Applications
      */
     fun filterApps(
-        data: List<ApplicationModel>,
+        data: List<ApplicationModel.ApplicationListModel>,
         filterInstaller: String?,
         filterCategory: String?,
         filterOthers: Set<String>
-    ): List<ApplicationModel> {
+    ): List<ApplicationModel.ApplicationListModel> {
         val filter = mutableSetOf<AppFilter>()
         filterInstaller?.let { filter.add(AppFilterInstaller.valueOf(it)) }
         filterCategory?.let { filter.add(AppFilterCategories.valueOf(it)) }
@@ -134,8 +134,8 @@ object ApplicationUtil {
      * @return Sorted List of Apps
      */
     fun sortAppData(
-        data: List<ApplicationModel>, sortMode: Int, sortFavorites: Boolean, sortAsc: Boolean
-    ): List<ApplicationModel> {
+        data: List<ApplicationModel.ApplicationListModel>, sortMode: Int, sortFavorites: Boolean, sortAsc: Boolean
+    ): List<ApplicationModel.ApplicationListModel> {
         val comparator = AppSortOptions[sortMode].comparator(sortAsc)
         val sortedList = data.sortedWith(comparator)
         return if (sortFavorites) sortedList.sortedBy { app -> !app.isFavorite } else sortedList
@@ -215,7 +215,7 @@ object ApplicationUtil {
         }
     }
 
-    suspend fun shareApk(context: Context, app: ApplicationModel, appName: String): Uri =
+    suspend fun shareApk(context: Context, app: ApplicationModel.ApplicationDetailModel, appName: String): Uri =
         withContext(Dispatchers.IO) {
             val outFile = FileUtil.createTempFile(context, appName, FileUtil.FileInfo.APK.suffix)
 
@@ -229,7 +229,7 @@ object ApplicationUtil {
 
     suspend fun shareApkBundle(
         context: Context,
-        app: ApplicationModel,
+        app: ApplicationModel.ApplicationDetailModel,
         appName: String,
         suffix: String,
         callback: suspend (String) -> Unit
@@ -256,11 +256,11 @@ object ApplicationUtil {
         }
 
         return if (applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) AppModel.UpdatedSystemApps(
-            applicationInfo
+            applicationInfo.packageName
         )
         else if (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == ApplicationInfo.FLAG_SYSTEM) AppModel.SystemApp(
-            applicationInfo
+            applicationInfo.packageName
         )
-        else AppModel.UserApp(applicationInfo)
+        else AppModel.UserApp(applicationInfo.packageName)
     }
 }

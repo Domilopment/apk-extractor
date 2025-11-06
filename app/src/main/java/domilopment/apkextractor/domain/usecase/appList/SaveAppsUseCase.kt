@@ -9,9 +9,6 @@ import domilopment.apkextractor.data.repository.files.FilesRepository
 import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
-import domilopment.apkextractor.domain.mapper.AppModelToApplicationModelMapper
-import domilopment.apkextractor.domain.mapper.ApplicationModelToAppModelMapper
-import domilopment.apkextractor.domain.mapper.mapAll
 import domilopment.apkextractor.utils.SaveApkResult
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.ApplicationUtil
@@ -33,6 +30,7 @@ class SaveAppsUseCaseImpl @Inject constructor(
     private val filesRepository: FilesRepository,
     private val apkRepository: PackageArchiveRepository,
     private val settingsRepository: PreferenceRepository,
+    private val appDetailsUseCase: GetAppDetailsUseCase
 ) : SaveAppsUseCase {
     override operator fun invoke(list: List<ApplicationModel>) = callbackFlow {
         if (list.isEmpty()) {
@@ -48,24 +46,22 @@ class SaveAppsUseCaseImpl @Inject constructor(
         var application: ApplicationModel? = null
         var errorMessage: String? = null
 
-        val tasks =
-            ApplicationModelToAppModelMapper(context.packageManager).mapAll(list).filterNotNull()
+        val tasks = list.mapNotNull { appDetailsUseCase.invoke(it) }
 
         val taskSize = if (backupMode) tasks.fold(0) { acc, applicationModel ->
-            acc + (applicationModel.applicationInfo.splitSourceDirs?.size ?: 0) + 1
+            acc + (applicationModel.appSplitSourceDirectories?.size ?: 0) + 1
         } else list.size
 
         trySend(ExtractionResult.Init(taskSize))
 
         tasks.forEach { app ->
-            application = AppModelToApplicationModelMapper(context.packageManager).map(app)
+            application = app
 
-            val splits = mutableListOf(app.applicationInfo.sourceDir)
-            val splitSources = app.applicationInfo.splitSourceDirs
+            val splits = mutableListOf(app.appSourceDirectory)
+            val splitSources = app.appSplitSourceDirectories
             if (!splitSources.isNullOrEmpty() && backupMode) splits.addAll(splitSources)
 
-            val packageInfo =
-                Utils.getPackageInfo(context.packageManager, app.applicationInfo.packageName)
+            val packageInfo = Utils.getPackageInfo(context.packageManager, app.appPackageName)
             val appName = packageInfo.let {
                 ApplicationUtil.appName(
                     context.packageManager, it, appNameConfig, appNameSpacer.symbol
@@ -97,15 +93,14 @@ class SaveAppsUseCaseImpl @Inject constructor(
                             fileType = it.mimeType!!,
                             fileLastModified = it.lastModified!!,
                             fileSize = it.size!!,
-                            appName = app.applicationInfo.loadLabel(context.packageManager)
-                                .toString(),
-                            appPackageName = app.applicationInfo.packageName,
-                            appIcon = app.applicationInfo.loadIcon(context.packageManager)
-                                .toBitmap().asImageBitmap(),
+                            appName = app.appName,
+                            appPackageName = app.appPackageName,
+                            appIcon = app.appIcon.toBitmap()
+                                .asImageBitmap(),
                             appVersionName = packageInfo.versionName,
                             appVersionCode = Utils.versionCode(packageInfo),
-                            appMinSdkVersion = app.applicationInfo.minSdkVersion,
-                            appTargetSdkVersion = app.applicationInfo.targetSdkVersion,
+                            appMinSdkVersion = app.minSdkVersion,
+                            appTargetSdkVersion = app.targetSdkVersion,
                             loaded = true,
                         )
                     }?.also {

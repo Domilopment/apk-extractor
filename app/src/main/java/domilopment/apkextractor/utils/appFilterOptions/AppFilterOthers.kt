@@ -6,7 +6,7 @@ import domilopment.apkextractor.data.model.appList.ApplicationModel
 
 enum class AppFilterOthers : AppFilter {
     FAVORITES {
-        override fun getFilter(list: List<ApplicationModel>): List<ApplicationModel> {
+        override fun getFilter(list: List<ApplicationModel.ApplicationListModel>): List<ApplicationModel.ApplicationListModel> {
             return list.filter { it.isFavorite }
         }
 

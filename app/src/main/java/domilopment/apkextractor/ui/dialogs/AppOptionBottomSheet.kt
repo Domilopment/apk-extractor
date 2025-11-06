@@ -62,7 +62,6 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
-import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.model.appList.ExtractionResult
@@ -71,7 +70,7 @@ import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.AndroidVersion
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
-import domilopment.apkextractor.utils.apkActions.ApkActionsManager
+import domilopment.apkextractor.utils.apkActions.ApkActionIntent
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import domilopment.apkextractor.utils.fadingEnd
 import domilopment.apkextractor.utils.fadingStart
@@ -81,15 +80,14 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AppOptionsBottomSheet(
-    app: ApplicationModel,
+    app: ApplicationModel.ApplicationDetailModel,
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     onFavoriteChanged: (Boolean) -> Unit,
-    onActionSave: () -> Unit,
     saveResult: SharedFlow<ExtractionResult>,
-    onActionShare: () -> Unit,
-    onActionSaveImage: PermissionState,
-    uninstalledAppFound: (ApplicationModel) -> Unit,
+    onActionSaveImagePermissionRequest: PermissionState,
+    onActionIntent: (ApkActionIntent) -> Unit,
+    uninstalledAppFound: (ApplicationModel.ApplicationDetailModel) -> Unit,
 ) {
     val context = LocalContext.current
     if (!Utils.isPackageInstalled(context.packageManager, app.appPackageName)) {
@@ -99,7 +97,6 @@ fun AppOptionsBottomSheet(
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    val apkOptions = ApkActionsManager(context, app)
 
     LifecycleEventEffect(event = Lifecycle.Event.ON_START) {
         if (!Utils.isPackageInstalled(context.packageManager, app.appPackageName)) {
@@ -130,7 +127,7 @@ fun AppOptionsBottomSheet(
         snackbarHostState = snackbarHostState
     ) {
         AppSheetHeader(
-            appName = app.appName ?: app.appPackageName,
+            appName = app.appName,
             packageName = app.appPackageName,
             appIcon = app.appIcon,
             isFavorite = app.isFavorite,
@@ -139,7 +136,7 @@ fun AppOptionsBottomSheet(
         HorizontalDivider(modifier = Modifier.padding(4.dp))
         AppSheetInfo(
             modifier = Modifier.weight(1f, fill = false),
-            sourceDirectory = app.appSourceDirectory.toString(),
+            sourceDirectory = app.appSourceDirectory,
             splitDirectories = app.appSplitSourceDirectories,
             apkSize = app.apkSize,
             versionName = app.appVersionName,
@@ -151,28 +148,36 @@ fun AppOptionsBottomSheet(
             updateTime = app.appUpdateTime,
             installationSource = app.installationSource,
             onOpenStorePage = {
-                apkOptions.actionOpenShop {
+                onActionIntent(ApkActionIntent.StorePage(app) {
                     scope.launch { snackbarHostState.showSnackbar(it) }
-                }
+                })
             })
         HorizontalDivider(modifier = Modifier.padding(4.dp))
         AppSheetActions(
             app = app,
-            onActionSave = onActionSave,
-            onActionShare = onActionShare,
+            onActionSave = {
+                onActionIntent(ApkActionIntent.Save(app))
+            },
+            onActionShare = {
+                onActionIntent(ApkActionIntent.Share(app))
+            },
             onActionSaveImage = label@{
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !onActionSaveImage.status.isGranted) {
-                    onActionSaveImage.launchPermissionRequest()
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !onActionSaveImagePermissionRequest.status.isGranted) {
+                    onActionSaveImagePermissionRequest.launchPermissionRequest()
                     return@label
                 }
-                apkOptions.actionSaveImage {
+                onActionIntent(ApkActionIntent.Icon(app) {
                     scope.launch { snackbarHostState.showSnackbar(it) }
-                }
+                })
             },
-            onActionOpenApp = apkOptions::actionOpenApp,
-            onActionOpenSettings = apkOptions::actionShowSettings,
+            onActionOpenApp = {
+                onActionIntent(ApkActionIntent.Open(app))
+            },
+            onActionOpenSettings = {
+                onActionIntent(ApkActionIntent.Settings(app))
+            },
             onActionUninstall = {
-                apkOptions.actionUninstall(InstallerActivity::class.java)
+                onActionIntent(ApkActionIntent.Uninstall(app))
             })
     }
 }

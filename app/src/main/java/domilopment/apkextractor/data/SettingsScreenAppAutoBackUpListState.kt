@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 
 @Stable
-data class SettingsScreenAppAutoBackUpListState(private val list: List<ApplicationModel>) {
+data class SettingsScreenAppAutoBackUpListState(private val list: List<ApplicationModel.ApplicationListModel>) {
     private val set = list.associateBy({ it.appName }, { it.appPackageName })
 
     val entries = set.keys.toTypedArray()

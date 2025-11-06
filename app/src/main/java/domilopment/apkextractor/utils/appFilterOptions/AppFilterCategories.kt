@@ -22,7 +22,7 @@ enum class AppFilterCategories(
         return context.getString(nameStrResId)
     }
 
-    override fun getFilter(list: List<ApplicationModel>): List<ApplicationModel> {
+    override fun getFilter(list: List<ApplicationModel.ApplicationListModel>): List<ApplicationModel.ApplicationListModel> {
         return list.filter { it.appCategory == category }
     }
 

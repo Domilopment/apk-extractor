@@ -9,12 +9,18 @@ import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
-import domilopment.apkextractor.domain.usecase.appList.AddAppUseCase
+import domilopment.apkextractor.domain.usecase.appList.GetAppDetailsUseCase
 import domilopment.apkextractor.domain.usecase.appList.GetAppListUseCase
+import domilopment.apkextractor.domain.usecase.appList.OpenAppShopDetailsUseCase
+import domilopment.apkextractor.domain.usecase.appList.OpenAppUseCase
 import domilopment.apkextractor.domain.usecase.appList.SaveAppsUseCase
 import domilopment.apkextractor.domain.usecase.appList.ShareAppsUseCase
 import domilopment.apkextractor.domain.usecase.appList.RemoveAppUseCase
+import domilopment.apkextractor.domain.usecase.appList.SaveImageUseCase
+import domilopment.apkextractor.domain.usecase.appList.ShowAppSettingsUseCase
+import domilopment.apkextractor.domain.usecase.appList.UninstallAppUseCase
 import domilopment.apkextractor.domain.usecase.appList.UpdateAppsUseCase
+import domilopment.apkextractor.utils.apkActions.ApkActionIntent
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.settings.AppSortOptions
@@ -34,12 +40,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppListViewModel @Inject constructor(
+    // UI information
     private val preferenceRepository: PreferenceRepository,
-    private val addApp: AddAppUseCase,
     private val appList: GetAppListUseCase,
+    private val appDetails: GetAppDetailsUseCase,
+    // App Actions
     private val saveApp: SaveAppsUseCase,
     private val shareApps: ShareAppsUseCase,
-    private val uninstallApp: RemoveAppUseCase,
+    private val saveAppIcon: SaveImageUseCase,
+    private val openSettings: ShowAppSettingsUseCase,
+    private val openApp: OpenAppUseCase,
+    private val uninstallApp: UninstallAppUseCase,
+    private val openAppStorePage: OpenAppShopDetailsUseCase,
+    // Apps repository interactions
+    private val removeApp: RemoveAppUseCase,
     private val updateApps: UpdateAppsUseCase,
 ) : ViewModel(), ProgressDialogViewModel {
 
@@ -119,11 +133,7 @@ class AppListViewModel @Inject constructor(
                     state.copy(
                         appList = appList,
                         isRefreshing = false,
-                        selectedApp = state.selectedApp?.let { sa ->
-                            appList.find {
-                                it.appPackageName == sa.appPackageName
-                            }
-                        })
+                        selectedApp = state.selectedApp?.let { appDetails.invoke(it) })
                 }
             }
         }
@@ -134,10 +144,14 @@ class AppListViewModel @Inject constructor(
      * and set it in BottomSheet state
      * @param app selected application
      */
-    fun selectApplication(app: ApplicationModel?) {
-        _mainFragmentState.update { state ->
-            state.copy(selectedApp = app)
+    fun selectApplication(app: ApplicationModel.ApplicationListModel?) {
+        viewModelScope.launch {
+            val app = async(Dispatchers.IO) { app?.let { appDetails.invoke(it) } }
+            _mainFragmentState.update { state ->
+                state.copy(selectedApp = app.await())
+            }
         }
+
     }
 
     /**
@@ -146,6 +160,22 @@ class AppListViewModel @Inject constructor(
      */
     fun searchQuery(query: String?) {
         _searchQuery.value = query
+    }
+
+    fun appActionIntent(intent: ApkActionIntent) {
+        viewModelScope.launch {
+            when (intent) {
+                is ApkActionIntent.Save -> saveApps(listOf(intent.app))
+                is ApkActionIntent.Share -> createShareUrisForApps(listOf(intent.app))
+                is ApkActionIntent.Icon -> saveAppIcon(intent.app, intent.showSnackbar)
+                is ApkActionIntent.Settings -> openSettings(intent.app)
+                is ApkActionIntent.Open -> openApp(intent.app)
+                is ApkActionIntent.Uninstall -> uninstallApp(intent.app)
+                is ApkActionIntent.StorePage -> openAppStorePage(intent.app, intent.showSnackbar)
+                ApkActionIntent.None -> Unit
+
+            }
+        }
     }
 
     /**
@@ -160,15 +190,9 @@ class AppListViewModel @Inject constructor(
         }
     }
 
-    fun addApps(packageName: String) {
+    fun removeApp(app: ApplicationModel) {
         viewModelScope.launch {
-            addApp(packageName)
-        }
-    }
-
-    fun uninstallApps(app: ApplicationModel) {
-        viewModelScope.launch {
-            uninstallApp(app.appPackageName)
+            removeApp.invoke(app.appPackageName)
         }
     }
 
@@ -193,7 +217,7 @@ class AppListViewModel @Inject constructor(
         }
     }
 
-    fun updateApp(app: ApplicationModel) {
+    fun updateApp(app: ApplicationModel.ApplicationListModel) {
         _mainFragmentState.update { state ->
             state.copy(
                 appList = state.appList.toMutableList()
@@ -246,10 +270,6 @@ class AppListViewModel @Inject constructor(
         }
     }
 
-    fun saveApp(app: ApplicationModel) {
-        runningTask = viewModelScope.launch { saveApps(listOf(app)) }
-    }
-
     /**
      * save multiple apps to filesystem
      * @param list of apps user wants to save
@@ -280,12 +300,9 @@ class AppListViewModel @Inject constructor(
     }
 
     fun createShareUrisForSelectedApps() {
-        runningTask =
-            viewModelScope.launch { createShareUrisForApps(mainFragmentState.value.appList.filter { it.isChecked }) }
-    }
-
-    fun createShareUrisForApp(app: ApplicationModel) {
-        runningTask = viewModelScope.launch { createShareUrisForApps(listOf(app)) }
+        runningTask = viewModelScope.launch {
+            createShareUrisForApps(mainFragmentState.value.appList.filter { it.isChecked })
+        }
     }
 
     /**

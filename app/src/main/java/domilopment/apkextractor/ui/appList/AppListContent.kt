@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.ui.components.PullToRefreshBox
+import domilopment.apkextractor.utils.apkActions.ApkActionIntent
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -24,20 +25,20 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppListContent(
-    appList: List<ApplicationModel>,
+    appList: List<ApplicationModel.ApplicationListModel>,
     searchString: String?,
     isSwipeToDismiss: Boolean,
-    updateApp: (ApplicationModel) -> Unit,
-    triggerActionMode: (ApplicationModel) -> Unit,
+    updateApp: (ApplicationModel.ApplicationListModel) -> Unit,
+    triggerActionMode: (ApplicationModel.ApplicationListModel) -> Unit,
     isRefreshing: Boolean,
     isPullToRefresh: Boolean,
     onRefresh: () -> Unit,
     rightSwipeAction: ApkActionsOptions,
     leftSwipeAction: ApkActionsOptions,
-    swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit,
+    swipeActionCallback: (ApkActionIntent) -> Unit,
     isSwipeActionCustomThreshold: Boolean,
     swipeActionThresholdModifier: Float,
-    uninstalledAppFound: (ApplicationModel) -> Unit
+    uninstalledAppFound: (ApplicationModel.ApplicationListModel) -> Unit
 ) {
     PullToRefreshBox(
         isRefreshing = isRefreshing, onRefresh = onRefresh, enabled = isPullToRefresh
@@ -64,16 +65,10 @@ private fun AppListScreenPreview() {
     val context = LocalContext.current
     val apps = remember {
         mutableStateListOf(
-            ApplicationModel(
+            ApplicationModel.ApplicationListModel(
                 appPackageName = BuildConfig.APPLICATION_ID,
                 appName = "Apk Ectractor",
-                appSourceDirectory = "/data/app/${BuildConfig.APPLICATION_ID}/base.apk",
-                appSplitSourceDirectories = null,
                 appIcon = context.packageManager.getApplicationIcon(BuildConfig.APPLICATION_ID),
-                appVersionName = "1.0",
-                appVersionCode = 1,
-                minSdkVersion = 39,
-                targetSdkVersion = 34,
                 appFlags = 0,
                 appCategory = 0,
                 appInstallTime = 0,
@@ -83,16 +78,10 @@ private fun AppListScreenPreview() {
                 installationSource = null,
                 isFavorite = true
             ),
-            ApplicationModel(
+            ApplicationModel.ApplicationListModel(
                 appPackageName = "com.google.android.youtube",
                 appName = "YouTube",
-                appSourceDirectory = "/data/app/com.google.android.youtube/base.apk",
-                appSplitSourceDirectories = null,
                 appIcon = context.packageManager.defaultActivityIcon,
-                appVersionName = "1.0",
-                appVersionCode = 1,
-                minSdkVersion = 39,
-                targetSdkVersion = 34,
                 appFlags = 0,
                 appCategory = 0,
                 appInstallTime = 0,
@@ -101,16 +90,10 @@ private fun AppListScreenPreview() {
                 launchIntent = null,
                 installationSource = null,
             ),
-            ApplicationModel(
+            ApplicationModel.ApplicationListModel(
                 appPackageName = "com.google.android.apps.messaging",
                 appName = "Messages",
-                appSourceDirectory = "/data/app/com.google.android.apps.messaging/base.apk",
-                appSplitSourceDirectories = null,
                 appIcon = context.packageManager.defaultActivityIcon,
-                appVersionName = "1.0",
-                appVersionCode = 1,
-                minSdkVersion = 39,
-                targetSdkVersion = 34,
                 appFlags = 0,
                 appCategory = 0,
                 appInstallTime = 0,
@@ -126,16 +109,10 @@ private fun AppListScreenPreview() {
     }
     val refreshScope = rememberCoroutineScope()
     var refreshing by remember { mutableStateOf(false) }
-    val appToAdd = ApplicationModel(
+    val appToAdd = ApplicationModel.ApplicationListModel(
         appPackageName = "com.android.vending",
         appName = "Play Store",
-        appSourceDirectory = "/data/app/com.android.vending/base.apk",
-        appSplitSourceDirectories = null,
         appIcon = context.packageManager.defaultActivityIcon,
-        appVersionName = "1.0",
-        appVersionCode = 1,
-        minSdkVersion = 39,
-        targetSdkVersion = 34,
         appFlags = 0,
         appCategory = 0,
         appInstallTime = 0,
@@ -174,7 +151,7 @@ private fun AppListScreenPreview() {
                 },
                 rightSwipeAction = ApkActionsOptions.SAVE,
                 leftSwipeAction = ApkActionsOptions.SHARE,
-                swipeActionCallback = { _, _ -> },
+                swipeActionCallback = { _ -> },
                 isSwipeActionCustomThreshold = false,
                 swipeActionThresholdModifier = 0.5f,
                 uninstalledAppFound = { _ -> })

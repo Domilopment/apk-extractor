@@ -27,8 +27,8 @@ class GetApkListUseCaseImpl(
         apksRepository.apks.combine(settings.apkSortOrder) { apkList, sortOrder ->
             PackageArchiveUtils.sortApkData(apkList, sortOrder)
                 .filter { apk -> FileUtil.doesDocumentExist(context, apk.fileUri) }
-        }.let {
-            searchQuery.debounce(500).combine(it) { searchQuery, apkList ->
+        }.let { apkList ->
+            searchQuery.debounce(500).combine(apkList) { searchQuery, apkList ->
                 val searchString = searchQuery?.trim()
 
                 return@combine if (searchString.isNullOrBlank()) {

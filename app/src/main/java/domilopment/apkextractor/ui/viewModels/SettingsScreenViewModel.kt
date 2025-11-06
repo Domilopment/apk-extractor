@@ -10,7 +10,7 @@ import domilopment.apkextractor.data.SettingsScreenState
 import domilopment.apkextractor.data.repository.analytics.AnalyticsRepository
 import domilopment.apkextractor.data.repository.applications.ApplicationRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
-import domilopment.apkextractor.domain.mapper.AppModelToApplicationModelMapper
+import domilopment.apkextractor.domain.mapper.AppModelToApplicationListModelMapper
 import domilopment.apkextractor.domain.mapper.mapAll
 import domilopment.apkextractor.domain.usecase.appList.IsAppInstalledUseCase
 import domilopment.apkextractor.utils.FileUtil
@@ -49,9 +49,10 @@ class SettingsScreenViewModel @Inject constructor(
                         selectSystemApps = false,
                         selectUserApps = true,
                     ).filter { app ->
-                        isAppInstalled(app.applicationInfo.packageName)
+                        isAppInstalled(app.packageName)
                     }.let {
-                        AppModelToApplicationModelMapper(context.packageManager).mapAll(it)
+                        AppModelToApplicationListModelMapper(context.packageManager).mapAll(it)
+                            .filterNotNull()
                     }.let {
                         ApplicationUtil.sortAppData(
                             it,

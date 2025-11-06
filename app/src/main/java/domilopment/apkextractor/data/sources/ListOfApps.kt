@@ -54,14 +54,14 @@ class ListOfApps private constructor(context: Context) {
         applicationsInfo.forEach { applicationInfo: ApplicationInfo ->
             when {
                 (applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == ApplicationInfo.FLAG_UPDATED_SYSTEM_APP -> newApps.add(
-                    AppModel.UpdatedSystemApps(applicationInfo)
+                    AppModel.UpdatedSystemApps(applicationInfo.packageName)
                 )
 
                 (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM -> newApps.add(
-                    AppModel.SystemApp(applicationInfo)
+                    AppModel.SystemApp(applicationInfo.packageName)
                 )
 
-                else -> newApps.add(AppModel.UserApp(applicationInfo))
+                else -> newApps.add(AppModel.UserApp(applicationInfo.packageName))
             }
         }
 
@@ -72,7 +72,7 @@ class ListOfApps private constructor(context: Context) {
         _apps.update { apps ->
             val newApps = apps.toMutableList()
             val element: AppModel? =
-                apps.find { it.applicationInfo.packageName == app.applicationInfo.packageName }
+                apps.find { it.packageName == app.packageName }
 
             if (element == null) {
                 newApps.add(app)
@@ -88,14 +88,14 @@ class ListOfApps private constructor(context: Context) {
     suspend fun remove(packageName: String) = withContext(Dispatchers.Default) {
         _apps.update { apps ->
             val element: AppModel =
-                apps.find { it.applicationInfo.packageName == packageName } ?: return@withContext
+                apps.find { it.packageName == packageName } ?: return@withContext
             if (element is AppModel.SystemApp) return@withContext
 
             val newApps = apps.toMutableList()
 
             if (element is AppModel.UpdatedSystemApps || element is AppModel.UserApp) {
                 newApps.remove(element)
-                if (element is AppModel.UpdatedSystemApps) newApps.add(AppModel.SystemApp(element.applicationInfo))
+                if (element is AppModel.UpdatedSystemApps) newApps.add(AppModel.SystemApp(element.packageName))
             }
 
             newApps

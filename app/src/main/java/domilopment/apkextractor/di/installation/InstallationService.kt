@@ -7,7 +7,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import dagger.hilt.android.qualifiers.ApplicationContext
 import domilopment.apkextractor.data.sources.ListOfApps
-import domilopment.apkextractor.domain.mapper.AppModelToApplicationModelMapper
+import domilopment.apkextractor.domain.mapper.AppModelToApplicationDetailModelMapper
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.InstallApkResult
 import domilopment.apkextractor.utils.InstallationUtil
@@ -77,7 +77,7 @@ class InstallationService private constructor(@param:ApplicationContext private 
                     val app = packageName?.let {
                         ApplicationUtil.appModelFromPackageName(it, context.packageManager)
                     }?.let {
-                        AppModelToApplicationModelMapper(context.packageManager).map(it)
+                        AppModelToApplicationDetailModelMapper(context.packageManager).map(it)
                     }
                     trySend(InstallApkResult.OnFinish.OnSuccess(app))
                 } else {

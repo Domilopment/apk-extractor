@@ -1,40 +1,40 @@
 package domilopment.apkextractor.utils.settings
 
-import domilopment.apkextractor.data.model.appList.ApplicationModel
+import domilopment.apkextractor.data.model.appList.ApplicationModel.ApplicationListModel
 
 enum class AppSortOptions {
     SORT_BY_NAME {
         override fun comparator(asc: Boolean) = if (asc) compareBy(
-            nullsLast(String.CASE_INSENSITIVE_ORDER), ApplicationModel::appName
+            nullsLast(String.CASE_INSENSITIVE_ORDER), ApplicationListModel::appName
         ) else compareByDescending(
-            nullsLast(String.CASE_INSENSITIVE_ORDER), ApplicationModel::appName
+            nullsLast(String.CASE_INSENSITIVE_ORDER), ApplicationListModel::appName
         )
     },
     SORT_BY_PACKAGE {
         override fun comparator(asc: Boolean) = if (asc) compareBy(
-            String.CASE_INSENSITIVE_ORDER, ApplicationModel::appPackageName
+            String.CASE_INSENSITIVE_ORDER, ApplicationListModel::appPackageName
         ) else compareByDescending(
-            String.CASE_INSENSITIVE_ORDER, ApplicationModel::appPackageName
+            String.CASE_INSENSITIVE_ORDER, ApplicationListModel::appPackageName
         )
     },
     SORT_BY_INSTALL_TIME {
         override fun comparator(asc: Boolean) =
-            if (asc) compareBy(ApplicationModel::appInstallTime) else compareByDescending(
-                ApplicationModel::appInstallTime
+            if (asc) compareBy(ApplicationListModel::appInstallTime) else compareByDescending(
+                ApplicationListModel::appInstallTime
             )
     },
     SORT_BY_UPDATE_TIME {
         override fun comparator(asc: Boolean) =
-            if (asc) compareBy(ApplicationModel::appUpdateTime) else compareByDescending(
-                ApplicationModel::appUpdateTime
+            if (asc) compareBy(ApplicationListModel::appUpdateTime) else compareByDescending(
+                ApplicationListModel::appUpdateTime
             )
     },
     SORT_BY_APK_SIZE {
         override fun comparator(asc: Boolean) =
-            if (asc) compareBy(ApplicationModel::apkSize) else compareByDescending(ApplicationModel::apkSize)
+            if (asc) compareBy(ApplicationListModel::apkSize) else compareByDescending(ApplicationListModel::apkSize)
     };
 
-    abstract fun comparator(asc: Boolean): Comparator<ApplicationModel>
+    abstract fun comparator(asc: Boolean): Comparator<ApplicationListModel>
 
     companion object {
         private val apkSortOptionsArray =

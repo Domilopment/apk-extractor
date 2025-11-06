@@ -21,10 +21,12 @@ import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,23 +44,31 @@ import domilopment.apkextractor.ui.components.ScrollToTopLazyColumn
 import domilopment.apkextractor.ui.tabletLazyListInsets
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.Utils.getAnnotatedString
+import domilopment.apkextractor.utils.apkActions.ApkActionIntent
+import domilopment.apkextractor.utils.apkActions.ApkActionVisuals
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
+import domilopment.apkextractor.utils.apkActions.intent
+import domilopment.apkextractor.utils.apkActions.isOptionSupported
+import domilopment.apkextractor.utils.apkActions.visuals
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @Composable
 fun AppList(
-    appList: List<ApplicationModel>,
+    appList: List<ApplicationModel.ApplicationListModel>,
     searchString: String?,
     isSwipeToDismiss: Boolean,
-    updateApp: (ApplicationModel) -> Unit,
-    triggerActionMode: (ApplicationModel) -> Unit,
+    updateApp: (ApplicationModel.ApplicationListModel) -> Unit,
+    triggerActionMode: (ApplicationModel.ApplicationListModel) -> Unit,
     rightSwipeAction: ApkActionsOptions,
     leftSwipeAction: ApkActionsOptions,
-    swipeActionCallback: (ApplicationModel, ApkActionsOptions) -> Unit,
+    swipeActionCallback: (ApkActionIntent) -> Unit,
     isSwipeActionCustomThreshold: Boolean,
     swipeActionThresholdModifier: Float,
-    uninstalledAppFound: (ApplicationModel) -> Unit
+    uninstalledAppFound: (ApplicationModel.ApplicationListModel) -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val highlightColor = attrColorResource(
         attrId = android.R.attr.textColorHighlight,
         defaultColor = MaterialTheme.colorScheme.inversePrimary
@@ -81,26 +91,22 @@ fun AppList(
 
             val density = LocalDensity.current
             val state = remember(
-                leftSwipeAction,
-                rightSwipeAction,
                 isSwipeActionCustomThreshold,
                 swipeActionThresholdModifier,
             ) {
                 SwipeToDismissBoxState(
                     initialValue = SwipeToDismissBoxValue.Settled,
-                    density = density,
-                    confirmValueChange = {
-                        if (it == SwipeToDismissBoxValue.EndToStart) {
-                            swipeActionCallback(app, leftSwipeAction)
-                        } else if (it == SwipeToDismissBoxValue.StartToEnd) {
-                            swipeActionCallback(app, rightSwipeAction)
-                        }
-                        false
-                    },
                     positionalThreshold = {
                         if (isSwipeActionCustomThreshold) it * swipeActionThresholdModifier
                         else with(density) { 56.dp.toPx() }
                     })
+            }
+
+            // Edge case item enters the screen in non Settled State or recomposition would leave it this way
+            LaunchedEffect(Unit) {
+                if (state.currentValue != SwipeToDismissBoxValue.Settled) {
+                    state.reset()
+                }
             }
 
             SwipeToDismissBox(
@@ -115,12 +121,13 @@ fun AppList(
 
                     when (state.dismissDirection) {
                         SwipeToDismissBoxValue.StartToEnd -> AppListItemSwipeRight(
-                            rightSwipeAction = rightSwipeAction,
+                            rightSwipeAction = rightSwipeAction.visuals(),
                             modifier = Modifier.background(color)
                         )
 
                         SwipeToDismissBoxValue.EndToStart -> AppListItemSwipeLeft(
-                            leftSwipeAction = leftSwipeAction, modifier = Modifier.background(color)
+                            leftSwipeAction = leftSwipeAction.visuals(),
+                            modifier = Modifier.background(color)
                         )
 
                         else -> Unit
@@ -129,7 +136,18 @@ fun AppList(
                 modifier = Modifier.animateItem(),
                 enableDismissFromStartToEnd = getSwipeDirections(app, rightSwipeAction),
                 enableDismissFromEndToStart = getSwipeDirections(app, leftSwipeAction),
-                gesturesEnabled = isSwipeToDismiss
+                gesturesEnabled = isSwipeToDismiss,
+                onDismiss = {
+                    when (it) {
+                        SwipeToDismissBoxValue.EndToStart -> swipeActionCallback(leftSwipeAction.intent(app))
+                        SwipeToDismissBoxValue.StartToEnd -> swipeActionCallback(rightSwipeAction.intent(app))
+                        else -> Unit
+                    }
+
+                    coroutineScope.launch {
+                        state.reset()
+                    }
+                }
             ) {
                 val appName = remember(app.appName, searchString) {
                     getAnnotatedString(
@@ -159,17 +177,15 @@ fun AppList(
 }
 
 private fun getSwipeDirections(
-    app: ApplicationModel,
+    app: ApplicationModel.ApplicationListModel,
     swipeDirection: ApkActionsOptions,
 ): Boolean {
-    return swipeDirection != ApkActionsOptions.NONE && ApkActionsOptions.isOptionSupported(
-        app, swipeDirection
-    )
+    return swipeDirection != ApkActionsOptions.NONE && swipeDirection.isOptionSupported(app)
 }
 
 @Composable
 private fun AppListItemSwipeLeft(
-    leftSwipeAction: ApkActionsOptions, modifier: Modifier = Modifier
+    leftSwipeAction: ApkActionVisuals, modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.fillMaxSize(),
@@ -197,7 +213,7 @@ private fun AppListItemSwipeLeft(
 
 @Composable
 private fun AppListItemSwipeRight(
-    rightSwipeAction: ApkActionsOptions, modifier: Modifier = Modifier
+    rightSwipeAction: ApkActionVisuals, modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.fillMaxSize(),
@@ -229,16 +245,10 @@ private fun AppListPreview() {
     val context = LocalContext.current
     val apps = remember {
         mutableStateListOf(
-            ApplicationModel(
+            ApplicationModel.ApplicationListModel(
                 appPackageName = BuildConfig.APPLICATION_ID,
                 appName = "Apk Extractor",
-                appSourceDirectory = "/data/app/${BuildConfig.APPLICATION_ID}/base.apk",
-                appSplitSourceDirectories = null,
                 appIcon = context.packageManager.getApplicationIcon(BuildConfig.APPLICATION_ID),
-                appVersionName = "1.0",
-                appVersionCode = 1,
-                minSdkVersion = 39,
-                targetSdkVersion = 34,
                 appFlags = 0,
                 appCategory = 0,
                 appInstallTime = 0,
@@ -247,16 +257,10 @@ private fun AppListPreview() {
                 launchIntent = null,
                 installationSource = null,
             ),
-            ApplicationModel(
+            ApplicationModel.ApplicationListModel(
                 appPackageName = "com.google.android.youtube",
                 appName = "YouTube",
-                appSourceDirectory = "/data/app/com.google.android.youtube/base.apk",
-                appSplitSourceDirectories = null,
                 appIcon = context.packageManager.defaultActivityIcon,
-                appVersionName = "1.0",
-                appVersionCode = 1,
-                minSdkVersion = 39,
-                targetSdkVersion = 34,
                 appFlags = 0,
                 appCategory = 0,
                 appInstallTime = 0,
@@ -265,16 +269,10 @@ private fun AppListPreview() {
                 launchIntent = null,
                 installationSource = null,
             ),
-            ApplicationModel(
+            ApplicationModel.ApplicationListModel(
                 appPackageName = "com.google.android.apps.messaging",
                 appName = "Messages",
-                appSourceDirectory = "/data/app/com.google.android.apps.messaging/base.apk",
-                appSplitSourceDirectories = null,
                 appIcon = context.packageManager.defaultActivityIcon,
-                appVersionName = "1.0",
-                appVersionCode = 1,
-                minSdkVersion = 39,
-                targetSdkVersion = 34,
                 appFlags = 0,
                 appCategory = 0,
                 appInstallTime = 0,
@@ -308,8 +306,8 @@ private fun AppListPreview() {
                 triggerActionMode = { if (!actionMode) actionMode = true },
                 rightSwipeAction = ApkActionsOptions.SAVE,
                 leftSwipeAction = ApkActionsOptions.SHARE,
-                swipeActionCallback = { app, action ->
-                    Timber.tag(action.name).i(app.appPackageName)
+                swipeActionCallback = { action ->
+                    Timber.tag(action.javaClass.simpleName).i(action.app?.appPackageName)
                 },
                 isSwipeActionCustomThreshold = false,
                 swipeActionThresholdModifier = 0.5f,

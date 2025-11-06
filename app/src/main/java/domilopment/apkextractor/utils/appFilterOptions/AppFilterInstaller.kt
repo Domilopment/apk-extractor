@@ -11,7 +11,7 @@ enum class AppFilterInstaller(private val packageName: String?) : AppFilter {
     SAMSUNG("com.sec.android.app.samsungapps"),
     AMAZON("com.amazon.venezia"),
     OTHERS(null) {
-        override fun getFilter(list: List<ApplicationModel>): List<ApplicationModel> {
+        override fun getFilter(list: List<ApplicationModel.ApplicationListModel>): List<ApplicationModel.ApplicationListModel> {
             return list.filter { it.installationSource !in Utils.listOfKnownStores }
         }
 
@@ -20,7 +20,7 @@ enum class AppFilterInstaller(private val packageName: String?) : AppFilter {
         }
     };
 
-    override fun getFilter(list: List<ApplicationModel>): List<ApplicationModel> {
+    override fun getFilter(list: List<ApplicationModel.ApplicationListModel>): List<ApplicationModel.ApplicationListModel> {
         return list.filter { it.installationSource == packageName }
     }
 

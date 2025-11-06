@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
-import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.data.model.appList.ExtractionResult
@@ -33,8 +32,7 @@ import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
-import domilopment.apkextractor.utils.apkActions.ApkActionsManager
-import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
+import domilopment.apkextractor.utils.apkActions.ApkActionIntent
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -85,12 +83,10 @@ fun AppListScreen(
     }
 
     // check if we have permission to save the app icon to storage
-    val saveImage =
+    val saveImagePermissionRequest =
         rememberPermissionState(permission = Manifest.permission.WRITE_EXTERNAL_STORAGE) { isPermissionGranted ->
             if (isPermissionGranted) state.selectedApp?.let {
-                ApkActionsManager(
-                    context, it
-                ).actionSaveImage(showSnackbar)
+                model.appActionIntent(ApkActionIntent.Icon(it, showSnackbar))
             } else showSnackbar(
                 MySnackbarVisuals(
                     duration = SnackbarDuration.Short,
@@ -210,11 +206,10 @@ fun AppListScreen(
             onFavoriteChanged = { isChecked ->
                 model.editFavorites(selectedApp.appPackageName, isChecked)
             },
-            onActionSave = { model.saveApp(selectedApp) },
             saveResult = model.extractionResult,
-            onActionShare = { model.createShareUrisForApp(selectedApp) },
-            onActionSaveImage = saveImage,
-            uninstalledAppFound = model::uninstallApps
+            onActionSaveImagePermissionRequest = saveImagePermissionRequest,
+            onActionIntent = model::appActionIntent,
+            uninstalledAppFound = model::removeApp
         )
     }
 
@@ -277,17 +272,9 @@ fun AppListScreen(
         onRefresh = model::updateApps,
         rightSwipeAction = rightSwipeAction,
         leftSwipeAction = leftSwipeAction,
-        swipeActionCallback = { app, apkAction ->
-            apkAction.getAction(
-                context,
-                app,
-                ApkActionsOptions.ApkActionOptionParams.Builder().saveFunction(model::saveApp)
-                    .setCallbackFun(showSnackbar).setShareFunction(model::createShareUrisForApp)
-                    .setDeleteResult(InstallerActivity::class.java).build()
-            )
-        },
+        swipeActionCallback = model::appActionIntent,
         isSwipeActionCustomThreshold = swipeActionCustomThreshold,
         swipeActionThresholdModifier = swipeActionThresholdMod,
-        uninstalledAppFound = model::uninstallApps
+        uninstalledAppFound = model::removeApp
     )
 }

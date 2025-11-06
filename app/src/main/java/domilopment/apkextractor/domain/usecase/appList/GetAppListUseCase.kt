@@ -4,8 +4,9 @@ import android.content.pm.PackageManager
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.repository.applications.ApplicationRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
-import domilopment.apkextractor.domain.mapper.AppModelToApplicationModelMapper
+import domilopment.apkextractor.domain.mapper.AppModelToApplicationListModelMapper
 import domilopment.apkextractor.domain.mapper.mapAll
+import domilopment.apkextractor.utils.PackageName
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 interface GetAppListUseCase {
-    operator fun invoke(searchQuery: Flow<String?>): Flow<List<ApplicationModel>>
+    operator fun invoke(searchQuery: Flow<PackageName?>): Flow<List<ApplicationModel.ApplicationListModel>>
 }
 
 class GetAppListUseCaseImpl @Inject constructor(
@@ -26,26 +27,27 @@ class GetAppListUseCaseImpl @Inject constructor(
     private val settings: PreferenceRepository
 ) : GetAppListUseCase {
     @OptIn(FlowPreview::class)
-    override operator fun invoke(searchQuery: Flow<String?>): Flow<List<ApplicationModel>> =
+    override operator fun invoke(searchQuery: Flow<PackageName?>): Flow<List<ApplicationModel.ApplicationListModel>> =
         combine(
             appsRepository.apps,
             settings.updatedSysApps,
             settings.sysApps,
             settings.userApps,
-            settings.appListFavorites
-        ) { apps, updatedSysApps, sysApps, userApps, favorites ->
+        ) { apps, updatedSysApps, sysApps, userApps ->
             // Filter selected app types
             ApplicationUtil.selectedAppTypes(
                 apps, updatedSysApps, sysApps, userApps
             )
                 // Make sure apps are still installed
-                .filter { app -> isAppInstalled(app.applicationInfo.packageName) }
+                .filter { app -> isAppInstalled(app.packageName) }
                 // Map ApplicationModel to ApplicationModel
-                .let { AppModelToApplicationModelMapper(packageManager).mapAll(it) }
-        }.let {
+                .let { AppModelToApplicationListModelMapper(packageManager).mapAll(it) }
+                // Remove Null mapping even there shouldn't be any
+                .filterNotNull()
+        }.let { appList ->
             // Filter user preferences applied on app list
             combine(
-                it,
+                appList,
                 settings.appFilterInstaller,
                 settings.appFilterCategory,
                 settings.appFilterOthers,
@@ -61,8 +63,8 @@ class GetAppListUseCaseImpl @Inject constructor(
             ) { appList, sortMode, sortFavorites, sortAsc ->
                 ApplicationUtil.sortAppData(appList, sortMode.ordinal, sortFavorites, sortAsc)
             }
-        }.let {
-            searchQuery.debounce(500L).combine(it) { searchQuery, appList ->
+        }.let { appList ->
+            searchQuery.debounce(500L).combine(appList) { searchQuery, appList ->
                 val searchString = searchQuery?.trim()
 
                 return@combine if (searchString.isNullOrBlank()) {
@@ -71,7 +73,7 @@ class GetAppListUseCaseImpl @Inject constructor(
                     appList.filter {
                         it.appName.contains(
                             searchString, ignoreCase = true
-                        ) == true || it.appPackageName.contains(
+                        ) || it.appPackageName.contains(
                             searchString, ignoreCase = true
                         )
                     }
