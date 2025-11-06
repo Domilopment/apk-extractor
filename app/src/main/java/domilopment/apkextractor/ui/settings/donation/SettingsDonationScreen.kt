@@ -5,7 +5,6 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import domilopment.apkextractor.utils.Constants
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -13,7 +12,6 @@ import androidx.core.net.toUri
 import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.ui.navigation.Route
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingsDonationScreen(
     onBackClicked: () -> Unit, context: Context = LocalContext.current

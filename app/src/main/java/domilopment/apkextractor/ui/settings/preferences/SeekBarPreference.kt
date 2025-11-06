@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.settings.preferences
 
-import android.annotation.SuppressLint
 import androidx.annotation.IntRange
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -53,7 +52,6 @@ fun SeekBarPreference(
     )
 }
 
-@SuppressLint("UnrememberedMutableState")
 @Composable
 fun SeekBarPreference(
     icon: ImageVector? = null,

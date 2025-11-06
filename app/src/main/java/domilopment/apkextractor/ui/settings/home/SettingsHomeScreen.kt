@@ -24,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.material.color.DynamicColors
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -48,7 +47,6 @@ import domilopment.apkextractor.utils.settings.Languages
 import domilopment.apkextractor.utils.settings.getDisplayString
 import java.util.Locale
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingsHomeScreen(
     model: SettingsScreenViewModel,

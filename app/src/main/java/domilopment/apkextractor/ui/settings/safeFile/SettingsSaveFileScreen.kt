@@ -4,14 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import domilopment.apkextractor.ui.navigation.Route
 import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingsSaveFileScreen(
     model: SettingsScreenViewModel,
