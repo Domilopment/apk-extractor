@@ -36,7 +36,9 @@ fun ApkExtractorBottomBar(
     val animatedProgress by animateFloatAsState(
         targetValue = if (isVisible) 1f else 0f,
         animationSpec = tween(
-            durationMillis = 300, delayMillis = 200, easing = FastOutSlowInEasing
+            durationMillis = 300,
+            delayMillis = if (isVisible) 100 else 0,
+            easing = FastOutSlowInEasing
         ),
         label = "BottomBarHeightAnimation",
     )
