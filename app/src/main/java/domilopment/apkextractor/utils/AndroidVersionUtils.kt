@@ -41,7 +41,8 @@ class AndroidVersion private constructor(
         TIRAMISU(33, "13", "Tiramisu"),
         UP_SIDE_DOWN_CAKE(34, "14", "Upside Down Cake"),
         VANILLA_ICE_CREAM(35, "15", "Vanilla Ice Cream"),
-        BAKLAVA(36, "16", "Baklava");
+        BAKLAVA(36, "16", "Baklava"),
+        CINNAMON_BUN(37, "17", "Cinnamon Bun");
     }
 
     companion object {
