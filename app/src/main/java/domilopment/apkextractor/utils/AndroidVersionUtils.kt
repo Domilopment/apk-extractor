@@ -24,7 +24,7 @@ class AndroidVersion private constructor(
         JELLY_BEAN(16, "4.1", "Jelly Bean"),
         JELLY_BEAN_MR1(17, "4.2", "Jelly Bean"),
         JELLY_BEAN_MR2(18, "4.3", "Jelly Bean"),
-        KITKAT(19, "4.4", "KitKat Wear"),
+        KITKAT(19, "4.4", "KitKat"),
         KITKAT_WATCH(20, "4.4W", "KitKat Wear"),
         LOLLIPOP(21, "5.0", "Lollipop"),
         LOLLIPOP_MR1(22, "5.1", "Lollipop"),
