@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldValue
+import androidx.compose.material3.adaptive.navigationsuite.rememberNavigationSuiteScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -57,6 +57,9 @@ fun ApkExtractorNavigationSuiteScaffold(
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val state =
+        rememberNavigationSuiteScaffoldState(initialValue = if (showNavigationSuite) NavigationSuiteScaffoldValue.Visible else NavigationSuiteScaffoldValue.Hidden)
+
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             navigationItems.forEach { navigationItem ->
@@ -95,12 +98,16 @@ fun ApkExtractorNavigationSuiteScaffold(
 
         },
         modifier = modifier,
-        layoutType = if (showNavigationSuite) {
-            NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
-        } else {
-            NavigationSuiteType.None
-        },
+        state = state,
         content = content,
     )
 
+    LaunchedEffect(key1 = showNavigationSuite) {
+        val newTarget =
+            if (showNavigationSuite) NavigationSuiteScaffoldValue.Visible else NavigationSuiteScaffoldValue.Hidden
+        if (state.targetValue != newTarget) when (newTarget) {
+            NavigationSuiteScaffoldValue.Hidden -> state.hide()
+            NavigationSuiteScaffoldValue.Visible -> state.show()
+        }
+    }
 }
