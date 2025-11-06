@@ -1,6 +1,5 @@
 package domilopment.apkextractor.utils.apkActions
 
-import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Delete
@@ -12,116 +11,62 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.model.appList.ApplicationModel
-import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 
-enum class ApkActionsOptions(val preferenceValue: String, val title: Int, val icon: ImageVector) {
-    SAVE("save_apk", R.string.action_bottom_sheet_save, Icons.Default.Save) {
-        override fun getAction(
-            context: Context, app: ApplicationModel, params: ApkActionOptionParams
-        ) {
-            params.saveFunction?.let {
-                ApkActionsManager(context, app).actionSave(it)
-            }
-        }
-    },
-    SHARE("share_apk", R.string.action_bottom_sheet_share, Icons.Default.Share) {
-        override fun getAction(
-            context: Context, app: ApplicationModel, params: ApkActionOptionParams
-        ) {
-            params.shareFunction?.let {
-                ApkActionsManager(context, app).actionShare(it)
-            }
+enum class ApkActionsOptions(val preferenceValue: String) {
+    SAVE("save_apk"),
+    SHARE("share_apk"),
+    ICON("save_icon"),
+    SETTINGS("open_settings"),
+    OPEN("open_app"),
+    UNINSTALL("uninstall_app"),
+    NONE("none");
+}
 
-        }
-    },
-    ICON("save_icon", R.string.action_bottom_sheet_save_image, Icons.Default.Image) {
-        override fun getAction(
-            context: Context, app: ApplicationModel, params: ApkActionOptionParams
-        ) {
-            params.callbackFun?.let {
-                ApkActionsManager(context, app).actionSaveImage(it)
-            }
-        }
-    },
-    SETTINGS(
-        "open_settings", R.string.action_bottom_sheet_settings, Icons.Default.Settings
-    ) {
-        override fun getAction(
-            context: Context, app: ApplicationModel, params: ApkActionOptionParams
-        ) {
-            ApkActionsManager(context, app).actionShowSettings()
-        }
-    },
-    OPEN(
-        "open_app", R.string.action_bottom_sheet_open, Icons.Default.Android
-    ) {
-        override fun getAction(
-            context: Context, app: ApplicationModel, params: ApkActionOptionParams
-        ) {
-            ApkActionsManager(context, app).actionOpenApp()
-        }
-    },
-    UNINSTALL(
-        "uninstall_app", R.string.action_bottom_sheet_uninstall, Icons.Default.Delete
-    ) {
-        override fun getAction(
-            context: Context, app: ApplicationModel, params: ApkActionOptionParams
-        ) {
-            params.deleteResultCls?.let { ApkActionsManager(context, app).actionUninstall(it) }
-        }
-    },
-    NONE(
-        "none", R.string.action_none, ImageVector.Builder(
-            defaultWidth = 1.dp, defaultHeight = 1.dp, viewportWidth = 1f, viewportHeight = 1f
-        ).build()
-    ) {
-        override fun getAction(
-            context: Context, app: ApplicationModel, params: ApkActionOptionParams
-        ) {
-            // None
-        }
-    };
+fun ApkActionsOptions.isOptionSupported(app: ApplicationModel): Boolean {
+    return (this != ApkActionsOptions.OPEN || app.launchIntent != null) && (this != ApkActionsOptions.UNINSTALL || (!Utils.isSystemApp(
+        app
+    ) || (app.appUpdateTime > app.appInstallTime)))
+}
 
-    abstract fun getAction(
-        context: Context, app: ApplicationModel, params: ApkActionOptionParams
+fun ApkActionsOptions.visuals(): ApkActionVisuals = when (this) {
+    ApkActionsOptions.SAVE -> ApkActionVisuals(
+        R.string.action_bottom_sheet_save, Icons.Default.Save
     )
 
-    companion object {
-        fun isOptionSupported(app: ApplicationModel, action: ApkActionsOptions): Boolean {
-            return (action != OPEN || app.launchIntent != null) && (action != UNINSTALL || (!Utils.isSystemApp(
-                app
-            ) || (app.appUpdateTime > app.appInstallTime)))
-        }
-    }
+    ApkActionsOptions.SHARE -> ApkActionVisuals(
+        R.string.action_bottom_sheet_share, Icons.Default.Share
+    )
 
-    class ApkActionOptionParams private constructor(
-        val saveFunction: ((ApplicationModel) -> Unit)?,
-        val callbackFun: ((MySnackbarVisuals) -> Unit)?,
-        val shareFunction: ((ApplicationModel) -> Unit)?,
-        val deleteResultCls: Class<*>?
-    ) {
-        data class Builder(
-            private var saveFunction: ((ApplicationModel) -> Unit)? = null,
-            private var callbackFun: ((MySnackbarVisuals) -> Unit)? = null,
-            private var shareFunction: ((ApplicationModel) -> Unit)? = null,
-            private var deleteResultCls: Class<*>? = null
-        ) {
-            fun saveFunction(saveFunction: (ApplicationModel) -> Unit) =
-                apply { this.saveFunction = saveFunction }
+    ApkActionsOptions.ICON -> ApkActionVisuals(
+        R.string.action_bottom_sheet_save_image, Icons.Default.Image
+    )
 
-            fun setCallbackFun(showSnackbar: (MySnackbarVisuals) -> Unit) =
-                apply { this.callbackFun = showSnackbar }
+    ApkActionsOptions.SETTINGS -> ApkActionVisuals(
+        R.string.action_bottom_sheet_settings, Icons.Default.Settings
+    )
 
-            fun setShareFunction(shareFunction: (ApplicationModel) -> Unit) =
-                apply { this.shareFunction = shareFunction }
+    ApkActionsOptions.OPEN -> ApkActionVisuals(
+        R.string.action_bottom_sheet_open, Icons.Default.Android
+    )
 
-            fun setDeleteResult(deleteResultCls: Class<*>) =
-                apply { this.deleteResultCls = deleteResultCls }
+    ApkActionsOptions.UNINSTALL -> ApkActionVisuals(
+        R.string.action_bottom_sheet_uninstall, Icons.Default.Delete
+    )
 
-            fun build() = ApkActionOptionParams(
-                saveFunction, callbackFun, shareFunction, deleteResultCls
-            )
-        }
-    }
+    ApkActionsOptions.NONE -> ApkActionVisuals(
+        R.string.action_none, ImageVector.Builder(
+            defaultWidth = 1.dp, defaultHeight = 1.dp, viewportWidth = 1f, viewportHeight = 1f
+        ).build()
+    )
+}
+
+fun ApkActionsOptions.intent(app: ApplicationModel, intentParams: ApkActionIntentParams? = null): ApkActionIntent = when (this) {
+    ApkActionsOptions.SAVE -> ApkActionIntent.Save(app)
+    ApkActionsOptions.SHARE -> ApkActionIntent.Share(app)
+    ApkActionsOptions.ICON -> ApkActionIntent.Icon(app, intentParams?.showSnackbar ?: {})
+    ApkActionsOptions.SETTINGS -> ApkActionIntent.Settings(app)
+    ApkActionsOptions.OPEN -> ApkActionIntent.Open(app)
+    ApkActionsOptions.UNINSTALL -> ApkActionIntent.Uninstall(app)
+    ApkActionsOptions.NONE -> ApkActionIntent.None
 }
