@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
@@ -33,6 +34,8 @@ import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.apkActions.ApkActionIntent
+import domilopment.apkextractor.utils.apkActions.ApkActionIntentParams
+import domilopment.apkextractor.utils.apkActions.intent
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -48,6 +51,7 @@ fun AppListScreen(
     onAppSelection: (Boolean, Int) -> Unit
 ) {
     val context = LocalContext.current
+    val ressources = LocalResources.current
     val state by model.mainFragmentState.collectAsStateWithLifecycle()
     val updatedSysApps by model.updatedSystemApps.collectAsStateWithLifecycle()
     val systemApps by model.systemApps.collectAsStateWithLifecycle()
@@ -129,7 +133,7 @@ fun AppListScreen(
                     showSnackbar(
                         MySnackbarVisuals(
                             duration = SnackbarDuration.Long,
-                            message = context.resources.getQuantityString(
+                            message = ressources.getQuantityString(
                                 R.plurals.snackbar_successful_extracted_multiple,
                                 backupsCount,
                                 extractionResult.app!!.appName,
@@ -233,7 +237,7 @@ fun AppListScreen(
         setCategory = model::setCategory,
         setFilterOthers = model::setOtherFilter
     )
-    
+
     progressDialogState?.let {
         ProgressDialog(
             state = it, onDismissRequest = model::resetProgress, onCancel = model::resetProgress
@@ -272,7 +276,13 @@ fun AppListScreen(
         onRefresh = model::updateApps,
         rightSwipeAction = rightSwipeAction,
         leftSwipeAction = leftSwipeAction,
-        swipeActionCallback = model::appActionIntent,
+        swipeActionCallback = { action, app ->
+            model.appActionIntent(
+                action.intent(
+                    app, ApkActionIntentParams(showSnackbar = showSnackbar)
+                )
+            )
+        },
         isSwipeActionCustomThreshold = swipeActionCustomThreshold,
         swipeActionThresholdModifier = swipeActionThresholdMod,
         uninstalledAppFound = model::removeApp

@@ -17,7 +17,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.ui.components.PullToRefreshBox
-import domilopment.apkextractor.utils.apkActions.ApkActionIntent
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -35,7 +34,7 @@ fun AppListContent(
     onRefresh: () -> Unit,
     rightSwipeAction: ApkActionsOptions,
     leftSwipeAction: ApkActionsOptions,
-    swipeActionCallback: (ApkActionIntent) -> Unit,
+    swipeActionCallback: (ApkActionsOptions, ApplicationModel.ApplicationListModel) -> Unit,
     isSwipeActionCustomThreshold: Boolean,
     swipeActionThresholdModifier: Float,
     uninstalledAppFound: (ApplicationModel.ApplicationListModel) -> Unit
@@ -128,7 +127,8 @@ private fun AppListScreenPreview() {
             Button(onClick = { actionMode = false }) {
                 Text(text = "Stop ActionMode")
             }
-            AppListContent(appList = apps,
+            AppListContent(
+                appList = apps,
                 searchString = "",
                 isSwipeToDismiss = !actionMode,
                 updateApp = { app ->
@@ -151,7 +151,7 @@ private fun AppListScreenPreview() {
                 },
                 rightSwipeAction = ApkActionsOptions.SAVE,
                 leftSwipeAction = ApkActionsOptions.SHARE,
-                swipeActionCallback = { _ -> },
+                swipeActionCallback = { _, _ -> },
                 isSwipeActionCustomThreshold = false,
                 swipeActionThresholdModifier = 0.5f,
                 uninstalledAppFound = { _ -> })

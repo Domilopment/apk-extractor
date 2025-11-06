@@ -44,13 +44,10 @@ import domilopment.apkextractor.ui.components.ScrollToTopLazyColumn
 import domilopment.apkextractor.ui.tabletLazyListInsets
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.Utils.getAnnotatedString
-import domilopment.apkextractor.utils.apkActions.ApkActionIntent
 import domilopment.apkextractor.utils.apkActions.ApkActionVisuals
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
-import domilopment.apkextractor.utils.apkActions.intent
 import domilopment.apkextractor.utils.apkActions.isOptionSupported
 import domilopment.apkextractor.utils.apkActions.visuals
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -63,7 +60,7 @@ fun AppList(
     triggerActionMode: (ApplicationModel.ApplicationListModel) -> Unit,
     rightSwipeAction: ApkActionsOptions,
     leftSwipeAction: ApkActionsOptions,
-    swipeActionCallback: (ApkActionIntent) -> Unit,
+    swipeActionCallback: (ApkActionsOptions, ApplicationModel.ApplicationListModel) -> Unit,
     isSwipeActionCustomThreshold: Boolean,
     swipeActionThresholdModifier: Float,
     uninstalledAppFound: (ApplicationModel.ApplicationListModel) -> Unit
@@ -95,8 +92,7 @@ fun AppList(
                 swipeActionThresholdModifier,
             ) {
                 SwipeToDismissBoxState(
-                    initialValue = SwipeToDismissBoxValue.Settled,
-                    positionalThreshold = {
+                    initialValue = SwipeToDismissBoxValue.Settled, positionalThreshold = {
                         if (isSwipeActionCustomThreshold) it * swipeActionThresholdModifier
                         else with(density) { 56.dp.toPx() }
                     })
@@ -139,16 +135,21 @@ fun AppList(
                 gesturesEnabled = isSwipeToDismiss,
                 onDismiss = {
                     when (it) {
-                        SwipeToDismissBoxValue.EndToStart -> swipeActionCallback(leftSwipeAction.intent(app))
-                        SwipeToDismissBoxValue.StartToEnd -> swipeActionCallback(rightSwipeAction.intent(app))
+                        SwipeToDismissBoxValue.EndToStart -> swipeActionCallback(
+                            leftSwipeAction, app
+                        )
+
+                        SwipeToDismissBoxValue.StartToEnd -> swipeActionCallback(
+                            rightSwipeAction, app
+                        )
+
                         else -> Unit
                     }
 
                     coroutineScope.launch {
                         state.reset()
                     }
-                }
-            ) {
+                }) {
                 val appName = remember(app.appName, searchString) {
                     getAnnotatedString(
                         app.appName, searchString, highlightColor
@@ -306,8 +307,8 @@ private fun AppListPreview() {
                 triggerActionMode = { if (!actionMode) actionMode = true },
                 rightSwipeAction = ApkActionsOptions.SAVE,
                 leftSwipeAction = ApkActionsOptions.SHARE,
-                swipeActionCallback = { action ->
-                    Timber.tag(action.javaClass.simpleName).i(action.app?.appPackageName)
+                swipeActionCallback = { action, app ->
+                    Timber.tag(action.preferenceValue).i(app.appPackageName)
                 },
                 isSwipeActionCustomThreshold = false,
                 swipeActionThresholdModifier = 0.5f,
