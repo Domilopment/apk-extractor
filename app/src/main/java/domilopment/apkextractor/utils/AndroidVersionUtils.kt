@@ -49,7 +49,7 @@ class AndroidVersion private constructor(
         fun fromApi(api: Int?): AndroidVersion {
             return AndroidVersions.entries.find { it.api == api }
                 ?.let { AndroidVersion(it.api, it.version, it.codename) }
-                ?: AndroidVersion(api ?: -1, "Unknown", "")
+                ?: AndroidVersion(api ?: -1, "???", "Unknown")
         }
     }
 }
