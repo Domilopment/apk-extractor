@@ -379,7 +379,7 @@ private fun AppFilterSort(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 0.dp)
+                .padding(horizontal = 12.dp, vertical = 0.dp)
                 .padding(top = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
