@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
@@ -25,19 +28,20 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.StayPrimaryPortrait
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.MultiChoiceSegmentedButtonRow
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,9 +59,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
-import domilopment.apkextractor.ui.components.SegmentedButton
-import domilopment.apkextractor.ui.components.SegmentedColumnButtonDefaults
-import domilopment.apkextractor.ui.components.SingleChoiceSegmentedButtonColumn
 import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterInstaller
@@ -233,7 +234,8 @@ private fun AppFilterApps(
                 .horizontalScroll(state = scrollState),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            FilterMenuChip(prefString = installationSource,
+            FilterMenuChip(
+                prefString = installationSource,
                 filterOptions = AppFilterInstaller.entries.toTypedArray(),
                 menuTitle = stringResource(id = R.string.installation_sources),
                 neutralMenuOptionTitle = stringResource(id = R.string.all_sources),
@@ -241,7 +243,8 @@ private fun AppFilterApps(
                 onDeselectItem = {
                     setInstallationSource(null)
                 })
-            FilterMenuChip(prefString = appCategory,
+            FilterMenuChip(
+                prefString = appCategory,
                 filterOptions = AppFilterCategories.entries.toTypedArray(),
                 menuTitle = stringResource(id = R.string.app_categories),
                 neutralMenuOptionTitle = stringResource(id = R.string.filter_category_all),
@@ -258,6 +261,7 @@ private fun AppFilterApps(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun AppFilterSort(
     sortOrder: Boolean,
@@ -274,7 +278,12 @@ private fun AppFilterSort(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AppFilterCategoryHeader(header = stringResource(id = R.string.menu_sort_app))
-        Row(modifier = Modifier.height(IntrinsicSize.Max)) {
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Max)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
             Button(
                 onClick = {
                     setSortOrder(!sortOrder)
@@ -290,90 +299,80 @@ private fun AppFilterSort(
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.Sort,
                         contentDescription = null,
-                        Modifier.conditional(sortOrder,
-                            ifTrue = { scale(scaleX = 1f, scaleY = -1f) })
+                        Modifier.conditional(
+                            sortOrder, ifTrue = { scale(scaleX = 1f, scaleY = -1f) })
                     )
                 }
             }
-            SingleChoiceSegmentedButtonColumn(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp, 0.dp)
+                    .padding(8.dp, 0.dp),
+                verticalArrangement = Arrangement.spacedBy((-6).dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                SegmentedButton(
-                    selected = sort == AppSortOptions.SORT_BY_NAME,
-                    onClick = {
+                ToggleButton(
+                    checked = sort == AppSortOptions.SORT_BY_NAME,
+                    onCheckedChange = {
                         sortApps(AppSortOptions.SORT_BY_NAME.ordinal)
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = SegmentedColumnButtonDefaults.itemShape(
-                        index = 0, count = 5
+                    shapes = ToggleButtonDefaults.shapes(
+                        shape = (ButtonGroupDefaults.connectedMiddleButtonShapes().shape as RoundedCornerShape).copy(
+                            topStart = CornerSize(100), topEnd = CornerSize(100)
+                        ),
+                        checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
                     ),
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.menu_sort_app_name),
-                        textAlign = TextAlign.Center,
-                    )
+                    Text(text = stringResource(id = R.string.menu_sort_app_name))
                 }
-                SegmentedButton(
-                    selected = sort == AppSortOptions.SORT_BY_PACKAGE,
-                    onClick = {
+                ToggleButton(
+                    checked = sort == AppSortOptions.SORT_BY_PACKAGE,
+                    onCheckedChange = {
                         sortApps(AppSortOptions.SORT_BY_PACKAGE.ordinal)
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = SegmentedColumnButtonDefaults.itemShape(
-                        index = 1, count = 5
+                    shapes = ToggleButtonDefaults.shapes(
+                        shape = ButtonGroupDefaults.connectedMiddleButtonShapes().shape,
+                        checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
                     ),
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.menu_sort_app_package),
-                        textAlign = TextAlign.Center,
-                    )
+                    Text(text = stringResource(id = R.string.menu_sort_app_package))
                 }
-                SegmentedButton(
-                    selected = sort == AppSortOptions.SORT_BY_INSTALL_TIME,
-                    onClick = {
+                ToggleButton(
+                    checked = sort == AppSortOptions.SORT_BY_INSTALL_TIME,
+                    onCheckedChange = {
                         sortApps(AppSortOptions.SORT_BY_INSTALL_TIME.ordinal)
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = SegmentedColumnButtonDefaults.itemShape(
-                        index = 2, count = 5
+                    shapes = ToggleButtonDefaults.shapes(
+                        shape = ButtonGroupDefaults.connectedMiddleButtonShapes().shape,
+                        checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
                     ),
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.menu_sort_app_install),
-                        textAlign = TextAlign.Center,
-                    )
+                    Text(text = stringResource(id = R.string.menu_sort_app_install))
                 }
-                SegmentedButton(
-                    selected = sort == AppSortOptions.SORT_BY_UPDATE_TIME,
-                    onClick = {
+                ToggleButton(
+                    checked = sort == AppSortOptions.SORT_BY_UPDATE_TIME,
+                    onCheckedChange = {
                         sortApps(AppSortOptions.SORT_BY_UPDATE_TIME.ordinal)
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = SegmentedColumnButtonDefaults.itemShape(
-                        index = 3, count = 5
+                    shapes = ToggleButtonDefaults.shapes(
+                        shape = ButtonGroupDefaults.connectedMiddleButtonShapes().shape,
+                        checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
                     ),
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.menu_sort_app_update),
-                        textAlign = TextAlign.Center,
-                    )
+                    Text(text = stringResource(id = R.string.menu_sort_app_update))
                 }
-                SegmentedButton(
-                    selected = sort == AppSortOptions.SORT_BY_APK_SIZE,
-                    onClick = {
+                ToggleButton(
+                    checked = sort == AppSortOptions.SORT_BY_APK_SIZE,
+                    onCheckedChange = {
                         sortApps(AppSortOptions.SORT_BY_APK_SIZE.ordinal)
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = SegmentedColumnButtonDefaults.itemShape(
-                        index = 4, count = 5
+                    shapes = ToggleButtonDefaults.shapes(
+                        shape = (ButtonGroupDefaults.connectedMiddleButtonShapes().shape as RoundedCornerShape).copy(
+                            bottomStart = CornerSize(100), bottomEnd = CornerSize(100)
+                        ),
+                        checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
                     ),
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.menu_sort_app_apk_size),
-                        textAlign = TextAlign.Center,
-                    )
+                    Text(text = stringResource(id = R.string.menu_sort_app_apk_size))
                 }
             }
         }
@@ -393,6 +392,7 @@ private fun AppFilterSort(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun AppFilterAppType(
     updatedSystemApps: Boolean,
@@ -409,69 +409,61 @@ private fun AppFilterAppType(
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold
         )
-        MultiChoiceSegmentedButtonRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Max)
+        Row(
+            Modifier.padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
         ) {
-            SegmentedButton(checked = updatedSystemApps,
+            ToggleButton(
+                checked = updatedSystemApps,
                 onCheckedChange = {
                     changeSelection(
                         PreferenceRepository.PreferencesKeys.UPDATED_SYSTEM_APPS.name, it
                     )
                 },
-                modifier = Modifier.fillMaxHeight(),
-                shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
-                icon = {}) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.SystemUpdate, contentDescription = null
-                    )
-                    Text(
-                        text = stringResource(id = R.string.app_type_system_updated),
-                        textAlign = TextAlign.Center,
-                    )
-                }
+                modifier = Modifier.weight(1f),
+                shapes = ButtonGroupDefaults.connectedLeadingButtonShapes(),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.SystemUpdate,
+                    contentDescription = "Localized description",
+                )
+                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                Text(text = stringResource(id = R.string.app_type_system_updated))
             }
-            SegmentedButton(checked = systemApps,
+            ToggleButton(
+                checked = systemApps,
                 onCheckedChange = {
-                    changeSelection(PreferenceRepository.PreferencesKeys.SYSTEM_APPS.name, it)
+                    changeSelection(
+                        PreferenceRepository.PreferencesKeys.SYSTEM_APPS.name, it
+                    )
                 },
-                shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
+                modifier = Modifier.weight(1f),
                 enabled = updatedSystemApps,
-                modifier = Modifier.fillMaxHeight(),
-                icon = {}) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(imageVector = Icons.Default.StayPrimaryPortrait, contentDescription = null)
-                    Text(
-                        text = stringResource(id = R.string.app_type_system),
-                        textAlign = TextAlign.Center,
-                    )
-                }
+                shapes = ButtonGroupDefaults.connectedMiddleButtonShapes(),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.StayPrimaryPortrait,
+                    contentDescription = "Localized description",
+                )
+                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                Text(text = stringResource(id = R.string.app_type_system))
             }
-            SegmentedButton(checked = userApps,
+            ToggleButton(
+                checked = userApps,
                 onCheckedChange = {
-                    changeSelection(PreferenceRepository.PreferencesKeys.USER_APPS.name, it)
-                },
-                shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
-                modifier = Modifier.fillMaxHeight(),
-                icon = {}) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(imageVector = Icons.Default.Person, contentDescription = null)
-                    Text(
-                        text = stringResource(id = R.string.app_type_user),
-                        textAlign = TextAlign.Center,
+                    changeSelection(
+                        PreferenceRepository.PreferencesKeys.USER_APPS.name, it
                     )
-                }
+                },
+                modifier = Modifier.weight(1f),
+                shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Localized description",
+                )
+                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                Text(text = stringResource(id = R.string.app_type_user))
             }
         }
     }
@@ -482,7 +474,8 @@ private fun AppFilterAppType(
 @Composable
 private fun AppFilterBottomSheetPreview() {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    AppFilterBottomSheet(updatedSystemApps = false,
+    AppFilterBottomSheet(
+        updatedSystemApps = false,
         systemApps = false,
         userApps = true,
         sortOrder = false,
