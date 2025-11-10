@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.dialogs
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +52,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,7 +65,6 @@ import domilopment.apkextractor.utils.appFilterOptions.AppFilter
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterInstaller
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterOthers
-import domilopment.apkextractor.utils.conditional
 import domilopment.apkextractor.utils.fadingEnd
 import domilopment.apkextractor.utils.fadingStart
 import domilopment.apkextractor.utils.settings.AppSortOptions
@@ -293,18 +292,15 @@ private fun AppFilterSort(
                     .fillMaxHeight()
                     .padding(8.dp, 0.dp)
             ) {
-                Row {
+                AnimatedContent(targetState = sortOrder) { isAscending ->
                     Icon(
-                        imageVector = if (sortOrder) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
-                        contentDescription = null
-                    )
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.Sort,
+                        imageVector = if (isAscending) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
                         contentDescription = null,
-                        Modifier.conditional(
-                            sortOrder, ifTrue = { scale(scaleX = 1f, scaleY = -1f) })
                     )
                 }
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.Sort, contentDescription = null
+                )
             }
             Column(
                 modifier = Modifier
