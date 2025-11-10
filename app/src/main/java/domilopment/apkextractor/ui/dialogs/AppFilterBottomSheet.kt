@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.dialogs
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,6 +56,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
@@ -306,7 +308,8 @@ private fun AppFilterSort(
             }
             Column(
                 modifier = Modifier
-                    .padding(8.dp, 0.dp),
+                    .padding(8.dp, 0.dp)
+                    .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy((-6).dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -315,6 +318,7 @@ private fun AppFilterSort(
                     onCheckedChange = {
                         sortApps(AppSortOptions.SORT_BY_NAME.ordinal)
                     },
+                    modifier = Modifier.fillMaxWidth(),
                     shapes = ToggleButtonDefaults.shapes(
                         shape = (ButtonGroupDefaults.connectedMiddleButtonShapes().shape as RoundedCornerShape).copy(
                             topStart = CornerSize(100), topEnd = CornerSize(100)
@@ -322,6 +326,10 @@ private fun AppFilterSort(
                         checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
                     ),
                 ) {
+                    AnimatedVisibility(visible = sort == AppSortOptions.SORT_BY_NAME) {
+                        Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                    }
                     Text(text = stringResource(id = R.string.menu_sort_app_name))
                 }
                 ToggleButton(
@@ -329,11 +337,16 @@ private fun AppFilterSort(
                     onCheckedChange = {
                         sortApps(AppSortOptions.SORT_BY_PACKAGE.ordinal)
                     },
+                    modifier = Modifier.fillMaxWidth(),
                     shapes = ToggleButtonDefaults.shapes(
                         shape = ButtonGroupDefaults.connectedMiddleButtonShapes().shape,
                         checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
                     ),
                 ) {
+                    AnimatedVisibility(visible = sort == AppSortOptions.SORT_BY_PACKAGE) {
+                        Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                    }
                     Text(text = stringResource(id = R.string.menu_sort_app_package))
                 }
                 ToggleButton(
@@ -341,11 +354,16 @@ private fun AppFilterSort(
                     onCheckedChange = {
                         sortApps(AppSortOptions.SORT_BY_INSTALL_TIME.ordinal)
                     },
+                    modifier = Modifier.fillMaxWidth(),
                     shapes = ToggleButtonDefaults.shapes(
                         shape = ButtonGroupDefaults.connectedMiddleButtonShapes().shape,
                         checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
                     ),
                 ) {
+                    AnimatedVisibility(visible = sort == AppSortOptions.SORT_BY_INSTALL_TIME) {
+                        Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                    }
                     Text(text = stringResource(id = R.string.menu_sort_app_install))
                 }
                 ToggleButton(
@@ -353,11 +371,16 @@ private fun AppFilterSort(
                     onCheckedChange = {
                         sortApps(AppSortOptions.SORT_BY_UPDATE_TIME.ordinal)
                     },
+                    modifier = Modifier.fillMaxWidth(),
                     shapes = ToggleButtonDefaults.shapes(
                         shape = ButtonGroupDefaults.connectedMiddleButtonShapes().shape,
                         checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
                     ),
                 ) {
+                    AnimatedVisibility(visible = sort == AppSortOptions.SORT_BY_UPDATE_TIME) {
+                        Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                    }
                     Text(text = stringResource(id = R.string.menu_sort_app_update))
                 }
                 ToggleButton(
@@ -365,6 +388,7 @@ private fun AppFilterSort(
                     onCheckedChange = {
                         sortApps(AppSortOptions.SORT_BY_APK_SIZE.ordinal)
                     },
+                    modifier = Modifier.fillMaxWidth(),
                     shapes = ToggleButtonDefaults.shapes(
                         shape = (ButtonGroupDefaults.connectedMiddleButtonShapes().shape as RoundedCornerShape).copy(
                             bottomStart = CornerSize(100), bottomEnd = CornerSize(100)
@@ -372,6 +396,10 @@ private fun AppFilterSort(
                         checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
                     ),
                 ) {
+                    AnimatedVisibility(visible = sort == AppSortOptions.SORT_BY_APK_SIZE) {
+                        Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                    }
                     Text(text = stringResource(id = R.string.menu_sort_app_apk_size))
                 }
             }
@@ -410,8 +438,9 @@ private fun AppFilterAppType(
             fontWeight = FontWeight.Bold
         )
         Row(
-            Modifier.padding(horizontal = 8.dp),
+            Modifier.height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             ToggleButton(
                 checked = updatedSystemApps,
@@ -420,7 +449,9 @@ private fun AppFilterAppType(
                         PreferenceRepository.PreferencesKeys.UPDATED_SYSTEM_APPS.name, it
                     )
                 },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
                 shapes = ButtonGroupDefaults.connectedLeadingButtonShapes(),
             ) {
                 Icon(
@@ -428,7 +459,12 @@ private fun AppFilterAppType(
                     contentDescription = "Localized description",
                 )
                 Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(text = stringResource(id = R.string.app_type_system_updated))
+                Text(
+                    text = stringResource(id = R.string.app_type_system_updated),
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 2
+                )
             }
             ToggleButton(
                 checked = systemApps,
@@ -437,7 +473,9 @@ private fun AppFilterAppType(
                         PreferenceRepository.PreferencesKeys.SYSTEM_APPS.name, it
                     )
                 },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
                 enabled = updatedSystemApps,
                 shapes = ButtonGroupDefaults.connectedMiddleButtonShapes(),
             ) {
@@ -446,7 +484,13 @@ private fun AppFilterAppType(
                     contentDescription = "Localized description",
                 )
                 Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(text = stringResource(id = R.string.app_type_system))
+                Text(
+                    text = stringResource(id = R.string.app_type_system),
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
+                )
+
             }
             ToggleButton(
                 checked = userApps,
@@ -455,7 +499,9 @@ private fun AppFilterAppType(
                         PreferenceRepository.PreferencesKeys.USER_APPS.name, it
                     )
                 },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
                 shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
             ) {
                 Icon(
@@ -463,7 +509,12 @@ private fun AppFilterAppType(
                     contentDescription = "Localized description",
                 )
                 Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(text = stringResource(id = R.string.app_type_user))
+                Text(
+                    text = stringResource(id = R.string.app_type_user),
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
+                )
             }
         }
     }
