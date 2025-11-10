@@ -37,7 +37,7 @@ fun ApkExtractorBottomBar(
         targetValue = if (isVisible) 1f else 0f,
         animationSpec = tween(
             durationMillis = 300,
-            delayMillis = if (isVisible) 100 else 0,
+            delayMillis = if (isVisible) 200 else 0,
             easing = FastOutSlowInEasing
         ),
         label = "BottomBarHeightAnimation",
