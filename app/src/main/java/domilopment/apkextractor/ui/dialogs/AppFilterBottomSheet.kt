@@ -68,6 +68,7 @@ import domilopment.apkextractor.utils.appFilterOptions.AppFilterOthers
 import domilopment.apkextractor.utils.fadingEnd
 import domilopment.apkextractor.utils.fadingStart
 import domilopment.apkextractor.utils.settings.AppSortOptions
+import domilopment.apkextractor.utils.settings.uiLabel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -294,7 +295,7 @@ private fun AppFilterSort(
             ) {
                 AnimatedContent(targetState = sortOrder) { isAscending ->
                     Icon(
-                        imageVector = if (isAscending) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
+                        imageVector = if (isAscending) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
                         contentDescription = null,
                     )
                 }
@@ -309,94 +310,36 @@ private fun AppFilterSort(
                 verticalArrangement = Arrangement.spacedBy((-6).dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                ToggleButton(
-                    checked = sort == AppSortOptions.SORT_BY_NAME,
-                    onCheckedChange = {
-                        sortApps(AppSortOptions.SORT_BY_NAME.ordinal)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shapes = ToggleButtonDefaults.shapes(
-                        shape = (ButtonGroupDefaults.connectedMiddleButtonShapes().shape as RoundedCornerShape).copy(
+                AppSortOptions.entries.forEachIndexed { index, item ->
+                    val shape = when (index) {
+                        0 -> (ButtonGroupDefaults.connectedMiddleButtonShapes().shape as RoundedCornerShape).copy(
                             topStart = CornerSize(100), topEnd = CornerSize(100)
-                        ),
-                        checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
-                    ),
-                ) {
-                    AnimatedVisibility(visible = sort == AppSortOptions.SORT_BY_NAME) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                    }
-                    Text(text = stringResource(id = R.string.menu_sort_app_name))
-                }
-                ToggleButton(
-                    checked = sort == AppSortOptions.SORT_BY_PACKAGE,
-                    onCheckedChange = {
-                        sortApps(AppSortOptions.SORT_BY_PACKAGE.ordinal)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shapes = ToggleButtonDefaults.shapes(
-                        shape = ButtonGroupDefaults.connectedMiddleButtonShapes().shape,
-                        checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
-                    ),
-                ) {
-                    AnimatedVisibility(visible = sort == AppSortOptions.SORT_BY_PACKAGE) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                    }
-                    Text(text = stringResource(id = R.string.menu_sort_app_package))
-                }
-                ToggleButton(
-                    checked = sort == AppSortOptions.SORT_BY_INSTALL_TIME,
-                    onCheckedChange = {
-                        sortApps(AppSortOptions.SORT_BY_INSTALL_TIME.ordinal)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shapes = ToggleButtonDefaults.shapes(
-                        shape = ButtonGroupDefaults.connectedMiddleButtonShapes().shape,
-                        checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
-                    ),
-                ) {
-                    AnimatedVisibility(visible = sort == AppSortOptions.SORT_BY_INSTALL_TIME) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                    }
-                    Text(text = stringResource(id = R.string.menu_sort_app_install))
-                }
-                ToggleButton(
-                    checked = sort == AppSortOptions.SORT_BY_UPDATE_TIME,
-                    onCheckedChange = {
-                        sortApps(AppSortOptions.SORT_BY_UPDATE_TIME.ordinal)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shapes = ToggleButtonDefaults.shapes(
-                        shape = ButtonGroupDefaults.connectedMiddleButtonShapes().shape,
-                        checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
-                    ),
-                ) {
-                    AnimatedVisibility(visible = sort == AppSortOptions.SORT_BY_UPDATE_TIME) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                    }
-                    Text(text = stringResource(id = R.string.menu_sort_app_update))
-                }
-                ToggleButton(
-                    checked = sort == AppSortOptions.SORT_BY_APK_SIZE,
-                    onCheckedChange = {
-                        sortApps(AppSortOptions.SORT_BY_APK_SIZE.ordinal)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shapes = ToggleButtonDefaults.shapes(
-                        shape = (ButtonGroupDefaults.connectedMiddleButtonShapes().shape as RoundedCornerShape).copy(
+                        )
+
+                        AppSortOptions.entries.lastIndex -> (ButtonGroupDefaults.connectedMiddleButtonShapes().shape as RoundedCornerShape).copy(
                             bottomStart = CornerSize(100), bottomEnd = CornerSize(100)
-                        ),
-                        checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
-                    ),
-                ) {
-                    AnimatedVisibility(visible = sort == AppSortOptions.SORT_BY_APK_SIZE) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                        )
+
+                        else -> ButtonGroupDefaults.connectedMiddleButtonShapes().shape
                     }
-                    Text(text = stringResource(id = R.string.menu_sort_app_apk_size))
+
+                    ToggleButton(
+                        checked = sort == item,
+                        onCheckedChange = {
+                            sortApps(item.ordinal)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shapes = ToggleButtonDefaults.shapes(
+                            shape = shape,
+                            checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
+                        ),
+                    ) {
+                        AnimatedVisibility(visible = sort == item) {
+                            Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                            Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                        }
+                        Text(text = item.uiLabel())
+                    }
                 }
             }
         }
