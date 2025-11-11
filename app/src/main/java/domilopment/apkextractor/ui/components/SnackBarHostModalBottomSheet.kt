@@ -60,7 +60,6 @@ fun SnackbarHostModalBottomSheet(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SnackbarDragHandle(
     snackbarHostState: SnackbarHostState, dragHandle: @Composable() (() -> Unit)?
