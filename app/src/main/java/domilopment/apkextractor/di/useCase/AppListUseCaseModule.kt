@@ -52,9 +52,9 @@ object AppListUseCaseModule {
     @Provides
     @Reusable
     fun getAppDetailsUseCase(
-        @ApplicationContext context: Context,
+        @ApplicationContext context: Context, settings: PreferenceRepository
     ): GetAppDetailsUseCase {
-        return GetAppDetailsUseCaseImpl(context.packageManager)
+        return GetAppDetailsUseCaseImpl(context.packageManager, settings)
     }
 
     @Provides
