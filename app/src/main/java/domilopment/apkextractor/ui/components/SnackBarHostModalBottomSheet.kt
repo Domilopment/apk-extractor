@@ -1,10 +1,8 @@
 package domilopment.apkextractor.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -39,7 +37,7 @@ fun SnackbarHostModalBottomSheet(
     contentColor: Color = contentColorFor(containerColor),
     tonalElevation: Dp = 0.dp,
     scrimColor: Color = BottomSheetDefaults.ScrimColor,
-    dragHandle: @Composable() (() -> Unit)? = { SnackbarDragHandle(snackbarHostState = snackbarHostState) },
+    dragHandle: @Composable() (() -> Unit)? = { BottomSheetDefaults.DragHandle() },
     contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
     properties: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties,
     content: @Composable() (ColumnScope.() -> Unit)
@@ -54,7 +52,7 @@ fun SnackbarHostModalBottomSheet(
         contentColor = contentColor,
         tonalElevation = tonalElevation,
         scrimColor = scrimColor,
-        dragHandle = dragHandle,
+        dragHandle = { SnackbarDragHandle(snackbarHostState, dragHandle) },
         contentWindowInsets = contentWindowInsets,
         properties = properties
     ) {
@@ -64,21 +62,17 @@ fun SnackbarHostModalBottomSheet(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SnackbarDragHandle(snackbarHostState: SnackbarHostState) {
-    Column(
-        modifier = Modifier.padding(vertical = 2.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        SnackbarHost(
-            hostState = snackbarHostState,
-        ) {
-            val visuals = it.visuals as MySnackbarVisuals
+private fun SnackbarDragHandle(
+    snackbarHostState: SnackbarHostState, dragHandle: @Composable() (() -> Unit)?
+) {
+    Box(contentAlignment = Alignment.Center) {
+        dragHandle?.invoke()
+        SnackbarHost(hostState = snackbarHostState) {
             Snackbar(
                 snackbarData = it,
-                contentColor = visuals.messageColor ?: SnackbarDefaults.contentColor
+                contentColor = (it.visuals as? MySnackbarVisuals)?.messageColor
+                    ?: SnackbarDefaults.contentColor
             )
         }
-        BottomSheetDefaults.DragHandle()
     }
 }
