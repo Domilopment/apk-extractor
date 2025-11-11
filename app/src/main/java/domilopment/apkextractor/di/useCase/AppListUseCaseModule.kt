@@ -89,9 +89,9 @@ object AppListUseCaseModule {
     @Provides
     @Reusable
     fun getOpenAppUseCase(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context, removeAppUseCase: RemoveAppUseCase
     ): OpenAppUseCase {
-        return OpenAppUseCaseImpl(context)
+        return OpenAppUseCaseImpl(context, removeAppUseCase)
     }
 
     @Provides

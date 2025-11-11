@@ -1,26 +1,31 @@
 package domilopment.apkextractor.domain.usecase.appList
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 
 interface OpenAppUseCase {
-    operator fun invoke(appDetailsModel: ApplicationModel)
+    suspend operator fun invoke(appDetailsModel: ApplicationModel)
 }
 
-class OpenAppUseCaseImpl(private val context: Context): OpenAppUseCase {
+class OpenAppUseCaseImpl(
+    private val context: Context, private val removeAppUseCase: RemoveAppUseCase
+) : OpenAppUseCase {
     /**
      * Launch App via Intent
      */
-    private fun openApp(launchIntent: Intent) {
+    private suspend fun openApp(launchIntent: Intent) {
         try {
             context.startActivity(launchIntent)
+        } catch (_: ActivityNotFoundException) {
+            launchIntent.`package`?.let { removeAppUseCase.invoke(it) }
         } catch (_: SecurityException) {
             // Permission denial
         }
     }
 
-    override fun invoke(appDetailsModel: ApplicationModel) {
+    override suspend fun invoke(appDetailsModel: ApplicationModel) {
         appDetailsModel.launchIntent?.let { openApp(it) }
     }
 }
