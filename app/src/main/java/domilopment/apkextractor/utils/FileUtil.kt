@@ -263,6 +263,8 @@ object FileUtil {
      * @param suffix suffix for file type (without '.')
      */
     fun createTempFile(context: Context, fileName: String, suffix: String): File {
+        // Ensure the cache directory exists. If not, create it.
+        context.cacheDir.mkdirs()
         return File(context.cacheDir, "$fileName.$suffix").let {
             if (it.createNewFile()) it else File.createTempFile(
                 fileName, ".$suffix", context.cacheDir
