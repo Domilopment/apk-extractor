@@ -235,6 +235,7 @@ class MainActivity : AppCompatActivity() {
                                         model.updateActionMode(isAllSelected, appCount)
                                     },
                                     chooseSaveDir = chooseSaveDir,
+                                    showAskForSaveDirDialog = { showAskForSaveDir = it },
                                     appUpdateManager = appUpdateManager,
                                     inAppUpdateResultLauncher = activityResultLauncher
                                 )

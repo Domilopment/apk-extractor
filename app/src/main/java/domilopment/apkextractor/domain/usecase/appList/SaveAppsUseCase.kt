@@ -36,12 +36,19 @@ class SaveAppsUseCaseImpl @Inject constructor(
         if (list.isEmpty()) {
             trySend(ExtractionResult.None)
             close()
+            return@callbackFlow
+        }
+
+        val saveDir = settingsRepository.saveDir.first()
+        if (saveDir == null) {
+            trySend(ExtractionResult.NoSaveDir)
+            close()
+            return@callbackFlow
         }
 
         val backupMode = settingsRepository.backupModeApkBundle.first()
         val appNameConfig = settingsRepository.appSaveName.first()
         val appNameSpacer = settingsRepository.appSaveNameSpacer.first()
-        val saveDir = settingsRepository.saveDir.first()
         val bundleFileInfo = settingsRepository.bundleFileInfo.first()
         var application: ApplicationModel? = null
         var errorMessage: String? = null
@@ -71,11 +78,7 @@ class SaveAppsUseCaseImpl @Inject constructor(
             trySend(ExtractionResult.Progress(application, 0))
 
             val newFile = filesRepository.save(
-                splits.filterNotNull(),
-                saveDir!!,
-                appName,
-                bundleFileInfo.mimeType,
-                bundleFileInfo.suffix
+                splits, saveDir, appName, bundleFileInfo.mimeType, bundleFileInfo.suffix
             ) {
                 trySend(ExtractionResult.Progress(application, 1))
             }
@@ -95,8 +98,7 @@ class SaveAppsUseCaseImpl @Inject constructor(
                             fileSize = it.size!!,
                             appName = app.appName,
                             appPackageName = app.appPackageName,
-                            appIcon = app.appIcon.toBitmap()
-                                .asImageBitmap(),
+                            appIcon = app.appIcon.toBitmap().asImageBitmap(),
                             appVersionName = packageInfo.versionName,
                             appVersionCode = Utils.versionCode(packageInfo),
                             appMinSdkVersion = app.minSdkVersion,

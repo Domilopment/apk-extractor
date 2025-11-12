@@ -53,6 +53,7 @@ fun ApkExtractorNavHost(
     isActionModeAllItemsSelected: Boolean,
     onAppSelection: (Boolean, Int) -> Unit,
     chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
+    showAskForSaveDirDialog: (Boolean) -> Unit,
     appUpdateManager: AppUpdateManager,
     inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
@@ -111,7 +112,8 @@ fun ApkExtractorNavHost(
                 showSnackbar = showSnackbar,
                 onTriggerActionMode = onTriggerActionMode,
                 isActionModeAllItemsSelected = isActionModeAllItemsSelected,
-                onAppSelection = onAppSelection
+                onAppSelection = onAppSelection,
+                showAskForSaveDirDialog = showAskForSaveDirDialog
             )
         }
 

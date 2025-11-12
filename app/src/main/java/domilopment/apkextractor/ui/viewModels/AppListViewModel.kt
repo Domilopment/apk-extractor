@@ -295,6 +295,11 @@ class AppListViewModel @Inject constructor(
                     _extractionResult.emit(it)
                     resetProgress()
                 }
+
+                ExtractionResult.NoSaveDir -> {
+                    _extractionResult.emit(it)
+                    resetProgress()
+                }
             }
         }
     }

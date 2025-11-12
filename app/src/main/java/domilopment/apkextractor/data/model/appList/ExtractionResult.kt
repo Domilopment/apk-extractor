@@ -10,5 +10,6 @@ sealed class ExtractionResult(open val app: ApplicationModel?) {
     data class SuccessMultiple(override val app: ApplicationModel, val backupsCount: Int): ExtractionResult(app)
     data class Progress(override val app: ApplicationModel, val progressIncrement: Int): ExtractionResult(app)
     data class Failure(override val app: ApplicationModel, val errorMessage: String?): ExtractionResult(app)
+    data object NoSaveDir: ExtractionResult(null)
     data object None : ExtractionResult(null)
 }

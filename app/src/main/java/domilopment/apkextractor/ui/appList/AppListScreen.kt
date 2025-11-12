@@ -48,10 +48,11 @@ fun AppListScreen(
     isActionMode: Boolean,
     onTriggerActionMode: () -> Unit,
     isActionModeAllItemsSelected: Boolean,
-    onAppSelection: (Boolean, Int) -> Unit
+    onAppSelection: (Boolean, Int) -> Unit,
+    showAskForSaveDirDialog: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
-    val ressources = LocalResources.current
+    val resources = LocalResources.current
     val state by model.mainFragmentState.collectAsStateWithLifecycle()
     val updatedSysApps by model.updatedSystemApps.collectAsStateWithLifecycle()
     val systemApps by model.systemApps.collectAsStateWithLifecycle()
@@ -133,7 +134,7 @@ fun AppListScreen(
                     showSnackbar(
                         MySnackbarVisuals(
                             duration = SnackbarDuration.Long,
-                            message = ressources.getQuantityString(
+                            message = resources.getQuantityString(
                                 R.plurals.snackbar_successful_extracted_multiple,
                                 backupsCount,
                                 extractionResult.app!!.appName,
@@ -144,6 +145,7 @@ fun AppListScreen(
                 }
 
                 is ExtractionResult.Failure -> extractionError = extractionResult
+                is ExtractionResult.NoSaveDir -> showAskForSaveDirDialog(true)
                 else -> Unit
             }
         }
