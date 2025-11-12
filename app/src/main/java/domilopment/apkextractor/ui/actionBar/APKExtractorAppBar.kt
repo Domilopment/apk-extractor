@@ -226,12 +226,13 @@ private fun ActionModeBar(
             )
         }
     }, actions = {
+        val context = LocalContext.current
         val isTabletBars = DeviceTypeUtils.isTabletBars
         AppBarRow {
             if (isTabletBars) appBarState.actionModeActions.forEach { item ->
                 clickableItem(onClick = item.onClick, icon = {
                     Icon(imageVector = item.icon, contentDescription = null)
-                }, label = "")
+                }, label = context.getString(item.labelRes))
             }
             toggleableItem(checked = allItemsChecked, onCheckedChange = onCheckAllItems, icon = {
                 Icon(
