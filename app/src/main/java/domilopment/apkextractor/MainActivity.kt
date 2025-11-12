@@ -136,9 +136,7 @@ class MainActivity : AppCompatActivity() {
 
             val chooseSaveDir =
                 rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) {
-                    it?.also { saveDirUri ->
-                        takeUriPermission(saveDir, saveDirUri, model::setSaveDir)
-                    }
+                    it?.also { saveDirUri -> model.setSaveDir(saveDirUri) }
                 }
 
             activityResultLauncher =
@@ -362,23 +360,6 @@ class MainActivity : AppCompatActivity() {
                 else -> Unit
             }
         }
-    }
-
-    /**
-     * Take Uri Permission for Save Dir
-     * @param newUri content uri for selected save path
-     */
-    private fun takeUriPermission(oldUri: Uri?, newUri: Uri, saveUri: (Uri) -> Unit) {
-        val takeFlags: Int =
-            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-
-        oldUri?.let { oldPath ->
-            if (oldPath in contentResolver.persistedUriPermissions.map { it.uri } && oldPath != newUri) contentResolver.releasePersistableUriPermission(
-                oldPath, takeFlags
-            )
-        }
-        saveUri(newUri)
-        contentResolver.takePersistableUriPermission(newUri, takeFlags)
     }
 
     companion object {

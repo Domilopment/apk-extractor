@@ -12,6 +12,7 @@ import domilopment.apkextractor.data.MainScreenState
 import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.data.repository.analytics.AnalyticsRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
+import domilopment.apkextractor.domain.usecase.prefs.SaveDirUriUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
+    private val saveDirUseCase: SaveDirUriUseCase,
     private val analyticsRepository: AnalyticsRepository
 ) : ViewModel() {
     var mainScreenState by mutableStateOf(MainScreenState())
@@ -100,7 +102,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun setSaveDir(value: Uri) {
-        viewModelScope.launch { preferenceRepository.setSaveDir(value) }
+        viewModelScope.launch { saveDirUseCase.invoke(value) }
     }
 
     fun setUpdateOnStart(b: Boolean) {
