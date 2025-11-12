@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.settings.donation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -10,10 +11,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,7 +57,9 @@ fun SettingsDonationContent(
                 Icon(
                     imageVector = Icons.Default.Favorite,
                     contentDescription = null,
-                    modifier = Modifier.size(64.dp),
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(LocalContentColor.current, shape = CircleShape),
                     tint = Color.Red
                 )
                 Text(
