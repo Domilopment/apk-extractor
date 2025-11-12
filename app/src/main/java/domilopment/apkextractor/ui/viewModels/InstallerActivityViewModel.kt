@@ -83,6 +83,11 @@ class InstallerActivityViewModel @Inject constructor(
                                     )
                                 }
 
+                                is InstallApkResult.OnFinish.OnExtern -> InstallationResultType.Failure.Install(
+                                    it.packageName,
+                                    "Could not Install via App, Tried to use external installation services."
+                                )
+
                                 else -> uiState.result
                             }
                         )

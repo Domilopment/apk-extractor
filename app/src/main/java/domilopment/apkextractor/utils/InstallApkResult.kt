@@ -20,5 +20,7 @@ sealed interface InstallApkResult {
             OnFinish(packageName)
 
         data class OnFinished(override val packageName: String?) : OnFinish(packageName)
+
+        data class OnExtern(override val packageName: String?): OnFinish(packageName)
     }
 }

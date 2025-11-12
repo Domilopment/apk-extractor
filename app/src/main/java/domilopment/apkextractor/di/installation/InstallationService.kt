@@ -1,7 +1,9 @@
 package domilopment.apkextractor.di.installation
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -43,6 +45,10 @@ class InstallationService private constructor(@param:ApplicationContext private 
                     packageName, e.message ?: "Unknown create session IO Exception"
                 )
             )
+            cancel()
+            return@callbackFlow
+        } catch (_: SecurityException) {
+            trySend(fallbackInstall(context, fileUri, packageName))
             cancel()
             return@callbackFlow
         }
@@ -114,33 +120,33 @@ class InstallationService private constructor(@param:ApplicationContext private 
                 FileUtil.FileInfo.APKS.mimeType, FileUtil.FileInfo.XAPK.mimeType -> contentResolver.openInputStream(
                     fileUri
                 )?.use { splitApkStream ->
-                        ZipInputStream(BufferedInputStream(splitApkStream)).use { input ->
-                            var currentProcess = 1
-                            generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
-                                .forEach { entry ->
-                                    send(
-                                        InstallApkResult.OnProgress(
-                                            "Read file: ${entry.name}",
-                                            calculateProgress(currentProcess - 1)
-                                        )
+                    ZipInputStream(BufferedInputStream(splitApkStream)).use { input ->
+                        var currentProcess = 1
+                        generateSequence { input.nextEntry }.filter { it.name.endsWith(".apk") }
+                            .forEach { entry ->
+                                send(
+                                    InstallApkResult.OnProgress(
+                                        "Read file: ${entry.name}",
+                                        calculateProgress(currentProcess - 1)
                                     )
+                                )
 
-                                    if (isActive) InstallationUtil.addFileToSession(
-                                        session, input, entry.name, entry.size
+                                if (isActive) InstallationUtil.addFileToSession(
+                                    session, input, entry.name, entry.size
+                                )
+                                input.closeEntry()
+
+                                send(
+                                    InstallApkResult.OnProgress(
+                                        "Read file: ${entry.name}",
+                                        calculateProgress(currentProcess)
                                     )
-                                    input.closeEntry()
+                                )
 
-                                    send(
-                                        InstallApkResult.OnProgress(
-                                            "Read file: ${entry.name}",
-                                            calculateProgress(currentProcess)
-                                        )
-                                    )
-
-                                    currentProcess += 1
-                                }
-                        }
+                                currentProcess += 1
+                            }
                     }
+                }
             }
         } catch (e: IOException) {
             // Also thrown if Session is abandoned
@@ -188,6 +194,22 @@ class InstallationService private constructor(@param:ApplicationContext private 
     }
 
     private fun calculateProgress(process: Int) = MAX_PROGRESS * process / (process + 2)
+
+    private fun fallbackInstall(context: Context, fileUri: Uri, packageName: String?): InstallApkResult.OnFinish {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(fileUri, "application/vnd.android.package-archive")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        return try {
+            context.startActivity(intent)
+            InstallApkResult.OnFinish.OnExtern(packageName)
+        } catch (activityNotFound: ActivityNotFoundException) {
+            InstallApkResult.OnFinish.OnError(
+                packageName, activityNotFound.message ?: "Service to install apks could not be found"
+            )
+        }
+    }
 
     companion object {
         private const val MAX_PROGRESS = 0.80f
