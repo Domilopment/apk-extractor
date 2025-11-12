@@ -38,6 +38,7 @@ object PackageArchiveUtils {
         }
     }
 
+    @Throws(SecurityException::class)
     fun getApkFileFromDocument(
         context: Context,
         fileUri: Uri,

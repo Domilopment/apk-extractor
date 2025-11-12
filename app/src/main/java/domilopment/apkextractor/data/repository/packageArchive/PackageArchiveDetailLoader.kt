@@ -7,11 +7,17 @@ import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.PackageArchiveUtils
+import timber.log.Timber
 
 object PackageArchiveDetailLoader {
     fun load(context: Context, model: PackageArchiveEntity): PackageArchiveEntity {
-        val apkFile =
+        val apkFile = try {
             PackageArchiveUtils.getApkFileFromDocument(context, model.fileUri, model.fileType)
+        } catch (e: SecurityException) {
+            Timber.tag("PackageArchiveDetailLoader: ${model.appPackageName}").e(e)
+            null
+        }
+
         return apkFile?.let {
             PackageArchiveUtils.getPackageInfoFromApkFile(
                 context.packageManager, it
