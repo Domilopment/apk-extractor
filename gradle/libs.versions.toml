@@ -1,10 +1,10 @@
 [versions]
 accompanist = "0.37.3"
-agp = "9.0.0"
+agp = "9.1.0"
 appcompat = "1.7.1"
 appUpdate = "2.1.0"
-baselineprofile = "1.4.1"
-benchmarkMacroJunit4 = "1.4.1"
+baselineprofile = "1.5.0-alpha04"
+benchmarkMacroJunit4 = "1.5.0-alpha04"
 browser = "1.9.0"
 coreSplashscreen = "1.2.0"
 crashlytics = "3.0.6"
@@ -86,10 +86,9 @@ oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-lic
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
-jetbrains-kotlin-plugin-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrains-kotlin-serialization = { id ="org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
