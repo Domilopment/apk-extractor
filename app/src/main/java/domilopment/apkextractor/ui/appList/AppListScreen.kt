@@ -95,7 +95,7 @@ fun AppListScreen(
             } else showSnackbar(
                 MySnackbarVisuals(
                     duration = SnackbarDuration.Short,
-                    message = context.getString(R.string.snackbar_need_permission_save_image),
+                    message = resources.getString(R.string.snackbar_need_permission_save_image),
                 )
             )
         }
@@ -183,7 +183,7 @@ fun AppListScreen(
                 }
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }.let {
-                Intent.createChooser(it, context.getString(R.string.share_intent_title))
+                Intent.createChooser(it, resources.getString(R.string.share_intent_title))
             }?.also {
                 shareApp.launch(it)
             }

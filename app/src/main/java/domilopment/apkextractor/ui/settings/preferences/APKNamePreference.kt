@@ -37,6 +37,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -89,6 +90,7 @@ fun APKNamePreference(
     onClick: (Set<String>) -> Unit
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val entriesMap = remember { entries.zip(entryValues) }
 
     val value = rememberSaveable(saver = listSaver(save = { stateList ->
@@ -126,7 +128,7 @@ fun APKNamePreference(
 
     LaunchedEffect(isValid) {
         if (!isValid) Toast.makeText(
-            context, context.getString(R.string.app_save_name_toast), Toast.LENGTH_LONG
+            context, resources.getString(R.string.app_save_name_toast), Toast.LENGTH_LONG
         ).show()
     }
 
@@ -245,7 +247,7 @@ private fun handleOverscrollJob(
 private fun sortedValues(value: Set<String>): Array<String> {
     return try {
         value.toSortedSet(compareBy { it[0].digitToInt() }).map { it.removeRange(0, 2) }
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         value
     }.toTypedArray()
 }

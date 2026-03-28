@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
@@ -18,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -38,6 +40,7 @@ fun SettingsAutoBackupScreen(
     model: SettingsScreenViewModel,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     context: Context = LocalContext.current,
+    resources: Resources = LocalResources.current,
     onBackClicked: () -> Unit
 ) {
     val uiState by model.uiState.collectAsStateWithLifecycle()
@@ -63,7 +66,7 @@ fun SettingsAutoBackupScreen(
                 showSnackbar(
                     MySnackbarVisuals(
                         duration = SnackbarDuration.Short,
-                        message = context.getString(R.string.auto_backup_notification_permission_request_rejected)
+                        message = resources.getString(R.string.auto_backup_notification_permission_request_rejected)
                     )
                 )
             }

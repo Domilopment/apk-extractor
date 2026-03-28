@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
@@ -35,11 +36,10 @@ import kotlinx.coroutines.runBlocking
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ApkListScreen(
-    model: ApkListViewModel,
-    searchString: String,
-    showSnackbar: (MySnackbarVisuals) -> Unit
+    model: ApkListViewModel, searchString: String, showSnackbar: (MySnackbarVisuals) -> Unit
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val state by model.apkListFragmentState.collectAsStateWithLifecycle()
     val saveDir by model.saveDir.collectAsStateWithLifecycle()
     val sortOrder by model.sortOrder.collectAsStateWithLifecycle()
@@ -77,7 +77,7 @@ fun ApkListScreen(
             it?.also { uri ->
                 model.loadFromUri(uri)
             } ?: Toast.makeText(
-                context, context.getString(R.string.alert_apk_selected_failed), Toast.LENGTH_LONG
+                context, resources.getString(R.string.alert_apk_selected_failed), Toast.LENGTH_LONG
             ).show()
         }
 
@@ -115,12 +115,12 @@ fun ApkListScreen(
                 context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                     type = FileUtil.FileInfo.APK.mimeType
                     putExtra(Intent.EXTRA_STREAM, it.fileUri)
-                }, context.getString(R.string.share_intent_title)))
+                }, resources.getString(R.string.share_intent_title)))
             },
             onActionInstall = {
                 Intent(context, InstallerActivity::class.java).apply {
                     setDataAndType(it.fileUri, it.fileType)
-                    setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 }.let { intent ->
                     context.startActivity(intent)
                 }
@@ -129,7 +129,7 @@ fun ApkListScreen(
                 runBlocking {
                     FileUtil.deleteDocument(context, it.fileUri).let { deleted ->
                         Toast.makeText(
-                            context, context.getString(
+                            context, resources.getString(
                                 if (deleted) {
                                     model.remove(it)
                                     R.string.apk_action_delete_success
@@ -142,7 +142,8 @@ fun ApkListScreen(
             onActionUninstall = {
                 Intent(context, InstallerActivity::class.java).apply {
                     data = Uri.fromParts("package", it.appPackageName, null)
-                    setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    flags =
+                        Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 }.let { intent ->
                     context.startActivity(intent)
                 }
@@ -151,7 +152,8 @@ fun ApkListScreen(
         )
     }
 
-    ApkListContent(apkList = state.appList,
+    ApkListContent(
+        apkList = state.appList,
         totalSpace = totalSpace,
         takenSpace = takenSpace,
         freeSpace = freeSpace,

@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.text.format.Formatter
@@ -22,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.color.DynamicColors
@@ -59,6 +61,7 @@ fun SettingsHomeScreen(
     onDonationSettings: () -> Unit,
     chooseSaveDir: ManagedActivityResultLauncher<Uri?, Uri?>,
     context: Context = LocalContext.current,
+    resources: Resources = LocalResources.current,
     appUpdateManager: AppUpdateManager,
     inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
@@ -81,7 +84,7 @@ fun SettingsHomeScreen(
     }
 
     var cacheSize by remember {
-        mutableLongStateOf(context.cacheDir.walkTopDown().map { it.length() }.sum())
+        mutableLongStateOf(context.cacheDir.walkTopDown().sumOf { it.length() })
     }
 
     LaunchedEffect(key1 = appUpdateManager, block = {
@@ -141,12 +144,12 @@ fun SettingsHomeScreen(
         cacheSize = Formatter.formatFileSize(context, cacheSize),
         onClearCache = {
             if (context.cacheDir?.deleteRecursively() == true) {
-                cacheSize = context.cacheDir.walkTopDown().map { it.length() }.sum()
+                cacheSize = context.cacheDir.walkTopDown().sumOf { it.length() }
                 Toast.makeText(
-                    context, context.getString(R.string.clear_cache_success), Toast.LENGTH_SHORT
+                    context, resources.getString(R.string.clear_cache_success), Toast.LENGTH_SHORT
                 ).show()
             } else Toast.makeText(
-                context, context.getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT
+                context, resources.getString(R.string.clear_cache_failed), Toast.LENGTH_SHORT
             ).show()
         },
         onDataCollectionSettings = onDataCollectionSettings,

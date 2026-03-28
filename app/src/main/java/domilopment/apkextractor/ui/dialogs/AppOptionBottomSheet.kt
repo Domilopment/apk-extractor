@@ -49,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -90,6 +91,8 @@ fun AppOptionsBottomSheet(
     uninstalledAppFound: (ApplicationModel.ApplicationDetailModel) -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
+
     if (!Utils.isPackageInstalled(context.packageManager, app.appPackageName)) {
         uninstalledAppFound(app)
         return
@@ -110,7 +113,7 @@ fun AppOptionsBottomSheet(
             when (extractionResult) {
                 is ExtractionResult.SuccessSingle -> snackbarHostState.showSnackbar(
                     MySnackbarVisuals(
-                        duration = SnackbarDuration.Short, message = context.getString(
+                        duration = SnackbarDuration.Short, message = resources.getString(
                             R.string.snackbar_successful_extracted, extractionResult.app.appName
                         )
                     )
