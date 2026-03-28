@@ -335,8 +335,11 @@ private fun AppFilterSort(
                         ),
                     ) {
                         AnimatedVisibility(visible = sort == item) {
-                            Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                            Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = ToggleButtonDefaults.IconSpacing)
+                            )
                         }
                         Text(text = item.uiLabel())
                     }
