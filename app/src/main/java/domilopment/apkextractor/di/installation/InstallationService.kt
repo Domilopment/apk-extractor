@@ -214,10 +214,11 @@ class InstallationService private constructor(@param:ApplicationContext private 
     companion object {
         private const val MAX_PROGRESS = 0.80f
 
+        @Volatile
         private lateinit var INSTANCE: InstallationService
 
         fun getInstallationService(context: Context): InstallationService {
-            synchronized(ListOfApps::class.java) {
+            synchronized(this) {
                 if (!Companion::INSTANCE.isInitialized) {
                     INSTANCE = InstallationService(context.applicationContext)
                 }
