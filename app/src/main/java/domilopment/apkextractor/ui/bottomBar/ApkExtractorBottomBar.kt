@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.Dp
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.ui.DeviceTypeUtils
+import androidx.compose.ui.platform.LocalResources
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -60,13 +61,13 @@ private fun ActionModeBar(
         horizontalArrangement = BottomAppBarDefaults.FlexibleFixedHorizontalArrangement,
         expandedHeight = expandedHeightDp
     ) {
-        val context = LocalContext.current
+        val resources = LocalResources.current
         AppBarRow {
             items.forEach { item ->
                 clickableItem(
                     onClick = item.onClick,
                     icon = { Icon(item.icon, contentDescription = null) },
-                    label = context.getString(item.labelRes)
+                    label = resources.getString(item.labelRes)
                 )
             }
         }
