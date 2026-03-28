@@ -55,8 +55,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -163,7 +163,7 @@ private fun DefaultAppBar(
             )
         }
     }, actions = {
-        val context = LocalContext.current
+        val resources = LocalResources.current
         with(sharedTransitionScope) {
             AppBarRow(
                 maxItemCount = visibleItems.let {
@@ -195,7 +195,7 @@ private fun DefaultAppBar(
                                 imageVector = item.icon,
                                 contentDescription = item.contentDescription
                             )
-                        }, label = context.getString(item.labelRes)
+                        }, label = resources.getString(item.labelRes)
                     )
                 }
             }
@@ -226,13 +226,13 @@ private fun ActionModeBar(
             )
         }
     }, actions = {
-        val context = LocalContext.current
+        val resources = LocalResources.current
         val isTabletBars = DeviceTypeUtils.isTabletBars
         AppBarRow {
             if (isTabletBars) appBarState.actionModeActions.forEach { item ->
                 clickableItem(onClick = item.onClick, icon = {
                     Icon(imageVector = item.icon, contentDescription = null)
-                }, label = context.getString(item.labelRes))
+                }, label = resources.getString(item.labelRes))
             }
             toggleableItem(checked = allItemsChecked, onCheckedChange = onCheckAllItems, icon = {
                 Icon(
