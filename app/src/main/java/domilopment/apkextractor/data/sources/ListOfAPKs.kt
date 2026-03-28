@@ -76,12 +76,13 @@ class ListOfAPKs private constructor(
 
 
     companion object {
+        @Volatile
         private lateinit var INSTANCE: ListOfAPKs
 
         fun getPackageArchives(
             context: Context, preferenceRepository: PreferenceRepository
         ): ListOfAPKs {
-            synchronized(ListOfApps::class.java) {
+            synchronized(this) {
                 if (!Companion::INSTANCE.isInitialized) {
                     INSTANCE = ListOfAPKs(context.applicationContext, preferenceRepository)
                 }

@@ -103,10 +103,11 @@ class ListOfApps private constructor(context: Context) {
     }
 
     companion object {
+        @Volatile
         private lateinit var INSTANCE: ListOfApps
 
         fun getApplications(context: Context): ListOfApps {
-            synchronized(ListOfApps::class.java) {
+            synchronized(this) {
                 if (!Companion::INSTANCE.isInitialized) {
                     INSTANCE = ListOfApps(context.applicationContext)
                 }
