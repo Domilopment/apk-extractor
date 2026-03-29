@@ -17,7 +17,7 @@ fun SettingsDonationScreen(
     onBackClicked: () -> Unit, context: Context = LocalContext.current
 ) {
     LaunchedEffect(key1 = Unit) {
-        Route.Screen.SettingsDonation.buttons.onEach { button ->
+        Route.SettingsDonation.buttons.onEach { button ->
             when (button) {
                 ScreenConfig.ScreenActions.NavigationIcon -> onBackClicked()
                 else -> Unit

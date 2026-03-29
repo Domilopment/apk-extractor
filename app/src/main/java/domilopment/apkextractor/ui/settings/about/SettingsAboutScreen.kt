@@ -21,7 +21,7 @@ fun SettingsAboutScreen(
     onBackClicked: () -> Unit, context: Context = LocalContext.current
 ) {
     LaunchedEffect(key1 = Unit) {
-        Route.Screen.SettingsAbout.buttons.onEach { button ->
+        Route.SettingsAbout.buttons.onEach { button ->
             when (button) {
                 ScreenConfig.ScreenActions.NavigationIcon -> onBackClicked()
                 else -> Unit

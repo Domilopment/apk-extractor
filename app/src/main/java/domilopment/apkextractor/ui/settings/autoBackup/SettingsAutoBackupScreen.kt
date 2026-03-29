@@ -83,7 +83,7 @@ fun SettingsAutoBackupScreen(
         }
 
     LaunchedEffect(key1 = Unit) {
-        Route.Screen.SettingsAutoBackup.buttons.onEach { button ->
+        Route.SettingsAutoBackup.buttons.onEach { button ->
             when (button) {
                 ScreenConfig.ScreenActions.NavigationIcon -> onBackClicked()
                 else -> Unit

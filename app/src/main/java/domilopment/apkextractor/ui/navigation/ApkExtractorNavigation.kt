@@ -10,16 +10,11 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.rememberNavigationSuiteScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation3.runtime.NavKey
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.ui.DeviceTypeUtils
@@ -27,8 +22,9 @@ import domilopment.apkextractor.ui.DeviceTypeUtils
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ApkExtractorNavigation(
-    navigationItems: List<TopLevelRoute<out Any>>,
-    navController: NavHostController,
+    navigationItems: Set<TopLevelRoute<out NavKey>>,
+    navigationState: NavigationState,
+    navigator: Navigator,
     appBarState: AppBarState,
     uiState: UiState,
     modifier: Modifier = Modifier,
@@ -37,7 +33,8 @@ fun ApkExtractorNavigation(
 ) {
     ApkExtractorNavigationSuiteScaffold(
         navigationItems = navigationItems,
-        navController = navController,
+        navigationState = navigationState,
+        navigator = navigator,
         modifier = modifier,
         showNavigationSuite = ((uiState !is UiState.ActionMode && !WindowInsets.isImeVisible) || DeviceTypeUtils.isTabletBars) && appBarState.hasNavigation,
         onNavigate = onNavigate,
@@ -47,15 +44,14 @@ fun ApkExtractorNavigation(
 
 @Composable
 fun ApkExtractorNavigationSuiteScaffold(
-    navigationItems: List<TopLevelRoute<out Any>>,
-    navController: NavHostController,
+    navigationItems: Set<TopLevelRoute<out NavKey>>,
+    navigationState: NavigationState,
+    navigator: Navigator,
     modifier: Modifier = Modifier,
     showNavigationSuite: Boolean = true,
     onNavigate: () -> Unit,
     content: @Composable (() -> Unit),
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
     val state =
         rememberNavigationSuiteScaffoldState(initialValue = if (showNavigationSuite) NavigationSuiteScaffoldValue.Visible else NavigationSuiteScaffoldValue.Hidden)
 
@@ -63,22 +59,10 @@ fun ApkExtractorNavigationSuiteScaffold(
         navigationSuiteItems = {
             navigationItems.forEach { navigationItem ->
                 item(
-                    selected = currentDestination?.hierarchy?.any { it.hasRoute(navigationItem.route::class) } == true,
+                    selected = navigationItem.route == navigationState.topLevelRoute,
                     onClick = {
                         onNavigate()
-                        navController.navigate(navigationItem.route) {
-                            // Pop up to the start destination of the graph to
-                            // avoid building up a large stack of destinations
-                            // on the back stack as users select items
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            // Avoid multiple copies of the same destination when
-                            // reselecting the same item
-                            launchSingleTop = true
-                            // Restore state when reselecting a previously selected item
-                            restoreState = true
-                        }
+                        navigator.navigate(navigationItem.route)
                     },
                     icon = {
                         Icon(

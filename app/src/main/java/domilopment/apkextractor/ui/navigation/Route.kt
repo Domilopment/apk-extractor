@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.MaterialTheme
+import androidx.navigation3.runtime.NavKey
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.IconResource
 import domilopment.apkextractor.ui.ScreenConfig
@@ -23,203 +24,195 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.serialization.Serializable
 
 @Keep
-sealed interface Route {
-    sealed interface Graph: Route {
-        @Serializable
-        data object Settings : Graph
+sealed interface Route : NavKey {
+    @Keep
+    @Serializable
+    data object AppList : Route, ScreenConfig {
+        override val appBarNavIcon = NavigationIcon(
+            icon = IconResource.DrawableIcon(R.drawable.app_bar_icon),
+            tint = { MaterialTheme.colorScheme.primary })
+        override val appBarTitleRes = R.string.app_name
+        override val isSearchable = true
+        override val hasNavigationBar = true
+        override val appBarActions = listOf(
+            ActionMenuItem.IconMenuItem.ShownIfRoom(
+                labelRes = R.string.filter_title,
+                onClick = { _buttons.tryEmit(ScreenActions.FilterList) },
+                icon = Icons.Default.FilterList,
+                contentDescription = null,
+            ),
+            ActionMenuItem.IconMenuItem.ShownIfRoom(
+                labelRes = R.string.menu_refresh_app_list,
+                onClick = { _buttons.tryEmit(ScreenActions.Refresh) },
+                icon = Icons.Default.Refresh,
+                contentDescription = null,
+            ),
+        )
+        override val bottomBarActions = listOf(
+            BottomBarItem(
+                icon = Icons.Default.Save,
+                onClick = { _buttons.tryEmit(ScreenActions.Save) },
+                labelRes = R.string.action_bottom_sheet_save,
+            ),
+            BottomBarItem(
+                icon = Icons.Default.Share,
+                onClick = { _buttons.tryEmit(ScreenActions.Share) },
+                labelRes = R.string.apk_action_share
+            ),
+        )
+
+        private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+        val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
     }
 
     @Keep
-    sealed interface Screen : Route {
-        @Keep
-        @Serializable
-        data object AppList : Screen, ScreenConfig {
-            override val appBarNavIcon = NavigationIcon(
-                icon = IconResource.DrawableIcon(R.drawable.app_bar_icon),
-                tint = { MaterialTheme.colorScheme.primary })
-            override val appBarTitleRes = R.string.app_name
-            override val isSearchable = true
-            override val hasNavigationBar = true
-            override val appBarActions = listOf(
-                ActionMenuItem.IconMenuItem.ShownIfRoom(
-                    labelRes = R.string.filter_title,
-                    onClick = { _buttons.tryEmit(ScreenActions.FilterList) },
-                    icon = Icons.Default.FilterList,
-                    contentDescription = null,
-                ),
-                ActionMenuItem.IconMenuItem.ShownIfRoom(
-                    labelRes = R.string.menu_refresh_app_list,
-                    onClick = { _buttons.tryEmit(ScreenActions.Refresh) },
-                    icon = Icons.Default.Refresh,
-                    contentDescription = null,
-                ),
-            )
-            override val bottomBarActions = listOf(
-                BottomBarItem(
-                    icon = Icons.Default.Save,
-                    onClick = { _buttons.tryEmit(ScreenActions.Save) },
-                    labelRes = R.string.action_bottom_sheet_save,
-                ),
-                BottomBarItem(
-                    icon = Icons.Default.Share,
-                    onClick = { _buttons.tryEmit(ScreenActions.Share) },
-                    labelRes = R.string.apk_action_share
-                ),
-            )
+    @Serializable
+    data object ApkList : Route, ScreenConfig {
+        override val appBarNavIcon = NavigationIcon(
+            icon = IconResource.DrawableIcon(R.drawable.app_bar_icon),
+            tint = { MaterialTheme.colorScheme.primary })
+        override val appBarTitleRes = R.string.app_name
+        override val isSearchable = true
+        override val hasNavigationBar = true
+        override val appBarActions = listOf(
+            ActionMenuItem.IconMenuItem.ShownIfRoom(
+                labelRes = R.string.menu_sort_apk,
+                onClick = { _buttons.tryEmit(ScreenActions.Sort) },
+                icon = Icons.AutoMirrored.Filled.Sort,
+                contentDescription = null,
+            ),
+            ActionMenuItem.IconMenuItem.ShownIfRoom(
+                labelRes = R.string.menu_show_open_documents,
+                onClick = { _buttons.tryEmit(ScreenActions.OpenExplorer) },
+                icon = Icons.Default.Folder,
+                contentDescription = null,
+            ),
+            ActionMenuItem.IconMenuItem.ShownIfRoom(
+                labelRes = R.string.menu_refresh_apk_list,
+                onClick = { _buttons.tryEmit(ScreenActions.Refresh) },
+                icon = Icons.Default.Refresh,
+                contentDescription = null,
+            ),
+        )
+        override val bottomBarActions = emptyList<BottomBarItem>()
 
-            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
-            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
-        }
+        private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+        val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
 
-        @Keep
-        @Serializable
-        data object ApkList : Screen, ScreenConfig {
-            override val appBarNavIcon = NavigationIcon(
-                icon = IconResource.DrawableIcon(R.drawable.app_bar_icon),
-                tint = { MaterialTheme.colorScheme.primary })
-            override val appBarTitleRes = R.string.app_name
-            override val isSearchable = true
-            override val hasNavigationBar = true
-            override val appBarActions = listOf(
-                ActionMenuItem.IconMenuItem.ShownIfRoom(
-                    labelRes = R.string.menu_sort_apk,
-                    onClick = { _buttons.tryEmit(ScreenActions.Sort) },
-                    icon = Icons.AutoMirrored.Filled.Sort,
-                    contentDescription = null,
-                ),
-                ActionMenuItem.IconMenuItem.ShownIfRoom(
-                    labelRes = R.string.menu_show_open_documents,
-                    onClick = { _buttons.tryEmit(ScreenActions.OpenExplorer) },
-                    icon = Icons.Default.Folder,
-                    contentDescription = null,
-                ),
-                ActionMenuItem.IconMenuItem.ShownIfRoom(
-                    labelRes = R.string.menu_refresh_apk_list,
-                    onClick = { _buttons.tryEmit(ScreenActions.Refresh) },
-                    icon = Icons.Default.Refresh,
-                    contentDescription = null,
-                ),
-            )
-            override val bottomBarActions = emptyList<BottomBarItem>()
+    @Keep
+    @Serializable
+    data object SettingsHome : Route, ScreenConfig {
+        override val appBarNavIcon = null
+        override val appBarTitleRes = R.string.title_activity_settings
+        override val isSearchable = false
+        override val hasNavigationBar = true
+        override val appBarActions = emptyList<ActionMenuItem>()
+        override val bottomBarActions = emptyList<BottomBarItem>()
 
-            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
-            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
-        }
+        private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+        val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
 
-        @Keep
-        @Serializable
-        data object SettingsHome : Screen, ScreenConfig {
-            override val appBarNavIcon = null
-            override val appBarTitleRes = R.string.title_activity_settings
-            override val isSearchable = false
-            override val hasNavigationBar = true
-            override val appBarActions = emptyList<ActionMenuItem>()
-            override val bottomBarActions = emptyList<BottomBarItem>()
+    @Keep
+    @Serializable
+    data object SettingsSaveFile : Route, ScreenConfig {
+        override val appBarNavIcon =
+            NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
+                _buttons.tryEmit(ScreenActions.NavigationIcon)
+            }
+        override val appBarTitleRes = R.string.title_screen_save_file_settings
+        override val isSearchable = false
+        override val hasNavigationBar = true
+        override val appBarActions = emptyList<ActionMenuItem>()
+        override val bottomBarActions = emptyList<BottomBarItem>()
 
-            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
-            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
-        }
+        private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+        val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
 
-        @Keep
-        @Serializable
-        data object SettingsSaveFile : Screen, ScreenConfig {
-            override val appBarNavIcon =
-                NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
-                    _buttons.tryEmit(ScreenActions.NavigationIcon)
-                }
-            override val appBarTitleRes = R.string.title_screen_save_file_settings
-            override val isSearchable = false
-            override val hasNavigationBar = true
-            override val appBarActions = emptyList<ActionMenuItem>()
-            override val bottomBarActions = emptyList<BottomBarItem>()
+    @Keep
+    @Serializable
+    data object SettingsAutoBackup : Route, ScreenConfig {
+        override val appBarNavIcon =
+            NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
+                _buttons.tryEmit(ScreenActions.NavigationIcon)
+            }
+        override val appBarTitleRes = R.string.title_screen_auto_backup_settings
+        override val isSearchable = false
+        override val hasNavigationBar = true
+        override val appBarActions = emptyList<ActionMenuItem>()
+        override val bottomBarActions = emptyList<BottomBarItem>()
 
-            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
-            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
-        }
+        private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+        val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
 
-        @Keep
-        @Serializable
-        data object SettingsAutoBackup : Screen, ScreenConfig {
-            override val appBarNavIcon =
-                NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
-                    _buttons.tryEmit(ScreenActions.NavigationIcon)
-                }
-            override val appBarTitleRes = R.string.title_screen_auto_backup_settings
-            override val isSearchable = false
-            override val hasNavigationBar = true
-            override val appBarActions = emptyList<ActionMenuItem>()
-            override val bottomBarActions = emptyList<BottomBarItem>()
+    @Keep
+    @Serializable
+    data object SettingsSwipeAction : Route, ScreenConfig {
+        override val appBarNavIcon =
+            NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
+                _buttons.tryEmit(ScreenActions.NavigationIcon)
+            }
+        override val appBarTitleRes = R.string.title_screen_swipe_action_settings
+        override val isSearchable = false
+        override val hasNavigationBar = true
+        override val appBarActions = emptyList<ActionMenuItem>()
+        override val bottomBarActions = emptyList<BottomBarItem>()
 
-            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
-            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
-        }
+        private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+        val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
 
-        @Keep
-        @Serializable
-        data object SettingsSwipeAction : Screen, ScreenConfig {
-            override val appBarNavIcon =
-                NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
-                    _buttons.tryEmit(ScreenActions.NavigationIcon)
-                }
-            override val appBarTitleRes = R.string.title_screen_swipe_action_settings
-            override val isSearchable = false
-            override val hasNavigationBar = true
-            override val appBarActions = emptyList<ActionMenuItem>()
-            override val bottomBarActions = emptyList<BottomBarItem>()
+    @Keep
+    @Serializable
+    data object SettingsDataCollection : Route, ScreenConfig {
+        override val appBarNavIcon =
+            NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
+                _buttons.tryEmit(ScreenActions.NavigationIcon)
+            }
+        override val appBarTitleRes = R.string.title_screen_data_collection_settings
+        override val isSearchable = false
+        override val hasNavigationBar = true
+        override val appBarActions = emptyList<ActionMenuItem>()
+        override val bottomBarActions = emptyList<BottomBarItem>()
 
-            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
-            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
-        }
+        private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+        val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
 
-        @Keep
-        @Serializable
-        data object SettingsDataCollection : Screen, ScreenConfig {
-            override val appBarNavIcon =
-                NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
-                    _buttons.tryEmit(ScreenActions.NavigationIcon)
-                }
-            override val appBarTitleRes = R.string.title_screen_data_collection_settings
-            override val isSearchable = false
-            override val hasNavigationBar = true
-            override val appBarActions = emptyList<ActionMenuItem>()
-            override val bottomBarActions = emptyList<BottomBarItem>()
+    @Keep
+    @Serializable
+    data object SettingsAbout : Route, ScreenConfig {
+        override val appBarNavIcon =
+            NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
+                _buttons.tryEmit(ScreenActions.NavigationIcon)
+            }
+        override val appBarTitleRes = R.string.title_screen_about_settings
+        override val isSearchable = false
+        override val hasNavigationBar = true
+        override val appBarActions = emptyList<ActionMenuItem>()
+        override val bottomBarActions = emptyList<BottomBarItem>()
 
-            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
-            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
-        }
+        private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+        val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
 
-        @Keep
-        @Serializable
-        data object SettingsAbout : Screen, ScreenConfig {
-            override val appBarNavIcon =
-                NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
-                    _buttons.tryEmit(ScreenActions.NavigationIcon)
-                }
-            override val appBarTitleRes = R.string.title_screen_about_settings
-            override val isSearchable = false
-            override val hasNavigationBar = true
-            override val appBarActions = emptyList<ActionMenuItem>()
-            override val bottomBarActions = emptyList<BottomBarItem>()
+    @Keep
+    @Serializable
+    data object SettingsDonation : Route, ScreenConfig {
+        override val appBarNavIcon =
+            NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
+                _buttons.tryEmit(ScreenActions.NavigationIcon)
+            }
+        override val appBarTitleRes = R.string.donations_page_title
+        override val isSearchable = false
+        override val hasNavigationBar = true
+        override val appBarActions = emptyList<ActionMenuItem>()
+        override val bottomBarActions = emptyList<BottomBarItem>()
 
-            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
-            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
-        }
-
-        @Keep
-        @Serializable
-        data object SettingsDonation : Screen, ScreenConfig {
-            override val appBarNavIcon =
-                NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
-                    _buttons.tryEmit(ScreenActions.NavigationIcon)
-                }
-            override val appBarTitleRes = R.string.donations_page_title
-            override val isSearchable = false
-            override val hasNavigationBar = true
-            override val appBarActions = emptyList<ActionMenuItem>()
-            override val bottomBarActions = emptyList<BottomBarItem>()
-
-            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
-            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
-        }
+        private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+        val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
     }
 }

@@ -7,11 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.navigation.NavController
+import androidx.compose.runtime.snapshotFlow
 import domilopment.apkextractor.ui.bottomBar.BottomBarItem
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.ui.actionBar.ActionMenuItem
+import domilopment.apkextractor.ui.navigation.NavigationState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -19,13 +20,14 @@ import kotlinx.coroutines.flow.onEach
 
 @Stable
 class AppBarState(
-    navController: NavController,
+    navigationState: NavigationState,
     scope: CoroutineScope,
 ) {
     init {
-        navController.currentBackStackEntryFlow.distinctUntilChanged().onEach { backStackEntry ->
-            currentScreenConfig = ScreenConfig.getScreenConfig(backStackEntry.destination)
-        }.launchIn(scope)
+        snapshotFlow { navigationState.backStacks[navigationState.topLevelRoute]?.lastOrNull() }.distinctUntilChanged()
+            .onEach { topKey ->
+                currentScreenConfig = ScreenConfig.getScreenConfig(topKey)
+            }.launchIn(scope)
     }
 
     var currentScreenConfig by mutableStateOf<ScreenConfig?>(null)
@@ -55,5 +57,5 @@ class AppBarState(
 
 @Composable
 fun rememberAppBarState(
-    navController: NavController, scope: CoroutineScope = rememberCoroutineScope()
+    navController: NavigationState, scope: CoroutineScope = rememberCoroutineScope()
 ) = remember { AppBarState(navController, scope) }

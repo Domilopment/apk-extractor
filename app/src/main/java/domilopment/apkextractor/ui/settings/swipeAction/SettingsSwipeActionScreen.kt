@@ -22,7 +22,7 @@ fun SettingsSwipeActionScreen(
     val uiState by model.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit) {
-        Route.Screen.SettingsSwipeAction.buttons.onEach { button ->
+        Route.SettingsSwipeAction.buttons.onEach { button ->
             when (button) {
                 ScreenConfig.ScreenActions.NavigationIcon -> onBackClicked()
                 else -> Unit

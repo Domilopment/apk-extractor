@@ -18,7 +18,7 @@ fun SettingsDataCollectionScreen(
     val uiState by model.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit) {
-        Route.Screen.SettingsDataCollection.buttons.onEach { button ->
+        Route.SettingsDataCollection.buttons.onEach { button ->
             when (button) {
                 ScreenConfig.ScreenActions.NavigationIcon -> onBackClicked()
                 else -> Unit

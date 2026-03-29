@@ -192,7 +192,7 @@ fun AppListScreen(
 
     LaunchedEffect(key1 = Unit) {
         // all actions inside Appbar or Bottombar the user can trigger in this screen
-        Route.Screen.AppList.buttons.onEach { button ->
+        Route.AppList.buttons.onEach { button ->
             when (button) {
                 ScreenConfig.ScreenActions.FilterList -> showFilter = true
                 ScreenConfig.ScreenActions.Refresh -> model.updateApps()

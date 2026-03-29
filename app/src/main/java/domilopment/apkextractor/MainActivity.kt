@@ -45,7 +45,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.compose.rememberNavController
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -69,7 +68,10 @@ import domilopment.apkextractor.ui.dialogs.InAppUpdateDialog
 import domilopment.apkextractor.ui.bottomBar.ApkExtractorBottomBar
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavigation
-import domilopment.apkextractor.ui.navigation.TOP_LEVEL_ROUTES
+import domilopment.apkextractor.ui.navigation.Navigator
+import domilopment.apkextractor.ui.navigation.Route
+import domilopment.apkextractor.ui.navigation.TopLevelRoute
+import domilopment.apkextractor.ui.navigation.rememberNavigationState
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.MainViewModel
 import domilopment.apkextractor.utils.FileUtil
@@ -118,8 +120,14 @@ class MainActivity : AppCompatActivity() {
             val saveDir by model.saveDir.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
             val dynamicColors by model.materialYou.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
             val firstLaunch by model.firstLaunch.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
-            val navController = rememberNavController()
-            val appBarState = rememberAppBarState(navController = navController)
+            val navigationState = rememberNavigationState(
+                startRoute = Route.AppList,
+                topLevelRoutes = TopLevelRoute.items.map { it.route }.toSet()
+            )
+
+            val navigator = remember { Navigator(navigationState) }
+
+            val appBarState = rememberAppBarState(navController = navigationState)
             val scope = rememberCoroutineScope()
 
             var showAskForSaveDir by remember {
@@ -180,10 +188,11 @@ class MainActivity : AppCompatActivity() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         ApkExtractorNavigation(
-                            navigationItems = TOP_LEVEL_ROUTES,
+                            navigationItems = TopLevelRoute.items,
                             appBarState = appBarState,
                             uiState = mainScreenState.uiState,
-                            navController = navController,
+                            navigationState = navigationState,
+                            navigator = navigator,
                             onNavigate = model::resetAppBarState
                         ) {
                             Scaffold(topBar = {
@@ -217,7 +226,8 @@ class MainActivity : AppCompatActivity() {
                                 val haptic = LocalHapticFeedback.current
                                 ApkExtractorNavHost(
                                     modifier = Modifier.padding(contentPadding),
-                                    navController = navController,
+                                    navigationState = navigationState,
+                                    navigator = navigator,
                                     showSnackbar = {
                                         scope.launch {
                                             snackbarHostState.showSnackbar(it)

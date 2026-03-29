@@ -86,7 +86,7 @@ fun ApkListScreen(
     }
 
     LaunchedEffect(key1 = Unit) {
-        Route.Screen.ApkList.buttons.onEach { button ->
+        Route.ApkList.buttons.onEach { button ->
             when (button) {
                 ScreenConfig.ScreenActions.Sort -> sortDialog = true
                 ScreenConfig.ScreenActions.OpenExplorer -> selectApk.launch(arrayOf(FileUtil.FileInfo.APK.mimeType))

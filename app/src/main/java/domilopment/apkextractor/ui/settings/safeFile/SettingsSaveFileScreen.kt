@@ -18,7 +18,7 @@ fun SettingsSaveFileScreen(
     val uiState by model.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit) {
-        Route.Screen.SettingsSaveFile.buttons.onEach { button ->
+        Route.SettingsSaveFile.buttons.onEach { button ->
             when (button) {
                 ScreenConfig.ScreenActions.NavigationIcon -> onBackClicked()
                 else -> Unit
