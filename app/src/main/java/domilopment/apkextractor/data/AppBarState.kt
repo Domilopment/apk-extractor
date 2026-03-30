@@ -13,6 +13,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.ui.actionBar.ActionMenuItem
 import domilopment.apkextractor.ui.navigation.NavigationState
+import domilopment.apkextractor.ui.navigation.Route
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -20,7 +21,7 @@ import kotlinx.coroutines.flow.onEach
 
 @Stable
 class AppBarState(
-    navigationState: NavigationState,
+    navigationState: NavigationState<Route>,
     scope: CoroutineScope,
 ) {
     init {
@@ -57,5 +58,5 @@ class AppBarState(
 
 @Composable
 fun rememberAppBarState(
-    navController: NavigationState, scope: CoroutineScope = rememberCoroutineScope()
+    navController: NavigationState<Route>, scope: CoroutineScope = rememberCoroutineScope()
 ) = remember { AppBarState(navController, scope) }

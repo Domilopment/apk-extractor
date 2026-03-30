@@ -22,25 +22,23 @@ import androidx.savedstate.compose.serialization.serializers.MutableStateSeriali
  * Create a navigation state that persists config changes and process death.
  */
 @Composable
-fun rememberNavigationState(
-    startRoute: NavKey,
-    topLevelRoutes: Set<NavKey>
-): NavigationState {
+fun <T : NavKey> rememberNavigationState(
+    startRoute: T, topLevelRoutes: Set<T>
+): NavigationState<T> {
 
     val topLevelRoute = rememberSerializable(
-        startRoute, topLevelRoutes,
-        serializer = MutableStateSerializer(NavKeySerializer())
+        startRoute, topLevelRoutes, serializer = MutableStateSerializer(NavKeySerializer())
     ) {
         mutableStateOf(startRoute)
     }
 
-    val backStacks = topLevelRoutes.associateWith { key -> rememberNavBackStack(key) }
+    val backStacks = topLevelRoutes.associateWith { key ->
+        rememberNavBackStack(key) as NavBackStack<T>
+    }
 
     return remember(startRoute, topLevelRoutes) {
         NavigationState(
-            startRoute = startRoute,
-            topLevelRoute = topLevelRoute,
-            backStacks = backStacks
+            startRoute = startRoute, topLevelRoute = topLevelRoute, backStacks = backStacks
         )
     }
 }
@@ -52,13 +50,11 @@ fun rememberNavigationState(
  * @param topLevelRoute - the current top level route
  * @param backStacks - the back stacks for each top level route
  */
-class NavigationState(
-    val startRoute: NavKey,
-    topLevelRoute: MutableState<NavKey>,
-    val backStacks: Map<NavKey, NavBackStack<NavKey>>
+class NavigationState<T : NavKey>(
+    val startRoute: T, topLevelRoute: MutableState<T>, val backStacks: Map<T, NavBackStack<T>>
 ) {
-    var topLevelRoute: NavKey by topLevelRoute
-    val stacksInUse: List<NavKey>
+    var topLevelRoute: T by topLevelRoute
+    val stacksInUse: List<T>
         get() = if (topLevelRoute == startRoute) {
             listOf(startRoute)
         } else {
@@ -70,22 +66,18 @@ class NavigationState(
  * Convert NavigationState into NavEntries.
  */
 @Composable
-fun NavigationState.toEntries(
-    entryProvider: (NavKey) -> NavEntry<NavKey>
-): SnapshotStateList<NavEntry<NavKey>> {
+fun <T : NavKey> NavigationState<T>.toEntries(
+    entryProvider: (T) -> NavEntry<T>
+): SnapshotStateList<NavEntry<T>> {
 
     val decoratedEntries = backStacks.mapValues { (_, stack) ->
         val decorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator<NavKey>(),
+            rememberSaveableStateHolderNavEntryDecorator<T>(),
         )
         rememberDecoratedNavEntries(
-            backStack = stack,
-            entryDecorators = decorators,
-            entryProvider = entryProvider
+            backStack = stack, entryDecorators = decorators, entryProvider = entryProvider
         )
     }
 
-    return stacksInUse
-        .flatMap { decoratedEntries[it] ?: emptyList() }
-        .toMutableStateList()
+    return stacksInUse.flatMap { decoratedEntries[it] ?: emptyList() }.toMutableStateList()
 }

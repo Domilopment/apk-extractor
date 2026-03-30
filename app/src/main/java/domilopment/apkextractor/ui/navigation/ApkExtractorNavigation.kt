@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.navigation3.runtime.NavKey
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.ui.DeviceTypeUtils
@@ -22,9 +21,9 @@ import domilopment.apkextractor.ui.DeviceTypeUtils
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ApkExtractorNavigation(
-    navigationItems: Set<TopLevelRoute<out NavKey>>,
-    navigationState: NavigationState,
-    navigator: Navigator,
+    navigationItems: Set<TopLevelRoute<out Route>>,
+    navigationState: NavigationState<Route>,
+    navigator: Navigator<Route>,
     appBarState: AppBarState,
     uiState: UiState,
     modifier: Modifier = Modifier,
@@ -44,9 +43,9 @@ fun ApkExtractorNavigation(
 
 @Composable
 fun ApkExtractorNavigationSuiteScaffold(
-    navigationItems: Set<TopLevelRoute<out NavKey>>,
-    navigationState: NavigationState,
-    navigator: Navigator,
+    navigationItems: Set<TopLevelRoute<out Route>>,
+    navigationState: NavigationState<Route>,
+    navigator: Navigator<Route>,
     modifier: Modifier = Modifier,
     showNavigationSuite: Boolean = true,
     onNavigate: () -> Unit,

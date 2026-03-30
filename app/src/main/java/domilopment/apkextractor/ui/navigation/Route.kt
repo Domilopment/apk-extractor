@@ -25,9 +25,13 @@ import kotlinx.serialization.Serializable
 
 @Keep
 sealed interface Route : NavKey {
+    val config: ScreenConfig
+
     @Keep
     @Serializable
     data object AppList : Route, ScreenConfig {
+        override val config = this
+
         override val appBarNavIcon = NavigationIcon(
             icon = IconResource.DrawableIcon(R.drawable.app_bar_icon),
             tint = { MaterialTheme.colorScheme.primary })
@@ -68,6 +72,8 @@ sealed interface Route : NavKey {
     @Keep
     @Serializable
     data object ApkList : Route, ScreenConfig {
+        override val config = this
+
         override val appBarNavIcon = NavigationIcon(
             icon = IconResource.DrawableIcon(R.drawable.app_bar_icon),
             tint = { MaterialTheme.colorScheme.primary })
@@ -103,6 +109,8 @@ sealed interface Route : NavKey {
     @Keep
     @Serializable
     data object SettingsHome : Route, ScreenConfig {
+        override val config = this
+
         override val appBarNavIcon = null
         override val appBarTitleRes = R.string.title_activity_settings
         override val isSearchable = false
@@ -117,6 +125,8 @@ sealed interface Route : NavKey {
     @Keep
     @Serializable
     data object SettingsSaveFile : Route, ScreenConfig {
+        override val config = this
+
         override val appBarNavIcon =
             NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
                 _buttons.tryEmit(ScreenActions.NavigationIcon)
@@ -134,6 +144,8 @@ sealed interface Route : NavKey {
     @Keep
     @Serializable
     data object SettingsAutoBackup : Route, ScreenConfig {
+        override val config = this
+
         override val appBarNavIcon =
             NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
                 _buttons.tryEmit(ScreenActions.NavigationIcon)
@@ -151,6 +163,8 @@ sealed interface Route : NavKey {
     @Keep
     @Serializable
     data object SettingsSwipeAction : Route, ScreenConfig {
+        override val config = this
+
         override val appBarNavIcon =
             NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
                 _buttons.tryEmit(ScreenActions.NavigationIcon)
@@ -168,6 +182,8 @@ sealed interface Route : NavKey {
     @Keep
     @Serializable
     data object SettingsDataCollection : Route, ScreenConfig {
+        override val config = this
+
         override val appBarNavIcon =
             NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
                 _buttons.tryEmit(ScreenActions.NavigationIcon)
@@ -185,6 +201,8 @@ sealed interface Route : NavKey {
     @Keep
     @Serializable
     data object SettingsAbout : Route, ScreenConfig {
+        override val config = this
+
         override val appBarNavIcon =
             NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
                 _buttons.tryEmit(ScreenActions.NavigationIcon)
@@ -202,6 +220,8 @@ sealed interface Route : NavKey {
     @Keep
     @Serializable
     data object SettingsDonation : Route, ScreenConfig {
+        override val config = this
+
         override val appBarNavIcon =
             NavigationIcon(icon = IconResource.VectorIcon(imageVector = Icons.AutoMirrored.Filled.ArrowBack)) {
                 _buttons.tryEmit(ScreenActions.NavigationIcon)

@@ -11,8 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation3.runtime.NavEntry
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -36,8 +34,8 @@ import domilopment.apkextractor.utils.MySnackbarVisuals
 @Composable
 fun ApkExtractorNavHost(
     modifier: Modifier = Modifier,
-    navigationState: NavigationState,
-    navigator: Navigator,
+    navigationState: NavigationState<Route>,
+    navigator: Navigator<Route>,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     searchQuery: String,
     onTriggerActionMode: () -> Unit,
@@ -62,7 +60,7 @@ fun ApkExtractorNavHost(
         }
     }
 
-    val entryProvider: (NavKey) -> NavEntry<NavKey> = entryProvider {
+    val entryProvider = entryProvider<Route> {
         entry<Route.AppList> {
             val model = hiltViewModel<AppListViewModel>()
             AppListScreen(

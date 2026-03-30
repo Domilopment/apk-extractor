@@ -7,7 +7,7 @@ import androidx.navigation3.runtime.NavKey
 import domilopment.apkextractor.data.IconResource
 import domilopment.apkextractor.ui.actionBar.ActionMenuItem
 import domilopment.apkextractor.ui.bottomBar.BottomBarItem
-import kotlin.reflect.full.companionObjectInstance
+import domilopment.apkextractor.ui.navigation.Route
 
 interface ScreenConfig {
     val appBarNavIcon: NavigationIcon?
@@ -35,9 +35,6 @@ interface ScreenConfig {
          * 1. Checks if the instance itself implements [ScreenConfig] (for data objects).
          * 2. Falls back to the companion object (for data classes).
          */
-        fun getScreenConfig(navDestination: NavKey?): ScreenConfig? =
-            (navDestination as? ScreenConfig) ?: navDestination?.let {
-                it::class.companionObjectInstance as? ScreenConfig
-            }
+        fun getScreenConfig(navDestination: Route?): ScreenConfig? = navDestination?.config
     }
 }

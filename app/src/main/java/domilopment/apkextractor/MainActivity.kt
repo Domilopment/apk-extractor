@@ -68,6 +68,7 @@ import domilopment.apkextractor.ui.dialogs.InAppUpdateDialog
 import domilopment.apkextractor.ui.bottomBar.ApkExtractorBottomBar
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavigation
+import domilopment.apkextractor.ui.navigation.NavigationState
 import domilopment.apkextractor.ui.navigation.Navigator
 import domilopment.apkextractor.ui.navigation.Route
 import domilopment.apkextractor.ui.navigation.TopLevelRoute

@@ -6,10 +6,9 @@ import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation3.runtime.NavKey
 import domilopment.apkextractor.R
 
-data class TopLevelRoute<T : NavKey>(
+data class TopLevelRoute<T : Route>(
     @param:StringRes val nameResId: Int, val route: T, val icon: ImageVector
 ) {
     companion object {
