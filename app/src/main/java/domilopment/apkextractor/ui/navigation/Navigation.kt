@@ -4,6 +4,15 @@ import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -151,6 +160,53 @@ fun ApkExtractorNavHost(
     NavDisplay(
         modifier = modifier,
         entries = navigationState.toEntries(entryProvider),
+        transitionSpec = {
+            scaleIn(
+                animationSpec = tween(
+                    durationMillis = 100,
+                    delayMillis = 35,
+                ),
+                initialScale = 1.1f,
+            ) + fadeIn(
+                animationSpec = tween(
+                    durationMillis = 100,
+                    delayMillis = 35,
+                ),
+            ) + slideInHorizontally(
+                animationSpec = tween(
+                    durationMillis = 100,
+                    delayMillis = 35,
+                )
+            ) togetherWith fadeOut(
+                animationSpec = tween(
+                    durationMillis = 100,
+                )
+            )
+        },
+        popTransitionSpec = {
+            fadeIn(
+                animationSpec = tween(
+                    durationMillis = 100,
+                )
+            ) togetherWith (scaleOut(targetScale = 0.9f) + fadeOut(
+                animationSpec = tween(
+                    durationMillis = 35,
+                    easing = CubicBezierEasing(0.1f, 0.1f, 0f, 1f),
+                ),
+            ) + slideOutHorizontally(targetOffsetX = { it + (it / 2) }))
+        },
+        predictivePopTransitionSpec = {
+            fadeIn(
+                animationSpec = tween(
+                    durationMillis = 100,
+                )
+            ) togetherWith (scaleOut(targetScale = 0.9f) + fadeOut(
+                animationSpec = tween(
+                    durationMillis = 35,
+                    easing = CubicBezierEasing(0.1f, 0.1f, 0f, 1f),
+                ),
+            ) + slideOutHorizontally(targetOffsetX = { it + (it / 2) }))
+        },
         onBack = { navigator.goBack() })
 }
 
