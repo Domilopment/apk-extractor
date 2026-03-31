@@ -2,37 +2,22 @@ package domilopment.apkextractor.data
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import domilopment.apkextractor.ui.bottomBar.BottomBarItem
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.ui.actionBar.ActionMenuItem
 import domilopment.apkextractor.ui.navigation.NavigationState
 import domilopment.apkextractor.ui.navigation.Route
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
 @Stable
-class AppBarState(
-    navigationState: NavigationState<Route>,
-    scope: CoroutineScope,
-) {
-    init {
-        snapshotFlow { navigationState.backStacks[navigationState.topLevelRoute]?.lastOrNull() }.distinctUntilChanged()
-            .onEach { topKey ->
-                currentScreenConfig = ScreenConfig.getScreenConfig(topKey)
-            }.launchIn(scope)
+class AppBarState(private val navigationState: NavigationState<Route>) {
+    val currentScreenConfig by derivedStateOf {
+        val topKey = navigationState.backStacks[navigationState.topLevelRoute]?.lastOrNull()
+        ScreenConfig.getScreenConfig(topKey)
     }
-
-    var currentScreenConfig by mutableStateOf<ScreenConfig?>(null)
-        private set
 
     val title: Int
         get() = currentScreenConfig?.appBarTitleRes ?: R.string.app_name
@@ -58,5 +43,5 @@ class AppBarState(
 
 @Composable
 fun rememberAppBarState(
-    navController: NavigationState<Route>, scope: CoroutineScope = rememberCoroutineScope()
-) = remember { AppBarState(navController, scope) }
+    navigationState: NavigationState<Route>
+) = remember(navigationState) { AppBarState(navigationState) }

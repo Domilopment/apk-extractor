@@ -68,7 +68,6 @@ import domilopment.apkextractor.ui.dialogs.InAppUpdateDialog
 import domilopment.apkextractor.ui.bottomBar.ApkExtractorBottomBar
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavigation
-import domilopment.apkextractor.ui.navigation.NavigationState
 import domilopment.apkextractor.ui.navigation.Navigator
 import domilopment.apkextractor.ui.navigation.Route
 import domilopment.apkextractor.ui.navigation.TopLevelRoute
@@ -128,7 +127,7 @@ class MainActivity : AppCompatActivity() {
 
             val navigator = remember { Navigator(navigationState) }
 
-            val appBarState = rememberAppBarState(navController = navigationState)
+            val appBarState = rememberAppBarState(navigationState = navigationState)
             val scope = rememberCoroutineScope()
 
             var showAskForSaveDir by remember {
