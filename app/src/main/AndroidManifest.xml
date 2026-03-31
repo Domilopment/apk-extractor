@@ -201,11 +201,8 @@
         </activity>
 
         <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
-            android:theme="@style/OSSActivityTheme" />
-
-        <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:name="com.google.android.gms.oss.licenses.v2.OssLicensesMenuActivity"
+            tools:replace="android:theme"
             android:theme="@style/OSSActivityTheme" />
 
         <provider
