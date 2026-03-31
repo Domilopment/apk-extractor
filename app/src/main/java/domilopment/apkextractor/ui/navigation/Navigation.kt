@@ -160,7 +160,7 @@ fun ApkExtractorNavHost(
     NavDisplay(
         modifier = modifier,
         entries = navigationState.toEntries(entryProvider),
-        transitionSpec = {
+        predictivePopTransitionSpec = {
             scaleIn(
                 animationSpec = tween(
                     durationMillis = 100,
@@ -177,35 +177,16 @@ fun ApkExtractorNavHost(
                     durationMillis = 100,
                     delayMillis = 35,
                 )
-            ) togetherWith fadeOut(
+            ) togetherWith scaleOut(
+                targetScale = 0.9f
+            ) + fadeOut(
                 animationSpec = tween(
-                    durationMillis = 100,
-                )
+                    durationMillis = 35,
+                    easing = CubicBezierEasing(0.1f, 0.1f, 0f, 1f),
+                ),
+            ) + slideOutHorizontally(
+                targetOffsetX = { it + (it / 2) }
             )
-        },
-        popTransitionSpec = {
-            fadeIn(
-                animationSpec = tween(
-                    durationMillis = 100,
-                )
-            ) togetherWith (scaleOut(targetScale = 0.9f) + fadeOut(
-                animationSpec = tween(
-                    durationMillis = 35,
-                    easing = CubicBezierEasing(0.1f, 0.1f, 0f, 1f),
-                ),
-            ) + slideOutHorizontally(targetOffsetX = { it + (it / 2) }))
-        },
-        predictivePopTransitionSpec = {
-            fadeIn(
-                animationSpec = tween(
-                    durationMillis = 100,
-                )
-            ) togetherWith (scaleOut(targetScale = 0.9f) + fadeOut(
-                animationSpec = tween(
-                    durationMillis = 35,
-                    easing = CubicBezierEasing(0.1f, 0.1f, 0f, 1f),
-                ),
-            ) + slideOutHorizontally(targetOffsetX = { it + (it / 2) }))
         },
         onBack = { navigator.goBack() })
 }
