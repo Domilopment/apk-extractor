@@ -42,7 +42,7 @@ import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
 
 @Composable
-fun ApkExtractorNavHost(
+fun ApkExtractorNavDisplay(
     modifier: Modifier = Modifier,
     navigationState: NavigationState<Route>,
     navigator: Navigator<Route>,

@@ -66,7 +66,7 @@ import domilopment.apkextractor.ui.dialogs.AnalyticsDialog
 import domilopment.apkextractor.ui.dialogs.AskForSaveDirDialog
 import domilopment.apkextractor.ui.dialogs.InAppUpdateDialog
 import domilopment.apkextractor.ui.bottomBar.ApkExtractorBottomBar
-import domilopment.apkextractor.ui.navigation.ApkExtractorNavHost
+import domilopment.apkextractor.ui.navigation.ApkExtractorNavDisplay
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavigation
 import domilopment.apkextractor.ui.navigation.Navigator
 import domilopment.apkextractor.ui.navigation.Route
@@ -224,7 +224,7 @@ class MainActivity : AppCompatActivity() {
                                     })
                             }) { contentPadding ->
                                 val haptic = LocalHapticFeedback.current
-                                ApkExtractorNavHost(
+                                ApkExtractorNavDisplay(
                                     modifier = Modifier.padding(contentPadding),
                                     navigationState = navigationState,
                                     navigator = navigator,
