@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -98,25 +99,41 @@ fun ApkExtractorNavHost(
             )
         }
 
-        entry<Route.SettingsSaveFile> {
+        entry<Route.SettingsSaveFile>(
+            metadata = SharedViewModelStoreNavEntryDecorator.parent(
+                Route.SettingsHome.toContentKey()
+            )
+        ) {
             val model = hiltViewModel<SettingsScreenViewModel>()
             SettingsSaveFileScreen(
                 model = model, onBackClicked = { navigator.goBack() })
         }
 
-        entry<Route.SettingsAutoBackup> {
+        entry<Route.SettingsAutoBackup>(
+            metadata = SharedViewModelStoreNavEntryDecorator.parent(
+                Route.SettingsHome.toContentKey()
+            )
+        ) {
             val model = hiltViewModel<SettingsScreenViewModel>()
             SettingsAutoBackupScreen(
                 model = model, showSnackbar = showSnackbar, onBackClicked = { navigator.goBack() })
         }
 
-        entry<Route.SettingsSwipeAction> {
+        entry<Route.SettingsSwipeAction>(
+            metadata = SharedViewModelStoreNavEntryDecorator.parent(
+                Route.SettingsHome.toContentKey()
+            )
+        ) {
             val model = hiltViewModel<SettingsScreenViewModel>()
             SettingsSwipeActionScreen(
                 model = model, onBackClicked = { navigator.goBack() })
         }
 
-        entry<Route.SettingsDataCollection> {
+        entry<Route.SettingsDataCollection>(
+            metadata = SharedViewModelStoreNavEntryDecorator.parent(
+                Route.SettingsHome.toContentKey()
+            )
+        ) {
             val model = hiltViewModel<SettingsScreenViewModel>()
             SettingsDataCollectionScreen(
                 model = model, onBackClicked = { navigator.goBack() })
@@ -136,3 +153,5 @@ fun ApkExtractorNavHost(
         entries = navigationState.toEntries(entryProvider),
         onBack = { navigator.goBack() })
 }
+
+fun NavKey.toContentKey() = this.toString()
