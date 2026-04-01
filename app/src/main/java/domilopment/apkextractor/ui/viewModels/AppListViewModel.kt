@@ -1,9 +1,11 @@
 package domilopment.apkextractor.ui.viewModels
 
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.*
+import domilopment.apkextractor.data.ProgressDialogUiState
+import domilopment.apkextractor.data.UiText
 import domilopment.apkextractor.data.model.appList.AppListScreenState
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.model.appList.ExtractionResult
@@ -24,6 +26,8 @@ import domilopment.apkextractor.utils.apkActions.ApkActionIntent
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import domilopment.apkextractor.utils.settings.AppSortOptions
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -146,9 +150,11 @@ class AppListViewModel @Inject constructor(
      */
     fun selectApplication(app: ApplicationModel.ApplicationListModel?) {
         viewModelScope.launch {
-            val app = async(Dispatchers.IO) { app?.let { appDetails.invoke(it) } }
+            val details = async(Dispatchers.IO) {
+                app?.let { appDetails.invoke(it) }
+            }
             _mainFragmentState.update { state ->
-                state.copy(selectedApp = app.await())
+                state.copy(selectedApp = details.await())
             }
         }
 
@@ -220,15 +226,17 @@ class AppListViewModel @Inject constructor(
     fun updateApp(app: ApplicationModel.ApplicationListModel) {
         _mainFragmentState.update { state ->
             state.copy(
-                appList = state.appList.toMutableList()
-                    .map { if (it.appPackageName == app.appPackageName) app else it })
+                appList = state.appList.mutate { list ->
+                    val index = list.indexOfFirst { it.appPackageName == app.appPackageName }
+                    if (index >= 0) list[index] = app
+                }
+            )
         }
-
     }
 
     fun selectAllApps(select: Boolean) {
         _mainFragmentState.update { state ->
-            state.copy(appList = state.appList.toMutableList().map { it.copy(isChecked = select) })
+            state.copy(appList = state.appList.map { it.copy(isChecked = select) }.toPersistentList())
         }
     }
 
@@ -326,7 +334,7 @@ class AppListViewModel @Inject constructor(
 
                 ShareResult.Progress -> _progressDialogState.update { state ->
                     state?.copy(
-                        progress = state.progress + 1
+                        progress = state.progress + 1f
                     )
                 }
 
@@ -341,6 +349,6 @@ class AppListViewModel @Inject constructor(
     override fun resetProgress() {
         runningTask?.cancel()
         runningTask = null
-        _progressDialogState.value = null
+        _progressDialogState.value = null // Hide Dialog after everything should be cleaned up
     }
 }

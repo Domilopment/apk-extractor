@@ -1,7 +1,10 @@
 package domilopment.apkextractor.data.model.appList
 
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+
 data class AppListScreenState(
-    var isRefreshing: Boolean = true,
-    var appList: List<ApplicationModel.ApplicationListModel> = listOf(),
-    var selectedApp: ApplicationModel.ApplicationDetailModel? = null
+    val isRefreshing: Boolean = true,
+    val appList: PersistentList<ApplicationModel.ApplicationListModel> = persistentListOf(),
+    val selectedApp: ApplicationModel.ApplicationDetailModel? = null
 )

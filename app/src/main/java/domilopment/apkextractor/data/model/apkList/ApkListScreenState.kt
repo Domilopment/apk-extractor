@@ -1,10 +1,12 @@
 package domilopment.apkextractor.data.model.apkList
 
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
 data class ApkListScreenState (
-    var isRefreshing: Boolean = true,
-    var appList: List<PackageArchiveEntity> = listOf(),
-    var selectedPackageArchiveModel: PackageArchiveEntity? = null,
-    var errorMessage: String? = null,
+    val isRefreshing: Boolean = true,
+    val appList: PersistentList<PackageArchiveEntity> = persistentListOf(),
+    val selectedPackageArchiveModel: PackageArchiveEntity? = null,
+    val errorMessage: String? = null,
 )

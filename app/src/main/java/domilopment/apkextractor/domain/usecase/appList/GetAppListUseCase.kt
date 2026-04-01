@@ -8,16 +8,19 @@ import domilopment.apkextractor.domain.mapper.AppModelToApplicationListModelMapp
 import domilopment.apkextractor.domain.mapper.mapAll
 import domilopment.apkextractor.utils.PackageName
 import domilopment.apkextractor.utils.settings.ApplicationUtil
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 interface GetAppListUseCase {
-    operator fun invoke(searchQuery: Flow<PackageName?>): Flow<List<ApplicationModel.ApplicationListModel>>
+    operator fun invoke(searchQuery: Flow<PackageName?>): Flow<PersistentList<ApplicationModel.ApplicationListModel>>
 }
 
 class GetAppListUseCaseImpl @Inject constructor(
@@ -27,7 +30,7 @@ class GetAppListUseCaseImpl @Inject constructor(
     private val settings: PreferenceRepository
 ) : GetAppListUseCase {
     @OptIn(FlowPreview::class)
-    override operator fun invoke(searchQuery: Flow<PackageName?>): Flow<List<ApplicationModel.ApplicationListModel>> =
+    override operator fun invoke(searchQuery: Flow<PackageName?>): Flow<PersistentList<ApplicationModel.ApplicationListModel>> =
         combine(
             appsRepository.apps,
             settings.updatedSysApps,
@@ -67,7 +70,7 @@ class GetAppListUseCaseImpl @Inject constructor(
             searchQuery.debounce(500L).combine(appList) { searchQuery, appList ->
                 val searchString = searchQuery?.trim()
 
-                return@combine if (searchString.isNullOrBlank()) {
+                if (searchString.isNullOrBlank()) {
                     appList
                 } else {
                     appList.filter {
@@ -79,5 +82,5 @@ class GetAppListUseCaseImpl @Inject constructor(
                     }
                 }
             }
-        }.flowOn(Dispatchers.Default)
+        }.map { it.toPersistentList() }.flowOn(Dispatchers.Default)
 }
