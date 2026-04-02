@@ -396,17 +396,21 @@ private fun AppFilterAppType(
                     .fillMaxHeight(),
                 shapes = ButtonGroupDefaults.connectedLeadingButtonShapes(),
             ) {
-                Icon(
-                    imageVector = Icons.Default.SystemUpdate,
-                    contentDescription = "Localized description",
-                )
-                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(
-                    text = stringResource(id = R.string.app_type_system_updated),
-                    textAlign = TextAlign.Center,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 2
-                )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(ToggleButtonDefaults.IconSpacing),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.SystemUpdate,
+                        contentDescription = "Localized description",
+                    )
+                    Text(
+                        text = stringResource(id = R.string.app_type_system_updated),
+                        textAlign = TextAlign.Center,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 2
+                    )
+                }
             }
             ToggleButton(
                 checked = systemApps,
