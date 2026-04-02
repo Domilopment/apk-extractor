@@ -79,7 +79,7 @@ class AsyncBackupTask(
     }
 
     private suspend fun doInBackground(): Uri? {
-        // Try to Backup App
+        // Try to back up App
         return try {
             when (val result = backup()) {
                 is SaveApkResult.Success -> result.uri
@@ -125,7 +125,7 @@ class AsyncBackupTask(
         val channel = NotificationChannel(
             CHANNEL_ID, "App Backup Created", NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
-            lightColor = R.attr.colorPrimary
+            lightColor = androidx.appcompat.R.attr.colorPrimary
             enableLights(true)
             lockscreenVisibility = Notification.VISIBILITY_PRIVATE
         }
