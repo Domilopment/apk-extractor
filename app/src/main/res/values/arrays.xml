@@ -24,9 +24,6 @@
         <item>version_number</item>
         <item>datetime</item>
     </string-array>
-    <string-array name="app_save_name_default_values">
-        <item>name</item>
-    </string-array>
 
     <string-array name="apk_swipe_options_entries">
         <item>@string/action_bottom_sheet_save</item>
