@@ -1,8 +1,6 @@
 package domilopment.apkextractor.ui.settings.swipeAction
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -17,7 +15,6 @@ import domilopment.apkextractor.ui.settings.preferences.SwitchPreferenceCompat
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategory
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBottom
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
-import domilopment.apkextractor.ui.tabletLazyListInsets
 
 @Composable
 fun SettingsSwipeActionContent(
@@ -31,9 +28,8 @@ fun SettingsSwipeActionContent(
     onSwipeActionThresholdMod: (Float) -> Unit,
 ) {
     LazyColumn(
-        state = rememberLazyListState(), contentPadding = WindowInsets.tabletLazyListInsets.union(
-            WindowInsets(left = 8.dp, right = 8.dp)
-        ).asPaddingValues()
+        state = rememberLazyListState(),
+        contentPadding = PaddingValues(horizontal = 8.dp)
     ) {
         preferenceCategory(title = R.string.app_list_swipe_actions) {
             preferenceCategoryItemTop {

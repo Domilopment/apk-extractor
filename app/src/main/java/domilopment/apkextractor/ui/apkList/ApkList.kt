@@ -8,8 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,7 +49,6 @@ import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
 import timber.log.Timber
 import androidx.core.net.toUri
-import domilopment.apkextractor.ui.tabletLazyListInsets
 
 @Composable
 fun ApkList(
@@ -73,7 +70,6 @@ fun ApkList(
     ScrollToTopLazyColumn(
         state = rememberLazyListState(),
         modifier = Modifier.fillMaxSize(),
-        contentPadding = WindowInsets.tabletLazyListInsets.asPaddingValues(),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         item {

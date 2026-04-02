@@ -3,12 +3,10 @@ package domilopment.apkextractor.ui.settings.donation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -33,7 +31,6 @@ import domilopment.apkextractor.ui.settings.preferences.Preference
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBottom
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemMiddle
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemTop
-import domilopment.apkextractor.ui.tabletLazyListInsets
 
 @Composable
 fun SettingsDonationContent(
@@ -42,9 +39,8 @@ fun SettingsDonationContent(
     onBuyMeACoffee: () -> Unit,
 ) {
     LazyColumn(
-        state = rememberLazyListState(), contentPadding = WindowInsets.tabletLazyListInsets.union(
-            WindowInsets(left = 8.dp, right = 8.dp)
-        ).asPaddingValues()
+        state = rememberLazyListState(),
+        contentPadding = PaddingValues(horizontal = 8.dp)
     ) {
         item {
             Column(

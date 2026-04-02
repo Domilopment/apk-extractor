@@ -5,8 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -41,7 +39,6 @@ import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.ui.attrColorResource
 import domilopment.apkextractor.ui.components.ScrollToTopLazyColumn
-import domilopment.apkextractor.ui.tabletLazyListInsets
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.Utils.getAnnotatedString
 import domilopment.apkextractor.utils.apkActions.ApkActionVisuals
@@ -74,7 +71,6 @@ fun AppList(
     ScrollToTopLazyColumn(
         state = rememberLazyListState(),
         modifier = Modifier.fillMaxSize(),
-        contentPadding = WindowInsets.tabletLazyListInsets.asPaddingValues(),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         items(items = appList, key = { it.appPackageName }) { app ->
