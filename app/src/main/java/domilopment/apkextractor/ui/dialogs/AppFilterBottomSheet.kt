@@ -425,18 +425,21 @@ private fun AppFilterAppType(
                 enabled = updatedSystemApps,
                 shapes = ButtonGroupDefaults.connectedMiddleButtonShapes(),
             ) {
-                Icon(
-                    imageVector = Icons.Default.StayPrimaryPortrait,
-                    contentDescription = "Localized description",
-                )
-                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(
-                    text = stringResource(id = R.string.app_type_system),
-                    textAlign = TextAlign.Center,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-                )
-
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(ToggleButtonDefaults.IconSpacing),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.StayPrimaryPortrait,
+                        contentDescription = "Localized description",
+                    )
+                    Text(
+                        text = stringResource(id = R.string.app_type_system),
+                        textAlign = TextAlign.Center,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
+                }
             }
             ToggleButton(
                 checked = userApps,
@@ -450,17 +453,21 @@ private fun AppFilterAppType(
                     .fillMaxHeight(),
                 shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Localized description",
-                )
-                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(
-                    text = stringResource(id = R.string.app_type_user),
-                    textAlign = TextAlign.Center,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-                )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(ToggleButtonDefaults.IconSpacing),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Localized description",
+                    )
+                    Text(
+                        text = stringResource(id = R.string.app_type_user),
+                        textAlign = TextAlign.Center,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
+                }
             }
         }
     }
