@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.navigation
+package domilopment.apkextractor.ui.navigation.sceneStrategies
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet

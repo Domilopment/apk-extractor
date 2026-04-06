@@ -19,6 +19,8 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.serialization.NavKeySerializer
 import androidx.savedstate.compose.serialization.serializers.MutableStateSerializer
+import domilopment.apkextractor.ui.navigation.entryDecorators.rememberNavigationAnalyticsNavEntryDecorator
+import domilopment.apkextractor.ui.navigation.entryDecorators.rememberSharedViewModelStoreNavEntryDecorator
 
 /**
  * Create a navigation state that persists config changes and process death.
@@ -77,6 +79,7 @@ fun <T : NavKey> NavigationState<T>.toEntries(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),
             rememberSharedViewModelStoreNavEntryDecorator(),
+            rememberNavigationAnalyticsNavEntryDecorator(),
         )
         rememberDecoratedNavEntries(
             backStack = stack, entryDecorators = decorators, entryProvider = entryProvider

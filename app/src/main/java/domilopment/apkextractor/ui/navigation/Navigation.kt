@@ -15,9 +15,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -25,12 +22,11 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.google.android.play.core.appupdate.AppUpdateManager
-import domilopment.apkextractor.MainActivity
-import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
-import domilopment.apkextractor.data.repository.analytics.logScreenView
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
 import domilopment.apkextractor.ui.appDetails.AppDetailsScreen
+import domilopment.apkextractor.ui.navigation.entryDecorators.SharedViewModelStoreNavEntryDecorator
+import domilopment.apkextractor.ui.navigation.sceneStrategies.BottomSheetSceneStrategy
 import domilopment.apkextractor.ui.settings.about.SettingsAboutScreen
 import domilopment.apkextractor.ui.settings.autoBackup.SettingsAutoBackupScreen
 import domilopment.apkextractor.ui.settings.dataCollection.SettingsDataCollectionScreen
@@ -61,19 +57,6 @@ fun ApkExtractorNavDisplay(
     appUpdateManager: AppUpdateManager,
     inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
-    val analytics = LocalAnalyticsHelper.current
-    val currentRoute by remember {
-        derivedStateOf {
-            navigationState.backStacks[navigationState.topLevelRoute]?.lastOrNull()
-        }
-    }
-
-    LaunchedEffect(currentRoute) {
-        currentRoute?.let { route ->
-            analytics.logScreenView(route.toString(), MainActivity::class.simpleName)
-        }
-    }
-
     val bottomSheetStrategy = remember { BottomSheetSceneStrategy<Route>() }
 
     val entryProvider = entryProvider {

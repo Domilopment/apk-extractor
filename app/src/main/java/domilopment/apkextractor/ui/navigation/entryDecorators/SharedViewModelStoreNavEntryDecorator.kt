@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.navigation
+package domilopment.apkextractor.ui.navigation.entryDecorators
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
