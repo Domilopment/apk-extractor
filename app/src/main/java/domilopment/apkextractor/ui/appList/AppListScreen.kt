@@ -25,6 +25,8 @@ import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.ui.navigation.Route
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
+import domilopment.apkextractor.ui.dialogs.ExtractionResultDialog
+import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
@@ -207,6 +209,20 @@ fun AppListScreen(
         setCategory = model::setCategory,
         setFilterOthers = model::setOtherFilter
     )
+
+    progressDialogState?.let {
+        ProgressDialog(
+            state = it, onDismissRequest = model::resetProgress, onCancel = model::resetProgress
+        )
+    }
+
+    extractionError?.let { (app, errorMessage) ->
+        ExtractionResultDialog(
+            onDismissRequest = { extractionError = null },
+            appName = app.appName,
+            errorMessage = errorMessage
+        )
+    }
 
     AppListContent(
         appList = state.appList,
