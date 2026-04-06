@@ -2,6 +2,11 @@ package domilopment.apkextractor.ui
 
 import android.util.TypedValue
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,15 +19,25 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 
 /**
  * Load a color resource.
- * @param attrId Id of attr associated with the color
+ * @param attrId ID of attr associated with the color
  * @param defaultColor fallback color if res could not be resolved
  * @return Color value associated with the attribute
  */
@@ -68,3 +83,32 @@ val WindowInsets.Companion.tabletLazyListInsets: WindowInsets
     @Composable get() = if (DeviceTypeUtils.isTabletBars && !WindowInsets.isImeVisible) WindowInsets.navigationBars.only(
         WindowInsetsSides.Bottom
     ) else WindowInsets(left = 0.dp, top = 0.dp, right = 0.dp, bottom = 0.dp)
+
+fun Modifier.shimmer(): Modifier = composed {
+    var size by remember {
+        mutableStateOf(IntSize.Zero)
+    }
+    val transition = rememberInfiniteTransition(label = "shimmer_transition")
+    val startOffsetX by transition.animateFloat(
+        initialValue = -2 * size.width.toFloat(),
+        targetValue = 2 * size.width.toFloat(),
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000)
+        ),
+        label = "shimmer_offset"
+    )
+
+    background(
+        brush = Brush.linearGradient(
+            colors = listOf(
+                Color(0xFFB8B5B5),
+                Color(0xFF8F8B8B),
+                Color(0xFFB8B5B5),
+            ),
+            start = Offset(startOffsetX, 0f),
+            end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat())
+        )
+    ).onGloballyPositioned {
+        size = it.size
+    }
+}

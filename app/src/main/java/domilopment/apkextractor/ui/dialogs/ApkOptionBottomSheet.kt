@@ -30,12 +30,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,12 +55,12 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.ui.components.ExpandableText
-import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.AndroidVersion
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.fadingEnd
 import domilopment.apkextractor.utils.fadingStart
+import androidx.compose.ui.platform.LocalResources
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,13 +76,11 @@ fun ApkOptionBottomSheet(
     deletedDocumentFound: (PackageArchiveEntity) -> Unit
 ) {
     val context = LocalContext.current
+
     if (!FileUtil.doesDocumentExist(context, apk.fileUri)) {
         deletedDocumentFound(apk)
         return
     }
-
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     LifecycleEventEffect(event = Lifecycle.Event.ON_START) {
         if (!FileUtil.doesDocumentExist(context, apk.fileUri)) {
@@ -93,10 +89,9 @@ fun ApkOptionBottomSheet(
         }
     }
 
-    SnackbarHostModalBottomSheet(
+    ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        snackbarHostState = snackbarHostState
     ) {
         ApkSheetHeader(
             apkName = apk.appName,
@@ -297,9 +292,11 @@ fun ApkSheetHeader(
         )
     }, leadingContent = {
         val context = LocalContext.current
+        val resources = LocalResources.current
+
         Image(
             bitmap = appIcon ?: ResourcesCompat.getDrawable(
-                context.resources, android.R.drawable.sym_def_app_icon, context.theme
+                resources, android.R.drawable.sym_def_app_icon, context.theme
             )!!.toBitmap().asImageBitmap(),
             contentDescription = stringResource(id = R.string.list_item_Image_description),
             modifier = Modifier.width(56.dp)

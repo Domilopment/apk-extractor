@@ -18,10 +18,12 @@ import domilopment.apkextractor.ui.ScreenConfig.NavigationIcon
 import domilopment.apkextractor.ui.ScreenConfig.ScreenActions
 import domilopment.apkextractor.ui.actionBar.ActionMenuItem
 import domilopment.apkextractor.ui.bottomBar.BottomBarItem
+import domilopment.apkextractor.utils.PackageName
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Keep
 sealed interface Route : NavKey {
@@ -67,6 +69,27 @@ sealed interface Route : NavKey {
 
         private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
         val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
+
+    @Keep
+    @Serializable
+    data class AppDetails(val packageName: PackageName) : Route  {
+        @Transient
+        override val config = Companion
+
+        companion object : ScreenConfig {
+            override val appBarNavIcon = NavigationIcon(
+                icon = IconResource.DrawableIcon(R.drawable.app_bar_icon),
+                tint = { MaterialTheme.colorScheme.primary })
+            override val appBarTitleRes = R.string.app_name
+            override val isSearchable = false
+            override val hasNavigationBar = false
+            override val appBarActions = emptyList<ActionMenuItem>()
+            override val bottomBarActions = emptyList<BottomBarItem>()
+
+            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+        }
     }
 
     @Keep

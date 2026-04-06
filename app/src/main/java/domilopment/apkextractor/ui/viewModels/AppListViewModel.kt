@@ -11,7 +11,6 @@ import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
-import domilopment.apkextractor.domain.usecase.appList.GetAppDetailsUseCase
 import domilopment.apkextractor.domain.usecase.appList.GetAppListUseCase
 import domilopment.apkextractor.domain.usecase.appList.OpenAppShopDetailsUseCase
 import domilopment.apkextractor.domain.usecase.appList.OpenAppUseCase
@@ -47,7 +46,6 @@ class AppListViewModel @Inject constructor(
     // UI information
     private val preferenceRepository: PreferenceRepository,
     private val appList: GetAppListUseCase,
-    private val appDetails: GetAppDetailsUseCase,
     // App Actions
     private val saveApp: SaveAppsUseCase,
     private val shareApps: ShareAppsUseCase,
@@ -137,27 +135,10 @@ class AppListViewModel @Inject constructor(
                     state.copy(
                         appList = appList,
                         isRefreshing = false,
-                        selectedApp = state.selectedApp?.let { appDetails.invoke(it) })
+                    )
                 }
             }
         }
-    }
-
-    /**
-     * Select a specific Application from list in view
-     * and set it in BottomSheet state
-     * @param app selected application
-     */
-    fun selectApplication(app: ApplicationModel.ApplicationListModel?) {
-        viewModelScope.launch {
-            val details = async(Dispatchers.IO) {
-                app?.let { appDetails.invoke(it) }
-            }
-            _mainFragmentState.update { state ->
-                state.copy(selectedApp = details.await())
-            }
-        }
-
     }
 
     /**

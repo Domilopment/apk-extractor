@@ -1,4 +1,4 @@
-package domilopment.apkextractor.ui.dialogs
+package domilopment.apkextractor.ui.appDetails
 
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Close
@@ -31,25 +29,19 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -65,9 +57,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.model.appList.ApplicationModel
-import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.ui.components.ExpandableColumn
-import domilopment.apkextractor.ui.components.SnackbarHostModalBottomSheet
 import domilopment.apkextractor.utils.AndroidVersion
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
@@ -75,31 +65,26 @@ import domilopment.apkextractor.utils.apkActions.ApkActionIntent
 import domilopment.apkextractor.utils.appFilterOptions.AppFilterCategories
 import domilopment.apkextractor.utils.fadingEnd
 import domilopment.apkextractor.utils.fadingStart
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.launch
+import kotlin.toString
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun AppOptionsBottomSheet(
+fun AppDetailsContent(
     app: ApplicationModel.ApplicationDetailModel,
     onDismissRequest: () -> Unit,
-    sheetState: SheetState,
+    onShowSnackbar: (MySnackbarVisuals) -> Unit,
     onFavoriteChanged: (Boolean) -> Unit,
-    saveResult: SharedFlow<ExtractionResult>,
     onActionSaveImagePermissionRequest: PermissionState,
     onActionIntent: (ApkActionIntent) -> Unit,
     uninstalledAppFound: (ApplicationModel.ApplicationDetailModel) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val resources = LocalResources.current
 
     if (!Utils.isPackageInstalled(context.packageManager, app.appPackageName)) {
         uninstalledAppFound(app)
         return
     }
-
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     LifecycleEventEffect(event = Lifecycle.Event.ON_START) {
         if (!Utils.isPackageInstalled(context.packageManager, app.appPackageName)) {
@@ -108,27 +93,7 @@ fun AppOptionsBottomSheet(
         }
     }
 
-    LaunchedEffect(key1 = Unit) {
-        saveResult.collect { extractionResult ->
-            when (extractionResult) {
-                is ExtractionResult.SuccessSingle -> snackbarHostState.showSnackbar(
-                    MySnackbarVisuals(
-                        duration = SnackbarDuration.Short, message = resources.getString(
-                            R.string.snackbar_successful_extracted, extractionResult.app.appName
-                        )
-                    )
-                )
-
-                else -> Unit
-            }
-        }
-    }
-
-    SnackbarHostModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-        snackbarHostState = snackbarHostState
-    ) {
+    Column(modifier = modifier) {
         AppSheetHeader(
             appName = app.appName,
             packageName = app.appPackageName,
@@ -152,7 +117,7 @@ fun AppOptionsBottomSheet(
             installationSource = app.installationSource,
             onOpenStorePage = {
                 onActionIntent(ApkActionIntent.StorePage(app) {
-                    scope.launch { snackbarHostState.showSnackbar(it) }
+                    onShowSnackbar(it)
                 })
             })
         HorizontalDivider(modifier = Modifier.padding(4.dp))
@@ -170,7 +135,7 @@ fun AppOptionsBottomSheet(
                     return@label
                 }
                 onActionIntent(ApkActionIntent.Icon(app) {
-                    scope.launch { snackbarHostState.showSnackbar(it) }
+                    onShowSnackbar(it)
                 })
             },
             onActionOpenApp = {

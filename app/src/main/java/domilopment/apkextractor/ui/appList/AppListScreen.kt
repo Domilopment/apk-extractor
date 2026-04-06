@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.appList
 
-import android.Manifest
 import android.content.ClipData
 import android.content.Intent
 import android.widget.Toast
@@ -20,20 +19,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.ui.navigation.Route
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
-import domilopment.apkextractor.ui.dialogs.AppOptionsBottomSheet
-import domilopment.apkextractor.ui.dialogs.ExtractionResultDialog
-import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
-import domilopment.apkextractor.utils.apkActions.ApkActionIntent
+import domilopment.apkextractor.utils.PackageName
 import domilopment.apkextractor.utils.apkActions.ApkActionIntentParams
 import domilopment.apkextractor.utils.apkActions.intent
 import kotlinx.coroutines.flow.launchIn
@@ -45,6 +40,7 @@ fun AppListScreen(
     model: AppListViewModel,
     searchString: String,
     showSnackbar: (MySnackbarVisuals) -> Unit,
+    appOetailsScreen: (PackageName) -> Unit,
     isActionMode: Boolean,
     onTriggerActionMode: () -> Unit,
     isActionModeAllItemsSelected: Boolean,
@@ -86,19 +82,6 @@ fun AppListScreen(
     ) {
         context.cacheDir.deleteRecursively()
     }
-
-    // check if we have permission to save the app icon to storage
-    val saveImagePermissionRequest =
-        rememberPermissionState(permission = Manifest.permission.WRITE_EXTERNAL_STORAGE) { isPermissionGranted ->
-            if (isPermissionGranted) state.selectedApp?.let {
-                model.appActionIntent(ApkActionIntent.Icon(it, showSnackbar))
-            } else showSnackbar(
-                MySnackbarVisuals(
-                    duration = SnackbarDuration.Short,
-                    message = resources.getString(R.string.snackbar_need_permission_save_image),
-                )
-            )
-        }
 
     LaunchedEffect(key1 = searchString) {
         /**
@@ -204,21 +187,6 @@ fun AppListScreen(
         }.launchIn(this)
     }
 
-    state.selectedApp?.let { selectedApp ->
-        AppOptionsBottomSheet(
-            app = selectedApp,
-            onDismissRequest = { model.selectApplication(null) },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            onFavoriteChanged = { isChecked ->
-                model.editFavorites(selectedApp.appPackageName, isChecked)
-            },
-            saveResult = model.extractionResult,
-            onActionSaveImagePermissionRequest = saveImagePermissionRequest,
-            onActionIntent = model::appActionIntent,
-            uninstalledAppFound = model::removeApp
-        )
-    }
-
     if (showFilter) AppFilterBottomSheet(
         updatedSystemApps = updatedSysApps,
         systemApps = systemApps,
@@ -240,20 +208,6 @@ fun AppListScreen(
         setFilterOthers = model::setOtherFilter
     )
 
-    progressDialogState?.let {
-        ProgressDialog(
-            state = it, onDismissRequest = model::resetProgress, onCancel = model::resetProgress
-        )
-    }
-
-    extractionError?.let { (app, errorMessage) ->
-        ExtractionResultDialog(
-            onDismissRequest = { extractionError = null },
-            appName = app.appName,
-            errorMessage = errorMessage
-        )
-    }
-
     AppListContent(
         appList = state.appList,
         searchString = searchString,
@@ -265,7 +219,7 @@ fun AppListScreen(
                     state.appList.map { if (it == app) newApp else it }.count { it.isChecked }
                 model.updateApp(newApp)
                 onAppSelection(false, selectedAppCount)
-            } else model.selectApplication(app)
+            } else appOetailsScreen(app.appPackageName)
         },
         triggerActionMode = {
             if (!isActionMode) {

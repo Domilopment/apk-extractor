@@ -13,6 +13,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -29,6 +30,7 @@ import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.logScreenView
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
+import domilopment.apkextractor.ui.appDetails.AppDetailsScreen
 import domilopment.apkextractor.ui.settings.about.SettingsAboutScreen
 import domilopment.apkextractor.ui.settings.autoBackup.SettingsAutoBackupScreen
 import domilopment.apkextractor.ui.settings.dataCollection.SettingsDataCollectionScreen
@@ -37,10 +39,12 @@ import domilopment.apkextractor.ui.settings.home.SettingsHomeScreen
 import domilopment.apkextractor.ui.settings.safeFile.SettingsSaveFileScreen
 import domilopment.apkextractor.ui.settings.swipeAction.SettingsSwipeActionScreen
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
+import domilopment.apkextractor.ui.viewModels.AppDetailViewModel
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ApkExtractorNavDisplay(
     modifier: Modifier = Modifier,
@@ -70,7 +74,9 @@ fun ApkExtractorNavDisplay(
         }
     }
 
-    val entryProvider = entryProvider<Route> {
+    val bottomSheetStrategy = remember { BottomSheetSceneStrategy<Route>() }
+
+    val entryProvider = entryProvider {
         entry<Route.AppList> {
             val model = hiltViewModel<AppListViewModel>()
             AppListScreen(
@@ -78,9 +84,25 @@ fun ApkExtractorNavDisplay(
                 searchString = searchQuery,
                 isActionMode = isActionMode,
                 showSnackbar = showSnackbar,
+                appOetailsScreen = { navigator.navigate(Route.AppDetails(it)) },
                 onTriggerActionMode = onTriggerActionMode,
                 isActionModeAllItemsSelected = isActionModeAllItemsSelected,
                 onAppSelection = onAppSelection,
+                showAskForSaveDirDialog = showAskForSaveDirDialog
+            )
+        }
+
+        entry<Route.AppDetails>(metadata = BottomSheetSceneStrategy.bottomSheet()) { key ->
+            val model = hiltViewModel<AppDetailViewModel, AppDetailViewModel.Factory>(
+                creationCallback = { factory ->
+                    factory.create(key)
+                }
+            )
+
+            AppDetailsScreen(
+                model = model,
+                onDismissRequest = { navigator.goBack() },
+                showSnackbar = showSnackbar,
                 showAskForSaveDirDialog = showAskForSaveDirDialog
             )
         }
@@ -158,8 +180,9 @@ fun ApkExtractorNavDisplay(
     }
 
     NavDisplay(
-        modifier = modifier,
         entries = navigationState.toEntries(entryProvider),
+        modifier = modifier,
+        sceneStrategies = listOf(bottomSheetStrategy),
         predictivePopTransitionSpec = {
             scaleIn(
                 animationSpec = tween(

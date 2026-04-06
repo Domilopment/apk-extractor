@@ -4,21 +4,27 @@ import android.content.pm.PackageManager
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.utils.FileUtil
+import domilopment.apkextractor.utils.PackageName
 import domilopment.apkextractor.utils.Utils
 import kotlinx.coroutines.flow.first
 import java.io.File
 
 interface GetAppDetailsUseCase {
-    suspend operator fun invoke(applicationListModel: ApplicationModel): ApplicationModel.ApplicationDetailModel?
+    suspend operator fun invoke(applicationModel: ApplicationModel): ApplicationModel.ApplicationDetailModel?
+    suspend operator fun invoke(packageName: PackageName): ApplicationModel.ApplicationDetailModel?
 }
 
 class GetAppDetailsUseCaseImpl(
     private val packageManager: PackageManager,
     private val preferenceRepository: PreferenceRepository
 ) : GetAppDetailsUseCase {
-    override suspend fun invoke(applicationListModel: ApplicationModel): ApplicationModel.ApplicationDetailModel? {
+    override suspend fun invoke(applicationModel: ApplicationModel): ApplicationModel.ApplicationDetailModel? {
+        return invoke(applicationModel.appPackageName)
+    }
+
+    override suspend fun invoke(packageName: PackageName): ApplicationModel.ApplicationDetailModel? {
         val packageInfo = try {
-            Utils.getPackageInfo(packageManager, applicationListModel.appPackageName)
+            Utils.getPackageInfo(packageManager, packageName)
         } catch (_: PackageManager.NameNotFoundException) {
             null
         }
