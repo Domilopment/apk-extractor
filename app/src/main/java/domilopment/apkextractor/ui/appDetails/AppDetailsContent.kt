@@ -58,6 +58,7 @@ import com.google.accompanist.permissions.isGranted
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.ui.components.ExpandableColumn
+import domilopment.apkextractor.ui.components.InfoText
 import domilopment.apkextractor.utils.AndroidVersion
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
@@ -384,19 +385,4 @@ private fun AppSheetHeader(
             )
         }
     }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
-}
-
-@Composable
-private fun InfoText(text: String) {
-    Text(
-        text = AnnotatedString(
-            text, listOf(
-                AnnotatedString.Range(
-                    SpanStyle(
-                        color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold
-                    ), 0, text.indexOf(':') + 1
-                )
-            )
-        ), maxLines = 1, overflow = TextOverflow.Ellipsis
-    )
 }

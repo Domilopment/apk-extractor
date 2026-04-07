@@ -29,6 +29,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.data.model.appList.ShareResult
+import domilopment.apkextractor.ui.components.DetailsSkeleton
 import domilopment.apkextractor.ui.dialogs.ExtractionResultDialog
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.AppDetailViewModel
@@ -167,7 +168,7 @@ fun AppDetailsScreen(
             }
         } ?: onDismissRequest()
     } else {
-        AppDetailsSkeleton(modifier = modifier)
+        DetailsSkeleton(modifier = modifier)
     }
 
     progressDialogState?.let {

@@ -52,6 +52,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.ui.components.ExpandableText
+import domilopment.apkextractor.ui.components.InfoText
 import domilopment.apkextractor.utils.AndroidVersion
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
@@ -303,19 +304,4 @@ fun ApkSheetHeader(
             }
         }
     }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
-}
-
-@Composable
-private fun InfoText(text: String) {
-    Text(
-        text = AnnotatedString(
-            text, listOf(
-                AnnotatedString.Range(
-                    SpanStyle(
-                        color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold
-                    ), 0, text.indexOf(':') + 1
-                )
-            )
-        ), maxLines = 1, overflow = TextOverflow.Ellipsis
-    )
 }

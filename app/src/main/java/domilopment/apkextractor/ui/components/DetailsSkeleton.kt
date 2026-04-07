@@ -1,6 +1,14 @@
-package domilopment.apkextractor.ui.appDetails
+package domilopment.apkextractor.ui.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
@@ -14,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.ui.shimmer
 
 @Composable
-fun AppDetailsSkeleton(modifier: Modifier = Modifier) {
+fun DetailsSkeleton(modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(12.dp)) {
         // Header Skeleton
         ListItem(headlineContent = {
@@ -32,14 +40,14 @@ fun AppDetailsSkeleton(modifier: Modifier = Modifier) {
                     .padding(2.dp)
                     .fillMaxWidth(0.4f)
                     .height(14.dp)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
                     .shimmer()
             )
         }, leadingContent = {
             Box(
                 modifier = Modifier
                     .size(56.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
                     .shimmer()
             )
         }, trailingContent = {
@@ -60,7 +68,7 @@ fun AppDetailsSkeleton(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth(if (it % 2 == 0) 0.8f else 0.6f)
                         .height(16.dp)
-                        .clip(RoundedCornerShape(4.dp))
+                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
                         .shimmer()
                 )
             }
@@ -75,7 +83,7 @@ fun AppDetailsSkeleton(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .width(80.dp)
                         .height(32.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
                         .shimmer()
                 )
             }

@@ -14,7 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
-import domilopment.apkextractor.ui.appDetails.AppDetailsSkeleton
+import domilopment.apkextractor.ui.components.DetailsSkeleton
 import domilopment.apkextractor.ui.viewModels.ApkDetailViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
@@ -84,6 +84,6 @@ fun ApkDetailsScreen(
             }
         } ?: onDismissRequest()
     } else {
-        AppDetailsSkeleton(modifier = modifier)
+        DetailsSkeleton(modifier = modifier)
     }
 }
