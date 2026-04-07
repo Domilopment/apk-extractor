@@ -1,5 +1,6 @@
 package domilopment.apkextractor.data.room.dao
 
+import android.net.Uri
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
@@ -12,6 +13,9 @@ import kotlinx.coroutines.flow.Flow
 interface ApkDao {
     @Query("SELECT * FROM saved_apks")
     fun getApks(): Flow<List<PackageArchiveEntity>>
+
+    @Query("SELECT * FROM saved_apks WHERE fileUri = :uri")
+    fun getApkByUri(uri: Uri): Flow<PackageArchiveEntity?>
 
     @Upsert
     suspend fun upsertApk(apk: PackageArchiveEntity)

@@ -11,6 +11,8 @@ import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveRep
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.domain.usecase.apkList.DeleteApkUseCase
 import domilopment.apkextractor.domain.usecase.apkList.DeleteApkUseCaseImpl
+import domilopment.apkextractor.domain.usecase.apkList.GetApkDetailsUseCase
+import domilopment.apkextractor.domain.usecase.apkList.GetApkDetailsUseCaseImpl
 import domilopment.apkextractor.domain.usecase.apkList.GetApkInfoFromDocumentUseCase
 import domilopment.apkextractor.domain.usecase.apkList.GetApkInfoFromDocumentUseCaseImpl
 import domilopment.apkextractor.domain.usecase.apkList.GetApkListUseCase
@@ -39,6 +41,14 @@ object ApkListUseCaseModule {
         settings: PreferenceRepository
     ): GetApkListUseCase {
         return GetApkListUseCaseImpl(context, apksRepository, settings)
+    }
+
+    @Provides
+    @Reusable
+    fun getGetApkDetailsUseCase(
+        apksRepository: PackageArchiveRepository,
+    ): GetApkDetailsUseCase {
+        return GetApkDetailsUseCaseImpl(apksRepository)
     }
 
     @Provides

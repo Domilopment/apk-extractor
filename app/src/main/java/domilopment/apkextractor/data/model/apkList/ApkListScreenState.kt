@@ -7,6 +7,4 @@ import kotlinx.collections.immutable.persistentListOf
 data class ApkListScreenState (
     val isRefreshing: Boolean = true,
     val appList: PersistentList<PackageArchiveEntity> = persistentListOf(),
-    val selectedPackageArchiveModel: PackageArchiveEntity? = null,
-    val errorMessage: String? = null,
 )

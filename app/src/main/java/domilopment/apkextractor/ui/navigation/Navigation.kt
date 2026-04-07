@@ -22,6 +22,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.google.android.play.core.appupdate.AppUpdateManager
+import domilopment.apkextractor.ui.apkDetails.ApkDetailsScreen
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
 import domilopment.apkextractor.ui.appDetails.AppDetailsScreen
@@ -34,6 +35,7 @@ import domilopment.apkextractor.ui.settings.donation.SettingsDonationScreen
 import domilopment.apkextractor.ui.settings.home.SettingsHomeScreen
 import domilopment.apkextractor.ui.settings.safeFile.SettingsSaveFileScreen
 import domilopment.apkextractor.ui.settings.swipeAction.SettingsSwipeActionScreen
+import domilopment.apkextractor.ui.viewModels.ApkDetailViewModel
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.AppDetailViewModel
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
@@ -79,8 +81,7 @@ fun ApkExtractorNavDisplay(
             val model = hiltViewModel<AppDetailViewModel, AppDetailViewModel.Factory>(
                 creationCallback = { factory ->
                     factory.create(key)
-                }
-            )
+                })
 
             AppDetailsScreen(
                 model = model,
@@ -93,7 +94,24 @@ fun ApkExtractorNavDisplay(
         entry<Route.ApkList> {
             val model = hiltViewModel<ApkListViewModel>()
             ApkListScreen(
-                model = model, searchString = searchQuery, showSnackbar = { showSnackbar(it) })
+                model = model,
+                searchString = searchQuery,
+                showSnackbar = { showSnackbar(it) },
+                onApkClick = { navigator.navigate(Route.ApkDetails(it)) })
+        }
+
+        entry<Route.ApkDetails>(metadata = BottomSheetSceneStrategy.bottomSheet()) { key ->
+            val model = hiltViewModel<ApkDetailViewModel, ApkDetailViewModel.Factory>(
+                creationCallback = { factory ->
+                    factory.create(key)
+                })
+
+            ApkDetailsScreen(
+                model = model,
+                onDismissRequest = { navigator.goBack() },
+                showSnackbar = showSnackbar,
+                showAskForSaveDirDialog = showAskForSaveDirDialog
+            )
         }
 
         entry<Route.SettingsHome> {
@@ -191,8 +209,7 @@ fun ApkExtractorNavDisplay(
                     easing = CubicBezierEasing(0.1f, 0.1f, 0f, 1f),
                 ),
             ) + slideOutHorizontally(
-                targetOffsetX = { it + (it / 2) }
-            )
+                targetOffsetX = { it + (it / 2) })
         },
         onBack = { navigator.goBack() })
 }

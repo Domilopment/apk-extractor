@@ -20,23 +20,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.navigation.Route
 import domilopment.apkextractor.ui.ScreenConfig
-import domilopment.apkextractor.ui.dialogs.ApkOptionBottomSheet
 import domilopment.apkextractor.ui.dialogs.ApkSortMenu
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ApkListScreen(
-    model: ApkListViewModel, searchString: String, showSnackbar: (MySnackbarVisuals) -> Unit
+    model: ApkListViewModel,
+    searchString: String,
+    showSnackbar: (MySnackbarVisuals) -> Unit,
+    onApkClick: (Uri) -> Unit
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -75,7 +75,7 @@ fun ApkListScreen(
             }
         }) {
             it?.also { uri ->
-                model.loadFromUri(uri)
+                onApkClick(uri)
             } ?: Toast.makeText(
                 context, resources.getString(R.string.alert_apk_selected_failed), Toast.LENGTH_LONG
             ).show()
@@ -105,53 +105,6 @@ fun ApkListScreen(
         sort = model::sort
     )
 
-    state.selectedPackageArchiveModel?.let {
-        ApkOptionBottomSheet(
-            apk = it,
-            onDismissRequest = { model.selectPackageArchive(null) },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            onRefresh = { model.loadPackageArchiveInfo(it) },
-            onActionShare = {
-                context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-                    type = FileUtil.FileInfo.APK.mimeType
-                    putExtra(Intent.EXTRA_STREAM, it.fileUri)
-                }, resources.getString(R.string.share_intent_title)))
-            },
-            onActionInstall = {
-                Intent(context, InstallerActivity::class.java).apply {
-                    setDataAndType(it.fileUri, it.fileType)
-                    flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                }.let { intent ->
-                    context.startActivity(intent)
-                }
-            },
-            onActionDelete = {
-                runBlocking {
-                    FileUtil.deleteDocument(context, it.fileUri).let { deleted ->
-                        Toast.makeText(
-                            context, resources.getString(
-                                if (deleted) {
-                                    model.remove(it)
-                                    R.string.apk_action_delete_success
-                                } else R.string.apk_action_delete_failed
-                            ), Toast.LENGTH_SHORT
-                        )
-                    }.show()
-                }
-            },
-            onActionUninstall = {
-                Intent(context, InstallerActivity::class.java).apply {
-                    data = Uri.fromParts("package", it.appPackageName, null)
-                    flags =
-                        Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                }.let { intent ->
-                    context.startActivity(intent)
-                }
-            },
-            deletedDocumentFound = model::remove
-        )
-    }
-
     ApkListContent(
         apkList = state.appList,
         totalSpace = totalSpace,
@@ -161,7 +114,7 @@ fun ApkListScreen(
         isRefreshing = state.isRefreshing,
         isPullToRefresh = true,
         onRefresh = model::updatePackageArchives,
-        onClick = model::selectPackageArchive,
+        onClick = { onApkClick(it.fileUri) },
         isApkFileDeleted = { apk ->
             !FileUtil.doesDocumentExist(context, apk.fileUri)
         },

@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.navigation
 
+import android.net.Uri
 import androidx.annotation.Keep
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -19,6 +20,7 @@ import domilopment.apkextractor.ui.ScreenConfig.ScreenActions
 import domilopment.apkextractor.ui.actionBar.ActionMenuItem
 import domilopment.apkextractor.ui.bottomBar.BottomBarItem
 import domilopment.apkextractor.utils.PackageName
+import domilopment.apkextractor.utils.UriSerializer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -127,6 +129,27 @@ sealed interface Route : NavKey {
 
         private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
         val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+    }
+
+    @Keep
+    @Serializable
+    data class ApkDetails(val fileUri: @Serializable(with = UriSerializer::class) Uri) : Route  {
+        @Transient
+        override val config = Companion
+
+        companion object : ScreenConfig {
+            override val appBarNavIcon = NavigationIcon(
+                icon = IconResource.DrawableIcon(R.drawable.app_bar_icon),
+                tint = { MaterialTheme.colorScheme.primary })
+            override val appBarTitleRes = R.string.app_name
+            override val isSearchable = false
+            override val hasNavigationBar = false
+            override val appBarActions = emptyList<ActionMenuItem>()
+            override val bottomBarActions = emptyList<BottomBarItem>()
+
+            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+        }
     }
 
     @Keep
