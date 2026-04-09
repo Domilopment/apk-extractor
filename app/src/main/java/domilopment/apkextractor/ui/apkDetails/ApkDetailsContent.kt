@@ -91,7 +91,7 @@ fun ApkDetailsContent(
             fileName = apk.fileName,
             packageName = apk.appPackageName,
             appIcon = apk.appIcon,
-            isRefreshing = false,
+            isRefreshing = !apk.loaded,
             onRefresh = onRefresh
         )
         HorizontalDivider(modifier = Modifier.padding(4.dp))

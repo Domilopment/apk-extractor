@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -39,12 +40,15 @@ class ApkDetailViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            apkDetails(navKey.fileUri).collect { apk ->
+            apkDetails(navKey.fileUri).distinctUntilChanged().collect { apk ->
                 val displayApk = apk ?: withContext(Dispatchers.IO) {
                     loadApkInfoFromDocument(navKey.fileUri)
                 }
                 _uiState.update { state ->
                     state.copy(app = displayApk, isLoading = false)
+                }
+                if (displayApk?.loaded == false) withContext(Dispatchers.IO) {
+                    loadApkInfo(displayApk)
                 }
             }
         }
@@ -59,7 +63,7 @@ class ApkDetailViewModel @AssistedInject constructor(
     fun loadPackageArchiveInfo(apk: ApkModel.ApkDetailModel) {
         viewModelScope.launch {
             _uiState.update { state ->
-                state.copy(isLoading = true)
+                state.copy(app = state.app?.copy(loaded = false))
             }
             loadApkInfo(apk)
         }
