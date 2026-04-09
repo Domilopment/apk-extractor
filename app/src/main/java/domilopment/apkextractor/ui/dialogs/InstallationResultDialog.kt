@@ -1,5 +1,6 @@
 package domilopment.apkextractor.ui.dialogs
 
+import android.net.Uri
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -7,11 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.InstallationResultType
+import domilopment.apkextractor.ui.model.installation.InstallationResultType
+import domilopment.apkextractor.ui.model.installation.InstallApkError
 
 @Composable
 fun InstallationResultDialog(
-    onDismissRequest: () -> Unit, result: InstallationResultType
+    onDismissRequest: () -> Unit, onExtern: (Uri) -> Unit, result: InstallationResultType
 ) {
     val title = remember(result) {
         when (result) {
@@ -30,7 +32,7 @@ fun InstallationResultDialog(
     val message = remember(result) {
         when (result) {
             // Installation Results
-            is InstallationResultType.Failure.Install -> R.string.installation_result_dialog_failed_message
+            is InstallationResultType.Failure.Install -> result.error.messageResId
             is InstallationResultType.Success.Installed -> R.string.installation_result_dialog_success_message
 
             // Uninstallation Results
@@ -44,6 +46,14 @@ fun InstallationResultDialog(
     AlertDialog(onDismissRequest = onDismissRequest, confirmButton = {
         TextButton(onClick = onDismissRequest) {
             Text(text = stringResource(id = R.string.installation_result_dialog_ok))
+        }
+    }, dismissButton = {
+        if (
+            result is InstallationResultType.Failure.Install &&
+            result.error !is InstallApkError.AbortedByUser &&
+            result.error !is InstallApkError.ExternNotFoundError
+        ) TextButton(onClick = { onExtern(result.fileUri) }) {
+            Text(text = stringResource(id = R.string.installation_result_dialog_extern))
         }
     }, title = {
         Text(text = stringResource(id = title))

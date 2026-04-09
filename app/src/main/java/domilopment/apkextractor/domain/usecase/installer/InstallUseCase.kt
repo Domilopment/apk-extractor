@@ -1,21 +1,21 @@
 package domilopment.apkextractor.domain.usecase.installer
 
-import android.app.Activity
 import android.net.Uri
+import domilopment.apkextractor.data.model.install.InstallStrategy
 import domilopment.apkextractor.data.repository.installation.InstallationRepository
-import domilopment.apkextractor.utils.InstallApkResult
+import domilopment.apkextractor.data.model.install.InstallationCallback
 import kotlinx.coroutines.flow.Flow
 
 interface InstallUseCase {
-    operator fun <T : Activity> invoke(fileUri: Uri, cls: Class<T>): Flow<InstallApkResult>
+    operator fun invoke(fileUri: Uri, strategy: InstallStrategy): Flow<InstallationCallback>
 }
 
 class InstallUseCaseImpl(
     private val installationRepository: InstallationRepository,
 ) : InstallUseCase {
-    override operator fun <T : Activity> invoke(
-        fileUri: Uri, cls: Class<T>
-    ): Flow<InstallApkResult> {
-        return installationRepository.install(fileUri, cls)
+    override operator fun invoke(
+        fileUri: Uri, strategy: InstallStrategy
+    ): Flow<InstallationCallback> {
+        return strategy.install(installationRepository, fileUri)
     }
 }

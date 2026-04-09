@@ -2,6 +2,7 @@ package domilopment.apkextractor
 
 import android.content.Intent
 import android.content.pm.PackageInstaller
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -25,7 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.IntentSanitizer
 import dagger.hilt.android.AndroidEntryPoint
-import domilopment.apkextractor.data.InstallationResultType
+import domilopment.apkextractor.ui.model.installation.InstallationResultType
 import domilopment.apkextractor.data.repository.analytics.AnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.logScreenView
@@ -33,6 +34,7 @@ import domilopment.apkextractor.ui.dialogs.InstallationResultDialog
 import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.InstallerActivityViewModel
+import domilopment.apkextractor.ui.model.installation.InstallApkError
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -86,6 +88,9 @@ class InstallerActivity : ComponentActivity() {
                                         model.showInstallationResult(null)
                                         this@InstallerActivity.finish()
                                     },
+                                    onExtern = { uri ->
+                                        model.tryExternalInstall(uri)
+                                    },
                                     result = it,
                                 )
                             }
@@ -114,7 +119,7 @@ class InstallerActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION || intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
-            when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
+            when (val status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                     val activityIntent = intent.let {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -188,6 +193,18 @@ class InstallerActivity : ComponentActivity() {
                         ?: "No Error message provided"
 
                     Timber.tag("Package Installer: ${intent.action}").e(Exception(errorMessage))
+
+                    val failure = when (status) {
+                        PackageInstaller.STATUS_FAILURE_ABORTED -> InstallApkError.AbortedByUser()
+                        PackageInstaller.STATUS_FAILURE_BLOCKED-> InstallApkError.BlockedByPolicy()
+                        PackageInstaller.STATUS_FAILURE_CONFLICT -> InstallApkError.Conflict()
+                        PackageInstaller.STATUS_FAILURE_INCOMPATIBLE -> InstallApkError.Incompatible()
+                        PackageInstaller.STATUS_FAILURE_INVALID -> InstallApkError.InvalidApk()
+                        PackageInstaller.STATUS_FAILURE_STORAGE -> InstallApkError.InsufficientStorage()
+                        else -> InstallApkError.Generic(errorMessage)
+                    }
+
+                    val fileUri = intent.data ?: Uri.EMPTY
                     when (intent.action) {
                         MainActivity.PACKAGE_UNINSTALLATION_ACTION -> model.showInstallationResult(
                             InstallationResultType.Failure.Uninstall(
@@ -197,7 +214,7 @@ class InstallerActivity : ComponentActivity() {
 
                         MainActivity.PACKAGE_INSTALLATION_ACTION -> model.showInstallationResult(
                             InstallationResultType.Failure.Install(
-                                packageName, errorMessage
+                                packageName, fileUri = fileUri, failure
                             )
                         )
                     }

@@ -304,7 +304,6 @@
     <string name="installation_result_dialog_success_title">Installation Erfolgreich!</string>
     <string name="installation_result_dialog_success_message">Installation von %s war erfolgreich</string>
     <string name="installation_result_dialog_failed_title">Installation Fehlgeschlagen!</string>
-    <string name="installation_result_dialog_failed_message">Installation von %s ist Fehlgeschlagen, mit nachricht:\n%s\n\nVersuche die aktuell installierte version zu deinstallieren und versuche es erneut.</string>
     <string name="uninstallation_result_dialog_success_title">Deinstallation Erfolgreich!</string>
     <string name="uninstallation_result_dialog_success_message">Deinstallation von %s war erfolgreich</string>
     <string name="uninstallation_result_dialog_failed_title">Deinstallation Fehlgeschlagen!</string>
@@ -312,6 +311,19 @@
     <string name="pending_user_action_security_exception_dialog_title">Security Exception!</string>
     <string name="pending_user_action_security_exception_dialog_message">Prozess konnte nicht vortgesetzt werden, Nachricht:\n\n%2$s\n\nKontaktiere den Entwickler.</string>
     <string name="installation_result_dialog_ok">OK</string>
+    <string name="installation_result_dialog_extern">Extern versuchen</string>
+
+    <!-- Installation Error Types -->
+    <string name="installation_error_aborted">Installation von %s wurde von Nutzer abgelehnt oder beendet.</string>
+    <string name="installation_error_generic">Installation von %s wurde mit diesem Error beendt:\n%s</string>
+    <string name="installation_error_blocked">Installation von %s wurde durch das System blockiert.</string>
+    <string name="installation_error_invalid">Installation von %s fehlgeschlagen, Package ist Invalid oder Korrupt oder beinhaltet inkompatible teil apk (apks/xapk).</string>
+    <string name="installation_error_conflict">Installation von %s fehlgeschlagen, Installierte App steht im komflikt.\nVersuche die aktuell installierte version zu deinstallieren und versuche es erneut.</string>
+    <string name="installation_error_storage">Installation von %s fehlgeschlagen, nicht genug speicher verfügbar. Versuche platz zu schaffen indem du andere Apps oder Dateien löscht.</string>
+    <string name="installation_error_incompatible">Installation von %s fehlgeschlagen, Paket ist Incompatibel. Das heißt es ist vermutlich für eine andere Prozessor Architectur erstellt oder dem Gerät fehlen komponenten sie auszuführen.</string>
+    <string name="installation_error_session_creation">Installation von %s fehlgeschlagen, Installationssitzung konnte nicht erstellt werden. Entweder durch einen lese-/schreib-Fehler oder sie wurde durch die Gerätesicherheit blockiert.</string>
+    <string name="installation_error_file_read">Installation von %s fehlgeschlagen, Installationsdatei konnte nicht gelesen werden oder ist korrupiert.</string>
+
 
     <!-- Action Mode -->
     <string name="action_mode_title">%d Ausgewählt</string>

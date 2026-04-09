@@ -297,7 +297,6 @@
     <string name="installation_result_dialog_success_title">Kurulum Başarılı!</string>
     <string name="installation_result_dialog_success_message">%s kurulumu başarılı</string>
     <string name="installation_result_dialog_failed_title">Kurulum Başarısız!</string>
-    <string name="installation_result_dialog_failed_message">%s kurulumu başarısız oldu, mesaj:\n%s\n\nMevcut yüklü sürümü kaldırıp tekrar deneyin.</string>
     <string name="uninstallation_result_dialog_success_title">Başarıyla kaldırıldı!</string>
     <string name="uninstallation_result_dialog_success_message">%s kaldırma işlemi başarılı</string>
     <string name="uninstallation_result_dialog_failed_title">Kaldırma Başarısız!</string>
@@ -305,6 +304,18 @@
     <string name="pending_user_action_security_exception_dialog_title">Güvenlik Hatası!</string>
     <string name="pending_user_action_security_exception_dialog_message">İşlem devam ettirilemedi, mesaj:\n\n%2$s\n\nGeliştiriciyle iletişime geçin.</string>
     <string name="installation_result_dialog_ok">Tamam</string>
+    <string name="installation_result_dialog_extern">Dışarıdan Dene</string>
+
+    <!-- Installation Error Types -->
+    <string name="installation_error_aborted">%s kurulumu kullanıcı tarafından iptal edildi.</string>
+    <string name="installation_error_generic">%s kurulumu şu hatayla başarısız oldu:\n%s</string>
+    <string name="installation_error_blocked">%s kurulumu sistem tarafından engellendi.</string>
+    <string name="installation_error_invalid">%s kurulumu başarısız oldu, paket geçersiz veya bozuk ya da geçersiz bileşenler içeriyor (apk/xapk).</string>
+    <string name="installation_error_conflict">%s kurulumu başarısız oldu, paket çakışıyor.\nMevcut yüklü sürümü kaldırıp tekrar deneyin.</string>
+    <string name="installation_error_storage">%s kurulumu başarısız oldu, yetersiz depolama alanı. Yer açmak için bazı dosya/uygulamaları silmeyi deneyin.</string>
+    <string name="installation_error_incompatible">%s kurulumu başarısız oldu, paket uyumsuz. Muhtemelen yanlış işlemci mimarisi içeriyor veya cihazda çalışması için gereken bileşenler eksik.</string>
+    <string name="installation_error_session_creation">%s kurulumu başarısız oldu, oturum oluşturulamadı. Depolama okuma/yazma hatası veya sistem güvenliği tarafından engellenmiş olabilir.</string>
+    <string name="installation_error_file_read">%s kurulumu başarısız oldu, dosya okunamadı veya bozuk.</string>
 
     <!-- Action Mode -->
     <string name="action_mode_title">%d Seçildi</string>

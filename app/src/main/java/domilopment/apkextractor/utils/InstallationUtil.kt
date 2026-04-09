@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageInstaller.Session
+import android.net.Uri
 import domilopment.apkextractor.MainActivity
 import java.io.IOException
 import java.io.InputStream
@@ -33,10 +34,11 @@ object InstallationUtil {
     }
 
     fun <T : Activity> finishSession(
-        context: Context, session: Session, sessionId: Int, cls: Class<T>
+        context: Context, session: Session, sessionId: Int, fileUri: Uri, cls: Class<T>
     ) {
         val pendingIntent = Intent(context, cls).apply {
             action = MainActivity.PACKAGE_INSTALLATION_ACTION
+            data = fileUri
         }.let {
             PendingIntent.getActivity(
                 context, sessionId, it, PendingIntent.FLAG_MUTABLE

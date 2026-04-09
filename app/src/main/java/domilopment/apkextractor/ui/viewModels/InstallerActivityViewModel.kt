@@ -10,15 +10,18 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.InstallationResultType
+import domilopment.apkextractor.ui.model.installation.InstallationResultType
 import domilopment.apkextractor.data.InstallationScreenState
 import domilopment.apkextractor.data.ProgressDialogUiState
 import domilopment.apkextractor.data.UiText
+import domilopment.apkextractor.data.model.install.InstallStrategy
 import domilopment.apkextractor.domain.usecase.appList.AddAppUseCase
 import domilopment.apkextractor.domain.usecase.appList.RemoveAppUseCase
 import domilopment.apkextractor.domain.usecase.installer.InstallUseCase
 import domilopment.apkextractor.domain.usecase.installer.UninstallUseCase
-import domilopment.apkextractor.utils.InstallApkResult
+import domilopment.apkextractor.data.model.install.InstallationCallback
+import domilopment.apkextractor.data.model.install.InstallationError
+import domilopment.apkextractor.ui.model.installation.InstallApkError
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -53,11 +56,11 @@ class InstallerActivityViewModel @Inject constructor(
         )
     }
 
-    fun installApkBundle(fileUri: Uri) {
+    fun installApkBundle(fileUri: Uri, installStrategy: InstallStrategy = InstallStrategy.Internal(InstallerActivity::class.java)) {
         task = viewModelScope.launch {
-            installUseCase(fileUri, InstallerActivity::class.java).collect {
+            installUseCase(fileUri, installStrategy).collect {
                 when (it) {
-                    is InstallApkResult.OnPrepare -> {
+                    is InstallationCallback.OnPrepare -> {
                         session = it.session
                         uiState = uiState.copy(
                             progressState = ProgressDialogUiState(
@@ -69,24 +72,33 @@ class InstallerActivityViewModel @Inject constructor(
                         )
                     }
 
-                    is InstallApkResult.OnProgress -> updateState(
+                    is InstallationCallback.OnProgress -> updateState(
                         packageName = it.packageName, progress = it.progress
                     )
 
-                    is InstallApkResult.OnFinish -> {
+                    is InstallationCallback.InstallationResult -> {
                         uiState = uiState.copy(
                             progressState = null, result = when (it) {
-                                is InstallApkResult.OnFinish.OnError -> {
-                                    Timber.tag("InstallApkResult; ${it.packageName}").e(it.error)
-                                    InstallationResultType.Failure.Install(
-                                        it.packageName, it.error
-                                    )
+                                is InstallationCallback.InstallationResult.OnError -> {
+                                    val failure = when (it.error) {
+                                        is InstallationError.SessionCreationException -> InstallApkError.SessionCreationFailure(
+                                            it.fileUri, it.error.throwable.message
+                                        )
+
+                                        is InstallationError.IOException -> InstallApkError.FileReadError(
+                                            it.fileUri, it.error.throwable.message
+                                        )
+
+                                        is InstallationError.ActivityNotFoundException -> InstallApkError.ExternNotFoundError(it.error.throwable.message)
+
+                                        is InstallationError.UnknownException -> InstallApkError.Generic(it.error.throwable.message)
+                                    }
+
+                                    Timber.tag("InstallApkResult; ${it.packageName}").e(it.error.throwable)
+                                    InstallationResultType.Failure.Install(it.packageName, fileUri = it.fileUri, failure)
                                 }
 
-                                is InstallApkResult.OnFinish.OnExtern -> InstallationResultType.Failure.Install(
-                                    it.packageName,
-                                    "Could not Install via App, Tried to use external installation services."
-                                )
+                                is InstallationCallback.InstallationResult.OnExtern -> InstallationResultType.Success.Installed(it.packageName)
 
                                 else -> uiState.result
                             }
@@ -125,5 +137,10 @@ class InstallerActivityViewModel @Inject constructor(
 
     fun showInstallationResult(result: InstallationResultType?) {
         uiState = uiState.copy(progressState = null, result = result)
+    }
+
+    fun tryExternalInstall(fileUri: Uri) {
+        Timber.d("Trying external install with $fileUri")
+        installApkBundle(fileUri, InstallStrategy.External)
     }
 }
