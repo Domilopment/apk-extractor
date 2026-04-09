@@ -110,7 +110,6 @@ fun ApkExtractorNavDisplay(
                 model = model,
                 onDismissRequest = { navigator.goBack() },
                 showSnackbar = showSnackbar,
-                showAskForSaveDirDialog = showAskForSaveDirDialog
             )
         }
 

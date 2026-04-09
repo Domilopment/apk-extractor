@@ -26,7 +26,6 @@ fun ApkDetailsScreen(
     model: ApkDetailViewModel,
     onDismissRequest: () -> Unit,
     showSnackbar: (MySnackbarVisuals) -> Unit,
-    showAskForSaveDirDialog: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
