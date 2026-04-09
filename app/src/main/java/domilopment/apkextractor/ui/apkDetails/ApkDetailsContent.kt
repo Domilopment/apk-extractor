@@ -50,7 +50,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import domilopment.apkextractor.R
-import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
+import domilopment.apkextractor.data.model.apkList.ApkModel
 import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.ui.components.InfoText
 import domilopment.apkextractor.utils.AndroidVersion
@@ -61,14 +61,14 @@ import domilopment.apkextractor.utils.fadingStart
 
 @Composable
 fun ApkDetailsContent(
-    apk: PackageArchiveEntity,
+    apk: ApkModel.ApkDetailModel,
     onDismissRequest: () -> Unit,
     onRefresh: () -> Unit,
     onActionShare: () -> Unit,
     onActionInstall: () -> Unit,
     onActionDelete: () -> Unit,
     onActionUninstall: () -> Unit,
-    deletedDocumentFound: (PackageArchiveEntity) -> Unit,
+    deletedDocumentFound: (ApkModel.ApkDetailModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current

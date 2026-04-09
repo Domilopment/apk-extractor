@@ -3,17 +3,17 @@ package domilopment.apkextractor.domain.usecase.apkList
 import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
+import domilopment.apkextractor.data.model.apkList.ApkModel
 import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveDetailLoader
-import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveRepository
-import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
+import domilopment.apkextractor.domain.mapper.PackageArchiveEntityToApkDetailModelMapper
 import domilopment.apkextractor.utils.FileUtil
 
 interface GetApkInfoFromDocumentUseCase {
-    suspend operator fun invoke(uri: Uri): PackageArchiveEntity?
+    suspend operator fun invoke(uri: Uri): ApkModel.ApkDetailModel?
 }
 
 class GetApkInfoFromDocumentUseCaseImpl(private val context: Context): GetApkInfoFromDocumentUseCase {
-    override suspend operator fun invoke(uri: Uri): PackageArchiveEntity? {
+    override suspend operator fun invoke(uri: Uri): ApkModel.ApkDetailModel? {
         return FileUtil.getDocumentInfo(
             context,
             uri,
@@ -23,6 +23,8 @@ class GetApkInfoFromDocumentUseCaseImpl(private val context: Context): GetApkInf
             DocumentsContract.Document.COLUMN_SIZE
         )?.let {
             PackageArchiveDetailLoader.load(context, it)
+        }?.let {
+            PackageArchiveEntityToApkDetailModelMapper.map(it)
         }
     }
 }

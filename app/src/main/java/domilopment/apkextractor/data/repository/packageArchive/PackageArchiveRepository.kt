@@ -18,7 +18,8 @@ import javax.inject.Inject
 
 interface PackageArchiveRepository {
     val apks: Flow<List<PackageArchiveEntity>>
-    fun getApk(fileUri: Uri): Flow<PackageArchiveEntity?>
+    suspend fun getApk(fileUri: Uri): PackageArchiveEntity?
+    fun getApkAsFlow(fileUri: Uri): Flow<PackageArchiveEntity?>
     suspend fun updateApps()
     suspend fun addApk(apk: PackageArchiveEntity)
     suspend fun removeApk(apk: PackageArchiveEntity)
@@ -36,7 +37,11 @@ class MyPackageArchiveRepository @Inject constructor(
     override val apks: Flow<List<PackageArchiveEntity>> =
         apkDao.getApks().combine(updateTrigger) { list, _ -> list }
 
-    override fun getApk(fileUri: Uri): Flow<PackageArchiveEntity?> = apkDao.getApkByUri(fileUri)
+    override suspend fun getApk(fileUri: Uri): PackageArchiveEntity? =
+        apkDao.getApkByUri(fileUri).first()
+
+    override fun getApkAsFlow(fileUri: Uri): Flow<PackageArchiveEntity?> =
+        apkDao.getApkByUri(fileUri)
 
     override suspend fun updateApps() = withContext(Dispatchers.IO) {
         val onDisk = packageArchiveService.apks.first()

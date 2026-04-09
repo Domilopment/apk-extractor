@@ -1,12 +1,14 @@
 package domilopment.apkextractor.domain.usecase.apkList
 
 import android.content.Context
-import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
+import domilopment.apkextractor.data.model.apkList.ApkModel
 import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveRepository
+import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.utils.FileUtil
 
 interface DeleteApkUseCase {
     suspend operator fun invoke(apk: PackageArchiveEntity)
+    suspend operator fun invoke(apk: ApkModel)
 }
 
 class DeleteApkUseCaseImpl(
@@ -14,7 +16,11 @@ class DeleteApkUseCaseImpl(
 ) : DeleteApkUseCase {
     override suspend fun invoke(apk: PackageArchiveEntity) {
         if (FileUtil.doesDocumentExist(context, apk.fileUri)) return
-
         apksRepository.removeApk(apk)
+    }
+
+    override suspend fun invoke(apk: ApkModel) {
+        val entity = apksRepository.getApk(apk.fileUri)
+        entity?.let { invoke(it) }
     }
 }

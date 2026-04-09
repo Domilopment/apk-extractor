@@ -7,7 +7,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import domilopment.apkextractor.data.model.apkList.ApkDetailScreenState
-import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
+import domilopment.apkextractor.data.model.apkList.ApkModel
 import domilopment.apkextractor.domain.usecase.apkList.DeleteApkUseCase
 import domilopment.apkextractor.domain.usecase.apkList.GetApkDetailsUseCase
 import domilopment.apkextractor.domain.usecase.apkList.GetApkInfoFromDocumentUseCase
@@ -50,13 +50,13 @@ class ApkDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun remove(apk: PackageArchiveEntity) {
+    fun remove(apk: ApkModel.ApkDetailModel) {
         viewModelScope.launch {
             deleteApk(apk)
         }
     }
 
-    fun loadPackageArchiveInfo(apk: PackageArchiveEntity) {
+    fun loadPackageArchiveInfo(apk: ApkModel.ApkDetailModel) {
         viewModelScope.launch {
             _uiState.update { state ->
                 state.copy(isLoading = true)

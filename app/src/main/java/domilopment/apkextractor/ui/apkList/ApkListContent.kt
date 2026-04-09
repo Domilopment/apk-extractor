@@ -11,16 +11,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
+import domilopment.apkextractor.data.model.apkList.ApkModel
 import domilopment.apkextractor.ui.components.PullToRefreshBox
-import domilopment.apkextractor.utils.FileUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.core.net.toUri
 
 @Composable
 fun ApkListContent(
-    apkList: List<PackageArchiveEntity>,
+    apkList: List<ApkModel.ApkListModel>,
     totalSpace: Long,
     takenSpace: Long,
     freeSpace: Long,
@@ -28,9 +27,9 @@ fun ApkListContent(
     isRefreshing: Boolean,
     isPullToRefresh: Boolean,
     onRefresh: () -> Unit,
-    onClick: (PackageArchiveEntity) -> Unit,
-    isApkFileDeleted: (PackageArchiveEntity) -> Boolean,
-    deletedDocumentFound: (PackageArchiveEntity) -> Unit,
+    onClick: (ApkModel.ApkListModel) -> Unit,
+    isApkFileDeleted: (ApkModel.ApkListModel) -> Boolean,
+    deletedDocumentFound: (ApkModel.ApkListModel) -> Unit,
     onStorageInfoClick: () -> Unit
 ) {
     PullToRefreshBox(
@@ -55,63 +54,47 @@ fun ApkListContent(
 private fun ApkListScreenPreview() {
     val apks = remember {
         mutableStateListOf(
-            PackageArchiveEntity(
+            ApkModel.ApkListModel(
                 fileUri = "test".toUri(),
                 fileName = "test.apk",
-                fileType = FileUtil.FileInfo.APK.mimeType,
-                fileLastModified = 0L,
                 fileSize = 1024 * 1024,
                 appName = "Test",
                 appPackageName = "com.example.test",
                 appIcon = null,
                 appVersionName = "v0",
                 appVersionCode = 0L,
-                appMinSdkVersion = 28,
-                appTargetSdkVersion = 33,
-            ), PackageArchiveEntity(
+            ), ApkModel.ApkListModel(
                 fileUri = "test2".toUri(),
                 fileName = "test2.apk",
-                fileType = FileUtil.FileInfo.APK.mimeType,
-                fileLastModified = 0L,
                 fileSize = 1024 * 1024,
                 appName = "Test",
                 appPackageName = "com.example.test2",
                 appIcon = null,
                 appVersionName = "v0",
                 appVersionCode = 0L,
-                appMinSdkVersion = 28,
-                appTargetSdkVersion = 33,
-            ), PackageArchiveEntity(
+            ), ApkModel.ApkListModel(
                 fileUri = "test (2)".toUri(),
                 fileName = "test (2).apk",
-                fileType = FileUtil.FileInfo.APK.mimeType,
-                fileLastModified = 0L,
                 fileSize = 1024 * 1024,
                 appName = "Test",
                 appPackageName = "com.example.test",
                 appIcon = null,
                 appVersionName = "v1.0.1",
                 appVersionCode = 2L,
-                appMinSdkVersion = 28,
-                appTargetSdkVersion = 33,
             )
         )
     }
     val refreshScope = rememberCoroutineScope()
     var refreshing by remember { mutableStateOf(false) }
-    val apkToAdd = PackageArchiveEntity(
+    val apkToAdd = ApkModel.ApkListModel(
         fileUri = "test (3)".toUri(),
         fileName = "test (3).apk",
-        fileType = FileUtil.FileInfo.APK.mimeType,
-        fileLastModified = 0L,
         fileSize = 1024 * 1024,
         appName = "Test",
         appPackageName = "com.example.test",
         appIcon = null,
         appVersionName = "v1.1.0",
         appVersionCode = 3L,
-        appMinSdkVersion = 28,
-        appTargetSdkVersion = 33,
     )
     val space by remember {
         derivedStateOf {

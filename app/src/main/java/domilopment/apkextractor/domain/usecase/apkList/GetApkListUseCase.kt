@@ -1,9 +1,11 @@
 package domilopment.apkextractor.domain.usecase.apkList
 
 import android.content.Context
-import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
+import domilopment.apkextractor.data.model.apkList.ApkModel
 import domilopment.apkextractor.data.repository.packageArchive.PackageArchiveRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
+import domilopment.apkextractor.domain.mapper.PackageArchiveEntityMapperToApkListModelMapper
+import domilopment.apkextractor.domain.mapper.mapAll
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.settings.PackageArchiveUtils
 import kotlinx.collections.immutable.PersistentList
@@ -17,7 +19,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 interface GetApkListUseCase {
-    operator fun invoke(searchQuery: Flow<String?>): Flow<PersistentList<PackageArchiveEntity>>
+    operator fun invoke(searchQuery: Flow<String?>): Flow<PersistentList<ApkModel.ApkListModel>>
 }
 
 class GetApkListUseCaseImpl(
@@ -52,5 +54,7 @@ class GetApkListUseCaseImpl(
                     }
                 }
             }
-        }.map { it.toPersistentList() }.flowOn(Dispatchers.Default)
+        }.map { list ->
+            PackageArchiveEntityMapperToApkListModelMapper.mapAll(list).toPersistentList()
+        }.flowOn(Dispatchers.Default)
 }
