@@ -24,13 +24,20 @@ class SaveDirUriUseCaseImpl(
         val takeFlags: Int =
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
-        oldUri?.let { oldPath ->
-            if (oldPath in contentResolver.persistedUriPermissions.map { it.uri } && oldPath != newUri) contentResolver.releasePersistableUriPermission(
-                oldPath, takeFlags
-            )
+        val currentPermissions = contentResolver.persistedUriPermissions
+
+        // Clean up the old permission first
+        if (oldUri != null && oldUri != newUri) {
+            if (currentPermissions.any { it.uri == oldUri }) {
+                contentResolver.releasePersistableUriPermission(oldUri, takeFlags)
+            }
+        }
+
+        // Take new permission only if we don't have it yet
+        if (currentPermissions.none { it.uri == newUri && it.isReadPermission && it.isWritePermission }) {
+            contentResolver.takePersistableUriPermission(newUri, takeFlags)
         }
         saveUri(newUri)
-        contentResolver.takePersistableUriPermission(newUri, takeFlags)
     }
 
     override suspend fun invoke(uri: Uri) {

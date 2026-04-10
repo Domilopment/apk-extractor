@@ -1,9 +1,7 @@
 package domilopment.apkextractor
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Binder
 import android.os.Bundle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -327,12 +325,9 @@ class MainActivity : AppCompatActivity() {
      * @return Have to ask user for Save Dir
      */
     private fun mustAskForSaveDir(saveDir: Uri?): Boolean {
-        return saveDir == null || checkUriPermission(
-            saveDir,
-            Binder.getCallingPid(),
-            Binder.getCallingUid(),
-            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        ) == PackageManager.PERMISSION_DENIED || !FileUtil.doesDocumentExist(this, saveDir)
+        return saveDir == null || contentResolver.persistedUriPermissions.none {
+            it.uri == saveDir && it.isReadPermission && it.isWritePermission
+        } || !FileUtil.doesDocumentExist(this, saveDir)
     }
 
     private fun checkForAppUpdates() {
