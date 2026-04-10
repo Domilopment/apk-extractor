@@ -85,7 +85,7 @@ sealed interface Route : NavKey {
                 tint = { MaterialTheme.colorScheme.primary })
             override val appBarTitleRes = R.string.app_name
             override val isSearchable = false
-            override val hasNavigationBar = false
+            override val hasNavigationBar = true
             override val appBarActions = emptyList<ActionMenuItem>()
             override val bottomBarActions = emptyList<BottomBarItem>()
 
@@ -143,7 +143,7 @@ sealed interface Route : NavKey {
                 tint = { MaterialTheme.colorScheme.primary })
             override val appBarTitleRes = R.string.app_name
             override val isSearchable = false
-            override val hasNavigationBar = false
+            override val hasNavigationBar = true
             override val appBarActions = emptyList<ActionMenuItem>()
             override val bottomBarActions = emptyList<BottomBarItem>()
 
