@@ -27,10 +27,8 @@ class SaveDirUriUseCaseImpl(
         val currentPermissions = contentResolver.persistedUriPermissions
 
         // Clean up the old permission first
-        if (oldUri != null && oldUri != newUri) {
-            if (currentPermissions.any { it.uri == oldUri }) {
-                contentResolver.releasePersistableUriPermission(oldUri, takeFlags)
-            }
+        if (oldUri != null && oldUri != newUri && currentPermissions.any { it.uri == oldUri }) {
+            contentResolver.releasePersistableUriPermission(oldUri, takeFlags)
         }
 
         // Take new permission only if we don't have it yet
