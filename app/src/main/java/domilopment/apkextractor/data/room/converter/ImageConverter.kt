@@ -14,11 +14,12 @@ class ImageConverter {
     fun fromDrawable(imageBitmap: ImageBitmap?): ByteArray? {
         val outputStream = ByteArrayOutputStream()
         val compressFormat = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Bitmap.CompressFormat.WEBP_LOSSLESS
+            Bitmap.CompressFormat.WEBP_LOSSY
         } else {
-            Bitmap.CompressFormat.PNG
+            @Suppress("DEPRECATION")
+            Bitmap.CompressFormat.WEBP
         }
-        return imageBitmap?.asAndroidBitmap()?.compress(compressFormat, 100, outputStream)?.let {
+        return imageBitmap?.asAndroidBitmap()?.compress(compressFormat, 85, outputStream)?.let {
             if (it) outputStream.toByteArray() else null
         }
     }
