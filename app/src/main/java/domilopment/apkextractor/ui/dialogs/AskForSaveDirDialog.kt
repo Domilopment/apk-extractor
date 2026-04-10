@@ -57,8 +57,13 @@ fun AskForSaveDirDialog(
                 } catch (e: ActivityNotFoundException) {
                     Timber.tag("Initial Ask for Save Dir Dialog").e(e)
                     error = true
+                } catch (e: SecurityException) {
+                    Timber.tag("Initial Ask for Save Dir Dialog").e(e)
+                    error = true
+                } catch (e: IllegalArgumentException) {
+                    Timber.tag("Initial Ask for Save Dir Dialog").e(e)
+                    error = true
                 }
-
             }) {
                 Text(text = stringResource(id = if (error) R.string.alert_save_path_error_ok else R.string.alert_save_path_ok))
             }
