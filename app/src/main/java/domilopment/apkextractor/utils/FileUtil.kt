@@ -295,18 +295,18 @@ object FileUtil {
      * @return true if document exist else false
      */
     fun doesDocumentExist(context: Context, uri: Uri): Boolean {
-        val documentUri = if (DocumentsContract.isTreeUri(uri)) {
-            val documentId = if (DocumentsContract.isDocumentUri(
-                    context, uri
-                )
-            ) DocumentsContract.getDocumentId(
-                uri
-            ) else DocumentsContract.getTreeDocumentId(uri)
-            DocumentsContract.buildDocumentUriUsingTree(
-                uri, documentId
-            )
-        } else uri
         return try {
+            val documentUri = if (DocumentsContract.isTreeUri(uri)) {
+                val documentId = if (DocumentsContract.isDocumentUri(
+                        context, uri
+                    )
+                ) DocumentsContract.getDocumentId(
+                    uri
+                ) else DocumentsContract.getTreeDocumentId(uri)
+                DocumentsContract.buildDocumentUriUsingTree(
+                    uri, documentId
+                )
+            } else uri
             context.contentResolver.query(
                 documentUri,
                 arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID),
@@ -314,7 +314,8 @@ object FileUtil {
                 null,
                 null
             )?.use { cursor -> cursor.count > 0 } ?: false
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Timber.tag("FileUtil.doesDocumentExist").e(e)
             false
         }
     }
