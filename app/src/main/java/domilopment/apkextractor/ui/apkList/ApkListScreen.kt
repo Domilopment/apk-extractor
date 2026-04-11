@@ -27,6 +27,7 @@ import domilopment.apkextractor.ui.dialogs.ApkSortMenu
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -46,6 +47,15 @@ fun ApkListScreen(
 
     var sortDialog by remember {
         mutableStateOf(false)
+    }
+
+    var isNavigating by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isNavigating) {
+        if (isNavigating) {
+            delay(500)
+            isNavigating = false
+        }
     }
 
     val takenSpace by remember {
@@ -114,7 +124,12 @@ fun ApkListScreen(
         isRefreshing = state.isRefreshing,
         isPullToRefresh = true,
         onRefresh = model::updatePackageArchives,
-        onClick = { onApkClick(it.fileUri) },
+        onClick = {
+            if (!isNavigating) {
+                isNavigating = true
+                onApkClick(it.fileUri)
+            }
+        },
         isApkFileDeleted = { apk ->
             !FileUtil.doesDocumentExist(context, apk.fileUri)
         },
