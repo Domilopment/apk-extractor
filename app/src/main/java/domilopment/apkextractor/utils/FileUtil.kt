@@ -1,9 +1,7 @@
 package domilopment.apkextractor.utils
 
 import android.content.Context
-import android.database.sqlite.SQLiteException
 import android.net.Uri
-import android.os.RemoteException
 import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
 import androidx.core.database.getLongOrNull
@@ -335,27 +333,34 @@ object FileUtil {
             DocumentsContract.Document.COLUMN_MIME_TYPE
         )
     ): DocumentFile? {
-        context.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
-            val documentIdIndex =
-                cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DOCUMENT_ID)
-            val displayNameIndex =
-                cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
-            val lastModifiedIndex =
-                cursor.getColumnIndex(DocumentsContract.Document.COLUMN_LAST_MODIFIED)
-            val sizeIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_SIZE)
-            val mimeTypeIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
+        return try {
+            context.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
+                val documentIdIndex =
+                    cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DOCUMENT_ID)
+                val displayNameIndex =
+                    cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
+                val lastModifiedIndex =
+                    cursor.getColumnIndex(DocumentsContract.Document.COLUMN_LAST_MODIFIED)
+                val sizeIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_SIZE)
+                val mimeTypeIndex =
+                    cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
 
-            if (cursor.moveToFirst()) {
-                return DocumentFile(
-                    uri = uri,
-                    documentId = cursor.getStringOrNull(documentIdIndex),
-                    displayName = cursor.getStringOrNull(displayNameIndex),
-                    lastModified = cursor.getLongOrNull(lastModifiedIndex),
-                    size = cursor.getLongOrNull(sizeIndex),
-                    mimeType = cursor.getStringOrNull(mimeTypeIndex)
-                )
+                if (cursor.moveToFirst()) {
+                    DocumentFile(
+                        uri = uri,
+                        documentId = cursor.getStringOrNull(documentIdIndex),
+                        displayName = cursor.getStringOrNull(displayNameIndex),
+                        lastModified = cursor.getLongOrNull(lastModifiedIndex),
+                        size = cursor.getLongOrNull(sizeIndex),
+                        mimeType = cursor.getStringOrNull(mimeTypeIndex)
+                    )
+                } else {
+                    null
+                }
             }
+        } catch (e: Exception) {
+            Timber.tag("FileUtil.getDocumentInfo").e(e)
+            null
         }
-        return null
     }
 }
