@@ -14,6 +14,8 @@ interface GetApkInfoFromDocumentUseCase {
 
 class GetApkInfoFromDocumentUseCaseImpl(private val context: Context): GetApkInfoFromDocumentUseCase {
     override suspend operator fun invoke(uri: Uri): ApkModel.ApkDetailModel? {
+        if (!FileUtil.doesDocumentExist(context, uri)) return null
+
         return FileUtil.getDocumentInfo(
             context,
             uri,
