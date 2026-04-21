@@ -152,8 +152,8 @@ class AppListViewModel @Inject constructor(
     fun appActionIntent(intent: ApkActionIntent) {
         viewModelScope.launch {
             when (intent) {
-                is ApkActionIntent.Save -> saveApps(listOf(intent.app))
-                is ApkActionIntent.Share -> createShareUrisForApps(listOf(intent.app))
+                is ApkActionIntent.Save -> saveSingleApp(intent.app)
+                is ApkActionIntent.Share -> createShareUrisForSingleApp(intent.app)
                 is ApkActionIntent.Icon -> saveAppIcon(intent.app, intent.showSnackbar)
                 is ApkActionIntent.Settings -> openSettings(intent.app)
                 is ApkActionIntent.Open -> openApp(intent.app)
@@ -253,6 +253,12 @@ class AppListViewModel @Inject constructor(
         }
     }
 
+    fun saveSingleApp(app: ApplicationModel) {
+        runningTask = viewModelScope.launch {
+            saveApps(listOf(app))
+        }
+    }
+
     fun saveSelectedApps() {
         runningTask = viewModelScope.launch {
             saveApps(mainFragmentState.value.appList.filter { it.isChecked })
@@ -290,6 +296,12 @@ class AppListViewModel @Inject constructor(
                     resetProgress()
                 }
             }
+        }
+    }
+
+    fun createShareUrisForSingleApp(app: ApplicationModel) {
+        runningTask = viewModelScope.launch {
+            createShareUrisForApps(listOf(app))
         }
     }
 
