@@ -33,7 +33,6 @@ import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.PackageName
 import domilopment.apkextractor.utils.apkActions.ApkActionIntentParams
 import domilopment.apkextractor.utils.apkActions.intent
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -77,15 +76,6 @@ fun AppListScreen(
     // information of error if last extraction has failed, to show inside a dialog
     var extractionError: ExtractionResult.Failure? by remember {
         mutableStateOf(null)
-    }
-
-    var isNavigating by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isNavigating) {
-        if (isNavigating) {
-            delay(500)
-            isNavigating = false
-        }
     }
 
     // After finish share apk file, clear the temp folder so the temp.apk files is deleted as well
@@ -245,10 +235,7 @@ fun AppListScreen(
                     state.appList.map { if (it == app) newApp else it }.count { it.isChecked }
                 model.updateApp(newApp)
                 onAppSelection(false, selectedAppCount)
-            } else if (!isNavigating) {
-                isNavigating = true
-                appOetailsScreen(app.appPackageName)
-            }
+            } else appOetailsScreen(app.appPackageName)
         },
         triggerActionMode = {
             if (!isActionMode) {

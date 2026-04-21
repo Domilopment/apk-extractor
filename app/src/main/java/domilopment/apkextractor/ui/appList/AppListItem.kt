@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
@@ -95,7 +96,10 @@ fun AppListItem(
         },
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
+            .combinedClickable(
+                onClick = dropUnlessResumed { onClick() },
+                onLongClick = onLongClick
+            ),
         supportingContent = {
             Text(
                 text = appPackageName,

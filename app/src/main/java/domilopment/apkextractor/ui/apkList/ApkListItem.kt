@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.compose.dropUnlessResumed
 import domilopment.apkextractor.data.room.entities.PackageArchiveEntity
 import domilopment.apkextractor.utils.FileUtil
 import androidx.core.net.toUri
@@ -50,7 +51,7 @@ fun ApkListItem(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .background(color = ListItemDefaults.containerColor)
-            .clickable(onClick = onClick),
+            .clickable(onClick = dropUnlessResumed { onClick() }),
     ) {
         Text(
             text = apkFileName,
