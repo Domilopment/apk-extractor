@@ -26,6 +26,7 @@ import domilopment.apkextractor.ui.apkDetails.ApkDetailsScreen
 import domilopment.apkextractor.ui.apkList.ApkListScreen
 import domilopment.apkextractor.ui.appList.AppListScreen
 import domilopment.apkextractor.ui.appDetails.AppDetailsScreen
+import domilopment.apkextractor.ui.navigation.entryDecorators.LocalSharedViewModelStoreOwner
 import domilopment.apkextractor.ui.navigation.entryDecorators.SharedViewModelStoreNavEntryDecorator
 import domilopment.apkextractor.ui.navigation.sceneStrategies.BottomSheetSceneStrategy
 import domilopment.apkextractor.ui.settings.about.SettingsAboutScreen
@@ -113,7 +114,9 @@ fun ApkExtractorNavDisplay(
             )
         }
 
-        entry<Route.SettingsHome> {
+        entry<Route.SettingsHome>(
+            clazzContentKey = { key -> key.toContentKey() },
+        ) {
             val model = hiltViewModel<SettingsScreenViewModel>()
             SettingsHomeScreen(
                 model = model,
@@ -135,7 +138,9 @@ fun ApkExtractorNavDisplay(
                 Route.SettingsHome.toContentKey()
             )
         ) {
-            val model = hiltViewModel<SettingsScreenViewModel>()
+            val model = hiltViewModel<SettingsScreenViewModel>(
+                viewModelStoreOwner = LocalSharedViewModelStoreOwner.current
+            )
             SettingsSaveFileScreen(
                 model = model, onBackClicked = { navigator.goBack() })
         }
@@ -145,7 +150,9 @@ fun ApkExtractorNavDisplay(
                 Route.SettingsHome.toContentKey()
             )
         ) {
-            val model = hiltViewModel<SettingsScreenViewModel>()
+            val model = hiltViewModel<SettingsScreenViewModel>(
+                viewModelStoreOwner = LocalSharedViewModelStoreOwner.current
+            )
             SettingsAutoBackupScreen(
                 model = model, showSnackbar = showSnackbar, onBackClicked = { navigator.goBack() })
         }
@@ -155,7 +162,9 @@ fun ApkExtractorNavDisplay(
                 Route.SettingsHome.toContentKey()
             )
         ) {
-            val model = hiltViewModel<SettingsScreenViewModel>()
+            val model = hiltViewModel<SettingsScreenViewModel>(
+                viewModelStoreOwner = LocalSharedViewModelStoreOwner.current
+            )
             SettingsSwipeActionScreen(
                 model = model, onBackClicked = { navigator.goBack() })
         }
@@ -165,7 +174,9 @@ fun ApkExtractorNavDisplay(
                 Route.SettingsHome.toContentKey()
             )
         ) {
-            val model = hiltViewModel<SettingsScreenViewModel>()
+            val model = hiltViewModel<SettingsScreenViewModel>(
+                viewModelStoreOwner = LocalSharedViewModelStoreOwner.current
+            )
             SettingsDataCollectionScreen(
                 model = model, onBackClicked = { navigator.goBack() })
         }
