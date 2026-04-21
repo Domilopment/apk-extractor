@@ -253,12 +253,20 @@ class AppListViewModel @Inject constructor(
         }
     }
 
-    fun saveSingleApp(app: ApplicationModel) {
+
+    /**
+     * save single app to filesystem
+     * @param app model of apk user wants to save
+     */
+    private fun saveSingleApp(app: ApplicationModel) {
         runningTask = viewModelScope.launch {
             saveApps(listOf(app))
         }
     }
 
+    /**
+     * save multiple apps to filesystem
+     */
     fun saveSelectedApps() {
         runningTask = viewModelScope.launch {
             saveApps(mainFragmentState.value.appList.filter { it.isChecked })
@@ -299,12 +307,19 @@ class AppListViewModel @Inject constructor(
         }
     }
 
-    fun createShareUrisForSingleApp(app: ApplicationModel) {
+    /**
+     * create temp files for app user want to save and get share Uri for it
+     * @param app model of apk user wants to save
+     */
+    private fun createShareUrisForSingleApp(app: ApplicationModel) {
         runningTask = viewModelScope.launch {
             createShareUrisForApps(listOf(app))
         }
     }
 
+    /**
+     * create temp files for selected apps user want to save and get share Uri for them
+     */
     fun createShareUrisForSelectedApps() {
         runningTask = viewModelScope.launch {
             createShareUrisForApps(mainFragmentState.value.appList.filter { it.isChecked })

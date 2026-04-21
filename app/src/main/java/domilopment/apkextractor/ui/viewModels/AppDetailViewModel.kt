@@ -95,7 +95,7 @@ class AppDetailViewModel @AssistedInject constructor(
         viewModelScope.launch {
             when (intent) {
                 is ApkActionIntent.Save -> save(intent.app)
-                is ApkActionIntent.Share -> createShareUrisForApps(intent.app)
+                is ApkActionIntent.Share -> createShareUrisForApp(intent.app)
                 is ApkActionIntent.Icon -> saveAppIcon(intent.app, intent.showSnackbar)
                 is ApkActionIntent.Settings -> openSettings(intent.app)
                 is ApkActionIntent.Open -> openApp(intent.app)
@@ -108,61 +108,65 @@ class AppDetailViewModel @AssistedInject constructor(
 
     /**
      * save multiple apps to filesystem
-     * @param list of apps user wants to save
+     * @param app model of apk user wants to save
      */
-    private suspend fun save(app: ApplicationModel) = coroutineScope {
-        saveApp.invoke(listOf(app)).collect {
-            when (it) {
-                ExtractionResult.None -> resetProgress()
-                is ExtractionResult.Init -> _progressDialogState.update { state ->
-                    ProgressDialogUiState(
-                        title = UiText(R.string.progress_dialog_title_save), tasks = it.tasks
-                    )
-                }
+    private fun save(app: ApplicationModel) {
+        runningTask = viewModelScope.launch {
+            saveApp.invoke(listOf(app)).collect {
+                when (it) {
+                    ExtractionResult.None -> resetProgress()
+                    is ExtractionResult.Init -> _progressDialogState.update { state ->
+                        ProgressDialogUiState(
+                            title = UiText(R.string.progress_dialog_title_save), tasks = it.tasks
+                        )
+                    }
 
-                is ExtractionResult.Progress -> _progressDialogState.update { state ->
-                    state?.copy(
-                        process = it.app.appPackageName,
-                        progress = state.progress + it.progressIncrement
-                    )
-                }
+                    is ExtractionResult.Progress -> _progressDialogState.update { state ->
+                        state?.copy(
+                            process = it.app.appPackageName,
+                            progress = state.progress + it.progressIncrement
+                        )
+                    }
 
-                is ExtractionResult.SuccessMultiple, is ExtractionResult.SuccessSingle, is ExtractionResult.Failure -> {
-                    _extractionResult.emit(it)
-                    resetProgress()
-                }
+                    is ExtractionResult.SuccessMultiple, is ExtractionResult.SuccessSingle, is ExtractionResult.Failure -> {
+                        _extractionResult.emit(it)
+                        resetProgress()
+                    }
 
-                ExtractionResult.NoSaveDir -> {
-                    _extractionResult.emit(it)
-                    resetProgress()
+                    ExtractionResult.NoSaveDir -> {
+                        _extractionResult.emit(it)
+                        resetProgress()
+                    }
                 }
             }
         }
     }
 
     /**
-     * create temp files for apps user want to save and get share Uris for them
-     * @param list list of all apps
+     * create temp files for app user want to save and get share Uri for it
+     * @param app model of app
      */
-    private suspend fun createShareUrisForApps(app: ApplicationModel) = coroutineScope {
-        shareApps.invoke(listOf(app)).collect {
-            when (it) {
-                ShareResult.None -> resetProgress()
-                is ShareResult.Init -> _progressDialogState.update { state ->
-                    ProgressDialogUiState(
-                        title = UiText(R.string.progress_dialog_title_share), tasks = it.tasks
-                    )
-                }
+    private fun createShareUrisForApp(app: ApplicationModel) {
+        runningTask = viewModelScope.launch {
+            shareApps.invoke(listOf(app)).collect {
+                when (it) {
+                    ShareResult.None -> resetProgress()
+                    is ShareResult.Init -> _progressDialogState.update { state ->
+                        ProgressDialogUiState(
+                            title = UiText(R.string.progress_dialog_title_share), tasks = it.tasks
+                        )
+                    }
 
-                ShareResult.Progress -> _progressDialogState.update { state ->
-                    state?.copy(
-                        progress = state.progress + 1f
-                    )
-                }
+                    ShareResult.Progress -> _progressDialogState.update { state ->
+                        state?.copy(
+                            progress = state.progress + 1f
+                        )
+                    }
 
-                is ShareResult.SuccessSingle, is ShareResult.SuccessMultiple -> {
-                    _shareResult.emit(it)
-                    resetProgress()
+                    is ShareResult.SuccessSingle, is ShareResult.SuccessMultiple -> {
+                        _shareResult.emit(it)
+                        resetProgress()
+                    }
                 }
             }
         }
