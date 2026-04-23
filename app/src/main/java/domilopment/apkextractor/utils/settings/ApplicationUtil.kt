@@ -18,6 +18,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -159,6 +160,7 @@ object ApplicationUtil {
         context: Context, from: String, to: Uri, fileName: String
     ): SaveApkResult = withContext(Dispatchers.IO) {
         return@withContext try {
+            ensureActive()
             val extractedApk = FileUtil.copy(
                 context,
                 from,
@@ -188,6 +190,7 @@ object ApplicationUtil {
     ): SaveApkResult = withContext(Dispatchers.IO) {
         var extractedApk: Uri? = null
         return@withContext try {
+            ensureActive()
             extractedApk = FileUtil.ZipUtil.createPersistentZip(
                 context, to, fileName, mimeType, suffix
             )!!
@@ -210,13 +213,15 @@ object ApplicationUtil {
             }
             SaveApkResult.Failure(e.message)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.tag("ApplicationUtil.saveApkBundle: generic error").e(e)
             SaveApkResult.Failure(e.message)
         }
     }
 
     suspend fun shareApk(context: Context, app: ApplicationModel.ApplicationDetailModel, appName: String): Uri =
         withContext(Dispatchers.IO) {
+            ensureActive()
+
             val outFile = FileUtil.createTempFile(context, appName, FileUtil.FileInfo.APK.suffix)
 
             FileInputStream(app.appSourceDirectory).use { input ->
@@ -238,9 +243,11 @@ object ApplicationUtil {
             app.appSourceDirectory, *(app.appSplitSourceDirectories ?: emptyArray())
         )
 
+        ensureActive()
         val outFile = FileUtil.ZipUtil.createTempZip(context, appName, suffix)
         FileUtil.ZipUtil.openZipOutputStream(outFile).use { output ->
             for (file in splits) {
+                ensureActive()
                 FileUtil.ZipUtil.writeToZip(output, file)
                 callback(file)
             }

@@ -14,6 +14,7 @@ import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
@@ -62,6 +63,7 @@ class SaveAppsUseCaseImpl @Inject constructor(
         trySend(ExtractionResult.Init(taskSize))
 
         tasks.forEach { app ->
+            ensureActive()
             application = app
 
             val splits = mutableListOf(app.appSourceDirectory)

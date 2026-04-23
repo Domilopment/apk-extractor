@@ -8,6 +8,7 @@ import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
@@ -42,7 +43,7 @@ class ShareAppsUseCaseImpl @Inject constructor(
         trySend(ShareResult.Init(taskSize))
 
         tasks.forEach { app ->
-
+            ensureActive()
             val splits = arrayListOf(app.appSourceDirectory)
             if (!app.appSplitSourceDirectories.isNullOrEmpty() && backupMode) splits.addAll(
                 app.appSplitSourceDirectories

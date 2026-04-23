@@ -7,8 +7,6 @@ import androidx.core.content.FileProvider
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import domilopment.apkextractor.BuildConfig
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.*
 import java.util.zip.ZipEntry
@@ -68,8 +66,8 @@ object FileUtil {
      * @return
      * If document was deleted or not
      */
-    suspend fun deleteDocument(context: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
-        return@withContext try {
+    fun deleteDocument(context: Context, uri: Uri): Boolean {
+        return try {
             DocumentsContract.deleteDocument(context.contentResolver, uri)
         } catch (_: FileNotFoundException) {
             // File is already gone, consider it successfully deleted
