@@ -21,7 +21,7 @@ import domilopment.apkextractor.ui.DeviceTypeUtils
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ApkExtractorNavigation(
-    navigationItems: Set<TopLevelRoute<out Route>>,
+    navigationItems: Map<Route, TopLevelNavItem>,
     navigationState: NavigationState<Route>,
     navigator: Navigator<Route>,
     appBarState: AppBarState,
@@ -43,7 +43,7 @@ fun ApkExtractorNavigation(
 
 @Composable
 fun ApkExtractorNavigationSuiteScaffold(
-    navigationItems: Set<TopLevelRoute<out Route>>,
+    navigationItems: Map<Route, TopLevelNavItem>,
     navigationState: NavigationState<Route>,
     navigator: Navigator<Route>,
     modifier: Modifier = Modifier,
@@ -56,21 +56,21 @@ fun ApkExtractorNavigationSuiteScaffold(
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
-            navigationItems.forEach { navigationItem ->
+            navigationItems.forEach { (key, value) ->
                 item(
-                    selected = navigationItem.route == navigationState.topLevelRoute,
+                    selected = key == navigationState.topLevelRoute,
                     onClick = {
                         onNavigate()
-                        navigator.navigate(navigationItem.route)
+                        navigator.navigate(key)
                     },
                     icon = {
                         Icon(
-                            imageVector = navigationItem.icon, contentDescription = null
+                            imageVector = value.icon, contentDescription = null
                         )
                     },
                     label = {
                         Text(
-                            text = stringResource(id = navigationItem.nameResId),
+                            text = stringResource(id = value.nameResId),
                             textAlign = TextAlign.Center,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 2

@@ -68,7 +68,7 @@ import domilopment.apkextractor.ui.navigation.ApkExtractorNavDisplay
 import domilopment.apkextractor.ui.navigation.ApkExtractorNavigation
 import domilopment.apkextractor.ui.navigation.Navigator
 import domilopment.apkextractor.ui.navigation.Route
-import domilopment.apkextractor.ui.navigation.TopLevelRoute
+import domilopment.apkextractor.ui.navigation.TopLevelNavItem
 import domilopment.apkextractor.ui.navigation.rememberNavigationState
 import domilopment.apkextractor.ui.theme.APKExtractorTheme
 import domilopment.apkextractor.ui.viewModels.MainViewModel
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
             val firstLaunch by model.firstLaunch.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
             val navigationState = rememberNavigationState(
                 startRoute = Route.AppList,
-                topLevelRoutes = TopLevelRoute.items.map { it.route }.toSet()
+                topLevelRoutes = TopLevelNavItem.TOP_LEVEL_ROUTES.keys
             )
 
             val navigator = remember { Navigator(navigationState) }
@@ -186,7 +186,7 @@ class MainActivity : AppCompatActivity() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         ApkExtractorNavigation(
-                            navigationItems = TopLevelRoute.items,
+                            navigationItems = TopLevelNavItem.TOP_LEVEL_ROUTES,
                             appBarState = appBarState,
                             uiState = mainScreenState.uiState,
                             navigationState = navigationState,
