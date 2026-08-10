@@ -1,5 +1,4 @@
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -35,7 +34,7 @@ android {
     defaultConfig {
         applicationId = "domilopment.apkextractor"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 99
         versionName = "2.7.0-${VersionUtils.buildDate()}"
 
