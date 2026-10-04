@@ -15,7 +15,8 @@ enum class Languages(val languageTag: String, val locale: Locale) {
     SYSTEM("default", Locale.ROOT),
     ENGLISH("en", Locale.ENGLISH),
     GERMANY("de-DE", Locale.GERMANY),
-    TURKISH("tr", Locale.forLanguageTag("tr"));
+    TURKISH("tr", Locale.forLanguageTag("tr")),
+    CHINESE_SIMPLIFIED("zh-CN", Locale.forLanguageTag("zh-CN"));
 
     companion object {
         /**
