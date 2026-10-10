@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,14 +66,8 @@ fun ApkListItem(
             overflow = TextOverflow.Clip,
             maxLines = 1,
         )
-        ListItem(headlineContent = {
-            if (appPackageName != null) Text(
-                text = appPackageName,
-                fontSize = 12.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
+        ListItem(
+            leadingContent = { ApkListItemAvatar(appIcon = appIcon) },
             overlineContent = {
                 Text(
                     text = appName ?: apkFileName,
@@ -89,18 +84,25 @@ fun ApkListItem(
                     overflow = TextOverflow.Ellipsis
                 )
             },
-            leadingContent = { ApkListItemAvatar(appIcon = appIcon) },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-        )
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        ) {
+            if (appPackageName != null) Text(
+                text = appPackageName,
+                fontSize = 12.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
 @Composable
 private fun ApkListItemAvatar(appIcon: ImageBitmap?) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val icon = remember(appIcon) {
         appIcon ?: ResourcesCompat.getDrawable(
-            context.resources, android.R.drawable.sym_def_app_icon, context.theme
+            resources, android.R.drawable.sym_def_app_icon, context.theme
         )!!.toBitmap().asImageBitmap()
     }
     Image(
@@ -131,7 +133,8 @@ private fun ApkListItemPreview() {
     }
     MaterialTheme {
         Column {
-            ApkListItem(AnnotatedString(apk.fileName),
+            ApkListItem(
+                AnnotatedString(apk.fileName),
                 appName = AnnotatedString(apk.appName.toString()),
                 appPackageName = AnnotatedString(apk.appPackageName.toString()),
                 appIcon = apk.appIcon,

@@ -3,7 +3,8 @@ package domilopment.apkextractor.ui.navigation.sceneStrategies
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -34,7 +35,10 @@ internal data class BottomSheetScene<T : Any>(
         val lifecycleOwner = rememberLifecycleOwner()
         ModalBottomSheet(
             onDismissRequest = onBack,
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            sheetState = rememberBottomSheetState(
+                initialValue = SheetValue.Hidden,
+                enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
+            ),
             properties = modalBottomSheetProperties,
         ) {
             CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {

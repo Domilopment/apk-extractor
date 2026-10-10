@@ -77,7 +77,8 @@ fun MultiSelectListPreference(
         mutableStateListOf(*state.toTypedArray())
     }
 
-    DialogPreference(icon = icon,
+    DialogPreference(
+        icon = icon,
         enabled = enabled,
         iconDesc = iconDesc,
         name = name,
@@ -92,7 +93,7 @@ fun MultiSelectListPreference(
         dialogContent = {
             LazyColumn(modifier = Modifier.clip(RoundedCornerShape(8.dp))) {
                 items(items = entriesMap, key = { it.second }) {
-                    ListItem(headlineContent = { Text(text = it.first) },
+                    ListItem(
                         modifier = Modifier.clickable {
                             if (value.contains(it.second)) value.remove(it.second) else value.add(
                                 it.second
@@ -103,8 +104,10 @@ fun MultiSelectListPreference(
                                 checked = value.contains(it.second), onCheckedChange = null
                             )
                         },
-                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest)
-                    )
+                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
+                    ) {
+                        Text(text = it.first)
+                    }
                 }
             }
         },

@@ -59,15 +59,17 @@ fun ApkExtractorNavigationSuiteScaffold(
     NavigationSuiteScaffold(
         navigationItems = {
             navigationItems.forEach { (key, value) ->
+                val selected = key == navigationState.topLevelRoute
                 NavigationSuiteItem(
-                    selected = key == navigationState.topLevelRoute,
+                    selected = selected,
                     onClick = {
                         onNavigate()
                         navigator.navigate(key)
                     },
                     icon = {
                         Icon(
-                            imageVector = value.icon, contentDescription = null
+                            imageVector = if (selected) value.selectedIcon else value.unselectedIcon,
+                            contentDescription = null
                         )
                     },
                     label = {
@@ -77,7 +79,8 @@ fun ApkExtractorNavigationSuiteScaffold(
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 2
                         )
-                    })
+                    },
+                )
             }
         },
         modifier = modifier,

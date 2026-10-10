@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -55,7 +54,6 @@ import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.ui.attrColorResource
 import domilopment.apkextractor.utils.Utils
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppListItem(
     modifier: Modifier = Modifier,
@@ -74,40 +72,11 @@ fun AppListItem(
         label = "AppListItemContainerColor"
     )
     ListItem(
-        headlineContent = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = appName, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = stringResource(id = R.string.app_list_item_size, apkSize),
-                    modifier = Modifier
-                        .align(Alignment.Bottom)
-                        .padding(vertical = 4.dp),
-                    fontSize = 8.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    lineHeight = 12.sp
-                )
-            }
-        },
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .combinedClickable(
-                onClick = dropUnlessResumed { onClick() },
-                onLongClick = onLongClick
+                onClick = dropUnlessResumed { onClick() }, onLongClick = onLongClick
             ),
-        supportingContent = {
-            Text(
-                text = appPackageName,
-                fontSize = 12.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
         leadingContent = {
             AppListItemAvatar(
                 appIcon = appIcon, isChecked = isChecked, containerColor = containerColor
@@ -122,9 +91,34 @@ fun AppListItem(
                 )
             }
         },
-        colors = ListItemDefaults.colors(containerColor = containerColor)
-    )
-
+        supportingContent = {
+            Text(
+                text = appPackageName,
+                fontSize = 12.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        colors = ListItemDefaults.colors(containerColor = containerColor),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = appName, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = stringResource(id = R.string.app_list_item_size, apkSize),
+                modifier = Modifier
+                    .align(Alignment.Bottom)
+                    .padding(vertical = 4.dp),
+                fontSize = 8.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                lineHeight = 12.sp
+            )
+        }
+    }
 }
 
 @Composable

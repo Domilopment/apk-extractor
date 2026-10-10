@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -63,14 +64,16 @@ private fun PullToRefreshBoxPreview() {
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = {
         scope.launch {
             isRefreshing = true
-            delay(1000)
+            delay(1000.milliseconds)
             list.addAll(list.size + 1..list.size + 10)
             isRefreshing = false
         }
     }) {
         LazyColumn {
             items(list) {
-                ListItem(headlineContent = { Text(text = "Item $it") })
+                ListItem {
+                    Text(text = "Item $it")
+                }
             }
         }
     }

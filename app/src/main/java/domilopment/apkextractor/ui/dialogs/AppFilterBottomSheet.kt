@@ -33,18 +33,18 @@ import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.ToggleButtonShapes
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -266,7 +266,6 @@ private fun AppFilterApps(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun AppFilterSort(
     sortOrder: Boolean,
@@ -368,7 +367,6 @@ private fun AppFilterSort(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun AppFilterAppType(
     updatedSystemApps: Boolean,
@@ -483,7 +481,12 @@ private fun AppFilterAppType(
 @Preview
 @Composable
 private fun AppFilterBottomSheetPreview() {
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val state = rememberBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        enabledValues = setOf(
+            SheetValue.Hidden, SheetValue.Expanded
+        ),
+    )
     AppFilterBottomSheet(
         updatedSystemApps = false,
         systemApps = false,

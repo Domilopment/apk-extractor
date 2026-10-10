@@ -5,7 +5,6 @@ import android.app.Application
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.content.res.Configuration
 import android.database.CursorWindow
 import dagger.hilt.android.HiltAndroidApp
@@ -46,8 +45,7 @@ class ApkExtractorApplication : Application() {
         }
 
         // Open Channel with Notification Service
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
 
         // Increase the CursorWindow size to 100 MB

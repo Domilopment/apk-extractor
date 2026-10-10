@@ -33,7 +33,6 @@ fun ApkSortMenu(
         Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
             ApkSortOptions.entries.forEach {
                 ListItem(
-                    headlineContent = { Text(text = stringResource(id = it.displayNameRes)) },
                     modifier = Modifier.clickable {
                         sort(it)
                     },
@@ -42,8 +41,10 @@ fun ApkSortMenu(
                             selected = sortOrder == it, onClick = null
                         )
                     },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                )
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                ) {
+                    Text(text = stringResource(id = it.displayNameRes))
+                }
             }
         }
     }

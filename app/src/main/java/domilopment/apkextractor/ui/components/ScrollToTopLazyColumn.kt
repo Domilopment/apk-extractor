@@ -116,7 +116,9 @@ private fun ScrollToTopLazyColumnPreview() {
     val list = remember { (1..20).toList() }
     ScrollToTopLazyColumn {
         items(list) {
-            ListItem(headlineContent = { Text(text = "Item $it") })
+            ListItem {
+                Text(text = "Item $it")
+            }
         }
     }
 }

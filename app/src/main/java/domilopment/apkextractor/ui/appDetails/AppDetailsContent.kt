@@ -3,7 +3,6 @@ package domilopment.apkextractor.ui.appDetails
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
 import android.os.Build
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.horizontalScroll
@@ -143,7 +142,8 @@ fun AppDetailsContent(
             },
             onActionUninstall = {
                 onActionIntent(ApkActionIntent.Uninstall(app))
-            })
+            },
+        )
     }
 }
 
@@ -336,7 +336,6 @@ private fun AppSheetInfo(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AppSheetHeader(
     appName: String,
@@ -345,7 +344,39 @@ private fun AppSheetHeader(
     isFavorite: Boolean,
     onFavoriteChanged: (Boolean) -> Unit
 ) {
-    ListItem(headlineContent = {
+    ListItem(
+        leadingContent = {
+            Image(
+                painter = rememberDrawablePainter(drawable = appIcon),
+                contentDescription = stringResource(id = R.string.list_item_Image_description),
+                modifier = Modifier.width(56.dp)
+            )
+        },
+        trailingContent = {
+            IconToggleButton(
+                checked = isFavorite,
+                onCheckedChange = onFavoriteChanged,
+                modifier = Modifier.width(56.dp)
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                    contentDescription = null,
+                )
+            }
+        },
+        supportingContent = {
+            Text(
+                text = packageName,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .basicMarquee(),
+                textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+    ) {
         Text(
             text = appName,
             modifier = Modifier.fillMaxWidth(),
@@ -353,32 +384,5 @@ private fun AppSheetHeader(
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
         )
-    }, supportingContent = {
-        Text(
-            text = packageName,
-            modifier = Modifier
-                .fillMaxWidth()
-                .basicMarquee(),
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1
-        )
-    }, leadingContent = {
-        Image(
-            painter = rememberDrawablePainter(drawable = appIcon),
-            contentDescription = stringResource(id = R.string.list_item_Image_description),
-            modifier = Modifier.width(56.dp)
-        )
-    }, trailingContent = {
-        IconToggleButton(
-            checked = isFavorite,
-            onCheckedChange = onFavoriteChanged,
-            modifier = Modifier.width(56.dp)
-        ) {
-            Icon(
-                imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
-                contentDescription = null,
-            )
-        }
-    }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
+    }
 }

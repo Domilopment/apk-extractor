@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularWavyProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -253,7 +252,6 @@ fun ApkSheetInfo(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ApkSheetHeader(
     apkName: CharSequence?,
@@ -263,7 +261,43 @@ fun ApkSheetHeader(
     isRefreshing: Boolean,
     onRefresh: () -> Unit
 ) {
-    ListItem(headlineContent = {
+    ListItem(
+        leadingContent = {
+            val context = LocalContext.current
+            val resources = LocalResources.current
+
+            Image(
+                bitmap = appIcon ?: ResourcesCompat.getDrawable(
+                    resources, android.R.drawable.sym_def_app_icon, context.theme
+                )!!.toBitmap().asImageBitmap(),
+                contentDescription = stringResource(id = R.string.list_item_Image_description),
+                modifier = Modifier.width(56.dp)
+            )
+        },
+        trailingContent = {
+            Box(modifier = Modifier.width(56.dp), contentAlignment = Alignment.Center) {
+                if (isRefreshing) CircularWavyProgressIndicator(
+                    color = MaterialTheme.colorScheme.secondary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                ) else FilledTonalIconButton(onClick = onRefresh) {
+                    Icon(imageVector = Icons.Default.Refresh, contentDescription = null)
+                }
+            }
+        },
+        supportingContent = {
+            if (packageName != null) Text(
+                text = packageName,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .basicMarquee(),
+                fontSize = 12.sp,
+                maxLines = 1,
+                textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+    ) {
         Text(
             text = apkName?.toString() ?: fileName,
             modifier = Modifier.fillMaxWidth(),
@@ -272,36 +306,5 @@ fun ApkSheetHeader(
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis
         )
-    }, supportingContent = {
-        if (packageName != null) Text(
-            text = packageName,
-            modifier = Modifier
-                .fillMaxWidth()
-                .basicMarquee(),
-            fontSize = 12.sp,
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis
-        )
-    }, leadingContent = {
-        val context = LocalContext.current
-        val resources = LocalResources.current
-
-        Image(
-            bitmap = appIcon ?: ResourcesCompat.getDrawable(
-                resources, android.R.drawable.sym_def_app_icon, context.theme
-            )!!.toBitmap().asImageBitmap(),
-            contentDescription = stringResource(id = R.string.list_item_Image_description),
-            modifier = Modifier.width(56.dp)
-        )
-    }, trailingContent = {
-        Box(modifier = Modifier.width(56.dp), contentAlignment = Alignment.Center) {
-            if (isRefreshing) CircularWavyProgressIndicator(
-                color = MaterialTheme.colorScheme.secondary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-            ) else FilledTonalIconButton(onClick = onRefresh) {
-                Icon(imageVector = Icons.Default.Refresh, contentDescription = null)
-            }
-        }
-    }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
+    }
 }

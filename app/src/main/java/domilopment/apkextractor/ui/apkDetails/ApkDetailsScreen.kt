@@ -4,14 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.components.DetailsSkeleton
@@ -20,7 +18,6 @@ import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import kotlinx.coroutines.runBlocking
 
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ApkDetailsScreen(
     model: ApkDetailViewModel,
@@ -44,6 +41,7 @@ fun ApkDetailsScreen(
                         context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                             type = FileUtil.FileInfo.APK.mimeType
                             putExtra(Intent.EXTRA_STREAM, apk.fileUri)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         }, resources.getString(R.string.share_intent_title)))
                     },
                     onActionInstall = {

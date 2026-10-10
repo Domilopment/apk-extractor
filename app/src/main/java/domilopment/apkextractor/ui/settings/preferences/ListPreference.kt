@@ -69,7 +69,8 @@ inline fun <reified T> ListPreference(
 
     val dialog = rememberDialogPreferenceState()
 
-    DialogPreference(icon = icon,
+    DialogPreference(
+        icon = icon,
         iconDesc = iconDesc,
         name = name,
         summary = summary,
@@ -80,7 +81,7 @@ inline fun <reified T> ListPreference(
         dialogContent = {
             LazyColumn(modifier = Modifier.clip(RoundedCornerShape(8.dp))) {
                 items(items = entriesMap, key = { it.second }) {
-                    ListItem(headlineContent = { Text(text = it.first) },
+                    ListItem(
                         modifier = Modifier.clickable {
                             val newValue = when (T::class) {
                                 Int::class -> it.second.toInt() as T
@@ -95,8 +96,10 @@ inline fun <reified T> ListPreference(
                                 selected = value.toString() == it.second, onClick = null
                             )
                         },
-                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest)
-                    )
+                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
+                    ) {
+                        Text(text = it.first)
+                    }
                 }
             }
         })

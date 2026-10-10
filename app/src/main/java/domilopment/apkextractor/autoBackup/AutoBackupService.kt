@@ -104,7 +104,7 @@ class AutoBackupService : Service() {
 
         // System Alarm Manager
         val alarmService: AlarmManager =
-            applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            applicationContext.getSystemService(ALARM_SERVICE) as AlarmManager
         // Set Alarm to be executed
         alarmService.setAndAllowWhileIdle(
             AlarmManager.ELAPSED_REALTIME_WAKEUP,

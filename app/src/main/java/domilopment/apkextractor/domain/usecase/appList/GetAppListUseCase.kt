@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 interface GetAppListUseCase {
     operator fun invoke(searchQuery: Flow<PackageName?>): Flow<PersistentList<ApplicationModel.ApplicationListModel>>
@@ -67,7 +68,7 @@ class GetAppListUseCaseImpl @Inject constructor(
                 ApplicationUtil.sortAppData(appList, sortMode.ordinal, sortFavorites, sortAsc)
             }
         }.let { appList ->
-            searchQuery.debounce(500L).combine(appList) { searchQuery, appList ->
+            searchQuery.debounce(500.milliseconds).combine(appList) { searchQuery, appList ->
                 val searchString = searchQuery?.trim()
 
                 if (searchString.isNullOrBlank()) {

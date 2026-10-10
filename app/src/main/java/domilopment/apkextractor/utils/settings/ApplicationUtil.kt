@@ -28,7 +28,10 @@ import java.util.Date
 object ApplicationUtil {
     /**
      * Gets an app and Creates a Name from its Data
-     * @param app the resource App
+     * @param packageManager the resource Manager
+     * @param packageInfo the App resource
+     * @param set the Set of Info to use in name
+     * @param spacer the spacer to use between the name parts
      * @return String of the name after the APK should be named
      */
     fun appName(
@@ -82,10 +85,10 @@ object ApplicationUtil {
     ): List<AppModel> {
         val mData: MutableList<AppModel> = mutableListOf()
         if (selectUpdatedSystemApps) {
-            mData.addAll(applications.filter { it is AppModel.UpdatedSystemApps })
-            if (selectSystemApps) mData.addAll(applications.filter { it is AppModel.SystemApp })
+            mData.addAll(applications.filterIsInstance<AppModel.UpdatedSystemApps>())
+            if (selectSystemApps) mData.addAll(applications.filterIsInstance<AppModel.SystemApp>())
         }
-        if (selectUserApps) mData.addAll(applications.filter { it is AppModel.UserApp })
+        if (selectUserApps) mData.addAll(applications.filterIsInstance<AppModel.UserApp>())
         return mData
     }
 

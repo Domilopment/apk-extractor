@@ -8,15 +8,9 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.isImeVisible
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
@@ -32,7 +26,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 
 /**
@@ -77,12 +70,6 @@ fun PaddingValues.add(paddingValues: PaddingValues): PaddingValues {
     val bottom = this.calculateBottomPadding() + paddingValues.calculateBottomPadding()
     return PaddingValues(start = start, top = top, end = end, bottom = bottom)
 }
-
-@OptIn(ExperimentalLayoutApi::class)
-val WindowInsets.Companion.tabletLazyListInsets: WindowInsets
-    @Composable get() = if (DeviceTypeUtils.isTabletBars && !WindowInsets.isImeVisible) WindowInsets.navigationBars.only(
-        WindowInsetsSides.Bottom
-    ) else WindowInsets(left = 0.dp, top = 0.dp, right = 0.dp, bottom = 0.dp)
 
 fun Modifier.shimmer(): Modifier = composed {
     var size by remember {

@@ -118,38 +118,41 @@ fun AnalyticsDialog(
                         )
                 ) {
                     ListItem(
-                        headlineContent = { Text(text = stringResource(id = R.string.data_collection_analytics)) },
                         modifier = Modifier.clickable { analytics = !analytics },
-                        supportingContent = {
-                            Text(text = stringResource(id = R.string.data_collection_analytics_summary))
-                        },
                         trailingContent = {
                             Switch(checked = analytics, onCheckedChange = { analytics = it })
                         },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                    )
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(id = R.string.data_collection_crashlytics)) },
-                        modifier = Modifier.clickable { crashlytics = !crashlytics },
                         supportingContent = {
-                            Text(text = stringResource(id = R.string.data_collection_crashlytics_summary))
+                            Text(text = stringResource(id = R.string.data_collection_analytics_summary))
                         },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    ) {
+                        Text(text = stringResource(id = R.string.data_collection_analytics))
+                    }
+                    ListItem(
+                        modifier = Modifier.clickable { crashlytics = !crashlytics },
                         trailingContent = {
                             Switch(checked = crashlytics, onCheckedChange = { crashlytics = it })
                         },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                    )
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(id = R.string.data_collection_perf)) },
-                        modifier = Modifier.clickable { performance = !performance },
                         supportingContent = {
-                            Text(text = stringResource(id = R.string.data_collection_perf_summary))
+                            Text(text = stringResource(id = R.string.data_collection_crashlytics_summary))
                         },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    ) {
+                        Text(text = stringResource(id = R.string.data_collection_crashlytics))
+                    }
+                    ListItem(
+                        modifier = Modifier.clickable { performance = !performance },
                         trailingContent = {
                             Switch(checked = performance, onCheckedChange = { performance = it })
                         },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                    )
+                        supportingContent = {
+                            Text(text = stringResource(id = R.string.data_collection_perf_summary))
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    ) {
+                        Text(text = stringResource(id = R.string.data_collection_perf))
+                    }
                 }
 
                 val privacyPolicy = stringResource(id = R.string.privacy_policy_title)

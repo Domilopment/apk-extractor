@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun DoubleBackPressDialog(
@@ -28,10 +29,10 @@ fun DoubleBackPressDialog(
     backPressNotice: String,
     modifier: Modifier = Modifier,
     pressDelay: Long = 2500L,
-    dismissButton: @Composable() (() -> Unit)? = null,
-    icon: @Composable() (() -> Unit)? = null,
-    title: @Composable() (() -> Unit)? = null,
-    text: @Composable() (() -> Unit)? = null,
+    dismissButton: @Composable (() -> Unit)? = null,
+    icon: @Composable (() -> Unit)? = null,
+    title: @Composable (() -> Unit)? = null,
+    text: @Composable (() -> Unit)? = null,
     shape: Shape = AlertDialogDefaults.shape,
     containerColor: Color = AlertDialogDefaults.containerColor,
     iconContentColor: Color = AlertDialogDefaults.iconContentColor,
@@ -55,7 +56,7 @@ fun DoubleBackPressDialog(
                 back = true
                 Toast.makeText(context, backPressNotice, Toast.LENGTH_SHORT).show()
                 scope.launch {
-                    delay(pressDelay)
+                    delay(pressDelay.milliseconds)
                     Timber.tag("DoubleBackPressDialog").d("reset")
                     back = false
                 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun DoubleClickBackHandler(
@@ -31,7 +32,7 @@ fun DoubleClickBackHandler(
             back = true
             Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
             scope.launch {
-                delay(pressDelay) // Is set to Toast.LENGTH_SHORT as default
+                delay(pressDelay.milliseconds) // Is set to Toast.LENGTH_SHORT as default
                 Timber.tag("DoubleClickBackHandler").d("reset")
                 back = false
             }

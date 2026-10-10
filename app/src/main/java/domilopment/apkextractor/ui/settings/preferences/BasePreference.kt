@@ -39,13 +39,16 @@ fun BasePreference(
     ) {
         Column {
             ListItem(
-                headlineContent = name, supportingContent = summary, leadingContent = {
+                leadingContent = {
                     if (icon != null) Icon(
                         imageVector = icon,
                         contentDescription = iconDesc,
                         modifier = Modifier.size(24.dp)
                     ) else Spacer(modifier = Modifier.size(24.dp))
-                }, trailingContent = trailingContent, colors = ListItemDefaults.colors(
+                },
+                trailingContent = trailingContent,
+                supportingContent = summary,
+                colors = ListItemDefaults.colors(
                     containerColor = Color.Transparent,
                     headlineColor = if (enabled) MaterialTheme.colorScheme.surfaceTint else MaterialTheme.colorScheme.surfaceTint.copy(
                         alpha = 0.38f
@@ -59,7 +62,8 @@ fun BasePreference(
                     trailingIconColor = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
                         alpha = 0.38f
                     )
-                )
+                ),
+                content = name,
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.onSurfaceVariant)
         }

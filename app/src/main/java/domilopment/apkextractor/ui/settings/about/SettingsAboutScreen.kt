@@ -6,7 +6,6 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.oss.licenses.v2.OssLicensesMenuActivity
 import domilopment.apkextractor.utils.Constants
 import kotlinx.coroutines.flow.launchIn
@@ -15,7 +14,6 @@ import androidx.core.net.toUri
 import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.ui.navigation.Route
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingsAboutScreen(
     onBackClicked: () -> Unit, context: Context = LocalContext.current

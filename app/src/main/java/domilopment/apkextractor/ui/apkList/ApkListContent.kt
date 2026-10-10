@@ -16,6 +16,7 @@ import domilopment.apkextractor.ui.components.PullToRefreshBox
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.core.net.toUri
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun ApkListContent(
@@ -114,7 +115,7 @@ private fun ApkListScreenPreview() {
                 onRefresh = {
                     refreshScope.launch {
                         refreshing = true
-                        delay(1500)
+                        delay(1500.milliseconds)
                         if (!apks.contains(apkToAdd)) apks.add(apkToAdd)
                         refreshing = false
                     }

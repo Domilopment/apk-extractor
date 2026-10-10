@@ -169,11 +169,12 @@ fun APKNamePreference(
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
                     .pointerInput(Unit) {
-                        detectDragGesturesAfterLongPress(onDrag = { change, offset ->
-                            change.consume()
-                            itemListDragAndDropState.onDrag(offset)
-                            handleOverscrollJob(overscrollJob, scope, itemListDragAndDropState)
-                        },
+                        detectDragGesturesAfterLongPress(
+                            onDrag = { change, offset ->
+                                change.consume()
+                                itemListDragAndDropState.onDrag(offset)
+                                handleOverscrollJob(overscrollJob, scope, itemListDragAndDropState)
+                            },
                             onDragStart = { offset ->
                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 itemListDragAndDropState.onDragStart(offset)
@@ -189,7 +190,7 @@ fun APKNamePreference(
                         } else {
                             null
                         }
-                    ListItem(headlineContent = { Text(text = item.first) },
+                    ListItem(
                         modifier = Modifier
                             .clickable {
                                 if (value.contains(item.second)) value.remove(item.second) else value.add(
@@ -215,8 +216,10 @@ fun APKNamePreference(
                             } else {
                                 MaterialTheme.colorScheme.surfaceContainerHighest
                             }
-                        )
-                    )
+                        ),
+                    ) {
+                        Text(text = item.first)
+                    }
                 }
             }
         },

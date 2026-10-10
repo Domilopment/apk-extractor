@@ -28,7 +28,37 @@ import domilopment.apkextractor.ui.shimmer
 fun DetailsSkeleton(modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         // Header Skeleton
-        ListItem(headlineContent = {
+        ListItem(
+            leadingContent = {
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .shimmer()
+                )
+            },
+            trailingContent = {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .shimmer()
+                )
+            },
+            supportingContent = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.4f)
+                            .height(14.dp)
+                            .padding(vertical = 2.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .shimmer()
+                    )
+                }
+            },
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        ) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Box(
                     modifier = Modifier
@@ -39,32 +69,7 @@ fun DetailsSkeleton(modifier: Modifier = Modifier) {
                         .shimmer()
                 )
             }
-        }, supportingContent = {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.4f)
-                        .height(14.dp)
-                        .padding(vertical = 2.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .shimmer()
-                )
-            }
-        }, leadingContent = {
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .shimmer()
-            )
-        }, trailingContent = {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .shimmer()
-            )
-        }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
+        }
 
         HorizontalDivider(modifier = Modifier.padding(4.dp))
 

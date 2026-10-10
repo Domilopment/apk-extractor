@@ -3,7 +3,6 @@ package domilopment.apkextractor.ui.actionBar
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
@@ -29,7 +28,6 @@ import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AppBarRow
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -68,7 +66,6 @@ import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.ui.DeviceTypeUtils
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun APKExtractorAppBar(
     appBarState: AppBarState,
@@ -119,7 +116,6 @@ fun APKExtractorAppBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun DefaultAppBar(
     appBarState: AppBarState,
@@ -203,7 +199,6 @@ private fun DefaultAppBar(
     })
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ActionModeBar(
     appBarState: AppBarState,
@@ -248,7 +243,6 @@ private fun ActionModeBar(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun SearchBar(
     modifier: Modifier = Modifier,

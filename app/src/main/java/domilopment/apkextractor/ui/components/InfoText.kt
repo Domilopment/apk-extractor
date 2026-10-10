@@ -19,6 +19,6 @@ fun InfoText(text: String) {
                     ), 0, text.indexOf(':') + 1
                 )
             )
-        ), maxLines = 1, overflow = TextOverflow.Ellipsis
+        ), maxLines = 1, overflow = TextOverflow.MiddleEllipsis
     )
 }

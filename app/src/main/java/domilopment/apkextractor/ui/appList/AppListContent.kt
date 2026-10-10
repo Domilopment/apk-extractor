@@ -2,7 +2,6 @@ package domilopment.apkextractor.ui.appList
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,8 +19,8 @@ import domilopment.apkextractor.ui.components.PullToRefreshBox
 import domilopment.apkextractor.utils.apkActions.ApkActionsOptions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppListContent(
     appList: List<ApplicationModel.ApplicationListModel>,
@@ -144,7 +143,7 @@ private fun AppListScreenPreview() {
                 onRefresh = {
                     refreshScope.launch {
                         refreshing = true
-                        delay(1500)
+                        delay(1500.milliseconds)
                         if (!apps.contains(appToAdd)) apps.add(appToAdd)
                         refreshing = false
                     }

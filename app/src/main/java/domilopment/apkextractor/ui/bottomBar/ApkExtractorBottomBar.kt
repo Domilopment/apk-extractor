@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.material3.AppBarRow
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FlexibleBottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -15,14 +14,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import domilopment.apkextractor.data.AppBarState
 import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.ui.DeviceTypeUtils
 import androidx.compose.ui.platform.LocalResources
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ApkExtractorBottomBar(
     appBarState: AppBarState, uiState: UiState, modifier: Modifier = Modifier
@@ -51,7 +48,7 @@ fun ApkExtractorBottomBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ActionModeBar(
     modifier: Modifier = Modifier, items: List<BottomBarItem>, expandedHeightDp: Dp

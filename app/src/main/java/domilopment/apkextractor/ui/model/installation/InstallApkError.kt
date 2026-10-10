@@ -17,8 +17,7 @@ sealed class InstallApkError(
      * This is a common and expected scenario.
      * Corresponds to [android.content.pm.PackageInstaller.STATUS_FAILURE_ABORTED].
      */
-    class AbortedByUser() :
-        InstallApkError(R.string.installation_error_aborted)
+    class AbortedByUser : InstallApkError(R.string.installation_error_aborted)
 
     /**
      * A generic failure occurred, but it wasn't one of the other specific cases.
@@ -32,37 +31,32 @@ sealed class InstallApkError(
      * The installation was blocked by a system policy (e.g., Device Admin).
      * Corresponds to [android.content.pm.PackageInstaller.STATUS_FAILURE_BLOCKED].
      */
-    class BlockedByPolicy() :
-        InstallApkError(R.string.installation_error_blocked)
+    class BlockedByPolicy : InstallApkError(R.string.installation_error_blocked)
 
     /**
      * The package is invalid, corrupt, or unsigned.
      * Corresponds to [android.content.pm.PackageInstaller.STATUS_FAILURE_INVALID].
      */
-    class InvalidApk() :
-        InstallApkError(R.string.installation_error_invalid)
+    class InvalidApk : InstallApkError(R.string.installation_error_invalid)
 
     /**
      * The new package has a conflict with an existing, different package
      * (e.g., different signature).
      * Corresponds to [android.content.pm.PackageInstaller.STATUS_FAILURE_CONFLICT].
      */
-    class Conflict() :
-        InstallApkError(R.string.installation_error_conflict)
+    class Conflict : InstallApkError(R.string.installation_error_conflict)
 
     /**
      * The system ran out of storage space while trying to install the package.
      * Corresponds to [android.content.pm.PackageInstaller.STATUS_FAILURE_STORAGE].
      */
-    class InsufficientStorage() :
-        InstallApkError(R.string.installation_error_storage)
+    class InsufficientStorage : InstallApkError(R.string.installation_error_storage)
 
     /**
      * The package is not compatible with the device's API level (SDK version).
      * Corresponds to [android.content.pm.PackageInstaller.STATUS_FAILURE_INCOMPATIBLE].
      */
-    class Incompatible() :
-        InstallApkError(R.string.installation_error_incompatible)
+    class Incompatible : InstallApkError(R.string.installation_error_incompatible)
 
     /**
      * An error occurred while trying to create the installation session itself,

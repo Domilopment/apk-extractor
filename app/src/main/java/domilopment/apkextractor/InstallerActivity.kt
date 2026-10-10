@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularWavyProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
@@ -45,7 +44,6 @@ class InstallerActivity : ComponentActivity() {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
-    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -131,17 +129,15 @@ class InstallerActivity : ComponentActivity() {
                     }?.let { userActionIntent ->
                         val sanitizer = IntentSanitizer.Builder().allowAnyComponent().apply {
                             if (intent.action == MainActivity.PACKAGE_UNINSTALLATION_ACTION) {
-                                allowAction("android.intent.action.UNINSTALL_PACKAGE").allowExtra(
-                                    "android.content.pm.extra.CALLBACK", Parcelable::class.java
-                                ).allowData { it.scheme == "package" }
+                                allowAction("android.intent.action.UNINSTALL_PACKAGE")
+                                    .allowExtra("android.content.pm.extra.CALLBACK", Parcelable::class.java)
+                                    .allowData { it.scheme == "package" }
                             } else if (intent.action == MainActivity.PACKAGE_INSTALLATION_ACTION) {
                                 allowAction("android.content.pm.action.CONFIRM_INSTALL")
                                     .allowAction("android.content.pm.action.CONFIRM_PERMISSIONS")
                                     .allowPackage("com.google.android.packageinstaller")
                                     .allowPackage("com.android.packageinstaller")
-                                    .allowExtra(
-                                        "android.content.pm.extra.SESSION_ID", Integer::class.java
-                                    )
+                                    .allowExtra("android.content.pm.extra.SESSION_ID", Integer::class.java)
                             }
                         }
 
@@ -197,7 +193,7 @@ class InstallerActivity : ComponentActivity() {
 
                     val failure = when (status) {
                         PackageInstaller.STATUS_FAILURE_ABORTED -> InstallApkError.AbortedByUser()
-                        PackageInstaller.STATUS_FAILURE_BLOCKED-> InstallApkError.BlockedByPolicy()
+                        PackageInstaller.STATUS_FAILURE_BLOCKED -> InstallApkError.BlockedByPolicy()
                         PackageInstaller.STATUS_FAILURE_CONFLICT -> InstallApkError.Conflict()
                         PackageInstaller.STATUS_FAILURE_INCOMPATIBLE -> InstallApkError.Incompatible()
                         PackageInstaller.STATUS_FAILURE_INVALID -> InstallApkError.InvalidApk()

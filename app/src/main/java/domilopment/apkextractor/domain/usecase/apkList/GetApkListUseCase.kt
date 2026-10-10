@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration.Companion.milliseconds
 
 interface GetApkListUseCase {
     operator fun invoke(searchQuery: Flow<String?>): Flow<PersistentList<ApkModel.ApkListModel>>
@@ -33,7 +34,7 @@ class GetApkListUseCaseImpl(
             PackageArchiveUtils.sortApkData(apkList, sortOrder)
                 .filter { apk -> FileUtil.doesDocumentExist(context, apk.fileUri) }
         }.let { apkList ->
-            searchQuery.debounce(500).combine(apkList) { searchQuery, apkList ->
+            searchQuery.debounce(500.milliseconds).combine(apkList) { searchQuery, apkList ->
                 val searchString = searchQuery?.trim()
 
                 return@combine if (searchString.isNullOrBlank()) {
