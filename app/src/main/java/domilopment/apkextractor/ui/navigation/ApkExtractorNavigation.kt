@@ -1,10 +1,12 @@
 package domilopment.apkextractor.ui.navigation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldValue
 import androidx.compose.material3.adaptive.navigationsuite.rememberNavigationSuiteScaffoldState
@@ -55,9 +57,9 @@ fun ApkExtractorNavigationSuiteScaffold(
         rememberNavigationSuiteScaffoldState(initialValue = if (showNavigationSuite) NavigationSuiteScaffoldValue.Visible else NavigationSuiteScaffoldValue.Hidden)
 
     NavigationSuiteScaffold(
-        navigationSuiteItems = {
+        navigationItems = {
             navigationItems.forEach { (key, value) ->
-                item(
+                NavigationSuiteItem(
                     selected = key == navigationState.topLevelRoute,
                     onClick = {
                         onNavigate()
@@ -77,10 +79,10 @@ fun ApkExtractorNavigationSuiteScaffold(
                         )
                     })
             }
-
         },
         modifier = modifier,
         state = state,
+        navigationItemVerticalArrangement = Arrangement.Center,
         content = content,
     )
 
