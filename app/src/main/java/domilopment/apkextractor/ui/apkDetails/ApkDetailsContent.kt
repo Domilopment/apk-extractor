@@ -204,7 +204,7 @@ fun ApkSheetInfo(
                         )
                     )
                 )
-            }, maxLines = 1, overflow = TextOverflow.Ellipsis
+            }, maxLines = 1, overflow = TextOverflow.MiddleEllipsis
         )
         InfoText(
             text = stringResource(id = R.string.apk_bottom_sheet_file_name, apkFileName),
