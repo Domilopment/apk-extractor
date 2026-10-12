@@ -6,22 +6,19 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import domilopment.apkextractor.R
-import domilopment.apkextractor.data.ProgressDialogUiState
-import domilopment.apkextractor.data.UiText
 import domilopment.apkextractor.data.model.appList.AppDetailScreenState
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.domain.usecase.appList.*
+import domilopment.apkextractor.domain.usecase.tasks.DismissTaskUseCase
+import domilopment.apkextractor.domain.usecase.tasks.GetTaskResultUseCase
 import domilopment.apkextractor.utils.apkActions.ApkActionIntent
 import domilopment.apkextractor.utils.settings.ApplicationUtil
 import domilopment.apkextractor.ui.navigation.Route
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -30,8 +27,6 @@ class AppDetailViewModel @AssistedInject constructor(
     @Assisted private val navKey: Route.AppDetails,
     private val getAppDetailsUseCase: GetAppDetailsUseCase,
     private val preferenceRepository: PreferenceRepository,
-    private val saveApp: SaveAppsUseCase,
-    private val shareApps: ShareAppsUseCase,
     private val saveAppIcon: SaveImageUseCase,
     private val openSettings: ShowAppSettingsUseCase,
     private val openApp: OpenAppUseCase,
@@ -39,7 +34,12 @@ class AppDetailViewModel @AssistedInject constructor(
     private val openAppStorePage: OpenAppShopDetailsUseCase,
     // Apps repository interactions
     private val removeApp: RemoveAppUseCase,
-) : ViewModel(), ProgressDialogViewModel {
+    private val saveApps: SaveAppsUseCase,
+    private val shareApps: ShareAppsUseCase,
+    // Task Store interactions
+    private val taskResult: GetTaskResultUseCase,
+    private val dismissTask: DismissTaskUseCase
+) : ViewModel() {
     @AssistedFactory
     interface Factory {
         fun create(navKey: Route.AppDetails): AppDetailViewModel
@@ -48,10 +48,8 @@ class AppDetailViewModel @AssistedInject constructor(
     private val _uiState = MutableStateFlow(AppDetailScreenState())
     val uiState: StateFlow<AppDetailScreenState> = _uiState.asStateFlow()
 
-    private val _progressDialogState: MutableStateFlow<ProgressDialogUiState?> =
-        MutableStateFlow(null)
-    override val progressDialogState: StateFlow<ProgressDialogUiState?> =
-        _progressDialogState.asStateFlow()
+    private val _onProgressRequest = MutableSharedFlow<String>()
+    val onProgressRequest: SharedFlow<String> = _onProgressRequest.asSharedFlow()
 
     private val _extractionResult = MutableSharedFlow<ExtractionResult>()
     val extractionResult = _extractionResult.asSharedFlow()
@@ -59,11 +57,21 @@ class AppDetailViewModel @AssistedInject constructor(
     private val _shareResult = MutableSharedFlow<ShareResult>()
     val shareResult = _shareResult.asSharedFlow()
 
-    // Task for ProgressDialog to Cancel
-    private var runningTask: Job? = null
-
     init {
         loadAppDetails()
+
+        // TODO: Remove when dedicated Tasks list screen is implemented
+        viewModelScope.launch {
+            onProgressRequest.collect { id ->
+                taskResult(id).collect { result ->
+                    when (result) {
+                        is ExtractionResult -> _extractionResult.emit(result)
+                        is ShareResult -> _shareResult.emit(result)
+                    }
+                    dismissTask(id)
+                }
+            }
+        }
     }
 
     private fun loadAppDetails() {
@@ -111,34 +119,9 @@ class AppDetailViewModel @AssistedInject constructor(
      * @param app model of apk user wants to save
      */
     private fun save(app: ApplicationModel) {
-        runningTask = viewModelScope.launch {
-            saveApp.invoke(listOf(app)).collect {
-                when (it) {
-                    ExtractionResult.None -> resetProgress()
-                    is ExtractionResult.Init -> _progressDialogState.update { state ->
-                        ProgressDialogUiState(
-                            title = UiText(R.string.progress_dialog_title_save), tasks = it.tasks
-                        )
-                    }
-
-                    is ExtractionResult.Progress -> _progressDialogState.update { state ->
-                        state?.copy(
-                            process = it.app.appPackageName,
-                            progress = state.progress + it.progressIncrement
-                        )
-                    }
-
-                    is ExtractionResult.SuccessMultiple, is ExtractionResult.SuccessSingle, is ExtractionResult.Failure -> {
-                        _extractionResult.emit(it)
-                        resetProgress()
-                    }
-
-                    ExtractionResult.NoSaveDir -> {
-                        _extractionResult.emit(it)
-                        resetProgress()
-                    }
-                }
-            }
+        viewModelScope.launch {
+            val id = saveApps(listOf(app))
+            _onProgressRequest.emit(id)
         }
     }
 
@@ -147,34 +130,9 @@ class AppDetailViewModel @AssistedInject constructor(
      * @param app model of app
      */
     private fun createShareUrisForApp(app: ApplicationModel) {
-        runningTask = viewModelScope.launch {
-            shareApps.invoke(listOf(app)).collect {
-                when (it) {
-                    ShareResult.None -> resetProgress()
-                    is ShareResult.Init -> _progressDialogState.update { state ->
-                        ProgressDialogUiState(
-                            title = UiText(R.string.progress_dialog_title_share), tasks = it.tasks
-                        )
-                    }
-
-                    ShareResult.Progress -> _progressDialogState.update { state ->
-                        state?.copy(
-                            progress = state.progress + 1f
-                        )
-                    }
-
-                    is ShareResult.SuccessSingle, is ShareResult.SuccessMultiple -> {
-                        _shareResult.emit(it)
-                        resetProgress()
-                    }
-                }
-            }
+        viewModelScope.launch {
+            val id = shareApps(listOf(app))
+            _onProgressRequest.emit(id)
         }
-    }
-
-    override fun resetProgress() {
-        runningTask?.cancel()
-        runningTask = null
-        _progressDialogState.value = null // Hide Dialog after everything should be cleaned up
     }
 }

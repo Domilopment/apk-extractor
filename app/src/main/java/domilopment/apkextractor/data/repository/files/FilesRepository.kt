@@ -13,7 +13,7 @@ interface FilesRepository {
         saveName: String,
         mimeType: String,
         suffix: String,
-        progressCallback: (String) -> Unit
+        progressCallback: suspend (String) -> Unit
     ): SaveApkResult
 
     suspend fun delete(data: Uri): Boolean
@@ -30,7 +30,7 @@ class FilesRepositoryImpl @Inject constructor(
         saveName: String,
         mimeType: String,
         suffix: String,
-        progressCallback: (String) -> Unit
+        progressCallback: suspend (String) -> Unit
     ): SaveApkResult {
         return filesService.save(data, saveDir, saveName, mimeType, suffix, progressCallback)
     }

@@ -12,7 +12,7 @@ import domilopment.apkextractor.InstallerActivity
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.model.installation.InstallationResultType
 import domilopment.apkextractor.data.InstallationScreenState
-import domilopment.apkextractor.data.ProgressDialogUiState
+import domilopment.apkextractor.data.TaskUiState
 import domilopment.apkextractor.data.UiText
 import domilopment.apkextractor.data.model.install.InstallStrategy
 import domilopment.apkextractor.domain.usecase.appList.AddAppUseCase
@@ -42,7 +42,6 @@ class InstallerActivityViewModel @Inject constructor(
 
     override fun onCleared() {
         cancel()
-        super.onCleared()
     }
 
     private fun updateState(
@@ -63,7 +62,7 @@ class InstallerActivityViewModel @Inject constructor(
                     is InstallationCallback.OnPrepare -> {
                         session = it.session
                         uiState = uiState.copy(
-                            progressState = ProgressDialogUiState(
+                            progressState = TaskUiState.Progress(
                                 title = UiText(R.string.progress_dialog_title_install),
                                 process = it.packageName,
                                 progress = 0F,

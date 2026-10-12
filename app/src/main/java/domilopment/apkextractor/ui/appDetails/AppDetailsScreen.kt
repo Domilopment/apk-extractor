@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarDuration
@@ -31,27 +30,32 @@ import domilopment.apkextractor.data.model.appList.ExtractionResult
 import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.ui.components.DetailsSkeleton
 import domilopment.apkextractor.ui.dialogs.ExtractionResultDialog
-import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.AppDetailViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.apkActions.ApkActionIntent
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AppDetailsScreen(
     model: AppDetailViewModel,
     onDismissRequest: () -> Unit,
     showSnackbar: (MySnackbarVisuals) -> Unit,
     showAskForSaveDirDialog: (Boolean) -> Unit,
+    onProgress: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
 
     val state by model.uiState.collectAsStateWithLifecycle()
-    val progressDialogState by model.progressDialogState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = Unit) {
+        model.onProgressRequest.collect { taskId ->
+            onProgress(taskId)
+        }
+    }
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -169,12 +173,6 @@ fun AppDetailsScreen(
         } ?: onDismissRequest()
     } else {
         DetailsSkeleton(modifier = modifier)
-    }
-
-    progressDialogState?.let {
-        ProgressDialog(
-            state = it, onDismissRequest = model::resetProgress, onCancel = model::resetProgress
-        )
     }
 
     extractionError?.let { (app, errorMessage) ->

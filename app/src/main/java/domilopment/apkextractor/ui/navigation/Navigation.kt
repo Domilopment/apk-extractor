@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.google.android.play.core.appupdate.AppUpdateManager
 import domilopment.apkextractor.ui.apkDetails.ApkDetailsScreen
@@ -40,6 +41,8 @@ import domilopment.apkextractor.ui.viewModels.ApkDetailViewModel
 import domilopment.apkextractor.ui.viewModels.ApkListViewModel
 import domilopment.apkextractor.ui.viewModels.AppDetailViewModel
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
+import domilopment.apkextractor.ui.dialogs.ProgressDialogScreen
+import domilopment.apkextractor.ui.viewModels.ProgressDialogViewModel
 import domilopment.apkextractor.ui.viewModels.SettingsScreenViewModel
 import domilopment.apkextractor.utils.MySnackbarVisuals
 
@@ -61,10 +64,12 @@ fun ApkExtractorNavDisplay(
     inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
     val bottomSheetStrategy = remember { BottomSheetSceneStrategy<Route>() }
+    val dialogStrategy = remember { DialogSceneStrategy<Route>() }
 
     val entryProvider = entryProvider {
         entry<Route.AppList> {
             val model = hiltViewModel<AppListViewModel>()
+
             AppListScreen(
                 model = model,
                 searchString = searchQuery,
@@ -74,7 +79,8 @@ fun ApkExtractorNavDisplay(
                 onTriggerActionMode = onTriggerActionMode,
                 isActionModeAllItemsSelected = isActionModeAllItemsSelected,
                 onAppSelection = onAppSelection,
-                showAskForSaveDirDialog = showAskForSaveDirDialog
+                showAskForSaveDirDialog = showAskForSaveDirDialog,
+                onProgress = { navigator.navigate(Route.ProgressDialog(it)) }
             )
         }
 
@@ -88,7 +94,8 @@ fun ApkExtractorNavDisplay(
                 model = model,
                 onDismissRequest = { navigator.goBack() },
                 showSnackbar = showSnackbar,
-                showAskForSaveDirDialog = showAskForSaveDirDialog
+                showAskForSaveDirDialog = showAskForSaveDirDialog,
+                onProgress = { navigator.navigate(Route.ProgressDialog(it)) }
             )
         }
 
@@ -112,6 +119,16 @@ fun ApkExtractorNavDisplay(
                 onDismissRequest = { navigator.goBack() },
                 showSnackbar = showSnackbar,
             )
+        }
+
+        entry<Route.ProgressDialog>(metadata = DialogSceneStrategy.dialog()) { key ->
+            val model = hiltViewModel< ProgressDialogViewModel, ProgressDialogViewModel.Factory>(
+                creationCallback = { factory ->
+                    factory.create(key)
+                }
+            )
+
+            ProgressDialogScreen(model = model, onDismissRequest = { navigator.goBack() })
         }
 
         entry<Route.SettingsHome>(
@@ -193,7 +210,7 @@ fun ApkExtractorNavDisplay(
     NavDisplay(
         entries = navigationState.toEntries(entryProvider),
         modifier = modifier,
-        sceneStrategies = listOf(bottomSheetStrategy),
+        sceneStrategies = listOf(bottomSheetStrategy, dialogStrategy),
         predictivePopTransitionSpec = {
             scaleIn(
                 animationSpec = tween(

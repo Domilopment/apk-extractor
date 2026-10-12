@@ -6,8 +6,9 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.ScreenConfig
 import domilopment.apkextractor.data.model.appList.ExtractionResult
@@ -26,7 +26,6 @@ import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.ui.navigation.Route
 import domilopment.apkextractor.ui.dialogs.AppFilterBottomSheet
 import domilopment.apkextractor.ui.dialogs.ExtractionResultDialog
-import domilopment.apkextractor.ui.dialogs.ProgressDialog
 import domilopment.apkextractor.ui.viewModels.AppListViewModel
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
@@ -36,7 +35,7 @@ import domilopment.apkextractor.utils.apkActions.intent
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppListScreen(
     model: AppListViewModel,
@@ -47,7 +46,8 @@ fun AppListScreen(
     onTriggerActionMode: () -> Unit,
     isActionModeAllItemsSelected: Boolean,
     onAppSelection: (Boolean, Int) -> Unit,
-    showAskForSaveDirDialog: (Boolean) -> Unit
+    showAskForSaveDirDialog: (Boolean) -> Unit,
+    onProgress: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -66,7 +66,11 @@ fun AppListScreen(
     val swipeActionCustomThreshold by model.swipeActionCustomThreshold.collectAsStateWithLifecycle()
     val swipeActionThresholdMod by model.swipeActionThresholdMod.collectAsStateWithLifecycle()
 
-    val progressDialogState by model.progressDialogState.collectAsStateWithLifecycle()
+    LaunchedEffect(key1 = Unit) {
+        model.onProgressRequest.collect { taskId ->
+            onProgress(taskId)
+        }
+    }
 
     // does user has selected the filter option dialog
     var showFilter by rememberSaveable {
@@ -118,11 +122,10 @@ fun AppListScreen(
                         if (extractionResult is ExtractionResult.SuccessMultiple) extractionResult.backupsCount else 1
                     showSnackbar(
                         MySnackbarVisuals(
-                            duration = SnackbarDuration.Long,
-                            message = resources.getQuantityString(
+                            duration = SnackbarDuration.Long, message = resources.getQuantityString(
                                 R.plurals.snackbar_successful_extracted_multiple,
                                 backupsCount,
-                                extractionResult.app!!.appName,
+                                extractionResult.data!!.appName,
                                 backupsCount - 1
                             )
                         )
@@ -200,7 +203,10 @@ fun AppListScreen(
         appCategory = category,
         otherFilters = otherFilter,
         onDismissRequest = { showFilter = false },
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        sheetState = rememberBottomSheetState(
+            initialValue = SheetValue.Hidden,
+            enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)
+        ),
         changeSelection = model::changeSelection,
         setSortOrder = model::setSortAsc,
         sortApps = model::setSortOrder,
@@ -209,12 +215,6 @@ fun AppListScreen(
         setCategory = model::setCategory,
         setFilterOthers = model::setOtherFilter
     )
-
-    progressDialogState?.let {
-        ProgressDialog(
-            state = it, onDismissRequest = model::resetProgress, onCancel = model::resetProgress
-        )
-    }
 
     extractionError?.let { (app, errorMessage) ->
         ExtractionResultDialog(

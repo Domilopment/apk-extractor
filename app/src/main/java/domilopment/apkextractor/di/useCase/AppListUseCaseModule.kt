@@ -37,6 +37,7 @@ import domilopment.apkextractor.domain.usecase.appList.UninstallAppUseCase
 import domilopment.apkextractor.domain.usecase.appList.UninstallAppUseCaseImpl
 import domilopment.apkextractor.domain.usecase.appList.UpdateAppsUseCase
 import domilopment.apkextractor.domain.usecase.appList.UpdateAppsUseCaseImpl
+import domilopment.apkextractor.domain.usecase.tasks.LaunchTaskUseCase
 
 @InstallIn(ActivityRetainedComponent::class)
 @Module
@@ -109,10 +110,11 @@ object AppListUseCaseModule {
         filesRepository: FilesRepository,
         apkRepository: PackageArchiveRepository,
         settings: PreferenceRepository,
-        getAppDetailsUseCase: GetAppDetailsUseCase
+        getAppDetailsUseCase: GetAppDetailsUseCase,
+        launchTaskUseCase: LaunchTaskUseCase,
     ): SaveAppsUseCase {
         return SaveAppsUseCaseImpl(
-            context, filesRepository, apkRepository, settings, getAppDetailsUseCase
+            context, filesRepository, apkRepository, settings, getAppDetailsUseCase, launchTaskUseCase
         )
     }
 
@@ -129,9 +131,10 @@ object AppListUseCaseModule {
     fun getShareAppsUseCase(
         @ApplicationContext context: Context,
         settings: PreferenceRepository,
-        getAppDetailsUseCase: GetAppDetailsUseCase
+        getAppDetailsUseCase: GetAppDetailsUseCase,
+        launchTaskUseCase: LaunchTaskUseCase
     ): ShareAppsUseCase {
-        return ShareAppsUseCaseImpl(context, settings, getAppDetailsUseCase)
+        return ShareAppsUseCaseImpl(context, settings, getAppDetailsUseCase, launchTaskUseCase)
     }
 
     @Provides

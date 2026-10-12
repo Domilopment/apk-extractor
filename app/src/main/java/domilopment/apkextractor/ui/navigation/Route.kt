@@ -75,7 +75,28 @@ sealed interface Route : NavKey {
 
     @Keep
     @Serializable
-    data class AppDetails(val packageName: PackageName) : Route  {
+    data class AppDetails(val packageName: PackageName) : Route {
+        @Transient
+        override val config = Companion
+
+        companion object : ScreenConfig {
+            override val appBarNavIcon = NavigationIcon(
+                icon = IconResource.DrawableIcon(R.drawable.app_bar_icon),
+                tint = { MaterialTheme.colorScheme.primary })
+            override val appBarTitleRes = R.string.app_name
+            override val isSearchable = false
+            override val hasNavigationBar = true
+            override val appBarActions = emptyList<ActionMenuItem>()
+            override val bottomBarActions = emptyList<BottomBarItem>()
+
+            private val _buttons = MutableSharedFlow<ScreenActions>(extraBufferCapacity = 1)
+            val buttons: Flow<ScreenActions> = _buttons.asSharedFlow()
+        }
+    }
+
+    @Keep
+    @Serializable
+    data class ProgressDialog(val taskId: String) : Route {
         @Transient
         override val config = Companion
 
@@ -133,7 +154,7 @@ sealed interface Route : NavKey {
 
     @Keep
     @Serializable
-    data class ApkDetails(val fileUri: @Serializable(with = UriSerializer::class) Uri) : Route  {
+    data class ApkDetails(val fileUri: @Serializable(with = UriSerializer::class) Uri) : Route {
         @Transient
         override val config = Companion
 
