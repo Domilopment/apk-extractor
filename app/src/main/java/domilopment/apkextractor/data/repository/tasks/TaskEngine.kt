@@ -15,9 +15,7 @@ class TaskEngine @Inject constructor(
     private val store: TaskStore
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-
     private val queue = Channel<TaskActor<*>>(capacity = 64)
-
     private val activeTasks = ConcurrentHashMap<Uuid, TaskActor<*>>()
 
     companion object {
@@ -35,10 +33,10 @@ class TaskEngine @Inject constructor(
     }
 
     suspend fun <T> launch(
-        initial: TaskState.Progress, block: suspend TaskScope.() -> ProgressResult<T>
+        initial: TaskState.Progress,
+        block: suspend TaskScope.() -> ProgressResult<T>,
     ): Uuid {
         val id = Uuid.random()
-
         val task = TaskActor(
             id = id,
             initial = initial,
@@ -54,11 +52,27 @@ class TaskEngine @Inject constructor(
         } catch (e: Exception) {
             task.cancel()
             activeTasks.remove(id, task)
-            store.remove(id)
             throw e
         }
 
         return id
+    }
+
+    private suspend fun execute(task: TaskActor<*>) {
+        try {
+            task.run()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Timber.tag("TaskEngine").e(e, "Unexpected failure for task ${task.id}")
+        } finally {
+            activeTasks.remove(task.id, task)
+        }
+    }
+
+    suspend fun cancel(id: Uuid) {
+        activeTasks[id]?.cancel()
+        activeTasks.remove(id)
     }
 
     private enum class TaskPhase {
@@ -87,7 +101,7 @@ class TaskEngine @Inject constructor(
 
                         store.transition(id) { current ->
                             val progress = current as? TaskState.Progress
-                            progress?.let { update(it) } ?: current
+                            progress?.let(update) ?: current
                         }
                     }
                     currentCoroutineContext().ensureActive()
@@ -98,21 +112,32 @@ class TaskEngine @Inject constructor(
                 val result = block(taskScope)
                 currentCoroutineContext().ensureActive()
                 synchronized(lock) {
-                    store.transition(id) {
-                        TaskState.Result.Success(result)
+                    if (phase == TaskPhase.RUNNING) {
+                        store.transition(id) {
+                            TaskState.Result.Success(result)
+                        }
+                        phase = TaskPhase.FINISHED
                     }
                 }
             } catch (e: CancellationException) {
                 synchronized(lock) {
-                    store.transition(id) {
-                        TaskState.Suspended
+                    if (phase == TaskPhase.RUNNING) {
+                        store.transition(id) {
+                            TaskState.Suspended
+                        }
+                        phase = TaskPhase.FINISHED
                     }
                 }
                 throw e
             } catch (e: Exception) {
                 synchronized(lock) {
-                    store.transition(id) {
-                        TaskState.Result.Error(ProgressError(e.message, e))
+                    if (phase == TaskPhase.RUNNING) {
+                        store.transition(id) {
+                            TaskState.Result.Error(
+                                ProgressError(e.message, e)
+                            )
+                        }
+                        phase = TaskPhase.FINISHED
                     }
                 }
             } finally {
@@ -133,32 +158,24 @@ class TaskEngine @Inject constructor(
                 phase = TaskPhase.RUNNING
                 job.start()
             }
+
             job.join()
         }
 
         suspend fun cancel() {
-            synchronized(lock) {
-                if (phase == TaskPhase.FINISHED) return
-                phase = TaskPhase.FINISHED
-                job.cancel()
+            val shouldCancel = synchronized(lock) {
+                if (phase == TaskPhase.FINISHED) {
+                    false
+                } else {
+                    phase = TaskPhase.FINISHED
+                    store.remove(id)
+                    true
+                }
             }
-            job.cancelAndJoin()
-        }
-    }
 
-    private suspend fun <T> execute(task: TaskActor<T>) {
-        try {
-            task.run()
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Timber.tag("TaskEngine").e(e, "Unexpected failure for task ${task.id}")
-        } finally {
-            activeTasks.remove(task.id, task)
+            if (shouldCancel) {
+                job.cancelAndJoin()
+            }
         }
-    }
-
-    suspend fun cancel(id: Uuid) {
-        activeTasks.remove(id)?.cancel()
     }
 }
