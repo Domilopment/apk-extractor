@@ -42,21 +42,16 @@ class SaveAppsUseCaseImpl @Inject constructor(
                 title = UiText(R.string.progress_dialog_title_save)
             )
         ) {
-            if (list.isEmpty()) {
-                return@invoke TaskState.Result.Error(ExtractionResult.ExtractionError.None)
-            }
+            if (list.isEmpty()) fail(ExtractionResult.ExtractionError.None)
 
-            val saveDir =
-                settingsRepository.saveDir.first() ?: return@invoke TaskState.Result.Error(
-                    ExtractionResult.ExtractionError.NoSaveDir
-                )
+            val saveDir = settingsRepository.saveDir.first()
+                ?: fail(ExtractionResult.ExtractionError.NoSaveDir)
 
             val backupMode = settingsRepository.backupModeApkBundle.first()
             val appNameConfig = settingsRepository.appSaveName.first()
             val appNameSpacer = settingsRepository.appSaveNameSpacer.first()
             val bundleFileInfo = settingsRepository.bundleFileInfo.first()
             var application: ApplicationModel? = null
-            var errorMessage: String? = null
 
             val tasks = withContext(Dispatchers.IO) {
                 list.mapNotNull { appDetailsUseCase.invoke(it) }
@@ -99,8 +94,11 @@ class SaveAppsUseCaseImpl @Inject constructor(
                     when (newFile) {
                         is SaveApkResult.Failure -> {
                             Timber.tag("Save Apps Error").e(Exception(newFile.errorMessage))
-                            errorMessage = newFile.errorMessage
-                            return@withContext
+                            fail(
+                                ExtractionResult.ExtractionError.Failure(
+                                    errorMessage = newFile.errorMessage, extra = application
+                                )
+                            )
                         }
 
                         is SaveApkResult.Success -> newFile.uri.let { uri ->
@@ -128,17 +126,8 @@ class SaveAppsUseCaseImpl @Inject constructor(
                 }
             }
 
-            if (errorMessage != null) TaskState.Result.Error(
-                ExtractionResult.ExtractionError.Failure(
-                    errorMessage = errorMessage, extra = application!!
-                )
-            )
-            else if (list.size == 1) TaskState.Result.Success(
-                ExtractionResult.ExtractionSuccess.SuccessSingle(application!!)
-            )
-            else TaskState.Result.Success(
-                ExtractionResult.ExtractionSuccess.SuccessMultiple(application!!, list.size)
-            )
+            if (list.size == 1) ExtractionResult.ExtractionSuccess.SuccessSingle(application!!)
+            else ExtractionResult.ExtractionSuccess.SuccessMultiple(application!!, list.size)
         }
     }
 }

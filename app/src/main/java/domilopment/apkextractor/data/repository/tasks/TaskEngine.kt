@@ -1,6 +1,8 @@
 package domilopment.apkextractor.data.repository.tasks
 
 import domilopment.apkextractor.data.model.tasks.ProgressError
+import domilopment.apkextractor.data.model.tasks.ProgressResult
+import domilopment.apkextractor.data.model.tasks.TaskFailure
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import timber.log.Timber
@@ -14,8 +16,8 @@ class TaskEngine @Inject constructor(
     private val store: TaskStore
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val queue = Channel<TaskActor>(capacity = 64)
-    private val activeTasks = ConcurrentHashMap<Uuid, TaskActor>()
+    private val queue = Channel<TaskActor<*>>(capacity = 64)
+    private val activeTasks = ConcurrentHashMap<Uuid, TaskActor<*>>()
 
     companion object {
         private const val MAX_CONCURRENT_TASKS = 3
@@ -31,9 +33,9 @@ class TaskEngine @Inject constructor(
         }
     }
 
-    suspend fun launch(
+    suspend fun <T> launch(
         initial: TaskState.Progress,
-        block: suspend TaskScope.() -> TaskState.Result,
+        block: suspend TaskScope.() -> ProgressResult<T>,
     ): Uuid {
         val id = Uuid.random()
         val task = TaskActor(
@@ -57,7 +59,7 @@ class TaskEngine @Inject constructor(
         return id
     }
 
-    private suspend fun execute(task: TaskActor) {
+    private suspend fun <T> execute(task: TaskActor<T>) {
         try {
             task.run()
         } catch (e: CancellationException) {
@@ -78,11 +80,11 @@ class TaskEngine @Inject constructor(
         PENDING, RUNNING, FINISHED
     }
 
-    private inner class TaskActor(
+    private inner class TaskActor<T>(
         val id: Uuid,
         private val initial: TaskState.Progress,
         private val store: TaskStore,
-        private val block: suspend TaskScope.() -> TaskState.Result,
+        private val block: suspend TaskScope.() -> ProgressResult<T>,
     ) {
         private val lock = Any()
         private var phase = TaskPhase.PENDING
@@ -105,6 +107,10 @@ class TaskEngine @Inject constructor(
                     }
                     currentCoroutineContext().ensureActive()
                 }
+
+                override fun fail(failure: TaskFailure): Nothing {
+                    throw TaskFailureException(failure)
+                }
             }
 
             try {
@@ -113,7 +119,7 @@ class TaskEngine @Inject constructor(
                 synchronized(lock) {
                     if (phase == TaskPhase.RUNNING) {
                         store.transition(id) {
-                            result
+                            TaskState.Result.Success(result)
                         }
                         phase = TaskPhase.FINISHED
                     }
@@ -128,6 +134,15 @@ class TaskEngine @Inject constructor(
                     }
                 }
                 throw e
+            } catch (e: TaskFailureException) {
+                synchronized(lock) {
+                    if (phase == TaskPhase.RUNNING) {
+                        store.transition(id) {
+                            TaskState.Result.Error(e.failure)
+                        }
+                        phase = TaskPhase.FINISHED
+                    }
+                }
             } catch (e: Exception) {
                 synchronized(lock) {
                     if (phase == TaskPhase.RUNNING) {
