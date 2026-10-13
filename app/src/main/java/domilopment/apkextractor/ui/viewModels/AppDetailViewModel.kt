@@ -6,6 +6,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import domilopment.apkextractor.data.TaskUiState
 import domilopment.apkextractor.data.model.appList.AppDetailScreenState
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.model.appList.ExtractionResult
@@ -65,8 +66,14 @@ class AppDetailViewModel @AssistedInject constructor(
             onProgressRequest.collect { id ->
                 taskResult(id).collect { result ->
                     when (result) {
-                        is ExtractionResult -> _extractionResult.emit(result)
-                        is ShareResult -> _shareResult.emit(result)
+                        is TaskUiState.Result.Error -> when (val reason = result.reason) {
+                            is ExtractionResult.ExtractionError -> _extractionResult.emit(reason)
+                            is ShareResult.ShareError -> _shareResult.emit(reason)
+                        }
+                        is TaskUiState.Result.Success<*> -> when (val data = result.data) {
+                            is ExtractionResult.ExtractionSuccess -> _extractionResult.emit(data)
+                            is ShareResult.ShareSuccess -> _shareResult.emit(data)
+                        }
                     }
                     dismissTask(id)
                 }

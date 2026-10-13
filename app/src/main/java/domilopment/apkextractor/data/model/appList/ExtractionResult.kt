@@ -1,18 +1,33 @@
 package domilopment.apkextractor.data.model.appList
 
 import domilopment.apkextractor.data.model.tasks.ProgressResult
+import domilopment.apkextractor.data.model.tasks.TaskFailure
 
-/**
- * Class used as return flow for saving one or multiple apk files to public storage
- * @param data Object containing basic Application info
- */
-sealed class ExtractionResult(override val data: ApplicationModel?) : ProgressResult<ApplicationModel?> {
-    data class Init(val tasks: Int): ExtractionResult(null)
-    data class SuccessSingle(val app: ApplicationModel): ExtractionResult(app)
-    data class SuccessMultiple(val app: ApplicationModel, val backupsCount: Int): ExtractionResult(app)
-    data class Progress(val app: ApplicationModel, val progressIncrement: Int): ExtractionResult(app)
-    data class Failure(val app: ApplicationModel, val errorMessage: String?): ExtractionResult(app)
+sealed interface ExtractionResult {
+    sealed class ExtractionSuccess(override val data: ApplicationModel?) : ExtractionResult,
+        ProgressResult<ApplicationModel?> {
+        data class SuccessSingle(val app: ApplicationModel) : ExtractionSuccess(app)
+        data class SuccessMultiple(val app: ApplicationModel, val backupsCount: Int) :
+            ExtractionSuccess(app)
+    }
 
-    data object NoSaveDir: ExtractionResult(null)
-    data object None : ExtractionResult(null)
+    sealed interface ExtractionError : ExtractionResult, TaskFailure {
+        data class Failure(
+            override val errorMessage: String?,
+            override val throwable: Throwable? = null,
+            override val extra: ApplicationModel
+        ) : ExtractionError
+
+        data object NoSaveDir : ExtractionError {
+            override val errorMessage: String? = null
+            override val throwable: Throwable? = null
+            override val extra: Any? = null
+        }
+
+        data object None : ExtractionError {
+            override val errorMessage: String? = null
+            override val throwable: Throwable? = null
+            override val extra: Any? = null
+        }
+    }
 }

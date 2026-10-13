@@ -17,7 +17,6 @@ class GetTaskProgressUseCaseImpl(
     private val taskStore: TaskStore
 ) : GetTaskProgressUseCase {
     override fun invoke(id: String): Flow<TaskUiState?> {
-
         val uuid = runCatching { Uuid.parse(id) }.getOrNull()
             ?: return flowOf(null)
 

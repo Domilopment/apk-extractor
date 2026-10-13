@@ -43,11 +43,13 @@ class SaveAppsUseCaseImpl @Inject constructor(
             )
         ) {
             if (list.isEmpty()) {
-                return@invoke ExtractionResult.None
+                return@invoke TaskState.Result.Error(ExtractionResult.ExtractionError.None)
             }
 
             val saveDir =
-                settingsRepository.saveDir.first() ?: return@invoke ExtractionResult.NoSaveDir
+                settingsRepository.saveDir.first() ?: return@invoke TaskState.Result.Error(
+                    ExtractionResult.ExtractionError.NoSaveDir
+                )
 
             val backupMode = settingsRepository.backupModeApkBundle.first()
             val appNameConfig = settingsRepository.appSaveName.first()
@@ -75,7 +77,8 @@ class SaveAppsUseCaseImpl @Inject constructor(
                     val splitSources = app.appSplitSourceDirectories
                     if (!splitSources.isNullOrEmpty() && backupMode) splits.addAll(splitSources)
 
-                    val packageInfo = Utils.getPackageInfo(context.packageManager, app.appPackageName)
+                    val packageInfo =
+                        Utils.getPackageInfo(context.packageManager, app.appPackageName)
                     val appName = packageInfo.let {
                         ApplicationUtil.appName(
                             context.packageManager, it, appNameConfig, appNameSpacer.symbol
@@ -125,9 +128,17 @@ class SaveAppsUseCaseImpl @Inject constructor(
                 }
             }
 
-            if (errorMessage != null) ExtractionResult.Failure(application!!, errorMessage)
-            else if (list.size == 1) ExtractionResult.SuccessSingle(application!!)
-            else ExtractionResult.SuccessMultiple(application!!, list.size)
+            if (errorMessage != null) TaskState.Result.Error(
+                ExtractionResult.ExtractionError.Failure(
+                    errorMessage = errorMessage, extra = application!!
+                )
+            )
+            else if (list.size == 1) TaskState.Result.Success(
+                ExtractionResult.ExtractionSuccess.SuccessSingle(application!!)
+            )
+            else TaskState.Result.Success(
+                ExtractionResult.ExtractionSuccess.SuccessMultiple(application!!, list.size)
+            )
         }
     }
 }

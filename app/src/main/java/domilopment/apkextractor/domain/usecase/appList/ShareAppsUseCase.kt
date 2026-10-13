@@ -35,7 +35,7 @@ class ShareAppsUseCaseImpl @Inject constructor(
             )
         ) {
             if (list.isEmpty()) {
-                return@invoke ShareResult.None
+                return@invoke TaskState.Result.Error(ShareResult.ShareError.None)
             }
 
             val files = ArrayList<Uri>()
@@ -86,8 +86,8 @@ class ShareAppsUseCaseImpl @Inject constructor(
                 }
             }
 
-            if (files.size == 1) ShareResult.SuccessSingle(files[0])
-            else ShareResult.SuccessMultiple(files)
+            if (files.size == 1) TaskState.Result.Success(ShareResult.ShareSuccess.SuccessSingle(files[0]))
+            else TaskState.Result.Success(ShareResult.ShareSuccess.SuccessMultiple(files))
         }
     }
 }

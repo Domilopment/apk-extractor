@@ -78,7 +78,7 @@ fun AppListScreen(
     }
 
     // information of error if last extraction has failed, to show inside a dialog
-    var extractionError: ExtractionResult.Failure? by remember {
+    var extractionError: ExtractionResult.ExtractionError.Failure? by remember {
         mutableStateOf(null)
     }
 
@@ -113,13 +113,13 @@ fun AppListScreen(
          */
         model.extractionResult.collect { extractionResult ->
             when (extractionResult) {
-                ExtractionResult.None -> Toast.makeText(
+                ExtractionResult.ExtractionError.None -> Toast.makeText(
                     context, R.string.toast_save_apps, Toast.LENGTH_SHORT
                 ).show()
 
-                is ExtractionResult.SuccessSingle, is ExtractionResult.SuccessMultiple -> {
+                is ExtractionResult.ExtractionSuccess.SuccessSingle, is ExtractionResult.ExtractionSuccess.SuccessMultiple -> {
                     val backupsCount =
-                        if (extractionResult is ExtractionResult.SuccessMultiple) extractionResult.backupsCount else 1
+                        if (extractionResult is ExtractionResult.ExtractionSuccess.SuccessMultiple) extractionResult.backupsCount else 1
                     showSnackbar(
                         MySnackbarVisuals(
                             duration = SnackbarDuration.Long, message = resources.getQuantityString(
@@ -132,9 +132,8 @@ fun AppListScreen(
                     )
                 }
 
-                is ExtractionResult.Failure -> extractionError = extractionResult
-                is ExtractionResult.NoSaveDir -> showAskForSaveDirDialog(true)
-                else -> Unit
+                is ExtractionResult.ExtractionError.Failure -> extractionError = extractionResult
+                is ExtractionResult.ExtractionError.NoSaveDir -> showAskForSaveDirDialog(true)
             }
         }
     }
@@ -144,36 +143,34 @@ fun AppListScreen(
          * Creates Intent for Apps to Share
          */
         model.shareResult.collect { shareResult ->
-            if (shareResult == ShareResult.None) {
+            if (shareResult == ShareResult.ShareError.None) {
                 Toast.makeText(
                     context, R.string.toast_share_app, Toast.LENGTH_SHORT
                 ).show()
                 return@collect
-            }
-
-            val action =
-                if (shareResult is ShareResult.SuccessSingle) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE
-            Intent(action).apply {
-                type = FileUtil.FileInfo.APK.mimeType
-                when (shareResult) {
-                    is ShareResult.SuccessMultiple -> {
-                        clipData = ClipData.newRawUri(null, shareResult.uris[0]).apply {
-                            shareResult.uris.drop(1).forEach { addItem(ClipData.Item(it)) }
+            } else if (shareResult is ShareResult.ShareSuccess) {
+                val action =
+                    if (shareResult is ShareResult.ShareSuccess.SuccessSingle) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE
+                Intent(action).apply {
+                    type = FileUtil.FileInfo.APK.mimeType
+                    when (shareResult) {
+                        is ShareResult.ShareSuccess.SuccessMultiple -> {
+                            clipData = ClipData.newRawUri(null, shareResult.uris[0]).apply {
+                                shareResult.uris.drop(1).forEach { addItem(ClipData.Item(it)) }
+                            }
+                            putParcelableArrayListExtra(Intent.EXTRA_STREAM, shareResult.uris)
                         }
-                        putParcelableArrayListExtra(Intent.EXTRA_STREAM, shareResult.uris)
+
+                        is ShareResult.ShareSuccess.SuccessSingle -> putExtra(
+                            Intent.EXTRA_STREAM, shareResult.uri
+                        )
                     }
-
-                    is ShareResult.SuccessSingle -> putExtra(
-                        Intent.EXTRA_STREAM, shareResult.uri
-                    )
-
-                    else -> Unit
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }.let {
+                    Intent.createChooser(it, resources.getString(R.string.share_intent_title))
+                }?.also {
+                    shareApp.launch(it)
                 }
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }.let {
-                Intent.createChooser(it, resources.getString(R.string.share_intent_title))
-            }?.also {
-                shareApp.launch(it)
             }
         }
     }
@@ -216,11 +213,11 @@ fun AppListScreen(
         setFilterOthers = model::setOtherFilter
     )
 
-    extractionError?.let { (app, errorMessage) ->
+    extractionError?.let { (errorMessage, throwable, app) ->
         ExtractionResultDialog(
             onDismissRequest = { extractionError = null },
             appName = app.appName,
-            errorMessage = errorMessage
+            errorMessage = errorMessage ?: throwable?.message
         )
     }
 
