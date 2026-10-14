@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -80,8 +81,7 @@ fun ApkExtractorNavDisplay(
                 isActionModeAllItemsSelected = isActionModeAllItemsSelected,
                 onAppSelection = onAppSelection,
                 showAskForSaveDirDialog = showAskForSaveDirDialog,
-                onProgress = { navigator.navigate(Route.ProgressDialog(it)) }
-            )
+                onProgress = { navigator.navigate(Route.ProgressDialog(it)) })
         }
 
         entry<Route.AppDetails>(metadata = BottomSheetSceneStrategy.bottomSheet()) { key ->
@@ -95,8 +95,7 @@ fun ApkExtractorNavDisplay(
                 onDismissRequest = { navigator.goBack() },
                 showSnackbar = showSnackbar,
                 showAskForSaveDirDialog = showAskForSaveDirDialog,
-                onProgress = { navigator.navigate(Route.ProgressDialog(it)) }
-            )
+                onProgress = { navigator.navigate(Route.ProgressDialog(it)) })
         }
 
         entry<Route.ApkList> {
@@ -121,12 +120,17 @@ fun ApkExtractorNavDisplay(
             )
         }
 
-        entry<Route.ProgressDialog>(metadata = DialogSceneStrategy.dialog()) { key ->
-            val model = hiltViewModel< ProgressDialogViewModel, ProgressDialogViewModel.Factory>(
+        entry<Route.ProgressDialog>(
+            metadata = DialogSceneStrategy.dialog(
+                dialogProperties = DialogProperties(
+                    dismissOnBackPress = false, dismissOnClickOutside = false
+                )
+            )
+        ) { key ->
+            val model = hiltViewModel<ProgressDialogViewModel, ProgressDialogViewModel.Factory>(
                 creationCallback = { factory ->
                     factory.create(key)
-                }
-            )
+                })
 
             ProgressDialogScreen(model = model, onDismissRequest = { navigator.goBack() })
         }
