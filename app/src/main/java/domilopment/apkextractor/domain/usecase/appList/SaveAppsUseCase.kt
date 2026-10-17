@@ -51,7 +51,6 @@ class SaveAppsUseCaseImpl @Inject constructor(
             val appNameConfig = settingsRepository.appSaveName.first()
             val appNameSpacer = settingsRepository.appSaveNameSpacer.first()
             val bundleFileInfo = settingsRepository.bundleFileInfo.first()
-            var application: ApplicationModel? = null
 
             val tasks = withContext(Dispatchers.IO) {
                 list.mapNotNull { appDetailsUseCase.invoke(it) }
@@ -66,7 +65,6 @@ class SaveAppsUseCaseImpl @Inject constructor(
             withContext(Dispatchers.IO) {
                 tasks.forEach { app ->
                     ensureActive()
-                    application = app
 
                     val splits = mutableListOf(app.appSourceDirectory)
                     val splitSources = app.appSplitSourceDirectories
@@ -81,7 +79,7 @@ class SaveAppsUseCaseImpl @Inject constructor(
                     }
 
                     updateProgress { state ->
-                        state.copy(process = application.appPackageName, progress = state.progress)
+                        state.copy(process = app.appPackageName, progress = state.progress)
                     }
 
                     val newFile = filesRepository.save(
@@ -96,19 +94,24 @@ class SaveAppsUseCaseImpl @Inject constructor(
                             Timber.tag("Save Apps Error").e(Exception(newFile.errorMessage))
                             fail(
                                 ExtractionResult.ExtractionError.Failure(
-                                    errorMessage = newFile.errorMessage, extra = application
+                                    errorMessage = newFile.errorMessage, extra = app
                                 )
                             )
                         }
 
                         is SaveApkResult.Success -> newFile.uri.let { uri ->
-                            filesRepository.fileInfo(uri)?.let {
+                            filesRepository.fileInfo(uri)?.let { info ->
+                                val fileName = info.displayName ?: return@let null
+                                val fileType = info.mimeType ?: return@let null
+                                val lastModified = info.lastModified ?: return@let null
+                                val fileSize = info.size ?: return@let null
+
                                 PackageArchiveEntity(
-                                    fileUri = it.uri,
-                                    fileName = it.displayName!!,
-                                    fileType = it.mimeType!!,
-                                    fileLastModified = it.lastModified!!,
-                                    fileSize = it.size!!,
+                                    fileUri = info.uri,
+                                    fileName = fileName,
+                                    fileType = fileType,
+                                    fileLastModified = lastModified,
+                                    fileSize = fileSize,
                                     appName = app.appName,
                                     appPackageName = app.appPackageName,
                                     appIcon = app.appIcon.toBitmap().asImageBitmap(),
@@ -126,8 +129,9 @@ class SaveAppsUseCaseImpl @Inject constructor(
                 }
             }
 
-            if (list.size == 1) ExtractionResult.ExtractionSuccess.SuccessSingle(application!!)
-            else ExtractionResult.ExtractionSuccess.SuccessMultiple(application!!, list.size)
+            val application = tasks.lastOrNull() ?: fail(ExtractionResult.ExtractionError.None)
+            if (list.size == 1) ExtractionResult.ExtractionSuccess.SuccessSingle(application)
+            else ExtractionResult.ExtractionSuccess.SuccessMultiple(application, list.size)
         }
     }
 }
