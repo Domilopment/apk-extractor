@@ -16,7 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -35,8 +34,10 @@ import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.PackageName
 import domilopment.apkextractor.utils.apkActions.ApkActionIntentParams
 import domilopment.apkextractor.utils.apkActions.intent
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,12 +89,15 @@ fun AppListScreen(
 
     // Automatically update the ActionMode selection count when appList changes.
     // Ignore the initial emission on composition.
-    LaunchedEffect(Unit) {
-        snapshotFlow { state.appList.count { it.isChecked } }
-            .drop(1)
-            .collect { count ->
-                onAppSelection(false, count)
-            }
+    LaunchedEffect(model, onAppSelection) {
+        model.mainFragmentState.map { state ->
+            val selectedCount = state.appList.count { it.isChecked }
+            val allSelected = state.appList.isNotEmpty() && selectedCount == state.appList.size
+
+            allSelected to selectedCount
+        }.distinctUntilChanged().drop(1).collect { (allSelected, selectedCount) ->
+            onAppSelection(allSelected, selectedCount)
+        }
     }
 
     LaunchedEffect(key1 = Unit) {
@@ -116,7 +120,6 @@ fun AppListScreen(
     LaunchedEffect(key1 = isActionModeAllItemsSelected) {
         if (isActionModeAllItemsSelected) {
             model.selectAllApps(true)
-            onAppSelection(true, state.appList.size)
         }
     }
 
