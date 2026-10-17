@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import domilopment.apkextractor.data.AppBarState
-import domilopment.apkextractor.data.UiState
+import domilopment.apkextractor.data.MainScreenState
 import domilopment.apkextractor.ui.DeviceTypeUtils
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -27,7 +27,7 @@ fun ApkExtractorNavigation(
     navigationState: NavigationState<Route>,
     navigator: Navigator<Route>,
     appBarState: AppBarState,
-    uiState: UiState,
+    screenState: MainScreenState,
     modifier: Modifier = Modifier,
     onNavigate: () -> Unit,
     content: @Composable (() -> Unit),
@@ -37,7 +37,7 @@ fun ApkExtractorNavigation(
         navigationState = navigationState,
         navigator = navigator,
         modifier = modifier,
-        showNavigationSuite = ((uiState !is UiState.ActionMode && !WindowInsets.isImeVisible) || DeviceTypeUtils.isTabletBars) && appBarState.hasNavigation,
+        showNavigationSuite = ((screenState !is MainScreenState.ActionMode && !WindowInsets.isImeVisible) || DeviceTypeUtils.isTabletBars) && appBarState.hasNavigation,
         onNavigate = onNavigate,
         content = content
     )

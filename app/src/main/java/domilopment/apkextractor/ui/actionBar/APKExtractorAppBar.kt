@@ -63,39 +63,41 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.AppBarState
-import domilopment.apkextractor.data.UiState
+import domilopment.apkextractor.data.MainScreenState
 import domilopment.apkextractor.ui.DeviceTypeUtils
 
 @Composable
 fun APKExtractorAppBar(
     appBarState: AppBarState,
     modifier: Modifier = Modifier,
-    uiState: UiState,
-    searchText: String,
-    isAllItemsChecked: Boolean,
+    screenState: MainScreenState,
     onSearchQueryChanged: (String) -> Unit,
     onTriggerSearch: () -> Unit,
     onReturnUiMode: () -> Unit,
     onCheckAllItems: (Boolean) -> Unit,
-    selectedApplicationsCount: Int
 ) {
     Box(modifier = modifier.background(color = TopAppBarDefaults.topAppBarColors().containerColor)) {
         SharedTransitionLayout {
-            AnimatedContent(targetState = uiState, transitionSpec = {
-                fadeIn(
-                    animationSpec = tween(durationMillis = 220, delayMillis = 90)
-                ) togetherWith fadeOut(animationSpec = tween(durationMillis = 90))
-            }, label = "Actionbar Content") { state ->
+            AnimatedContent(
+                targetState = screenState,
+                transitionSpec = {
+                    fadeIn(
+                        animationSpec = tween(durationMillis = 220, delayMillis = 90)
+                    ) togetherWith fadeOut(animationSpec = tween(durationMillis = 90))
+                },
+                label = "Actionbar Content",
+                contentKey = { it::class },
+            ) { state ->
                 when (state) {
-                    UiState.Default -> DefaultAppBar(
+                    is MainScreenState.AppBarMode.Default -> DefaultAppBar(
                         appBarState = appBarState,
                         onActionSearch = onTriggerSearch,
                         animatedVisibilityScope = this@AnimatedContent,
                         sharedTransitionScope = this@SharedTransitionLayout
                     )
 
-                    UiState.Search -> SearchBar(
-                        text = searchText,
+                    is MainScreenState.AppBarMode.Search -> SearchBar(
+                        text = state.query,
                         onTextChange = onSearchQueryChanged,
                         onCloseClicked = onReturnUiMode,
                         onSearchClicked = onSearchQueryChanged,
@@ -103,10 +105,10 @@ fun APKExtractorAppBar(
                         sharedTransitionScope = this@SharedTransitionLayout
                     )
 
-                    is UiState.ActionMode -> ActionModeBar(
+                    is MainScreenState.ActionMode -> ActionModeBar(
                         appBarState = appBarState,
-                        allItemsChecked = isAllItemsChecked,
-                        selectedApplicationsCount = selectedApplicationsCount,
+                        allItemsChecked = state.isSelectAllActive,
+                        selectedApplicationsCount = state.selectedItemCount,
                         onTriggerActionMode = onReturnUiMode,
                         onCheckAllItems = onCheckAllItems
                     )

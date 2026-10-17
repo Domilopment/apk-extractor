@@ -27,14 +27,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -55,7 +54,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import domilopment.apkextractor.autoBackup.AutoBackupService
 import domilopment.apkextractor.data.InAppUpdateResult
 import domilopment.apkextractor.data.InAppUpdateResultType
-import domilopment.apkextractor.data.UiState
+import domilopment.apkextractor.data.MainScreenState
 import domilopment.apkextractor.data.rememberAppBarState
 import domilopment.apkextractor.data.repository.analytics.AnalyticsHelper
 import domilopment.apkextractor.data.repository.analytics.LocalAnalyticsHelper
@@ -114,14 +113,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-            val mainScreenState = model.mainScreenState
-            val actionModeState = model.actionModeState
+            val mainScreenState by model.mainScreenStateFlow.collectAsStateWithLifecycle()
             val saveDir by model.saveDir.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
             val dynamicColors by model.materialYou.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
             val firstLaunch by model.firstLaunch.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.CREATED)
             val navigationState = rememberNavigationState(
                 startRoute = Route.AppList,
-                topLevelRoutes = TopLevelNavItem.TOP_LEVEL_ROUTES.keys
+                topLevelRoutes = TopLevelNavItem.TOP_LEVEL_ROUTES.keys,
             )
 
             val navigator = remember { Navigator(navigationState) }
@@ -133,8 +131,10 @@ class MainActivity : AppCompatActivity() {
                 mutableStateOf(false)
             }
 
-            val isActionModeActive = remember(key1 = mainScreenState.uiState) {
-                mainScreenState.uiState is UiState.ActionMode
+            val isActionModeActive by remember {
+                derivedStateOf {
+                    mainScreenState is MainScreenState.ActionMode
+                }
             }
 
             var inAppUpdateResult: InAppUpdateResult? by remember {
@@ -189,7 +189,7 @@ class MainActivity : AppCompatActivity() {
                         ApkExtractorNavigation(
                             navigationItems = TopLevelNavItem.TOP_LEVEL_ROUTES,
                             appBarState = appBarState,
-                            uiState = mainScreenState.uiState,
+                            screenState = mainScreenState,
                             navigationState = navigationState,
                             navigator = navigator,
                             onNavigate = model::resetAppBarState
@@ -198,18 +198,15 @@ class MainActivity : AppCompatActivity() {
                                 APKExtractorAppBar(
                                     appBarState = appBarState,
                                     modifier = Modifier.fillMaxWidth(),
-                                    uiState = mainScreenState.uiState,
-                                    searchText = mainScreenState.appBarSearchText,
-                                    isAllItemsChecked = actionModeState.selectAllItemsCheck,
-                                    onSearchQueryChanged = model::updateSearchQuery,
-                                    onTriggerSearch = model::setSearchBarState,
+                                    screenState = mainScreenState,
+                                    onSearchQueryChanged = model::searchBarMode,
+                                    onTriggerSearch = model::searchBarMode,
                                     onReturnUiMode = model::onReturnUiMode,
-                                    onCheckAllItems = { model.updateActionMode(selectAllItems = it) },
-                                    selectedApplicationsCount = actionModeState.selectedItemCount
+                                    onCheckAllItems = model::actionMode,
                                 )
                             }, bottomBar = {
                                 ApkExtractorBottomBar(
-                                    appBarState = appBarState, uiState = mainScreenState.uiState
+                                    appBarState = appBarState, screenState = mainScreenState
                                 )
                             }, snackbarHost = {
                                 SnackbarHost(
@@ -222,7 +219,6 @@ class MainActivity : AppCompatActivity() {
                                         )
                                     })
                             }) { contentPadding ->
-                                val haptic = LocalHapticFeedback.current
                                 ApkExtractorNavDisplay(
                                     modifier = Modifier.padding(contentPadding),
                                     navigationState = navigationState,
@@ -232,17 +228,10 @@ class MainActivity : AppCompatActivity() {
                                             snackbarHostState.showSnackbar(it)
                                         }
                                     },
-                                    searchQuery = mainScreenState.appBarSearchText.trim(),
+                                    searchQuery = mainScreenState.searchQuery.trim(),
                                     isActionMode = isActionModeActive,
-                                    isActionModeAllItemsSelected = actionModeState.selectAllItemsCheck,
-                                    onTriggerActionMode = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        model.updateActionMode(selectedItems = 1)
-                                        model.setActionModeState()
-                                    },
-                                    onAppSelection = { isAllSelected, appCount ->
-                                        model.updateActionMode(isAllSelected, appCount)
-                                    },
+                                    isActionModeAllItemsSelected = mainScreenState.isSelectAll,
+                                    onAppSelection = model::actionMode,
                                     chooseSaveDir = chooseSaveDir,
                                     showAskForSaveDirDialog = { showAskForSaveDir = it },
                                     appUpdateManager = appUpdateManager,
@@ -376,3 +365,15 @@ class MainActivity : AppCompatActivity() {
             "${BuildConfig.APPLICATION_ID}.apis.content.SESSION_API_PACKAGE_UNINSTALLATION"
     }
 }
+
+private val MainScreenState.searchQuery: String
+    get() = when (this) {
+        is MainScreenState.AppBarMode.Search -> query
+        is MainScreenState.ActionMode -> (returnTo as? MainScreenState.AppBarMode.Search)?.query
+            ?: ""
+
+        else -> ""
+    }
+
+private val MainScreenState.isSelectAll: Boolean
+    get() = (this as? MainScreenState.ActionMode)?.isSelectAllActive == true

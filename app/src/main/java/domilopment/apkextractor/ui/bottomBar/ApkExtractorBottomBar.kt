@@ -5,7 +5,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.material3.AppBarRow
 import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FlexibleBottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -16,18 +15,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.Dp
 import domilopment.apkextractor.data.AppBarState
-import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.ui.DeviceTypeUtils
 import androidx.compose.ui.platform.LocalResources
+import domilopment.apkextractor.data.MainScreenState
 
 @Composable
 fun ApkExtractorBottomBar(
-    appBarState: AppBarState, uiState: UiState, modifier: Modifier = Modifier
+    appBarState: AppBarState, screenState: MainScreenState, modifier: Modifier = Modifier
 ) {
     val isPhoneBars = DeviceTypeUtils.isPhoneBars
-    val isVisible by remember(uiState, appBarState, isPhoneBars) {
+    val isVisible by remember(screenState, appBarState, isPhoneBars) {
         derivedStateOf {
-            uiState is UiState.ActionMode && isPhoneBars && appBarState.actionModeActions.isNotEmpty()
+            screenState is MainScreenState.ActionMode && isPhoneBars && appBarState.actionModeActions.isNotEmpty()
         }
     }
 
@@ -48,7 +47,6 @@ fun ApkExtractorBottomBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ActionModeBar(
     modifier: Modifier = Modifier, items: List<BottomBarItem>, expandedHeightDp: Dp

@@ -16,7 +16,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import domilopment.apkextractor.R
@@ -32,6 +35,7 @@ import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.PackageName
 import domilopment.apkextractor.utils.apkActions.ApkActionIntentParams
 import domilopment.apkextractor.utils.apkActions.intent
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -43,7 +47,6 @@ fun AppListScreen(
     showSnackbar: (MySnackbarVisuals) -> Unit,
     appOetailsScreen: (PackageName) -> Unit,
     isActionMode: Boolean,
-    onTriggerActionMode: () -> Unit,
     isActionModeAllItemsSelected: Boolean,
     onAppSelection: (Boolean, Int) -> Unit,
     showAskForSaveDirDialog: (Boolean) -> Unit,
@@ -66,27 +69,37 @@ fun AppListScreen(
     val swipeActionCustomThreshold by model.swipeActionCustomThreshold.collectAsStateWithLifecycle()
     val swipeActionThresholdMod by model.swipeActionThresholdMod.collectAsStateWithLifecycle()
 
-    LaunchedEffect(key1 = Unit) {
-        model.onProgressRequest.collect { taskId ->
-            onProgress(taskId)
-        }
-    }
-
-    // does user has selected the filter option dialog
-    var showFilter by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    // information of error if last extraction has failed, to show inside a dialog
-    var extractionError: ExtractionResult.ExtractionError.Failure? by remember {
-        mutableStateOf(null)
-    }
-
     // After finish share apk file, clear the temp folder so the temp.apk files is deleted as well
     val shareApp = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
         context.cacheDir.deleteRecursively()
+    }
+
+    // Shows if user has selected the filter option dialog
+    var showFilter by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    // Error details to display in a dialog if the last extraction failed.
+    var extractionError: ExtractionResult.ExtractionError.Failure? by remember {
+        mutableStateOf(null)
+    }
+
+    // Automatically update the ActionMode selection count when appList changes.
+    // Ignore the initial emission on composition.
+    LaunchedEffect(Unit) {
+        snapshotFlow { state.appList.count { it.isChecked } }
+            .drop(1)
+            .collect { count ->
+                onAppSelection(false, count)
+            }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        model.onProgressRequest.collect { taskId ->
+            onProgress(taskId)
+        }
     }
 
     LaunchedEffect(key1 = searchString) {
@@ -221,24 +234,18 @@ fun AppListScreen(
         )
     }
 
+    val haptic = LocalHapticFeedback.current
     AppListContent(
         appList = state.appList,
         searchString = searchString,
         isSwipeToDismiss = !isActionMode,
         updateApp = { app ->
-            if (isActionMode) {
-                val newApp = app.copy(isChecked = !app.isChecked)
-                val selectedAppCount =
-                    state.appList.map { if (it == app) newApp else it }.count { it.isChecked }
-                model.updateApp(newApp)
-                onAppSelection(false, selectedAppCount)
-            } else appOetailsScreen(app.appPackageName)
+            if (isActionMode) model.updateApp(app.copy(isChecked = !app.isChecked))
+            else appOetailsScreen(app.appPackageName)
         },
         triggerActionMode = {
-            if (!isActionMode) {
-                onTriggerActionMode()
-                model.updateApp(it.copy(isChecked = true))
-            }
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            model.updateApp(it.copy(isChecked = true))
         },
         isRefreshing = state.isRefreshing,
         isPullToRefresh = !isActionMode,

@@ -1,6 +1,14 @@
 package domilopment.apkextractor.data
 
-data class MainScreenState(
-    val appBarSearchText: String = "",
-    val uiState: UiState = UiState.Default
-)
+sealed interface MainScreenState {
+    sealed interface AppBarMode : MainScreenState {
+        data object Default : AppBarMode
+        data class Search(val query: String = "") : AppBarMode
+    }
+
+    data class ActionMode(
+        val returnTo: AppBarMode,
+        val isSelectAllActive: Boolean = false,
+        val selectedItemCount: Int = 0
+    ) : MainScreenState
+}

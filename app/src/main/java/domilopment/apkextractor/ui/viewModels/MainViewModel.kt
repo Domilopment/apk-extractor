@@ -1,15 +1,10 @@
 package domilopment.apkextractor.ui.viewModels
 
 import android.net.Uri
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import domilopment.apkextractor.data.ActionModeState
 import domilopment.apkextractor.data.MainScreenState
-import domilopment.apkextractor.data.UiState
 import domilopment.apkextractor.data.repository.analytics.AnalyticsRepository
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
 import domilopment.apkextractor.domain.usecase.prefs.SaveDirUriUseCase
@@ -17,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,11 +22,9 @@ class MainViewModel @Inject constructor(
     private val saveDirUseCase: SaveDirUriUseCase,
     private val analyticsRepository: AnalyticsRepository
 ) : ViewModel() {
-    var mainScreenState by mutableStateOf(MainScreenState())
-        private set
-
-    var actionModeState by mutableStateOf(ActionModeState())
-        private set
+    private val _mainScreenState =
+        MutableStateFlow<MainScreenState>(MainScreenState.AppBarMode.Default)
+    val mainScreenStateFlow = _mainScreenState.asStateFlow()
 
     private val _keepSplashScreen = MutableStateFlow(true)
     val keepSplashScreen = _keepSplashScreen.asStateFlow()
@@ -52,49 +46,61 @@ class MainViewModel @Inject constructor(
         viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000), false
     )
 
-    fun updateSearchQuery(query: String) {
-        mainScreenState = mainScreenState.copy(appBarSearchText = query)
-    }
-
-    fun setSearchBarState() {
-        mainScreenState = mainScreenState.copy(uiState = UiState.Search)
-    }
-
-    fun setActionModeState() {
-        mainScreenState =
-            mainScreenState.copy(uiState = UiState.ActionMode(previousState = mainScreenState.uiState))
+    fun searchBarMode(query: String = "") {
+        _mainScreenState.update { state ->
+            val searchState = state as? MainScreenState.AppBarMode.Search
+            searchState?.copy(query = query) ?: MainScreenState.AppBarMode.Search(query)
+        }
     }
 
     fun resetAppBarState() {
-        mainScreenState = MainScreenState()
+        _mainScreenState.update {
+            MainScreenState.AppBarMode.Default
+        }
     }
 
-    fun updateActionMode(
-        selectAllItems: Boolean = actionModeState.selectAllItemsCheck,
-        selectedItems: Int = actionModeState.selectedItemCount
-    ) {
-        if (selectedItems == 0) {
-            mainScreenState = mainScreenState.copy(
-                uiState = (mainScreenState.uiState as UiState.ActionMode).previousState
+    private fun actionMode(
+        state: MainScreenState,
+        selectAllItems: Boolean = (state as? MainScreenState.ActionMode)?.isSelectAllActive ?: false,
+        selectedItems: Int = (state as? MainScreenState.ActionMode)?.selectedItemCount ?: 0
+    ) : MainScreenState {
+        return when (state) {
+            is MainScreenState.AppBarMode -> if (selectedItems > 0) {
+                MainScreenState.ActionMode(
+                    returnTo = state,
+                    isSelectAllActive = selectAllItems,
+                    selectedItemCount = selectedItems
+                )
+            } else state
+
+            is MainScreenState.ActionMode -> if (selectedItems == 0) {
+                state.returnTo
+            } else state.copy(
+                isSelectAllActive = selectAllItems, selectedItemCount = selectedItems
             )
-            actionModeState = ActionModeState()
-        } else actionModeState = actionModeState.copy(
-            selectAllItemsCheck = selectAllItems, selectedItemCount = selectedItems
-        )
+        }
+    }
+
+    fun actionMode(selectAllItems: Boolean, selectedItems: Int) {
+        _mainScreenState.update { state ->
+            actionMode(state, selectAllItems, selectedItems)
+        }
+    }
+
+    fun actionMode(selectAllItems: Boolean) {
+        _mainScreenState.update { state ->
+            actionMode(state, selectAllItems)
+        }
     }
 
     fun onReturnUiMode() {
-        mainScreenState = mainScreenState.copy(
-            uiState = when (mainScreenState.uiState) {
-                UiState.Search -> UiState.Default
-                is UiState.ActionMode -> {
-                    actionModeState = ActionModeState()
-                    (mainScreenState.uiState as UiState.ActionMode).previousState
-                }
-
-                else -> mainScreenState.uiState
+        _mainScreenState.update { state ->
+            when (state) {
+                is MainScreenState.AppBarMode.Search -> MainScreenState.AppBarMode.Default
+                is MainScreenState.ActionMode -> state.returnTo
+                else -> state
             }
-        )
+        }
     }
 
     fun hideSplashScreen() {
