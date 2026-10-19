@@ -3,6 +3,7 @@ package domilopment.apkextractor.utils
 import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.text.format.Formatter
 import androidx.core.content.FileProvider
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
@@ -269,11 +270,11 @@ object FileUtil {
     }
 
     /**
-     * Takes in File size in Bytes and returns size in MB
+     * Takes in File size in Bytes and returns formatted size
      * @param length File size as Long
      */
-    fun getBytesSizeInMB(length: Long): Float {
-        return length / (1000.0F * 1000.0F) // Calculate MB Size
+    fun formatFileSize(context: Context, length: Long): String {
+        return Formatter.formatFileSize(context, length)
     }
 
     /**

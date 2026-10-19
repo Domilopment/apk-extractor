@@ -52,13 +52,14 @@ import domilopment.apkextractor.BuildConfig
 import domilopment.apkextractor.R
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.ui.attrColorResource
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
 
 @Composable
 fun AppListItem(
     modifier: Modifier = Modifier,
     appName: AnnotatedString,
-    apkSize: Float,
+    apkSize: Long,
     appPackageName: AnnotatedString,
     appIcon: Drawable,
     isChecked: Boolean,
@@ -66,6 +67,7 @@ fun AppListItem(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val containerColor by animateColorAsState(
         targetValue = if (isChecked) MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.2f)
             .compositeOver(ListItemDefaults.containerColor) else ListItemDefaults.containerColor,
@@ -108,7 +110,7 @@ fun AppListItem(
                 text = appName, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = stringResource(id = R.string.app_list_item_size, apkSize),
+                text = FileUtil.formatFileSize(context, apkSize),
                 modifier = Modifier
                     .align(Alignment.Bottom)
                     .padding(vertical = 4.dp),
@@ -180,7 +182,7 @@ private fun AppListItemPreview() {
                 appCategory = 0,
                 appInstallTime = 0,
                 appUpdateTime = 0,
-                apkSize = 1024F,
+                apkSize = 1024L,
                 launchIntent = null,
                 installationSource = null,
             )

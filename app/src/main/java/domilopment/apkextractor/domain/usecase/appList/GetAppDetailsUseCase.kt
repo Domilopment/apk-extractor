@@ -47,7 +47,7 @@ class GetAppDetailsUseCaseImpl(
                 appUpdateTime = packageInfo.lastUpdateTime,
                 apkSize = listOfNotNull(
                     applicationInfo.sourceDir, *(applicationInfo.splitSourceDirs ?: emptyArray())
-                ).sumOf { File(it).length() }.let { FileUtil.getBytesSizeInMB(it) },
+                ).sumOf { File(it).length() },
                 launchIntent = packageManager.getLaunchIntentForPackage(applicationInfo.packageName),
                 installationSource = Utils.getInstallationSourceOrNull(
                     packageManager, applicationInfo

@@ -246,7 +246,7 @@
     <!-- App Options Bottom Sheet -->
     <string name="info_bottom_sheet_source_directory">Source APK</string>
     <string name="info_bottom_sheet_split_sources">splits</string>
-    <string name="info_bottom_sheet_apk_size">APK size: %.2f MB</string>
+    <string name="info_bottom_sheet_apk_size">APK size: %s</string>
     <string name="info_bottom_sheet_version_name">Version name: %s</string>
     <string name="info_bottom_sheet_version_number">Version number: %d</string>
     <string name="info_bottom_sheet_min_sdk">Min SDK: %d | Android %s (%s)</string>
@@ -276,9 +276,6 @@
     <!-- App Multiselect Options Bottom Sheet -->
     <string name="action_multiselect_bottom_sheet_save_description">Save APKs</string>
     <string name="action_multiselect_bottom_sheet_share_description">@string/apk_action_share</string>
-
-    <!-- App List Item -->
-    <string name="app_list_item_size">%.2f MB</string>
 
     <!-- Apk List Adapter -->
     <string name="apk_holder_version">Version: %s (%d)</string>

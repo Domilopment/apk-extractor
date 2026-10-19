@@ -55,6 +55,7 @@ import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.ui.components.ExpandableColumn
 import domilopment.apkextractor.ui.components.InfoText
 import domilopment.apkextractor.utils.AndroidVersion
+import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.MySnackbarVisuals
 import domilopment.apkextractor.utils.Utils
 import domilopment.apkextractor.utils.apkActions.ApkActionIntent
@@ -222,7 +223,7 @@ private fun AppSheetInfo(
     modifier: Modifier = Modifier,
     sourceDirectory: String,
     splitDirectories: Array<String>?,
-    apkSize: Float,
+    apkSize: Long,
     versionName: String?,
     versionNumber: Long,
     minSdk: Int,
@@ -233,6 +234,7 @@ private fun AppSheetInfo(
     installationSource: String?,
     onOpenStorePage: () -> Unit
 ) {
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
     Column(
         modifier = modifier
@@ -247,7 +249,7 @@ private fun AppSheetInfo(
         )
         InfoText(
             text = stringResource(
-                id = R.string.info_bottom_sheet_apk_size, apkSize
+                id = R.string.info_bottom_sheet_apk_size, FileUtil.formatFileSize(context, apkSize)
             )
         )
         InfoText(

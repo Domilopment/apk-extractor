@@ -35,7 +35,7 @@ class AppModelToApplicationDetailModelMapper(val packageManager: PackageManager)
                 appUpdateTime = packageInfo.lastUpdateTime,
                 apkSize = listOfNotNull(
                     applicationInfo.sourceDir, *(applicationInfo.splitSourceDirs ?: emptyArray())
-                ).sumOf { File(it).length() }.let { FileUtil.getBytesSizeInMB(it) },
+                ).sumOf { File(it).length() },
                 launchIntent = packageManager.getLaunchIntentForPackage(applicationInfo.packageName),
                 installationSource = Utils.getInstallationSourceOrNull(
                     packageManager, applicationInfo
@@ -93,7 +93,7 @@ class AppModelToApplicationListModelMapper(val packageManager: PackageManager) :
                 appUpdateTime = packageInfo.lastUpdateTime,
                 apkSize = listOfNotNull(
                     applicationInfo.sourceDir, *(applicationInfo.splitSourceDirs ?: emptyArray())
-                ).sumOf { File(it).length() }.let { FileUtil.getBytesSizeInMB(it) },
+                ).sumOf { File(it).length() },
                 launchIntent = packageManager.getLaunchIntentForPackage(applicationInfo.packageName),
                 installationSource = Utils.getInstallationSourceOrNull(
                     packageManager, applicationInfo
@@ -157,7 +157,7 @@ class ApplicationListModelToApplicationDetailModelMapper(
                 appUpdateTime = packageInfo.lastUpdateTime,
                 apkSize = listOfNotNull(
                     applicationInfo.sourceDir, *(applicationInfo.splitSourceDirs ?: emptyArray())
-                ).sumOf { File(it).length() }.let { FileUtil.getBytesSizeInMB(it) },
+                ).sumOf { File(it).length() },
                 launchIntent = packageManager.getLaunchIntentForPackage(applicationInfo.packageName),
                 installationSource = Utils.getInstallationSourceOrNull(
                     packageManager, applicationInfo

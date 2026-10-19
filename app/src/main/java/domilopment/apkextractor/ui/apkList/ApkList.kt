@@ -1,6 +1,5 @@
 package domilopment.apkextractor.ui.apkList
 
-import android.text.format.Formatter
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
@@ -48,6 +47,7 @@ import domilopment.apkextractor.ui.components.ScrollToTopLazyColumn
 import domilopment.apkextractor.utils.Utils
 import timber.log.Timber
 import androidx.core.net.toUri
+import domilopment.apkextractor.utils.FileUtil
 
 @Composable
 fun ApkList(
@@ -141,11 +141,11 @@ private fun StorageInfo(
     }
 
     val formatTotalSpace = remember(totalSpace) {
-        Formatter.formatFileSize(context, totalSpace)
+        FileUtil.formatFileSize(context, totalSpace)
     }
 
     val formatTakenSpace = remember(takenSpace) {
-        Formatter.formatFileSize(context, takenSpace)
+        FileUtil.formatFileSize(context, takenSpace)
     }
 
     Surface(

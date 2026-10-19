@@ -12,7 +12,7 @@ sealed interface ApplicationModel {
     val appCategory: Int
     val appInstallTime: Long
     val appUpdateTime: Long
-    val apkSize: Float
+    val apkSize: Long
     val launchIntent: Intent?
     val installationSource: String?
     val isFavorite: Boolean
@@ -36,7 +36,7 @@ sealed interface ApplicationModel {
         override val appCategory: Int,
         override val appInstallTime: Long,
         override val appUpdateTime: Long,
-        override val apkSize: Float,
+        override val apkSize: Long,
         override val launchIntent: Intent?,
         override val installationSource: String?,
         override val isFavorite: Boolean = false
@@ -98,7 +98,7 @@ sealed interface ApplicationModel {
         override val appCategory: Int,
         override val appInstallTime: Long,
         override val appUpdateTime: Long,
-        override val apkSize: Float,
+        override val apkSize: Long,
         override val launchIntent: Intent?,
         override val installationSource: String?,
         val isChecked: Boolean = false,

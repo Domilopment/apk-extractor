@@ -237,7 +237,7 @@
     <!-- App Options Bottom Sheet -->
     <string name="info_bottom_sheet_source_directory">Kaynak APK</string>
     <string name="info_bottom_sheet_split_sources">bölünmüş kaynaklar</string>
-    <string name="info_bottom_sheet_apk_size">APK boyutu: %.2f MB</string>
+    <string name="info_bottom_sheet_apk_size">APK boyutu: %s</string>
     <string name="info_bottom_sheet_version_name">Sürüm adı: %s</string>
     <string name="info_bottom_sheet_version_number">Sürüm numarası: %d</string>
     <string name="info_bottom_sheet_min_sdk">Minimum SDK: %d | Android %s (%s)</string>
@@ -267,9 +267,6 @@
     <!-- App Multiselect Options Bottom Sheet -->
     <string name="action_multiselect_bottom_sheet_save_description">APK\'ları kaydet</string>
     <string name="action_multiselect_bottom_sheet_share_description">@string/apk_action_share</string>
-
-    <!-- App List Item -->
-    <string name="app_list_item_size">%.2f MB</string>
 
     <!-- Apk List Adapter -->
     <string name="apk_holder_version">Sürüm: %s (%d)</string>

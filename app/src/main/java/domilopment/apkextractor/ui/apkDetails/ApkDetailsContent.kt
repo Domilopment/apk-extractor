@@ -183,6 +183,7 @@ fun ApkSheetInfo(
     versionName: String?,
     versionNumber: Long?
 ) {
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
     Column(
         modifier = modifier
@@ -211,7 +212,7 @@ fun ApkSheetInfo(
         )
         InfoText(
             text = stringResource(
-                id = R.string.info_bottom_sheet_apk_size, apkSize / (1000F * 1000F)
+                id = R.string.info_bottom_sheet_apk_size, FileUtil.formatFileSize(context, apkSize)
             )
         )
         InfoText(
