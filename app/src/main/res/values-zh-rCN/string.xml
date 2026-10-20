@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">APK Extractor</string>
+
+    <!-- Apk Options -->
+    <string name="apk_action_share">分享</string>
+    <string name="apk_action_delete">删除</string>
+    <string name="apk_action_delete_success">APK 已删除</string>
+    <string name="apk_action_delete_failed">删除 APK 失败</string>
+    <string name="apk_action_uninstall_app">卸载应用</string>
+
+    <string name="title_activity_settings">设置</string>
+    <string name="title_screen_save_file_settings">保存文件格式</string>
+    <string name="title_screen_auto_backup_settings">自动备份</string>
+    <string name="title_screen_about_settings">关于</string>
+    <string name="title_screen_swipe_action_settings">滑动操作</string>
+    <string name="title_screen_data_collection_settings">数据收集</string>
+
+    <!-- Preference Header -->
+    <string name="save_header">存储与备份</string>
+    <string name="app_type_header">应用</string>
+    <string name="info_header">关于与支持</string>
+
+    <!-- Preference update available -->
+    <string name="update_available_title">有可用更新</string>
+    <string name="update_available_summary">点击此处下载并安装应用更新。</string>
+
+    <!-- Preferences Save Option -->
+    <string name="choose_save_dir">选择保存目录</string>
+    <string name="choose_save_dir_summary">选择或更改保存 APK 的路径</string>
+
+    <string name="auto_backup">自动备份服务</string>
+    <string name="auto_backup_summary">应用更新后自动备份</string>
+
+    <string name="auto_backup_app_list">选择要自动备份的应用</string>
+    <string name="auto_backup_app_list_summary">选择在更新后自动创建备份的应用</string>
+
+    <string name="backup_mode_split_apk">备份拆分源 APK</string>
+    <string name="backup_mode_split_apk_summary_active">将 base.apk + 拆分 APK 备份为 APK 捆绑包（可重命名为“.zip”并作为 zip 使用）。</string>
+    <string name="backup_mode_split_apk_summary_inactive">仅备份 base.apk（警告：仅从 base.apk 安装应用可能因缺少资源而在启动时崩溃）。</string>
+
+    <!-- Preferences Apps -->
+    <string name="app_type_system">系统</string>
+    <string name="app_type_system_updated">系统（已更新）</string>
+    <string name="app_type_user">用户</string>
+
+    <!-- Preference Data Collection -->
+    <string name="data_collection_header">隐私与数据收集</string>
+    <string name="data_collection_analytics">分析</string>
+    <string name="data_collection_analytics_summary">收集用户数据，例如应用交互和屏幕浏览，以了解用户行为并优化应用性能。</string>
+    <string name="data_collection_crashlytics">Crashlytics</string>
+    <string name="data_collection_crashlytics_summary">收集崩溃报告和系统相关数据，以排查问题并提升稳定性。</string>
+    <string name="data_collection_perf">性能</string>
+    <string name="data_collection_perf_summary">收集性能指标，例如应用启动时间和网络请求，以优化应用性能。</string>
+    <string name="data_collection_delete">删除安装 ID</string>
+    <string name="data_collection_delete_summary">Firebase 安装 ID 对于每个应用的每次安装都不同；同一设备上的不同应用具有不同的 Firebase 安装 ID。Firebase 安装 ID 用于标识应用安装以及与该应用安装相关的数据。\n\n当您删除安装 ID 时，与该安装 ID 相关的数据将在 180 天内从所有使用 Firebase 安装 ID 来标识安装的 Firebase 服务的实时系统和备份系统中移除。此过程在 Google 关于删除和保留的声明中有概要说明。</string>
+    <string name="data_collection_delete_summary_hyperlink_text">关于删除和保留的声明</string>
+    <string name="data_collection_delete_summary_hyperlink_url">https://policies.google.com/technologies/retention</string>
+    <string name="data_collection_delete_success">Firebase 安装 ID 已删除</string>
+    <string name="data_collection_delete_failure">无法删除 Firebase 安装 ID，请稍后重试或联系开发者</string>
+
+    <!-- Preferences Info -->
+    <string name="github">GitHub</string>
+    <string name="github_summary">查看代码或创建 Issue、Pull Request</string>
+
+    <string name="googleplay">Google Play</string>
+    <string name="googleplay_summary">查看应用的 Play 商店页面</string>
+
+    <string name="privacy_policy_title">隐私政策</string>
+
+    <string name="terms_title">条款与条件</string>
+
+    <string name="thanks_translaton_title">翻译者</string>
+
+    <string name="oss_dependencies_title">使用的库</string>
+
+    <string name="version">版本：%s (%d)</string>
+
+    <string name="appearance">外观与主题</string>
+    <string name="ui_mode">夜间模式</string>
+    <string name="ui_mode_summary">更改应用外观</string>
+    <string name="ui_follow_os">跟随系统</string>
+    <string name="ui_dark">深色</string>
+    <string name="ui_white">浅色</string>
+
+    <string name="use_material_you">使用 Material You</string>
+    <string name="use_material_you_summary">使用动态色彩主题，由 Android 12 及更高版本的壁纸颜色提供</string>
+
+    <string name="gestures_and_interactions">手势与交互</string>
+    <string name="app_list_swipe_actions">应用列表滑动操作</string>
+
+    <string name="apk_swipe_action_right_title">右滑操作</string>
+    <string name="apk_swipe_action_right_summary">选择在应用列表中向右滑动条目时执行的操作</string>
+
+    <string name="apk_swipe_action_left_title">左滑操作</string>
+    <string name="apk_swipe_action_left_summary">选择在应用列表中向左滑动条目时执行的操作</string>
+
+    <string name="apk_swipe_action_custom_threshold_title">启用滑动操作自定义阈值</string>
+    <string name="apk_swipe_action_custom_threshold_summary">使用滑动操作阈值修饰符，而不是默认的 56dp。</string>
+
+    <string name="advanced_swipe_action_header">高级滑动操作设置</string>
+    <string name="apk_swipe_action_threshold_title">滑动操作阈值修饰符</string>
+    <string name="apk_swipe_action_threshold_summary">更改位置阈值的百分比，以便更容易触发滑动操作。</string>
+
+    <string name="app_options_header">应用选项</string>
+
+    <string name="favorites">收藏</string>
+    <string name="sort_favorites">将收藏排序到顶部</string>
+
+    <string name="filter_title">筛选</string>
+    <string name="all_sources">任意来源</string>
+    <string name="other_sources">其他来源</string>
+    <string name="filter_category_all">所有类别</string>
+    <string name="filter_category_undefined">未定义</string>
+    <string name="filter_category_games">游戏</string>
+    <string name="filter_category_audio">音频</string>
+    <string name="filter_category_video">视频</string>
+    <string name="filter_category_image">图像</string>
+    <string name="filter_category_social">社交</string>
+    <string name="filter_category_news">新闻</string>
+    <string name="filter_category_maps">地图</string>
+    <string name="filter_category_productivity">效率</string>
+    <string name="installation_sources">安装来源</string>
+    <string name="app_categories">类别</string>
+    <string name="other_filter">其他筛选</string>
+
+    <string name="backup_apk_bundle_file_ending_title">APK 捆绑包文件扩展名</string>
+    <string name="backup_apk_bundle_file_ending_summary">为捆绑的 APK 文件（拆分 APK）设置默认文件扩展名（后缀）。</string>
+
+    <string name="ignore_battery_optimization_title">禁用电池优化</string>
+    <string name="ignore_battery_optimization_summary">如果自动备份服务在后台被终止且不会重启，您可以考虑为此应用禁用电池优化，以便它继续在后台运行</string>
+
+    <string name="check_update_on_start_title">启动时检查更新</string>
+    <string name="check_update_on_start_summary">在应用启动时检查是否有新更新，并显示安装提示。</string>
+
+    <string name="clear_cache">清除缓存</string>
+    <string name="clear_cache_summary">应用缓存大小：%s</string>
+    <string name="clear_cache_success">缓存已清除</string>
+    <string name="clear_cache_failed">无法清除缓存</string>
+
+    <string name="app_save_name">APK 名称</string>
+    <string name="app_save_name_summary">配置 APK 保存名称信息，在文件名中拖动所选元素以更改位置。</string>
+    <string name="app_save_name_name">应用名称</string>
+    <string name="app_save_name_package">包名</string>
+    <string name="app_save_name_version_name">应用版本名称</string>
+    <string name="app_save_name_version_number">应用版本号</string>
+    <string name="app_save_name_datetime">日期</string>
+    <string name="app_save_name_toast">请至少选择应用名称或包名</string>
+
+    <string name="app_save_name_part_separator">APK 名称部分分隔符</string>
+    <string name="app_save_name_part_separator_summary">选择连接 APK 名称各部分时使用的字符。创建 APK 文件时会使用该字符。</string>
+    <string name="app_save_name_part_separator_space">空格</string>
+    <string name="app_save_name_part_separator_underscore">下划线</string>
+    <string name="app_save_name_part_separator_hyphen">连字符</string>
+    <string name="app_save_name_part_separator_dot">点</string>
+
+    <string name="locale_list_title">语言</string>
+    <string name="locale_list_summary">%s</string>
+    <string name="locale_list_default">系统默认</string>
+    <string name="locale_list_not_supported">尚不支持区域设置 %s</string>
+
+    <!-- APK Name Preference Dialog -->
+    <string name="app_name_dialog_ok">确定</string>
+    <string name="app_name_dialog_cancel">取消</string>
+
+    <!-- Menu -->
+    <string name="menu_search">搜索</string>
+    <string name="menu_sort_app">排序</string>
+    <string name="menu_sort_app_name">应用名称</string>
+    <string name="menu_sort_app_package">包名</string>
+    <string name="menu_sort_app_install">最近安装</string>
+    <string name="menu_sort_app_update">最近更新</string>
+    <string name="menu_sort_app_apk_size">APK 大小</string>
+    <string name="menu_show_save_dir">已保存的 APK</string>
+    <string name="action_settings">设置</string>
+    <string name="menu_show_app_list">已安装应用</string>
+    <string name="menu_refresh_app_list">刷新</string>
+
+    <string name="sort_order_asc">升序</string>
+    <string name="sort_order_desc">降序</string>
+
+    <!-- Menu Multiselect -->
+    <string name="multiselect_select_all">全选</string>
+
+    <!-- Menu ApkListFragment -->
+    <string name="menu_sort_apk">排序方式…</string>
+    <string name="menu_sort_apk_file_name_asc">文件名（A 到 Z）</string>
+    <string name="menu_sort_apk_file_name_desc">文件名（Z 到 A）</string>
+    <string name="menu_sort_apk_file_size_asc">大小（从小到大）</string>
+    <string name="menu_sort_apk_file_size_desc">大小（从大到小）</string>
+    <string name="menu_sort_apk_file_mod_date_asc">修改时间（从旧到新）</string>
+    <string name="menu_sort_apk_file_mod_date_desc">修改时间（从新到旧）</string>
+    <string name="menu_show_open_documents">其他 APK</string>
+    <string name="menu_refresh_apk_list">刷新</string>
+
+    <!-- APK Selected Alert -->
+    <string name="alert_apk_selected_title">如何使用 APK</string>
+    <string name="alert_apk_selected_failed">无法打开所选 APK</string>
+    <string name="alert_apk_selected_share">@string/apk_action_share</string>
+    <string name="alert_apk_selected_install">安装</string>
+    <string name="alert_apk_selected_delete">@string/apk_action_delete</string>
+
+    <!-- MainActivity -->
+    <string name="alert_save_path_title">请选择保存目录</string>
+    <string name="alert_save_path_message">为了保存提取的 APK，您必须选择或创建一个目录，并授予应用写入权限。</string>
+    <string name="alert_save_path_ok">确定</string>
+    <string name="alert_save_path_error_title">需要文件管理器！</string>
+    <string name="alert_save_path_error_message">您的设备似乎缺少可处理目录选择的文件管理器应用。应用需要它才能正常工作。\n\n解决问题后，请再次尝试选择目录。</string>
+    <string name="alert_save_path_error_ok">重试</string>
+    <string name="alert_save_path_error_cancel">取消</string>
+
+    <string name="toast_save_apps">选择要保存的应用</string>
+    <string name="snackbar_successful_extracted">%s 已成功提取</string>
+    <plurals name="snackbar_successful_extracted_multiple">
+        <item quantity="other">%s 以及另外 %d 个已成功提取</item>
+    </plurals>
+    <string name="snackbar_extraction_failed">%s 提取失败</string>
+    <string name="snackbar_extraction_failed_message">错误信息：\n%s\n\n如果无法解决问题，请联系开发者。</string>
+    <string name="snackbar_extraction_failed_message_copy_to_clipboard">复制到剪贴板</string>
+    <string name="snackbar_extraction_failed_message_dismiss">忽略</string>
+    <string name="share_intent_title">分享应用</string>
+    <string name="toast_share_app">选择要分享的应用</string>
+
+    <!-- Auto Backup Foreground Service -->
+    <string name="auto_backup_notification_title">正在监视更新</string>
+    <string name="auto_backup_notification_content_text">正在监视所选软件包的更新</string>
+    <string name="auto_backup_notification_action_stop">停止服务</string>
+    <string name="auto_backup_notification_permission_request_rejected">请授予通知权限（在应用设置中），否则自动备份服务无法告知其是否仍在运行或已在后台创建备份。</string>
+
+    <string name="auto_backup_broadcast_receiver_backup_success">已成功备份 %s</string>
+    <string name="auto_backup_broadcast_receiver_backup_failed">备份 %s 失败</string>
+    <string name="auto_backup_broadcast_receiver_notification_title">自动备份</string>
+
+    <!-- Auto Backup Tile Service -->
+    <string name="auto_backup_tile_service_start_foreground_error">错误：打开应用以启动服务</string>
+    <string name="auto_backup_tile_service_notifications_disabled">启动服务前，请授予通知权限。</string>
+
+    <!-- App Options Bottom Sheet -->
+    <string name="info_bottom_sheet_source_directory">源 APK</string>
+    <string name="info_bottom_sheet_split_sources">拆分</string>
+    <string name="info_bottom_sheet_apk_size">APK 大小：%.2f MB</string>
+    <string name="info_bottom_sheet_version_name">版本名称：%s</string>
+    <string name="info_bottom_sheet_version_number">版本号：%d</string>
+    <string name="info_bottom_sheet_min_sdk">最低 SDK：%d | Android %s (%s)</string>
+    <string name="info_bottom_sheet_target_sdk">目标 SDK：%d | Android %s (%s)</string>
+    <string name="info_bottom_sheet_category">类别：%s</string>
+    <string name="info_bottom_sheet_install_time">安装时间：%s</string>
+    <string name="info_bottom_sheet_update_time">最后更新：%s</string>
+    <string name="info_bottom_sheet_installation_source">安装来源：%s</string>
+
+    <string name="action_bottom_sheet_save">保存</string>
+    <string name="action_bottom_sheet_share">@string/apk_action_share</string>
+    <string name="action_bottom_sheet_save_image">保存图标</string>
+    <string name="action_bottom_sheet_open">打开</string>
+    <string name="action_bottom_sheet_settings">设置</string>
+    <string name="action_bottom_sheet_uninstall">卸载</string>
+    <string name="snackbar_successful_save_image">图标已保存</string>
+    <string name="snackbar_need_permission_save_image">需要存储权限才能保存图片</string>
+    <string name="snackbar_no_activity_for_market_intent">无法打开商店页面</string>
+
+    <string name="action_none">无</string>
+
+    <!-- Apk Options Bottom Sheet -->
+    <string name="apk_bottom_sheet_source_uri">APK 源 URI：%s</string>
+    <string name="apk_bottom_sheet_file_name">APK 文件名：%s</string>
+    <string name="apk_bottom_sheet_last_modified">创建时间：%s</string>
+
+    <!-- App Multiselect Options Bottom Sheet -->
+    <string name="action_multiselect_bottom_sheet_save_description">保存 APK</string>
+    <string name="action_multiselect_bottom_sheet_share_description">@string/apk_action_share</string>
+
+    <!-- App List Item -->
+    <string name="app_list_item_size">%.2f MB</string>
+
+    <!-- Apk List Adapter -->
+    <string name="apk_holder_version">版本：%s (%d)</string>
+    <string name="apk_list_sum_backup_size_title">备份占用空间：</string>
+    <string name="apk_list_sum_backup_size_percentage">%.2f %%</string>
+    <string name="apk_list_sum_backup_size_info_backups">已提取的备份</string>
+    <string name="apk_list_sum_backup_size_info_used">设备已用空间总计</string>
+    <string name="apk_list_sum_backup_size_info_total">设备空间总计</string>
+
+    <!-- App List Item -->
+    <string name="list_item_Image_description">应用图标</string>
+    <string name="list_item_title_placeholder" translatable="false">App Title</string>
+    <string name="list_item_package_placeholder" translatable="false">com.placeholder.application</string>
+    <string name="list_item_checkbox_description">多选复选框</string>
+
+    <!-- App Extraction Progress Dialog -->
+    <string name="progress_dialog_percentage">%.2f %%</string>
+    <string name="progress_dialog_value">%d/%d</string>
+    <string name="progress_dialog_title_save">保存 APK</string>
+    <string name="progress_dialog_title_share">准备分享</string>
+    <string name="progress_dialog_title_install">安装 APK</string>
+    <string name="progress_dialog_title_placeholder" translatable="false">Progress Dialog</string>
+
+    <!-- Installation Activity -->
+    <string name="installation_activity_placeholder_text">请稍候</string>
+
+    <!-- Installation Result Dialog -->
+    <string name="installation_result_dialog_success_title">安装成功！</string>
+    <string name="installation_result_dialog_success_message">%s 安装成功</string>
+    <string name="installation_result_dialog_failed_title">安装失败！</string>
+    <string name="uninstallation_result_dialog_success_title">卸载成功！</string>
+    <string name="uninstallation_result_dialog_success_message">%s 卸载成功</string>
+    <string name="uninstallation_result_dialog_failed_title">卸载失败！</string>
+    <string name="uninstallation_result_dialog_failed_message">%s 卸载失败，消息：\n%s</string>
+    <string name="pending_user_action_security_exception_dialog_title">安全异常！</string>
+    <string name="pending_user_action_security_exception_dialog_message">无法继续处理，消息：\n\n%2$s\n\n请联系开发者。</string>
+    <string name="installation_result_dialog_ok">确定</string>
+    <string name="installation_result_dialog_extern">尝试外部安装</string>
+
+    <!-- Installation Error Types -->
+    <string name="installation_error_aborted">%s 安装被用户中止。</string>
+    <string name="installation_error_generic">%s 安装失败，错误：\n%s</string>
+    <string name="installation_error_blocked">%s 安装被系统阻止。</string>
+    <string name="installation_error_invalid">%s 安装失败，软件包无效、损坏或包含无效部分（apks/xapk）。</string>
+    <string name="installation_error_conflict">%s 安装失败，软件包冲突。\n请尝试卸载当前已安装版本，然后重试。</string>
+    <string name="installation_error_storage">%s 安装失败，存储空间不足。请尝试删除一些文件/应用以腾出空间。</string>
+    <string name="installation_error_incompatible">%s 安装失败，软件包不兼容。这可能意味着处理器架构不匹配，或设备缺少运行所需的组件。</string>
+    <string name="installation_error_session_creation">%s 安装失败，无法创建会话。可能是存储读写错误，或被系统安全机制阻止。</string>
+    <string name="installation_error_file_read">%s 安装失败，文件无法读取或已损坏。</string>
+
+    <!-- Action Mode -->
+    <string name="action_mode_title">已选择 %d 项</string>
+
+    <!-- Check for App update -->
+    <string name="popup_snackbar_for_complete_update_text">刚刚下载了一个更新。</string>
+    <string name="popup_snackbar_for_complete_update_action">重启</string>
+
+    <string name="popup_dialog_for_notify_about_update_title">请考虑更新</string>
+    <string name="popup_dialog_for_notify_about_update_text">如果您跳过更新，将错过新功能、UI 和性能改进，但最重要的是错误和崩溃修复。\n\n您可以在设置中禁用启动时检查更新请求。</string>
+    <string name="popup_dialog_for_notify_about_update_button_positive">更新</string>
+    <string name="popup_dialog_for_notify_about_update_button_negative">关闭</string>
+    <string name="popup_dialog_for_notify_about_update_button_neutral">不再询问</string>
+
+    <string name="popup_dialog_update_failed_title">应用内更新失败</string>
+    <string name="popup_dialog_update_failed_text">应用无法更新，请重试、直接从 Play 商店加载，或在下次打开应用时重试。</string>
+    <string name="popup_dialog_update_failed_button_positive">重试</string>
+    <string name="popup_dialog_update_failed_button_negative">关闭</string>
+
+    <!-- User Consent Dialog -->
+    <string name="consent_dialog_header">每个人都应该能够自行决定共享哪些数据，以及是否共享任何数据。为了改善您的体验，我使用 Firebase Analytics、Crashlytics 和性能监控。您可以在此指定允许收集哪些数据。</string>
+    <string name="consent_dialog_consent_notice">点击“确认选择”即表示您同意按上述方式收集和处理您的数据。如果不同意，识别和修复错误与缺陷可能会更加困难，从而可能影响您的应用体验。</string>
+    <string name="consent_dialog_footer">您可以随时在设置中撤回同意。请阅读我们的 %s 和 %s 了解更多信息。</string>
+    <string name="consent_dialog_confirm">确认选择</string>
+    <string name="consent_dialog_dismiss">全部拒绝</string>
+
+    <string name="double_back_press_first_press_toast_text">再次点击以关闭应用</string>
+
+    <!-- Donations -->
+    <string name="donations_page_title">向 Domilopment 捐赠</string>
+    <string name="donations_page_header">感谢您使用 APK Extractor！🎉</string>
+    <string name="donations_page_text">如果您喜欢这个应用，可以通过自愿捐赠支持其开发。您的贡献有助于改进应用，并让它对所有人保持无广告。\n\n每一份贡献，无论大小，都很重要。您的慷慨有助于：\n• 维护和改进应用功能\n• 为需要的人保持服务无广告\n• 开发新的精彩更新</string>
+    <string name="donations_github_sponsors">GitHub Sponsors</string>
+    <string name="donations_patreon">Patreon</string>
+    <string name="donations_bmc">Buy me a Coffee</string>
+
+</resources>
