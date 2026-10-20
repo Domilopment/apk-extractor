@@ -59,7 +59,7 @@ fun SettingsAboutContent(
                 summary = buildHyperlinkAnnotationString(
                     text = translators.joinToString(separator = "\n") {
                         "${it.name} (${Locale.forLanguageTag(it.languageTag).displayName})"
-                    }.removeSuffix("\n"),
+                    },
                     links = translators.map { Link(it.name, it.url) }.toTypedArray()
                 ),
                 onClick = {},
