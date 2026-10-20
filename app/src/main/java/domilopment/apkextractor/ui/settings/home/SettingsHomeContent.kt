@@ -135,7 +135,7 @@ fun SettingsHomeContent(
                 )
             }
             preferenceCategoryItemBottom {
-                val languages = Languages.entries
+                val languages = Languages.sortedEntries
                 ListPreference(
                     name = stringResource(id = R.string.locale_list_title),
                     icon = Icons.Default.Language,

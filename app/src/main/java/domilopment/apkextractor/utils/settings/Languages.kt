@@ -1,5 +1,6 @@
 package domilopment.apkextractor.utils.settings
 
+import android.icu.text.Collator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.stringResource
@@ -19,6 +20,17 @@ enum class Languages(val languageTag: String, val locale: Locale) {
     CHINESE_SIMPLIFIED("zh-CN", Locale.forLanguageTag("zh-CN"));
 
     companion object {
+        /**
+         * Returns a list containing the constants of this enum type, in sorted order.
+         */
+        val sortedEntries: List<Languages> by lazy {
+            val collator = Collator.getInstance(Locale.ROOT)
+            entries.sortedWith(
+                compareBy<Languages> { if (it == SYSTEM) 0 else 1 }
+                        then compareBy(collator) { it.locale.getDisplayName(it.locale) }
+            )
+        }
+
         /**
          * Get the language by its language tag.
          * @param languageTag The language tag of the language.
