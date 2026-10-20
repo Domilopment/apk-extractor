@@ -12,6 +12,7 @@ sealed class BaseContributor(name: String, url: String) {
 
 object Contributors {
     val mikropsoft = BaseContributor.Translator("mikropsoft", "https://github.com/mikropsoft", "tr")
+    val zhenghaoWen = BaseContributor.Translator("Zhenghao Wen", "https://github.com/Zhenghao-Wen", "zh-CN")
 
-    fun getTranslators(): List<BaseContributor.Translator> = listOf(mikropsoft)
+    fun getTranslators(): List<BaseContributor.Translator> = listOf(mikropsoft, zhenghaoWen)
 }

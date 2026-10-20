@@ -57,8 +57,8 @@ fun SettingsAboutContent(
                 name = AnnotatedString(text = stringResource(id = R.string.thanks_translaton_title)),
                 icon = Icons.Default.Translate,
                 summary = buildHyperlinkAnnotationString(
-                    text = translators.joinToString {
-                        "${it.name} (${Locale.forLanguageTag(it.languageTag).displayName})\n"
+                    text = translators.joinToString(separator = "\n") {
+                        "${it.name} (${Locale.forLanguageTag(it.languageTag).displayName})"
                     }.removeSuffix("\n"),
                     links = translators.map { Link(it.name, it.url) }.toTypedArray()
                 ),
