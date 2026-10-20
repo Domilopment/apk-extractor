@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">APK Extractor</string>
-
     <!-- Apk Options -->
     <string name="apk_action_share">分享</string>
     <string name="apk_action_delete">删除</string>
@@ -238,7 +236,7 @@
     <!-- App Options Bottom Sheet -->
     <string name="info_bottom_sheet_source_directory">源 APK</string>
     <string name="info_bottom_sheet_split_sources">拆分</string>
-    <string name="info_bottom_sheet_apk_size">APK 大小：%.2f MB</string>
+    <string name="info_bottom_sheet_apk_size">APK 大小：%s</string>
     <string name="info_bottom_sheet_version_name">版本名称：%s</string>
     <string name="info_bottom_sheet_version_number">版本号：%d</string>
     <string name="info_bottom_sheet_min_sdk">最低 SDK：%d | Android %s (%s)</string>
@@ -269,9 +267,6 @@
     <string name="action_multiselect_bottom_sheet_save_description">保存 APK</string>
     <string name="action_multiselect_bottom_sheet_share_description">@string/apk_action_share</string>
 
-    <!-- App List Item -->
-    <string name="app_list_item_size">%.2f MB</string>
-
     <!-- Apk List Adapter -->
     <string name="apk_holder_version">版本：%s (%d)</string>
     <string name="apk_list_sum_backup_size_title">备份占用空间：</string>
@@ -282,8 +277,6 @@
 
     <!-- App List Item -->
     <string name="list_item_Image_description">应用图标</string>
-    <string name="list_item_title_placeholder" translatable="false">App Title</string>
-    <string name="list_item_package_placeholder" translatable="false">com.placeholder.application</string>
     <string name="list_item_checkbox_description">多选复选框</string>
 
     <!-- App Extraction Progress Dialog -->
@@ -292,7 +285,6 @@
     <string name="progress_dialog_title_save">保存 APK</string>
     <string name="progress_dialog_title_share">准备分享</string>
     <string name="progress_dialog_title_install">安装 APK</string>
-    <string name="progress_dialog_title_placeholder" translatable="false">Progress Dialog</string>
 
     <!-- Installation Activity -->
     <string name="installation_activity_placeholder_text">请稍候</string>
