@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.stringResource
 import domilopment.apkextractor.R
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import java.util.Locale
 
 /**
@@ -21,14 +23,14 @@ enum class Languages(val languageTag: String, val locale: Locale) {
 
     companion object {
         /**
-         * Returns a list containing the constants of this enum type, in sorted order.
+         * Returns an immutable list containing the constants of this enum type, in sorted order.
          */
-        val sortedEntries: List<Languages> by lazy {
+        val sortedEntries: ImmutableList<Languages> by lazy {
             val collator = Collator.getInstance(Locale.ROOT)
             entries.sortedWith(
                 compareBy<Languages> { if (it == SYSTEM) 0 else 1 }
                         then compareBy(collator) { it.locale.getDisplayName(it.locale) }
-            )
+            ).toImmutableList()
         }
 
         /**
