@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -52,6 +51,7 @@ import domilopment.apkextractor.R
 import domilopment.apkextractor.data.model.apkList.ApkModel
 import domilopment.apkextractor.ui.components.ExpandableText
 import domilopment.apkextractor.ui.components.InfoText
+import domilopment.apkextractor.ui.components.toAnnotatedInfoText
 import domilopment.apkextractor.utils.AndroidVersion
 import domilopment.apkextractor.utils.FileUtil
 import domilopment.apkextractor.utils.Utils
@@ -194,18 +194,11 @@ fun ApkSheetInfo(
         ExpandableText(
             text = stringResource(
                 id = R.string.apk_bottom_sheet_source_uri, sourceDirectory
-            ).let {
-                AnnotatedString(
-                    it, listOf(
-                        AnnotatedString.Range(
-                            SpanStyle(
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
-                            ), 0, it.indexOf(':') + 1
-                        )
-                    )
+            ).toAnnotatedInfoText(
+                SpanStyle(
+                    color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold
                 )
-            }, maxLines = 1, overflow = TextOverflow.MiddleEllipsis
+            ), maxLines = 1, overflow = TextOverflow.MiddleEllipsis
         )
         InfoText(
             text = stringResource(id = R.string.apk_bottom_sheet_file_name, apkFileName),
