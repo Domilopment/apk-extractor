@@ -24,7 +24,7 @@ class TaskStore @Inject constructor() {
     fun transition(id: Uuid, transform: (TaskState) -> TaskState) {
         _state.update { current ->
             val previous = current[id] ?: return@update current
-            if (previous is TaskState.Result || previous == TaskState.Suspended) return@update current
+            if (previous is TaskState.Result || previous == TaskState.Canceled) return@update current
             current + (id to transform(previous))
         }
     }
@@ -39,6 +39,6 @@ class TaskStore @Inject constructor() {
 
     fun get(id: Uuid): Flow<TaskState?> = _state.map { it[id] }.transformWhile { value ->
         emit(value)
-        value != null && value != TaskState.Suspended && value !is TaskState.Result
+        value != null && value != TaskState.Canceled && value !is TaskState.Result
     }
 }

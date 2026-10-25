@@ -16,7 +16,7 @@ class TaskEngine @Inject constructor(
     private val store: TaskStore
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val queue = Channel<TaskActor<*>>(capacity = 64)
+    private val queue = Channel<Uuid>(capacity = 64)
     private val activeTasks = ConcurrentHashMap<Uuid, TaskActor<*>>()
 
     companion object {
@@ -26,8 +26,8 @@ class TaskEngine @Inject constructor(
     init {
         repeat(MAX_CONCURRENT_TASKS) {
             scope.launch {
-                for (task in queue) {
-                    execute(task)
+                for (taskId in queue) {
+                    activeTasks[taskId]?.let { task -> execute(task) }
                 }
             }
         }
@@ -35,6 +35,7 @@ class TaskEngine @Inject constructor(
 
     suspend fun <T> launch(
         initial: TaskState.Progress,
+        executionPolicy: TaskExecutionPolicy = TaskExecutionPolicy.QUEUED,
         block: suspend TaskScope.() -> ProgressResult<T>,
     ): Uuid {
         val id = Uuid.random()
@@ -49,7 +50,12 @@ class TaskEngine @Inject constructor(
         activeTasks[id] = task
 
         try {
-            queue.send(task)
+            when (executionPolicy) {
+                TaskExecutionPolicy.QUEUED -> queue.send(task.id)
+                TaskExecutionPolicy.IMMEDIATE -> scope.launch {
+                    execute(task)
+                }
+            }
         } catch (e: Exception) {
             task.cancel()
             activeTasks.remove(id, task)
@@ -128,7 +134,7 @@ class TaskEngine @Inject constructor(
                 synchronized(lock) {
                     if (phase == TaskPhase.RUNNING) {
                         store.transition(id) {
-                            TaskState.Suspended
+                            TaskState.Canceled
                         }
                         phase = TaskPhase.FINISHED
                     }

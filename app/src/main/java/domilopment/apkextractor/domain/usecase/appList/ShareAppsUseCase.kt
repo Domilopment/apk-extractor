@@ -8,6 +8,7 @@ import domilopment.apkextractor.data.UiText
 import domilopment.apkextractor.data.model.appList.ApplicationModel
 import domilopment.apkextractor.data.model.appList.ShareResult
 import domilopment.apkextractor.data.repository.preferences.PreferenceRepository
+import domilopment.apkextractor.data.repository.tasks.TaskExecutionPolicy
 import domilopment.apkextractor.data.repository.tasks.TaskState
 import domilopment.apkextractor.domain.usecase.tasks.LaunchTaskUseCase
 import domilopment.apkextractor.utils.Utils
@@ -32,7 +33,8 @@ class ShareAppsUseCaseImpl @Inject constructor(
         return launchTask.invoke(
             initialState = TaskState.Progress(
                 title = UiText(R.string.progress_dialog_title_share)
-            )
+            ),
+            executionPolicy = TaskExecutionPolicy.IMMEDIATE
         ) {
             if (list.isEmpty()) {
                 fail(ShareResult.ShareError.None)

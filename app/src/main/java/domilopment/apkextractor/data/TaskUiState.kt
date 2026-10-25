@@ -18,5 +18,5 @@ sealed interface TaskUiState {
         data class Error(val reason: TaskFailure) : Result
     }
 
-    data object Suspended : TaskUiState
+    data object Canceled : TaskUiState
 }

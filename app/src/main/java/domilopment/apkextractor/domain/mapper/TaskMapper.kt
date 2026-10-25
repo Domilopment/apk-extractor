@@ -16,7 +16,7 @@ object TaskProgressToTaskUiStateMapper: Mapper<TaskState, TaskUiState> {
                 tasks = from.tasks
             )
 
-            is TaskState.Suspended -> TaskUiState.Suspended
+            is TaskState.Canceled -> TaskUiState.Canceled
         }
     }
 }

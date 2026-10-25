@@ -31,7 +31,7 @@ fun ProgressDialogScreen(
     val state by model.progressDialogState.collectAsStateWithLifecycle()
 
     when (state) {
-        null, TaskUiState.Suspended -> LaunchedEffect(Unit) {
+        null, TaskUiState.Canceled -> LaunchedEffect(Unit) {
             onDismissRequest()
         }
 
