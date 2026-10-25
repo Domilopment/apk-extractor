@@ -21,6 +21,7 @@ class TaskEngine @Inject constructor(
 
     companion object {
         private const val MAX_CONCURRENT_TASKS = 3
+        private const val TAG = "TaskEngine"
     }
 
     init {
@@ -39,6 +40,8 @@ class TaskEngine @Inject constructor(
         block: suspend TaskScope.() -> ProgressResult<T>,
     ): Uuid {
         val id = Uuid.random()
+        Timber.tag(TAG).d("Launching task $id with policy $executionPolicy")
+
         val task = TaskActor(
             id = id,
             initial = initial,
@@ -51,12 +54,18 @@ class TaskEngine @Inject constructor(
 
         try {
             when (executionPolicy) {
-                TaskExecutionPolicy.QUEUED -> queue.send(task.id)
-                TaskExecutionPolicy.IMMEDIATE -> scope.launch {
-                    execute(task)
+                TaskExecutionPolicy.QUEUED -> {
+                    queue.send(task.id)
+                    Timber.tag(TAG).d("Task $id enqueued")
+                }
+
+                TaskExecutionPolicy.IMMEDIATE -> {
+                    Timber.tag(TAG).d("Executing task $id immediately")
+                    scope.launch { execute(task) }
                 }
             }
         } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Failed to dispatch task $id")
             task.cancel()
             activeTasks.remove(id, task)
             throw e
@@ -69,15 +78,18 @@ class TaskEngine @Inject constructor(
         try {
             task.run()
         } catch (e: CancellationException) {
+            Timber.tag(TAG).d("Task ${task.id} execution canceled")
             throw e
         } catch (e: Exception) {
-            Timber.tag("TaskEngine").e(e, "Unexpected failure for task ${task.id}")
+            // Fallback for unexpected exceptions escaping run()
+            Timber.tag(TAG).e(e, "Unexpected failure in execute() for task ${task.id}")
         } finally {
             activeTasks.remove(task.id, task)
         }
     }
 
     suspend fun cancel(id: Uuid) {
+        Timber.tag(TAG).d("Requesting cancellation for task $id")
         activeTasks[id]?.cancel()
         activeTasks.remove(id)
     }
@@ -120,6 +132,7 @@ class TaskEngine @Inject constructor(
             }
 
             try {
+                Timber.tag(TAG).d("Task $id started running block")
                 val result = block(taskScope)
                 currentCoroutineContext().ensureActive()
                 synchronized(lock) {
@@ -128,9 +141,11 @@ class TaskEngine @Inject constructor(
                             TaskState.Result.Success(result)
                         }
                         phase = TaskPhase.FINISHED
+                        Timber.tag(TAG).d("Task $id completed successfully")
                     }
                 }
             } catch (e: CancellationException) {
+                Timber.tag(TAG).d("Task $id was cancelled during execution")
                 synchronized(lock) {
                     if (phase == TaskPhase.RUNNING) {
                         store.transition(id) {
@@ -141,6 +156,7 @@ class TaskEngine @Inject constructor(
                 }
                 throw e
             } catch (e: TaskFailureException) {
+                Timber.tag(TAG).w(e, "Task $id failed with domain error: ${e.failure.errorMessage}")
                 synchronized(lock) {
                     if (phase == TaskPhase.RUNNING) {
                         store.transition(id) {
@@ -150,6 +166,7 @@ class TaskEngine @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Task $id failed with unexpected exception")
                 synchronized(lock) {
                     if (phase == TaskPhase.RUNNING) {
                         store.transition(id) {
@@ -195,6 +212,7 @@ class TaskEngine @Inject constructor(
 
             if (shouldCancel) {
                 job.cancelAndJoin()
+                Timber.tag(TAG).d("Task $id successfully cancelled and joined")
             }
         }
     }
