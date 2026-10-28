@@ -1,10 +1,22 @@
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.char
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 object VersionUtils {
     /**
      * Get the current build date in the format of yyyy.MM.dd
      */
-    fun buildDate(): String = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(Date())
+    @OptIn(ExperimentalTime::class)
+    fun buildDate(): String = Clock.System.todayIn(TimeZone.currentSystemDefault()).format(
+            LocalDate.Format {
+                year()
+                char('.')
+                monthNumber()
+                char('.')
+                day()
+            })
 }
