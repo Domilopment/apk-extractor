@@ -8,7 +8,7 @@
         android:maxSdkVersion="28" />
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
+        tools:ignore="PackageVisibilityPolicy,QueryAllPackagesPermission" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
@@ -27,7 +27,9 @@
     <application
         android:name=".ApkExtractorApplication"
         android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:localeConfig="@xml/locales_config"
@@ -202,8 +204,8 @@
 
         <activity
             android:name="com.google.android.gms.oss.licenses.v2.OssLicensesMenuActivity"
-            tools:replace="android:theme"
-            android:theme="@style/OSSActivityTheme" />
+            android:theme="@style/OSSActivityTheme"
+            tools:replace="android:theme" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
