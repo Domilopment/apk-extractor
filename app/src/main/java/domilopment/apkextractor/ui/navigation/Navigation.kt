@@ -210,7 +210,7 @@ fun ApkExtractorNavDisplay(
     }
 
     NavDisplay(
-        entries = navigationState.toEntries(entryProvider),
+        entries = navigationState.toDecoratedEntries(entryProvider),
         modifier = modifier,
         sceneStrategies = listOf(bottomSheetStrategy, dialogStrategy),
         predictivePopTransitionSpec = {

@@ -8,7 +8,7 @@ import androidx.navigation3.runtime.NavKey
 class Navigator<T : NavKey>(val state: NavigationState<T>) {
     fun navigate(route: T) {
         if (route in state.backStacks.keys) {
-            // This is a top level route, just switch to it.
+            // This is a top level route, just switch to it
             state.topLevelRoute = route
         } else {
             state.backStacks[state.topLevelRoute]?.add(route)
