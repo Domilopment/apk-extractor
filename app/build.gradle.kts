@@ -54,7 +54,9 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
-            isMinifyEnabled = false
+            optimization {
+                enable = false
+            }
         }
         release {
             optimization {
