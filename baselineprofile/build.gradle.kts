@@ -8,10 +8,9 @@ plugins {
 
 android {
     namespace = "domilopment.apkextractor.baselineprofile"
-
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
+        version = release(37) {
+            minorApiLevel = 2
         }
     }
 
@@ -28,7 +27,7 @@ android {
 
     defaultConfig {
         minSdk = 28
-        targetSdk = 36
+        targetSdk = 37
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -59,11 +58,11 @@ dependencies {
 }
 
 androidComponents {
-    onVariants { variant ->
-        val artifactsLoader = variant.artifacts.getBuiltArtifactsLoader()
-        variant.instrumentationRunnerArguments.put(
-            "targetAppId", variant.testedApks.map { directory ->
-                artifactsLoader.load(directory)?.applicationId ?: "unknown"
-            })
+    onVariants { v ->
+        val artifactsLoader = v.artifacts.getBuiltArtifactsLoader()
+        v.instrumentationRunnerArguments.put(
+            "targetAppId",
+            v.testedApks.map { artifactsLoader.load(it)?.applicationId }
+        )
     }
 }
