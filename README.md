@@ -75,11 +75,16 @@ To add support for a new language, please follow these steps:
 
    * Add an entry for the new language, including the locale and tag, in [`Languages.kt`](app/src/main/java/domilopment/apkextractor/utils/settings/Languages.kt).
 
-3. **Update locale filters**
+3. **Update locale configuration**
+
+   * Add or update the corresponding locale entry in [`locales_config.xml`](app/src/main/res/xml/locales_config.xml) to ensure Android recognizes the supported language.
+   * If you are modifying an existing locale, make sure the configuration matches the locale code used in your translated resources.
+
+4. **Update locale filters**
 
    * Add your language to the locale filter list in the build script at [`build.gradle.kts`](app/build.gradle.kts#L37).
 
-4. **Submit a pull request**
+5. **Submit a pull request**
 
    * Open a pull request with your changes.
    * Include a brief description and request a review from the maintainers.
@@ -87,6 +92,7 @@ To add support for a new language, please follow these steps:
 ### ✅ Tips
 
 * Make sure your locale code follows Android's [language and region standards](https://developer.android.com/guide/topics/resources/localization).
+* Keep locale entries consistent across Languages.kt, locales_config.xml, and the build script.
 * Test your language selection in the app to ensure everything displays correctly.
 * Keep translations consistent with the original tone and terminology.
 
