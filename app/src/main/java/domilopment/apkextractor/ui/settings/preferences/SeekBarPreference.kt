@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -90,14 +91,16 @@ fun SeekBarPreference(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Slider(
-                    value = value,
+                    state = rememberSliderState(
+                        value = value,
+                        steps = steps,
+                        trackRange = min..max
+                    ),
                     onValueChange = {
                         value = it
                     },
                     modifier = Modifier.weight(1f),
                     enabled = enabled,
-                    valueRange = min..max,
-                    steps = steps,
                     onValueChangeFinished = { onValueChanged(value) },
                 )
                 if (showValue) Text(text = value.toInt().toString())

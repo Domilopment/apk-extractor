@@ -156,6 +156,7 @@ class AsyncBackupTask(
             Intent(Intent.ACTION_SEND).apply {
                 type = FileUtil.FileInfo.APK.mimeType
                 putExtra(Intent.EXTRA_STREAM, fileUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }, context.getString(R.string.share_intent_title)
         ).let {
             PendingIntent.getActivity(context, 0, it, PendingIntent.FLAG_IMMUTABLE)

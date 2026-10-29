@@ -1,7 +1,7 @@
 package domilopment.apkextractor.ui
 
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 
@@ -21,8 +21,8 @@ object DeviceTypeUtils {
     }
 
     val isPhoneBars: Boolean
-        @Composable get() = getDeviceBarType(currentWindowAdaptiveInfo()) == DeviceType.PHONE
+        @Composable get() = getDeviceBarType(currentWindowAdaptiveInfoV2()) == DeviceType.PHONE
 
     val isTabletBars: Boolean
-        @Composable get() = getDeviceBarType(currentWindowAdaptiveInfo()) == DeviceType.TABLET
+        @Composable get() = getDeviceBarType(currentWindowAdaptiveInfoV2()) == DeviceType.TABLET
 }
