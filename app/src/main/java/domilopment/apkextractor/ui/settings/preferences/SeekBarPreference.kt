@@ -4,17 +4,15 @@ import androidx.annotation.IntRange
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,7 +31,7 @@ fun SeekBarPreference(
     @StringRes summary: Int? = null,
     min: Float = 0f,
     max: Float = 100f,
-    steps: Int = 1,
+    @IntRange(from = 0L) steps: Int = 0,
     showValue: Boolean = false,
     state: Float,
     onValueChanged: (Float) -> Unit
@@ -62,17 +60,17 @@ fun SeekBarPreference(
     summary: String? = null,
     min: Float = 0f,
     max: Float = 100f,
-    @IntRange(from = 0L) steps: Int = 1,
+    @IntRange(from = 0L) steps: Int = 0,
     showValue: Boolean = false,
     state: Float,
     onValueChanged: (Float) -> Unit
 ) {
-    var value by remember {
-        mutableFloatStateOf(state)
-    }
+    val sliderState = rememberSliderState(
+        value = state, steps = steps, trackRange = min..max
+    )
 
     LaunchedEffect(state) {
-        value = state
+        sliderState.value = state
     }
 
     BasePreference(icon = icon, enabled = enabled, iconDesc = iconDesc, name = {
@@ -91,19 +89,15 @@ fun SeekBarPreference(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Slider(
-                    state = rememberSliderState(
-                        value = value,
-                        steps = steps,
-                        trackRange = min..max
-                    ),
+                    state = sliderState,
                     onValueChange = {
-                        value = it
+                        sliderState.value = it
                     },
                     modifier = Modifier.weight(1f),
                     enabled = enabled,
-                    onValueChangeFinished = { onValueChanged(value) },
+                    onValueChangeFinished = { onValueChanged(sliderState.value) },
                 )
-                if (showValue) Text(text = value.toInt().toString())
+                if (showValue) Text(text = "%.2f".format(sliderState.value))
             }
         }
     }, onClick = {})

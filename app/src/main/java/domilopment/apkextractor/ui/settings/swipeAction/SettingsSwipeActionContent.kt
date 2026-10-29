@@ -71,7 +71,7 @@ fun SettingsSwipeActionContent(
                     summary = R.string.apk_swipe_action_threshold_summary,
                     min = 0f,
                     max = 100f,
-                    steps = 100,
+                    steps = 99,
                     showValue = true,
                     state = swipeActionThresholdMod,
                     onValueChanged = onSwipeActionThresholdMod,
