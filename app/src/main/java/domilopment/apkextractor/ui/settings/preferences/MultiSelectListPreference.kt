@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MultiSelectListPreference(
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     @StringRes iconDesc: Int? = null,
@@ -37,6 +38,7 @@ fun MultiSelectListPreference(
     onClick: (Set<String>) -> Unit
 ) {
     MultiSelectListPreference(
+        modifier = modifier,
         icon = icon,
         enabled = enabled,
         iconDesc = iconDesc?.let { stringResource(id = it) },
@@ -53,6 +55,7 @@ fun MultiSelectListPreference(
 
 @Composable
 fun MultiSelectListPreference(
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     iconDesc: String? = null,
     name: String,
@@ -78,6 +81,7 @@ fun MultiSelectListPreference(
     }
 
     DialogPreference(
+        modifier = modifier,
         icon = icon,
         enabled = enabled,
         iconDesc = iconDesc,

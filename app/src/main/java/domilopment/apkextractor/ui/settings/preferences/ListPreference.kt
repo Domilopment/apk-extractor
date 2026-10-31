@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 inline fun <reified T> ListPreference(
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     @StringRes iconDesc: Int? = null,
@@ -37,6 +38,7 @@ inline fun <reified T> ListPreference(
     crossinline onClick: (T) -> Unit
 ) {
     ListPreference(
+        modifier = modifier,
         icon = icon,
         enabled = enabled,
         iconDesc = iconDesc?.let { stringResource(id = it) },
@@ -51,6 +53,7 @@ inline fun <reified T> ListPreference(
 
 @Composable
 inline fun <reified T> ListPreference(
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     iconDesc: String? = null,
@@ -70,6 +73,7 @@ inline fun <reified T> ListPreference(
     val dialog = rememberDialogPreferenceState()
 
     DialogPreference(
+        modifier = modifier,
         icon = icon,
         iconDesc = iconDesc,
         name = name,

@@ -3,10 +3,12 @@ package domilopment.apkextractor.ui.settings.preferences
 import androidx.annotation.StringRes
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
 fun SwitchPreferenceCompat(
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     @StringRes iconDesc: Int? = null,
     @StringRes name: Int,
@@ -15,7 +17,9 @@ fun SwitchPreferenceCompat(
     isVisible: Boolean = true,
     onClick: (Boolean) -> Unit
 ) {
-    Preference(icon = icon,
+    Preference(
+        modifier = modifier,
+        icon = icon,
         iconDesc = iconDesc,
         name = name,
         summary = summary,

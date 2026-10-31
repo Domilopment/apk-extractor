@@ -25,6 +25,7 @@ import domilopment.apkextractor.utils.fadingTop
 
 @Composable
 fun DialogPreference(
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     @StringRes iconDesc: Int? = null,
@@ -39,6 +40,7 @@ fun DialogPreference(
     onDismiss: (() -> Unit)? = null,
 ) {
     DialogPreference(
+        modifier = modifier,
         icon = icon,
         enabled = enabled,
         iconDesc = iconDesc?.let { stringResource(id = it) },
@@ -56,6 +58,7 @@ fun DialogPreference(
 
 @Composable
 fun DialogPreference(
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     iconDesc: String? = null,
@@ -69,7 +72,9 @@ fun DialogPreference(
     onConfirmEnabled: Boolean = true,
     onDismiss: (() -> Unit)? = null,
 ) {
-    Preference(name = name,
+    Preference(
+        name = name,
+        modifier = modifier,
         enabled = enabled,
         icon = icon,
         iconDesc = iconDesc,

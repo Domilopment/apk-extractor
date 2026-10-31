@@ -52,6 +52,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun APKNamePreference(
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     @StringRes iconDesc: Int? = null,
@@ -63,6 +64,7 @@ fun APKNamePreference(
     onClick: (Set<String>) -> Unit
 ) {
     APKNamePreference(
+        modifier = modifier,
         icon = icon,
         enabled = enabled,
         iconDesc = iconDesc?.let { stringResource(id = it) },
@@ -79,6 +81,7 @@ fun APKNamePreference(
 
 @Composable
 fun APKNamePreference(
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     iconDesc: String? = null,
     name: String,
@@ -133,6 +136,7 @@ fun APKNamePreference(
     }
 
     DialogPreference(
+        modifier = modifier,
         icon = icon,
         enabled = enabled,
         iconDesc = iconDesc,

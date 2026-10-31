@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SwipeLeft
 import androidx.compose.material.icons.filled.SwipeRight
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.settings.preferences.ListPreference
 import domilopment.apkextractor.ui.settings.preferences.SliderPreference
@@ -75,16 +77,15 @@ fun SettingsSwipeActionContent(
                     min = 0f,
                     max = 100f,
                     steps = 99,
-                    sliderValue = {
-                        Text(
-                            text = "%d %%".format(it.toInt()),
-                            modifier = Modifier.width(40.dp),
-                            textAlign = TextAlign.End
-                        )
-                    },
                     state = swipeActionThresholdMod,
                     onValueChanged = onSwipeActionThresholdMod,
-                )
+                ) {
+                    Text(
+                        text = "%d %%".format(it.toInt()),
+                        modifier = Modifier.width(64.dp),
+                        textAlign = TextAlign.End
+                    )
+                }
             }
         }
     }
