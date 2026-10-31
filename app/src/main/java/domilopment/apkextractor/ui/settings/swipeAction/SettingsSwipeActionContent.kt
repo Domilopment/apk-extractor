@@ -1,16 +1,20 @@
 package domilopment.apkextractor.ui.settings.swipeAction
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SwipeLeft
 import androidx.compose.material.icons.filled.SwipeRight
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import domilopment.apkextractor.R
 import domilopment.apkextractor.ui.settings.preferences.ListPreference
-import domilopment.apkextractor.ui.settings.preferences.SeekBarPreference
+import domilopment.apkextractor.ui.settings.preferences.SliderPreference
 import domilopment.apkextractor.ui.settings.preferences.SwitchPreferenceCompat
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategory
 import domilopment.apkextractor.ui.settings.preferences.preferenceCategoryItemBottom
@@ -28,8 +32,7 @@ fun SettingsSwipeActionContent(
     onSwipeActionThresholdMod: (Float) -> Unit,
 ) {
     LazyColumn(
-        state = rememberLazyListState(),
-        contentPadding = PaddingValues(horizontal = 8.dp)
+        state = rememberLazyListState(), contentPadding = PaddingValues(horizontal = 8.dp)
     ) {
         preferenceCategory(title = R.string.app_list_swipe_actions) {
             preferenceCategoryItemTop {
@@ -65,14 +68,20 @@ fun SettingsSwipeActionContent(
                 )
             }
             preferenceCategoryItemBottom {
-                SeekBarPreference(
+                SliderPreference(
                     enabled = swipeActionCustomThreshold,
                     name = R.string.apk_swipe_action_threshold_title,
                     summary = R.string.apk_swipe_action_threshold_summary,
                     min = 0f,
                     max = 100f,
                     steps = 99,
-                    showValue = true,
+                    sliderValue = {
+                        Text(
+                            text = "%d %%".format(it.toInt()),
+                            modifier = Modifier.width(40.dp),
+                            textAlign = TextAlign.End
+                        )
+                    },
                     state = swipeActionThresholdMod,
                     onValueChanged = onSwipeActionThresholdMod,
                 )

@@ -4,10 +4,8 @@ import androidx.annotation.IntRange
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSliderState
@@ -23,7 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SeekBarPreference(
+fun SliderPreference(
     icon: ImageVector? = null,
     enabled: Boolean = true,
     @StringRes iconDesc: Int? = null,
@@ -32,11 +30,11 @@ fun SeekBarPreference(
     min: Float = 0f,
     max: Float = 100f,
     @IntRange(from = 0L) steps: Int = 0,
-    showValue: Boolean = false,
+    sliderValue: @Composable ((Float) -> Unit)? = { Text(text = "%.2f".format(it)) },
     state: Float,
     onValueChanged: (Float) -> Unit
 ) {
-    SeekBarPreference(
+    SliderPreference(
         icon = icon,
         enabled = enabled,
         iconDesc = iconDesc?.let { stringResource(id = it) },
@@ -45,14 +43,14 @@ fun SeekBarPreference(
         min = min,
         max = max,
         steps = steps,
-        showValue = showValue,
+        sliderValue = sliderValue,
         state = state,
         onValueChanged = onValueChanged
     )
 }
 
 @Composable
-fun SeekBarPreference(
+fun SliderPreference(
     icon: ImageVector? = null,
     enabled: Boolean = true,
     iconDesc: String? = null,
@@ -61,7 +59,7 @@ fun SeekBarPreference(
     min: Float = 0f,
     max: Float = 100f,
     @IntRange(from = 0L) steps: Int = 0,
-    showValue: Boolean = false,
+    sliderValue: @Composable ((Float) -> Unit)? = { Text(text = "%.2f".format(it)) },
     state: Float,
     onValueChanged: (Float) -> Unit
 ) {
@@ -97,7 +95,7 @@ fun SeekBarPreference(
                     enabled = enabled,
                     onValueChangeFinished = { onValueChanged(sliderState.value) },
                 )
-                if (showValue) Text(text = "%.2f".format(sliderState.value))
+                sliderValue?.invoke(sliderState.value)
             }
         }
     }, onClick = {})
