@@ -1,6 +1,6 @@
 [versions]
 accompanist = "0.37.3"
-agp = "9.5.0"
+agp = "9.5.1"
 appcompat = "1.8.0"
 appUpdate = "2.1.0"
 baselineprofile = "1.5.0"
