@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Apk Options -->
+    <string name="apk_action_share">Compartilhar</string>
+    <string name="apk_action_delete">Excluir</string>
+    <string name="apk_action_delete_success">APK excluído</string>
+    <string name="apk_action_delete_failed">Falha ao excluir o APK</string>
+    <string name="apk_action_uninstall_app">Desinstalar app</string>
+
+    <string name="title_activity_settings">Configurações</string>
+    <string name="title_screen_save_file_settings">Formato do arquivo salvo</string>
+    <string name="title_screen_auto_backup_settings">Backup automático</string>
+    <string name="title_screen_about_settings">Sobre</string>
+    <string name="title_screen_swipe_action_settings">Ações de deslize</string>
+    <string name="title_screen_data_collection_settings">Coleta de dados</string>
+
+    <!-- Preference Header -->
+    <string name="save_header">Armazenamento e backup</string>
+    <string name="app_type_header">Apps</string>
+    <string name="info_header">Sobre e suporte</string>
+
+    <!-- Preference update available -->
+    <string name="update_available_title">Atualização disponível</string>
+    <string name="update_available_summary">Toque aqui para baixar e instalar a atualização do app.</string>
+
+    <!-- Preferences Save Option -->
+    <string name="choose_save_dir">Escolher diretório de salvamento</string>
+    <string name="choose_save_dir_summary">Escolha ou altere o caminho para salvar os APKs</string>
+
+    <string name="auto_backup">Serviço de backup automático</string>
+    <string name="auto_backup_summary">Backup automático dos apps após atualização</string>
+
+    <string name="auto_backup_app_list">Escolher apps para backup automático</string>
+    <string name="auto_backup_app_list_summary">Selecione os apps dos quais criar um backup automático após a atualização </string>
+
+    <string name="backup_mode_split_apk">Fazer backup de APKs de origem divididos</string>
+    <string name="backup_mode_split_apk_summary_active">Fazer backup do base.apk + split apks como pacote APK (pode ser renomeado para \'.zip\' e usado como tal).</string>
+    <string name="backup_mode_split_apk_summary_inactive">Fazer backup apenas do base.apk (aviso: instalar um app apenas a partir do base.apk pode causar travamento ao iniciar devido à falta de recursos).</string>
+
+    <!-- Preferences Apps -->
+    <string name="app_type_system">Sistema</string>
+    <string name="app_type_system_updated">Sistema (atualizado)</string>
+    <string name="app_type_user">Usuário</string>
+
+    <!-- Preference Data Collection -->
+    <string name="data_collection_header">Privacidade e coleta de dados</string>
+    <string name="data_collection_analytics">Analytics</string>
+    <string name="data_collection_analytics_summary">Coleta de dados do usuário, como interações com o app e visualizações de tela, para entender o comportamento do usuário e otimizar o desempenho do app.</string>
+    <string name="data_collection_crashlytics">Crashlytics</string>
+    <string name="data_collection_crashlytics_summary">Coleta de relatórios de falhas e dados relacionados ao sistema para solucionar problemas e melhorar a estabilidade.</string>
+    <string name="data_collection_perf">Desempenho</string>
+    <string name="data_collection_perf_summary">Coleta de métricas de desempenho, como o tempo de inicialização do app e as requisições de rede, para otimizar o desempenho do app.</string>
+    <string name="data_collection_delete">Excluir ID de instalação</string>
+    <string name="data_collection_delete_summary">Os IDs de instalação do Firebase são diferentes para cada instalação de cada aplicativo; aplicativos diferentes no mesmo dispositivo têm IDs de instalação do Firebase diferentes. Os IDs de instalação do Firebase identificam instalações de apps e os dados vinculados a essas instalações.\n\nQuando você exclui um ID de instalação, os dados vinculados a esse ID de instalação são removidos dos sistemas ativos e de backup de todos os serviços do Firebase que usam IDs de instalação do Firebase para identificar instalações, no prazo de 180 dias. Esse processo é descrito de forma geral na declaração do Google sobre exclusão e retenção.</string>
+    <string name="data_collection_delete_summary_hyperlink_text">declaração sobre exclusão e retenção</string>
+    <string name="data_collection_delete_summary_hyperlink_url">https://policies.google.com/technologies/retention</string>
+    <string name="data_collection_delete_success">ID de instalação do Firebase excluído</string>
+    <string name="data_collection_delete_failure">Não foi possível excluir o ID de instalação do Firebase, tente novamente mais tarde ou entre em contato com o desenvolvedor</string>
+
+    <!-- Preferences Info -->
+    <string name="github">GitHub</string>
+    <string name="github_summary">Ver o código ou criar uma issue ou pull request</string>
+
+    <string name="googleplay">Google Play</string>
+    <string name="googleplay_summary">Ver a página do app na Play Store</string>
+
+    <string name="privacy_policy_title">Política de Privacidade</string>
+
+    <string name="terms_title">Termos e Condições</string>
+
+    <string name="thanks_translaton_title">Tradutores</string>
+
+    <string name="oss_dependencies_title">Bibliotecas usadas</string>
+
+    <string name="version">Versão: %s (%d)</string>
+
+    <string name="appearance">Aparência e tema</string>
+    <string name="ui_mode">Modo noturno</string>
+    <string name="ui_mode_summary">Alterar a aparência do app</string>
+    <string name="ui_follow_os">Seguir o sistema</string>
+    <string name="ui_dark">Escuro</string>
+    <string name="ui_white">Branco</string>
+
+    <string name="use_material_you">Usar Material You</string>
+    <string name="use_material_you_summary">Usar o tema de cores dinâmicas, fornecido pelas cores do papel de parede no Android 12 e versões posteriores</string>
+
+    <string name="gestures_and_interactions">Gestos e interações</string>
+    <string name="app_list_swipe_actions">Ações de deslize na lista de apps</string>
+
+    <string name="apk_swipe_action_right_title">Ação de deslize para a direita</string>
+    <string name="apk_swipe_action_right_summary">Selecione o que acontece ao deslizar para a direita sobre um item na lista de apps</string>
+
+    <string name="apk_swipe_action_left_title">Ação de deslize para a esquerda</string>
+    <string name="apk_swipe_action_left_summary">Selecione o que acontece ao deslizar para a esquerda sobre um item na lista de apps</string>
+
+    <string name="apk_swipe_action_custom_threshold_title">Ativar limiar personalizado da ação de deslize</string>
+    <string name="apk_swipe_action_custom_threshold_summary">Usar o modificador de limiar da ação de deslize em vez do padrão de 56dp.</string>
+
+    <string name="advanced_swipe_action_header">Configurações avançadas da ação de deslize</string>
+    <string name="apk_swipe_action_threshold_title">Modificador do limiar da ação de deslize</string>
+    <string name="apk_swipe_action_threshold_summary">Altere a porcentagem do limiar posicional para acionar a ação de deslize com mais facilidade.</string>
+
+    <string name="app_options_header">Opções do app</string>
+
+    <string name="favorites">Favoritos</string>
+    <string name="sort_favorites">Exibir favoritos no topo</string>
+
+    <string name="filter_title">Filtro</string>
+    <string name="all_sources">Qualquer origem</string>
+    <string name="other_sources">Outras origens</string>
+    <string name="filter_category_all">Todas as categorias</string>
+    <string name="filter_category_undefined">Indefinida</string>
+    <string name="filter_category_games">Jogos</string>
+    <string name="filter_category_audio">Áudio</string>
+    <string name="filter_category_video">Vídeo</string>
+    <string name="filter_category_image">Imagem</string>
+    <string name="filter_category_social">Social</string>
+    <string name="filter_category_news">Notícias</string>
+    <string name="filter_category_maps">Mapas</string>
+    <string name="filter_category_productivity">Produtividade</string>
+    <string name="installation_sources">Origem da instalação</string>
+    <string name="app_categories">Categoria</string>
+    <string name="other_filter">Outros filtros</string>
+
+    <string name="backup_apk_bundle_file_ending_title">Terminação de arquivo do pacote APK</string>
+    <string name="backup_apk_bundle_file_ending_summary">Defina a terminação de arquivo (sufixo) padrão para arquivos apk agrupados (split apk)."</string>
+
+    <string name="ignore_battery_optimization_title">Desativar otimização de bateria</string>
+    <string name="ignore_battery_optimization_summary">Se o serviço de backup automático for encerrado em segundo plano sem reiniciar, considere desativar a otimização de bateria para este app, para que ele continue em execução em segundo plano</string>
+
+    <string name="check_update_on_start_title">Verificar atualizações ao iniciar</string>
+    <string name="check_update_on_start_summary">Verificar ao iniciar o app se há novas atualizações disponíveis e mostrar um aviso para instalá-las.</string>
+
+    <string name="clear_cache">Limpar cache</string>
+    <string name="clear_cache_summary">Tamanho do cache do app: %s</string>
+    <string name="clear_cache_success">Cache limpo</string>
+    <string name="clear_cache_failed">Não foi possível limpar o cache</string>
+
+    <string name="app_save_name">Nome do APK</string>
+    <string name="app_save_name_summary">Configure as informações do nome de salvamento do APK; use o arraste sobre os elementos selecionados para mudar a posição no nome do arquivo.</string>
+    <string name="app_save_name_name">Nome do app</string>
+    <string name="app_save_name_package">Nome do pacote</string>
+    <string name="app_save_name_version_name">Nome da versão do app</string>
+    <string name="app_save_name_version_number">Número da versão do app</string>
+    <string name="app_save_name_datetime">Data</string>
+    <string name="app_save_name_toast">Selecione ao menos o nome do app ou do pacote</string>
+
+    <string name="app_save_name_part_separator">Separador das partes do nome do APK</string>
+    <string name="app_save_name_part_separator_summary">Escolha o caractere a ser usado ao unir as partes do nome do apk. Ele é usado ao criar o arquivo apk.</string>
+    <string name="app_save_name_part_separator_space">Espaço</string>
+    <string name="app_save_name_part_separator_underscore">Sublinhado</string>
+    <string name="app_save_name_part_separator_hyphen">Hífen</string>
+    <string name="app_save_name_part_separator_dot">Ponto</string>
+
+    <string name="locale_list_title">Idioma</string>
+    <string name="locale_list_summary">%s</string>
+    <string name="locale_list_default">Padrão do sistema</string>
+    <string name="locale_list_not_supported">O idioma %s ainda não é compatível</string>
+
+    <!-- APK Name Preference Dialog -->
+    <string name="app_name_dialog_ok">OK</string>
+    <string name="app_name_dialog_cancel">Cancelar</string>
+
+    <!-- Menu -->
+    <string name="menu_search">Pesquisar</string>
+    <string name="menu_sort_app">Ordenar</string>
+    <string name="menu_sort_app_name">Nome do app</string>
+    <string name="menu_sort_app_package">Nome do pacote</string>
+    <string name="menu_sort_app_install">Instalados recentemente</string>
+    <string name="menu_sort_app_update">Atualizados recentemente</string>
+    <string name="menu_sort_app_apk_size">Tamanho do APK</string>
+    <string name="menu_show_save_dir">APKs salvos</string>
+    <string name="action_settings">Configurações</string>
+    <string name="menu_show_app_list">Apps instalados</string>
+    <string name="menu_refresh_app_list">Atualizar</string>
+
+    <string name="sort_order_asc">CRESC</string>
+    <string name="sort_order_desc">DECRESC</string>
+
+    <!-- Menu Multiselect -->
+    <string name="multiselect_select_all">Selecionar tudo</string>
+
+    <!-- Menu ApkListFragment -->
+    <string name="menu_sort_apk">Ordenar por…</string>
+    <string name="menu_sort_apk_file_name_asc">Nome do arquivo (A a Z)</string>
+    <string name="menu_sort_apk_file_name_desc">Nome do arquivo (Z a A)</string>
+    <string name="menu_sort_apk_file_size_asc">Tamanho (menor primeiro)</string>
+    <string name="menu_sort_apk_file_size_desc">Tamanho (maior primeiro)</string>
+    <string name="menu_sort_apk_file_mod_date_asc">Modificado (mais antigo primeiro)</string>
+    <string name="menu_sort_apk_file_mod_date_desc">Modificado (mais recente primeiro)</string>
+    <string name="menu_show_open_documents">Outros APKs</string>
+    <string name="menu_refresh_apk_list">Atualizar</string>
+
+    <!-- APK Selected Alert -->
+    <string name="alert_apk_selected_title">Como usar o APK</string>
+    <string name="alert_apk_selected_failed">Falha ao abrir o APK selecionado</string>
+    <string name="alert_apk_selected_share">@string/apk_action_share</string>
+    <string name="alert_apk_selected_install">Instalar</string>
+    <string name="alert_apk_selected_delete">@string/apk_action_delete</string>
+
+    <!-- MainActivity -->
+    <string name="alert_save_path_title">Selecione um diretório de salvamento</string>
+    <string name="alert_save_path_message">Para salvar os APKs extraídos, você precisa escolher ou criar um diretório, concedendo ao app permissão de escrita nele.</string>
+    <string name="alert_save_path_ok">OK</string>
+    <string name="alert_save_path_error_title">Gerenciador de arquivos necessário!</string>
+    <string name="alert_save_path_error_message">Parece que seu dispositivo não tem um app gerenciador de arquivos capaz de lidar com a seleção de diretórios. Isso é necessário para o app funcionar corretamente.\n\nApós resolver o problema, tente selecionar um diretório novamente.</string>
+    <string name="alert_save_path_error_ok">Tentar novamente</string>
+    <string name="alert_save_path_error_cancel">Cancelar</string>
+
+    <string name="toast_save_apps">Selecione apps para salvar</string>
+    <string name="snackbar_successful_extracted">%s extraído com sucesso</string>
+    <plurals name="snackbar_successful_extracted_multiple">
+        <!--
+             As a developer, you should always supply "one" and "other"
+             strings. Your translators will know which strings are actually
+             needed for their language. Always include %d in "one" because
+             translators will need to use %d for languages where "one"
+             doesn't mean 1 (as explained above).
+          -->
+        <item quantity="one">@string/snackbar_successful_extracted</item>
+        <item quantity="other">%s e mais %d extraídos com sucesso</item>
+    </plurals>
+    <string name="snackbar_extraction_failed">FALHA na extração de %s</string>
+    <string name="snackbar_extraction_failed_message">Mensagem de erro:\n%s\n\nQuando não conseguir resolver o problema, entre em contato com o desenvolvedor.</string>
+    <string name="snackbar_extraction_failed_message_copy_to_clipboard">Copiar para a área de transferência</string>
+    <string name="snackbar_extraction_failed_message_dismiss">Dispensar</string>
+    <string name="share_intent_title">Compartilhando app</string>
+    <string name="toast_share_app">Selecione apps para compartilhar</string>
+
+    <!-- Auto Backup Foreground Service -->
+    <string name="auto_backup_notification_title">Monitorando atualizações</string>
+    <string name="auto_backup_notification_content_text">Monitorando atualizações nos pacotes selecionados</string>
+    <string name="auto_backup_notification_action_stop">PARAR SERVIÇO</string>
+    <string name="auto_backup_notification_permission_request_rejected">Conceda a permissão de notificação (nas configurações do app), senão o serviço de backup automático não consegue informar se ainda está em execução ou se criou um backup em segundo plano.</string>
+
+    <string name="auto_backup_broadcast_receiver_backup_success">Backup de %s realizado com sucesso</string>
+    <string name="auto_backup_broadcast_receiver_backup_failed">Falha no backup de %s</string>
+    <string name="auto_backup_broadcast_receiver_notification_title">Backup automático</string>
+
+    <!-- Auto Backup Tile Service -->
+    <string name="auto_backup_tile_service_start_foreground_error">Erro: abra o app para iniciar o serviço</string>
+    <string name="auto_backup_tile_service_notifications_disabled">Conceda a permissão de notificação antes de iniciar o serviço.</string>
+
+    <!-- App Options Bottom Sheet -->
+    <string name="info_bottom_sheet_source_directory">APK de origem</string>
+    <string name="info_bottom_sheet_split_sources">divididos</string>
+    <string name="info_bottom_sheet_apk_size">Tamanho do APK: %s</string>
+    <string name="info_bottom_sheet_version_name">Nome da versão: %s</string>
+    <string name="info_bottom_sheet_version_number">Número da versão: %d</string>
+    <string name="info_bottom_sheet_min_sdk">SDK mínimo: %d | Android %s (%s)</string>
+    <string name="info_bottom_sheet_target_sdk">SDK alvo: %d | Android %s (%s)</string>
+    <string name="info_bottom_sheet_category">Categoria: %s</string>
+    <string name="info_bottom_sheet_install_time">Instalado: %s</string>
+    <string name="info_bottom_sheet_update_time">Última atualização: %s</string>
+    <string name="info_bottom_sheet_installation_source">Origem da instalação: %s</string>
+
+    <string name="action_bottom_sheet_save">Salvar</string>
+    <string name="action_bottom_sheet_share">@string/apk_action_share</string>
+    <string name="action_bottom_sheet_save_image">Salvar ícone</string>
+    <string name="action_bottom_sheet_open">Abrir</string>
+    <string name="action_bottom_sheet_settings">Configurações</string>
+    <string name="action_bottom_sheet_uninstall">Desinstalar</string>
+    <string name="snackbar_successful_save_image">Ícone salvo</string>
+    <string name="snackbar_need_permission_save_image">É necessária a permissão de armazenamento para salvar imagens</string>
+    <string name="snackbar_no_activity_for_market_intent">Não foi possível abrir a página da loja</string>
+
+    <string name="action_none">Nenhuma</string>
+
+    <!-- Apk Options Bottom Sheet -->
+    <string name="apk_bottom_sheet_source_uri">URI de origem do APK: %s</string>
+    <string name="apk_bottom_sheet_file_name">Nome do arquivo APK: %s</string>
+    <string name="apk_bottom_sheet_last_modified">Criado em: %s</string>
+
+    <!-- App Multiselect Options Bottom Sheet -->
+    <string name="action_multiselect_bottom_sheet_save_description">Salvar APKs</string>
+    <string name="action_multiselect_bottom_sheet_share_description">@string/apk_action_share</string>
+
+    <!-- Apk List Adapter -->
+    <string name="apk_holder_version">Versão: %s (%d)</string>
+    <string name="apk_list_sum_backup_size_title">Espaço ocupado pelos backups:</string>
+    <string name="apk_list_sum_backup_size_percentage">%.2f %%</string>
+    <string name="apk_list_sum_backup_size_info_backups">Backups extraídos</string>
+    <string name="apk_list_sum_backup_size_info_used">Espaço usado no dispositivo (total)</string>
+    <string name="apk_list_sum_backup_size_info_total">Espaço total do dispositivo</string>
+
+    <!-- App List Item -->
+    <string name="list_item_Image_description">Ícone do app</string>
+    <string name="list_item_checkbox_description">Caixa de seleção de multisseleção</string>
+
+    <!-- App Extraction Progress Dialog -->
+    <string name="progress_dialog_percentage">%.2f %%</string>
+    <string name="progress_dialog_value">%d/%d</string>
+    <string name="progress_dialog_title_save">Salvar APKs</string>
+    <string name="progress_dialog_title_share">Preparando para compartilhar</string>
+    <string name="progress_dialog_title_install">Instalar APKs</string>
+
+    <!-- Installation Activity -->
+    <string name="installation_activity_placeholder_text">Aguarde</string>
+
+    <!-- Installation Result Dialog -->
+    <string name="installation_result_dialog_success_title">Instalação concluída!</string>
+    <string name="installation_result_dialog_success_message">Instalação de %s concluída com sucesso</string>
+    <string name="installation_result_dialog_failed_title">Falha na instalação!</string>
+    <string name="uninstallation_result_dialog_success_title">Desinstalado com sucesso!</string>
+    <string name="uninstallation_result_dialog_success_message">Desinstalação de %s concluída com sucesso</string>
+    <string name="uninstallation_result_dialog_failed_title">Falha na desinstalação!</string>
+    <string name="uninstallation_result_dialog_failed_message">Falha na desinstalação de %s, com a mensagem:\n%s</string>
+    <string name="pending_user_action_security_exception_dialog_title">Exceção de segurança!</string>
+    <string name="pending_user_action_security_exception_dialog_message">O processo não pôde continuar, mensagem:\n\n%2$s\n\nEntre em contato com o desenvolvedor.</string>
+    <string name="installation_result_dialog_ok">OK</string>
+    <string name="installation_result_dialog_extern">Tentar externamente</string>
+
+    <!-- Installation Error Types -->
+    <string name="installation_error_aborted">Instalação de %s cancelada pelo usuário.</string>
+    <string name="installation_error_generic">Falha na instalação de %s com o erro:\n%s</string>
+    <string name="installation_error_blocked">Instalação de %s bloqueada pelo sistema.</string>
+    <string name="installation_error_invalid">Falha na instalação de %s, o pacote é inválido, corrompido ou contém partes inválidas (apks/xapk).</string>
+    <string name="installation_error_conflict">Falha na instalação de %s, o pacote está em conflito.\nTente desinstalar a versão atualmente instalada e execute novamente.</string>
+    <string name="installation_error_storage">Falha na instalação de %s, armazenamento insuficiente. Tente excluir alguns arquivos/apps para liberar espaço.</string>
+    <string name="installation_error_incompatible">Falha na instalação de %s, o pacote é incompatível. Isso significa que ele provavelmente tem uma arquitetura de processador incorreta ou o dispositivo não possui os componentes para executá-lo.</string>
+    <string name="installation_error_session_creation">Falha na instalação de %s, não foi possível criar a sessão. Seja por erro de leitura/escrita no armazenamento ou por bloqueio da segurança do sistema.</string>
+    <string name="installation_error_file_read">Falha na instalação de %s, não foi possível ler o arquivo ou ele está corrompido.</string>
+
+    <!-- Action Mode -->
+    <string name="action_mode_title">%d selecionados</string>
+
+    <!-- Check for App update -->
+    <string name="popup_snackbar_for_complete_update_text">Uma atualização acabou de ser baixada.</string>
+    <string name="popup_snackbar_for_complete_update_action">REINICIAR</string>
+
+    <string name="popup_dialog_for_notify_about_update_title">Considere atualizar</string>
+    <string name="popup_dialog_for_notify_about_update_text">Se você pular as atualizações, perde novos recursos, melhorias de interface e desempenho, mas, o mais importante, correções de bugs e travamentos.\n\nVocê pode desativar a verificação de atualização ao iniciar nas configurações.</string>
+    <string name="popup_dialog_for_notify_about_update_button_positive">Atualizar</string>
+    <string name="popup_dialog_for_notify_about_update_button_negative">Fechar</string>
+    <string name="popup_dialog_for_notify_about_update_button_neutral">Não perguntar novamente</string>
+
+    <string name="popup_dialog_update_failed_title">Falha na atualização interna do app</string>
+    <string name="popup_dialog_update_failed_text">Não foi possível atualizar o app, tente novamente, baixe-o diretamente da Play Store ou tente na próxima vez que abrir o app.</string>
+    <string name="popup_dialog_update_failed_button_positive">Tentar novamente</string>
+    <string name="popup_dialog_update_failed_button_negative">Fechar</string>
+
+    <!-- User Consent Dialog -->
+    <string name="consent_dialog_header">Todos devem poder decidir por si mesmos quais dados são compartilhados e se algum dado é compartilhado. Para melhorar sua experiência, eu uso o Firebase Analytics, o Crashlytics e o monitoramento de desempenho. Você pode especificar aqui quais dados têm permissão para serem coletados.</string>
+    <string name="consent_dialog_consent_notice">Ao tocar em \"Confirmar seleção\", você concorda com a coleta e o processamento dos seus dados conforme descrito acima. Sem o seu consentimento, pode ser mais difícil identificar e corrigir erros e bugs, o que pode afetar sua experiência com o app.</string>
+    <string name="consent_dialog_footer">Você pode retirar o seu consentimento a qualquer momento nas configurações. Leia a nossa %s e os nossos %s para mais informações.</string>
+    <string name="consent_dialog_confirm">Confirmar seleção</string>
+    <string name="consent_dialog_dismiss">Negar tudo</string>
+
+    <string name="double_back_press_first_press_toast_text">Toque novamente para fechar o app</string>
+
+    <!-- Donations -->
+    <string name="donations_page_title">Doar para Domilopment</string>
+    <string name="donations_page_header">Obrigado por usar o APK Extractor! 🎉</string>
+    <string name="donations_page_text">Se você gosta do app, pode apoiar o seu desenvolvimento com uma doação voluntária. Sua contribuição ajuda a melhorar o app e a mantê-lo sem anúncios para todos.\n\nCada contribuição, grande ou pequena, faz a diferença. Sua generosidade ajuda a:\n• Manter e melhorar os recursos do app\n• Manter o serviço sem anúncios para quem precisa\n• Desenvolver atualizações novas e empolgantes</string>
+    <string name="donations_github_sponsors">GitHub Sponsors</string>
+    <string name="donations_patreon">Patreon</string>
+    <string name="donations_bmc">Buy me a Coffee</string>
+
+</resources>
